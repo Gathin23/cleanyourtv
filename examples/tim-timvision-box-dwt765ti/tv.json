@@ -1,0 +1,6 @@
+{
+  "tv": "TIM TIMVISION Box (Technicolor DWT765TI, Marvell Berlin), Italy",
+  "os": "Android TV 8.0",
+  "brand": "TIM",
+  "notes": "Operator streaming box, a sibling of `tim-timvision-box-uzw4010tim/` on the same skipper_tim board: TIMVISION telemetry, Smarts monitoring agent, Movenda OMA-DM device management, Technicolor boot trace, Google feedback and recommendation rows; TIMVISION service parts left as comments (off on this unit by choice); voice off by choice; preloaded streaming apps left in the list as comments (off on this unit by choice); the stock launcher is the TIMVISION app with HOME priority 2 (`STOCK_LAUNCHER=timvision.launcher`); Chromecast and remote services kept, updaters left in the list as comments; reboot-checked"
+}

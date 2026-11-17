@@ -9,9 +9,10 @@ else. Nobody notices a missing row, so this test reads the table the way a reade
 Three kinds of file are not expected in the table, and none is a judgement call about the tool:
 
   * README_STATS, README_FEATURED and README_CARD draw the README's card image in CI, not something
-    a reader runs; the card's alt text is what points at them.
-  * SCENES_WALLPAPERS draws the wallpaper of themes/scenes and is linked from themes/README.md,
-    which is the only place a theme author needs it.
+    a reader runs; the card's alt text is what points at them. PICTURE_FILE is the write those three
+    share, so it is a helper with no command line rather than a tool.
+  * SCENES_WALLPAPERS and BLOCKY_WALLPAPERS draw the wallpapers of themes/scenes and themes/blocky and are
+    linked from themes/README.md, which is the only place a theme author needs them.
   * GEN_TABLES writes the README's TV tables and brand line after a merge, a maintainer's step; the
     markers around those tables name it, and so do CONTRIBUTING.md and MAINTAINER.md.
 
@@ -34,9 +35,12 @@ TOOL_PATH = re.compile(r"tools/([\w.-]+\.(?:py|sh|ps1))")
 README_STATS = "readme_stats.py"        # the three that draw docs/card.jpg
 README_FEATURED = "readme_featured.py"
 README_CARD = "readme_card.py"
+PICTURE_FILE = "picture_file.py"        # the staged write the three above share
 SCENES_WALLPAPERS = "scenes_wallpapers.py"   # themes/scenes/wallpapers, linked from themes/README.md
+BLOCKY_WALLPAPERS = "blocky_wallpapers.py"   # themes/blocky/wallpapers, linked from themes/README.md
 GEN_TABLES = "gen_tables.py"            # the TV tables, from examples/*/tv.json
-NOT_IN_TABLE = {README_STATS, README_FEATURED, README_CARD, SCENES_WALLPAPERS, GEN_TABLES}
+NOT_IN_TABLE = {README_STATS, README_FEATURED, README_CARD, PICTURE_FILE, SCENES_WALLPAPERS,
+                BLOCKY_WALLPAPERS, GEN_TABLES}
 
 
 def table_rows(text):

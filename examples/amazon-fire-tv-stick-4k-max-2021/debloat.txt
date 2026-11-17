@@ -15,10 +15,23 @@
 # com.amazon.alexamediaplayer.runtime.ftv, com.amazon.whisperjoin.middleware.np, com.amazon.tv.ffsprovisioneeclient,
 # com.amazon.tv.mattercohost, com.amazon.ods.kindleconnect, com.amazon.naatyam, com.amazon.storm.lightning.tutorial.
 #
+# Second unit: AFTKA on the same build PS7713.5443N, Germany. Applied 2026-10-28 in three batches with a screenshot
+# after each, together with the commented-out Silk and casting lines at the end, then rebooted: everything stayed
+# disabled; Home, Netflix, Disney+ and MagentaTV open.
+# tools/disable.sh holds two of the listed packages back on this build:
+# - com.amazon.tv.livetv answers VIEW vnd.android.cursor.item/channel (.TvChannelsPlayerActivityAlias), which the
+#   script reads as the HDMI input handler; a stick has no tuner or HDMI input.
+#   The German unit kept it, as MagentaTV is in use there.
+# - com.amazon.systemnotices asks for no permissions, so its dumpsys has no requested-permissions block and the
+#   input-driver check cannot read it. The German unit kept it.
+# com.amazon.client.metrics, the service behind com.amazon.client.metrics.api, is protected on this build
+# (pm disable-user: "Cannot disable a protected package"), so it is not listed.
+#
 # Kept on purpose: com.amazon.tv.launcher, com.amazon.tv.settings.*, com.amazon.venezia (Appstore), com.amazon.tv.ime,
 # remote/Bluetooth services, OTA updates, Alexa voice search (com.amazon.vizzini, aria, ivona TTS, tcomm), Prime Video
 # (com.amazon.firebat), Silk (com.amazon.cloud9, com.amazon.tv.website_launcher), casting (cast.sink, dialservice,
 # awvflingreceiver, whisperplay, whisperlink), profiles (com.amazon.prism.android.service), com.amazon.tv.oobe.
+# Silk and casting are optional: the German unit disabled the lines commented out at the end.
 #
 # The hero rotator on Home is the launcher's own content feed; this list does not remove it.
 
@@ -57,3 +70,10 @@ com.amazon.tahoe                           # Amazon Kids (FreeTime)
 com.amazon.bueller.music                   # Amazon Music
 com.amazon.bueller.photos                  # Amazon Photos
 com.amazon.tmm.tutorial                    # remote tutorial
+
+# Optional, disabled on the German unit by the owner's choice: remove the "# " to disable
+# com.amazon.cloud9                        # Silk browser
+# com.amazon.tv.website_launcher           # opens websites in Silk
+# com.amazon.cast.sink                     # Miracast / screen mirroring
+# com.amazon.dialservice                   # DIAL: phone apps start Netflix/YouTube on the stick
+# com.amazon.awvflingreceiver              # fling receiver for casting from a phone

@@ -1,0 +1,6 @@
+{
+  "tv": "LYNCAST X3AQ (H726 Focus)",
+  "os": "Android TV 14",
+  "brand": "LYNCAST",
+  "notes": "LuminaOS, Allwinner H726; tested on retail unit, reboot-checked; LuminaOS kept for keystone and remote pairing; YouTube and Katniss off by choice; stock firmware restricts ADB: [notes](../docs/devices/lyncast-x3aq-allwinner-h726.md)"
+}

@@ -12,26 +12,109 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
     tv.py --reboot                     return once the reboot request is accepted; the TV may still be restarting
     tv.py --help                       this text; needs neither the venv nor a TV
 
-Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
-empty or failed, 2 it was refused before anything ran on the TV - a flag it does not have, a local
-path that cannot be used, a port it could not open.
+Exit status: 0 the command ran (the TV's own answer is in its output), or the reader stopped reading that
+answer before it was all out (a pager, `head`: the run printed as far as they read, which is not a
+failure), 1 the screenshot came back empty or failed, a pull the TV did not send (the local file is left
+as it was), a push the TV refused (what it said, and that the file there may be incomplete), or a
+command's answer was lost when the TV dropped the connection,
+2 it was refused before anything ran on the TV - a flag it does not have, one of its own with the wrong
+number of words, a local path that cannot be used, a port it could not open, or a TV_HOST that is a URL
+or a path instead of the TV's address. A flag and its count are
+judged before TV_HOST is read, so a typo names the usage instead of the TV's address.
+Batch input must be UTF-8 without NUL bytes; the whole list is checked before connecting.
 
 Set TV_ADB_BINARY to the Google adb executable to use an already connected, paired transport
 (including encrypted Wireless debugging). See tools/native-adb.md.
 """
 import errno
+import io
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
+
+
+def stopped_reading():
+    """What a run answers when the reader closed the pipe before the answer was all out.
+
+    `tv.py <command> | head` or `| less` quits at the first screen, and the answer here is the TV's own
+    output, which for dumpsys or logcat is longer than the pipe the two share: the write then fails with
+    BrokenPipeError, which used to leave the reader a traceback and exit 1 - the status this docstring
+    keeps for a command whose answer was lost, or a screenshot or push that failed, none of which
+    happened. The command had already run on the TV and its answer was printed as far as the reader read,
+    so this is the 0 the docstring gives a command that ran.
+
+    stdout is pointed at /dev/null before returning, because the interpreter flushes it again at exit and
+    would print "Exception ignored in: ... BrokenPipeError" onto the stderr of a run that went fine.
+    """
+    try:
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+    except (AttributeError, OSError, ValueError):
+        pass
+    return 0
+
 
 # -h/--help before the adb_shell imports and before TV_HOST is read: the usage is the first thing a
 # reader types at a script they do not know, and it needs neither the venv nor a TV. The TV_HOST check
 # below exits at import time, so a flag handled after it could never print anything but that error.
 if sys.argv[1:2] and sys.argv[1] in ("-h", "--help"):
-    print((__doc__ or "").strip())
+    try:
+        print((__doc__ or "").strip())
+        sys.stdout.flush()
+    except BrokenPipeError:
+        sys.exit(stopped_reading())
     sys.exit(0)
+
+USAGE = """usage:
+    tv.py --probe
+    tv.py --screenshot <local.png> [KEY ...] [--wait SECONDS]
+    tv.py --push <local> <remote>
+    tv.py --pull <remote> <local>
+    tv.py --batch < commands.txt
+    tv.py --reboot
+    tv.py --help
+    tv.py <shell command...>
+"""
+# Arguments each known flag takes, the flag included. The shell branch takes anything, so a flag
+# with the wrong count listed here is a typo, not a command for the TV.
+# --screenshot takes its file and then any number of keys, so it is checked by screenshot_args instead.
+ARITY = {"--probe": 1, "--push": 3, "--pull": 3, "--batch": 1, "--reboot": 1}
+
+
+def usage_error(message):
+    sys.stderr.write(f"{message}\n{USAGE}")
+    sys.exit(2)
+
+
+def check_flags(args):
+    """A flag tv.py does not have, or one of its own with the wrong number of words, before TV_HOST.
+
+    The TV_HOST check below exits at import time, so a command line that is wrong could only ever be
+    answered with the TV's address: `--proob` and `--push only-two.apk` both printed "Set TV_HOST to
+    your TV's IP address" and exited 1 - the status this client keeps for a command the TV ran and
+    failed, while the docstring's 2 is "refused before anything ran on the TV" - and the reader who
+    set the address they were told to set then got the usage. A typo in a flag is answered from the
+    usage, which needs neither the venv nor a TV, so it is judged here beside -h/--help.
+    """
+    if args and args[0] in ARITY and len(args) != ARITY[args[0]]:
+        sys.stderr.write(USAGE)
+        sys.exit(2)
+    if not args or not args[0].startswith("-"):
+        return                      # a shell command, or the bare run that is a probe
+    if args[0] == "--screenshot":
+        if len(args) == 1:
+            usage_error("--screenshot needs the file to save to")
+        return
+    if args[0] not in ARITY:
+        usage_error(f"not a flag of tv.py: {args[0]!r}")
+
+
+if __name__ == "__main__":
+    # Only tv.py's own command line: recovery.py, privacy.py, bench.py and the tests import this file,
+    # and the words their commands take are not this script's flags.
+    check_flags(sys.argv[1:])
 
 # The docs type `tools/tv.py ...`, which starts the first python3 on PATH, and that one seldom has
 # adb_shell: the README installs it into tools/venv only. Run that way, tv.py starts again under the
@@ -55,7 +138,6 @@ except ImportError as e:
         _args = [_venv, "-I", os.path.abspath(__file__), *sys.argv[1:]]
         if os.name == "nt":
             # No exec on Windows: os.execv starts a second process, and the shell takes its prompt back.
-            import subprocess
             sys.exit(subprocess.call(_args))
         os.execv(_venv, _args)
     _make = (r"python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt"
@@ -88,10 +170,35 @@ def split_host_port(endpoint):
     return endpoint, None
 
 
+def address_problem(raw):
+    """What makes TV_HOST something other than the TV's address, as the sentence to print, or None.
+
+    An address is read out of a browser or copied off a page often enough that the two shapes it is
+    never in are worth naming: a reader pastes `http://192.168.1.50`, or `192.168.1.50/` from the tail
+    of a URL. split_host_port() then keeps `//192.168.1.50` as the port ("not a port number:
+    '//192.168.1.50'") or hands `192.168.1.50/` to the socket, which answers "could not reach
+    192.168.1.50/:5555 ([Errno -2] Name or service not known). Is the TV on and on this network?" - a
+    mistake in the argument, reported against the TV, the Wi-Fi and the router. Neither a scheme nor a
+    path is ever part of an address, in brackets for IPv6 or not.
+    """
+    if "://" in raw:
+        return "that is a URL, not the TV's address"
+    if "/" in raw:
+        return "that is a path, not the TV's address"
+    return None
+
+
 _raw_host = os.environ.get("TV_HOST")
 if not _raw_host:
     sys.exit("Set TV_HOST to your TV's IP address, e.g.  TV_HOST=192.168.1.50 tools/tv.py --probe\n"
              "(find it under Settings → Network, or look for the TV in `arp -a`)")
+_problem = address_problem(_raw_host)
+if _problem:
+    # 2, like the flag refusals below: nothing reached the TV, and manage.py answers 2 for a run that asked
+    # it nothing - a URL read as TV_HOST there would otherwise look like a command the TV refused (1).
+    sys.stderr.write(f"TV_HOST={_raw_host!r}: {_problem}. Pass the address alone, e.g.  "
+                     f"TV_HOST=192.168.1.50 tools/tv.py --probe\n")
+    sys.exit(2)
 HOST, _endpoint_port = split_host_port(_raw_host)
 _port_str = _endpoint_port or os.environ.get("TV_PORT") or "5555"
 try:
@@ -182,6 +289,8 @@ class NativeAdbDevice:
     # b64push sizes its shell commands from this payload bound. A small value also
     # keeps adb's command-line arguments below Windows' process argument limit.
     max_chunk_size = 4096
+    # A shell OPEN also carries the service prefix and its terminating NUL.
+    max_shell_command_size = max_chunk_size - len(b"shell:\0")
 
     def __init__(self, binary, host, port, timeout):
         self.binary = binary
@@ -193,8 +302,9 @@ class NativeAdbDevice:
     def _run(self, args, timeout=None):
         limit = self.timeout if timeout is None else float(timeout)
         try:
+            # Android shell text is UTF-8, including when the host uses a Windows code page.
             result = subprocess.run([self.binary, "-s", self.serial, *args],
-                                    capture_output=True, text=True, errors="replace", timeout=limit)
+                                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=limit)
         except subprocess.TimeoutExpired as e:
             raise NativeAdbError(f"Google ADB {args[0]} on {self.serial} timed out after {limit:g}s.") from e
         except OSError as e:
@@ -244,7 +354,7 @@ def connect_error(e):
     A refused port and a Wireless debugging port used to end tv.py with a traceback, which says nothing
     about the port to use instead (#1578). connect() itself still raises: check.py (through
     recovery.connect()) and privacy.py catch its errors with wording and exit codes of their own, and
-    recovery.py --save still lets them through (a follow-up)."""
+    recovery.py --save asks this same function through recovery.reach()."""
     if isinstance(e, NativeAdbError):
         return str(e)
     # Imported here rather than with the client above, so the stub adb_shell in the tests (adb_device
@@ -259,8 +369,15 @@ def connect_error(e):
     see = "See docs/TROUBLESHOOTING.md#connecting."
     if isinstance(e, InvalidCommandError) and "STLS" in str(e):
         # Android 11+ answers the handshake on its Wireless debugging port with STLS, a request for TLS.
-        # adb_shell 0.4.4 (tools/requirements.txt) has no TLS, so no TV_HOST or TV_PORT gets past it.
+        # adb_shell 0.4.4 (tools/requirements.txt) has no TLS, so no TV_HOST or TV_PORT gets past it - but
+        # Google's own adb does, which is what TV_ADB_BINARY and tools/native-adb.md are for. Sending the
+        # reader to `adb tcpip 5555` alone answered a question the repo already has a better answer to:
+        # that opens the plaintext port the security section asks them to close.
         return (f"{target} is a Wireless debugging port: it asks for TLS, which tv.py cannot use.\n"
+                f"Google's adb can use it: pair and connect with it once, then set TV_ADB_BINARY to that "
+                f"adb and keep TV_HOST as it is (the Wireless debugging port) - this same tool then goes "
+                f"through that paired connection, with nothing opened on 5555 "
+                f"(tools/native-adb.md).\n"
                 f"To use port 5555 instead, {pair}, then set TV_HOST to the TV's IP alone and leave TV_PORT "
                 f"unset. {reboot} {see}")
     if isinstance(e, ConnectionRefusedError):
@@ -295,26 +412,46 @@ def connect_error(e):
     return None
 
 
-USAGE = """usage:
-    tv.py --probe
-    tv.py --screenshot <local.png> [KEY ...] [--wait SECONDS]
-    tv.py --push <local> <remote>
-    tv.py --pull <remote> <local>
-    tv.py --batch < commands.txt
-    tv.py --reboot
-    tv.py --help
-    tv.py <shell command...>
-"""
-# Arguments each known flag takes, the flag included. The shell branch takes anything, so a flag
-# with the wrong count listed here is a typo, not a command for the TV.
-# --screenshot takes its file and then any number of keys, so it is checked by screenshot_args instead.
-ARITY = {"--probe": 1, "--push": 3, "--pull": 3, "--batch": 1, "--reboot": 1}
+def lost_connection(e, command, position=None):
+    """What to print when a shell command failed because the TV dropped the connection, or None.
+
+    A TV that resets the TCP connection between two commands of a batch ended tv.py with adb_shell's
+    ConnectionResetError traceback (#2663). Under `set -euo pipefail` tools/disable.sh stopped there, and
+    the traceback named neither the command that was running nor whether the TV had run it: on the
+    SHIELD in that report it had, and only its answer was lost. So the drop is answered in words, with
+    the command and, in a batch, its place among the commands sent - comments and blank lines are not
+    commands, so the count lines up with the `$ command` headings printed above it.
+
+    The exit status stays 1, which is what a run that reached the TV and failed already answered (the
+    traceback exited 1 too). Anything that is not a lost connection keeps its traceback: that is a bug
+    in this script or in adb_shell, and a traceback is where it shows.
+    """
+    # Imported here rather than with the client above, as connect_error does, so a stub adb_shell that
+    # answers only adb_device and auth still loads this file.
+    from adb_shell.exceptions import AdbConnectionError, AdbTimeoutError, TcpTimeoutException
+    if not isinstance(e, (OSError, NativeAdbError, AdbConnectionError, AdbTimeoutError,
+                          TcpTimeoutException)):
+        return None
+    where = f" (command {position} of this batch)" if position else ""
+    rest = ("and the commands after it were not sent: look at the TV before running the batch again"
+            if position else
+            "look at the TV before running it again")
+    return (f'the connection to the TV dropped while running "{command}"{where}: '
+            f"{type(e).__name__}: {e}\n"
+            f"The TV may or may not have run it, {rest} (`tv.py \"pm list packages -d\"` names the "
+            f"packages a debloat batch disabled). See docs/TROUBLESHOOTING.md#connecting.")
+
 
 # screencap writes the PNG on the TV and we pull the file afterwards: adb_shell's shell() decodes
 # what comes back as text, which corrupts an image, and `exec-out screencap -p` returns a broken
 # PNG on some MediaTek sets (docs/TROUBLESHOOTING.md). /data/local/tmp is writable from shell.
 SHOT_REMOTE = "/data/local/tmp/cleanyourtv-shot.png"
 PNG = b"\x89PNG\r\n\x1a\n"
+# The last 8 bytes of every PNG: the IEND chunk's type and CRC. `screencap -p` writes one, so a file
+# that starts with the signature and does not end with this is a picture the pull stopped in the middle
+# of - not a screen. The signature alone let that through: the file was announced with its size and
+# exit 0, and the reader got half a screenshot that GitHub draws as a picture cut off at the bottom.
+PNG_END = b"IEND\xaeB`\x82"
 # Key names go into a shell command on the TV, so only plain key names and numeric keycodes get through.
 KEY_NAME = re.compile(r"^[A-Z0-9_]+$")
 KEY_GAP_S = 0.6   # between two keys, so the UI has finished reacting to the first
@@ -325,21 +462,17 @@ WAIT_MAX_S = 300.0
 
 
 def check_arity(args):
-    """Reject a known flag with the wrong argument count before connecting.
+    """Judge --screenshot's arguments and the two paths of --push/--pull before the TV is opened.
 
-    Without this, `--screenshot` with a destination missing falls through to the shell branch and
-    the TV tries to run `--screenshot` as a command. The same goes for a flag this script does not
-    have at all: `--proob` used to be sent to the TV, whose shell answered "inaccessible or not
-    found" while tv.py exited 0, so a mistyped flag looked like a command that ran."""
-    if args and args[0] in ARITY and len(args) != ARITY[args[0]]:
-        sys.stderr.write(USAGE)
-        sys.exit(2)
+    The flag itself, and how many words it takes, is check_flags() above, which runs before TV_HOST is
+    read. What is left here is the file a flag takes: `--screenshot` with its destination missing would
+    otherwise fall through to the shell branch and the TV would try to run `--screenshot` as a command.
+    """
+    check_flags(args)
     if args and args[0] == "--screenshot":
         screenshot_args(args[1:])
     elif args and args[0] in ("--push", "--pull"):
         transfer_args(args)
-    elif args and args[0].startswith("-") and args[0] not in ARITY:
-        usage_error(f"not a flag of tv.py: {args[0]!r}")
 
 
 def transfer_args(args):
@@ -406,13 +539,36 @@ def screenshot_target(local):
     have been judged this way since #2039; this is the flag the pages hand out most.
 
     A folder that is not there is still made rather than refused: that is the one shape the command is
-    expected to fix for itself.
+    expected to fix for itself. Three words are not a file name and are refused here: one that is only
+    whitespace, which `--screenshot "$SHOT"` sends when SHOT holds a space (the pull wrote a file named
+    "   " and the run printed `screenshot     (N bytes)`, exit 0, while the path the reader meant was
+    never made), one that ends with a separator while that folder is not there yet - the check below
+    only answers a folder that exists, and os.path.abspath() drops the separator, so the folder was made
+    and `screencap` ran on the TV before the pull wrote to a name that is a folder - and one whose last
+    word is `.` or `..`, which names the folder itself or its parent (`--screenshot newshots/.`): the
+    folder is not there, isdir() answers no and abspath() drops the tail as well, so the pull's open() of
+    the destination was the first thing to fail.
     """
     if not local:
         usage_error("--screenshot needs the file to save to")
+    if not local.strip():
+        usage_error(f"--screenshot's file is blank ({local!r}): name the file to save to, such as "
+                    f"shots/01-home.png")
     if os.path.isdir(local):
         path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
                    f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
+    if local.endswith(("/", os.sep)):
+        path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
+                   f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
+                   f"Nothing was captured.")
+    if os.path.basename(local) in (".", ".."):
+        # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
+        # is not there yet: os.path.isdir() answers no, the check above sees a dot rather than a separator,
+        # and os.path.abspath() drops the tail, so the parent was made, `screencap` ran on the TV, and the
+        # pull's open() of the destination - a path with no such folder - was the first thing to fail.
+        path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
+                   f"and --screenshot saves the PNG to a file: give the file a name such as "
+                   f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
@@ -473,11 +629,6 @@ def screenshot_args(rest):
     return local, keys, wait
 
 
-def usage_error(message):
-    sys.stderr.write(f"{message}\n{USAGE}")
-    sys.exit(2)
-
-
 def path_error(message):
     """Refuse a path that cannot be used, before anything is sent. Exit 2, no usage block.
 
@@ -498,7 +649,10 @@ def screenshot(dev, local, keys=(), wait=0.0):
 
     `local` and the folder it needs are judged - and the folder made - by screenshot_target() before the
     TV is opened: agents pass shots/01-home.png before that folder exists (#364), and a destination that
-    cannot be written has to be answered before a capture is run for it."""
+    cannot be written has to be answered before a capture is run for it.
+
+    A picture the TV does not send is pull()'s failure, not an empty screenshot: it answers in words,
+    exit 1, and the file that was already there is left as it was."""
     for i, key in enumerate(keys):
         if i:
             time.sleep(KEY_GAP_S)
@@ -514,7 +668,19 @@ def screenshot(dev, local, keys=(), wait=0.0):
         dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
         print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
         return 1
-    dev.pull(SHOT_REMOTE, local, transport_timeout_s=300.0, read_timeout_s=300.0)
+    # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
+    # local path before it asks the TV, so a dropped connection emptied the picture that was already
+    # there - the one the reader was about to compare against - and ended in a traceback out of a
+    # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
+    # it before this run says anything about a picture it did not get.
+    if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
+        # What usually failed is the transport, so the capture nobody will read is worth one attempt
+        # only, and that attempt cannot raise on top of the failure the pull just reported.
+        try:
+            dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+        except Exception:
+            pass
+        return 1
     dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
     size = os.path.getsize(local) if os.path.exists(local) else 0
     if size == 0:
@@ -528,13 +694,131 @@ def screenshot(dev, local, keys=(), wait=0.0):
         if f.read(len(PNG)) != PNG:
             print(f"{local} is not a PNG: the pull from the TV came back damaged; try again", file=sys.stderr)
             return 1
+        # A PNG that stops before its IEND chunk kept the signature and went through the check above:
+        # the run printed "screenshot <file> (N bytes)", returned 0 and left the reader a picture that
+        # ends in the middle - a pull that ran out (a transport that dropped, a fill that stopped on
+        # the TV) reads as a plain short screenshot, and the docs ask for those to go in a PR
+        # description. The end marker is what tells the two apart.
+        f.seek(max(0, size - len(PNG_END)))
+        if f.read() != PNG_END:
+            print(f"{local} is {size} bytes of a PNG that stops before its IEND chunk: the pull from the "
+                  "TV ended before the picture did; try again", file=sys.stderr)
+            return 1
     print(f"screenshot {local} ({size} bytes)")
     return 0
 
 
+def pull(dev, remote, local, announce=True):
+    """Pull `remote` into `local`, which is replaced only once the whole file has come back. Returns 0,
+    or 1 when the TV did not send the file.
+
+    adb_shell opens the local path for writing before it asks the TV for the file, so a path the TV does
+    not have, or a connection that dropped halfway, emptied the copy that was there (or left a 0-byte
+    file where there was none) and then ended in a traceback. The pull goes into a file of its own in
+    the same folder, so the os.replace() that puts it in place stays on one filesystem.
+
+    `announce=False` is for a caller that prints its own line about the file, as a capture does; a
+    failure is reported either way, because it is the run's answer rather than a note about it."""
+    folder, name = os.path.split(os.path.abspath(local))
+    part = os.path.join(folder, f".{name}.{os.getpid()}.part")
+    try:
+        dev.pull(remote, part, transport_timeout_s=300.0, read_timeout_s=300.0)
+        if os.path.exists(local):
+            shutil.copymode(local, part)
+        os.replace(part, local)
+    except Exception as e:
+        try:
+            os.remove(part)
+        except OSError:
+            pass
+        # Imported here, as lost_connection() does, so a stub adb_shell without exceptions still loads.
+        from adb_shell.exceptions import (AdbCommandFailureException, AdbConnectionError, AdbTimeoutError,
+                                          TcpTimeoutException)
+        if not isinstance(e, (OSError, NativeAdbError, AdbCommandFailureException, AdbConnectionError,
+                              AdbTimeoutError, TcpTimeoutException)):
+            raise
+        kept = "was left as it was" if os.path.exists(local) else "was not written"
+        print(f"could not pull {remote}: {type(e).__name__}: {e}\n{local} {kept}.", file=sys.stderr)
+        return 1
+    if announce:
+        print(f"pulled {remote} -> {local}")
+    return 0
+
+
+def push(dev, local, remote):
+    """Push `local` to `remote`, answering a transfer the TV refused. Returns 0, or 1 when it failed.
+
+    adb_shell's push() opens the local file, writes it to the TV and closes the sync session in one
+    call, so a push the TV would not take ended in a traceback out of main(): PushFailedError carrying
+    the TV's own words as bytes ("b'No such file or directory'") for a folder it cannot write - a
+    read-only mount, a path that is a folder, a name the shell user does not own - plus
+    AdbConnectionError, AdbTimeoutError and TcpTimeoutException for a transport that went, and
+    NativeAdbError from the Google ADB backend. Exit 1 was right (this client's code for a transfer
+    that failed) but nothing said which file, which path, or what the TV answered, and the reader had
+    to parse a stack trace to find out. --pull has answered its failures in words since #3191; --push
+    had no such sentence.
+    """
+    try:
+        dev.push(local, remote, transport_timeout_s=300.0, read_timeout_s=300.0)
+    except Exception as e:
+        # Imported here, as pull() does, so a stub adb_shell without exceptions still loads.
+        from adb_shell.exceptions import (AdbCommandFailureException, AdbConnectionError, AdbTimeoutError,
+                                          PushFailedError, TcpTimeoutException)
+        if not isinstance(e, (OSError, NativeAdbError, AdbCommandFailureException, AdbConnectionError,
+                              AdbTimeoutError, PushFailedError, TcpTimeoutException)):
+            raise
+        # PushFailedError's argument is the TV's answer as bytes; every other one reads as it is.
+        said = e.args[0].decode("utf-8", "replace") if e.args and isinstance(e.args[0], bytes) else str(e)
+        # Not "was not written": a push that stopped part-way can leave a cut-short file behind, so the
+        # sentence says what to look at rather than promising the TV still holds the old one.
+        print(f"could not push {local} to {remote}: {type(e).__name__}: {said}\n"
+              f"{remote} may be incomplete or missing: look at it on the TV before relying on it.",
+              file=sys.stderr)
+        return 1
+    print(f"pushed {local} -> {remote}")
+    return 0
+
+
 def main():
+    # A reader who closed the pipe is not a failed command: _run answers the status the work deserves, and
+    # this is the one place that turns the reader going away into the 0 stopped_reading() explains. The
+    # flush is here because a short answer stays in the buffer until the interpreter's own last flush,
+    # where the same BrokenPipeError arrives as "Exception ignored in: ... BrokenPipeError" and status 120
+    # instead of a status this docstring defines.
+    try:
+        code = _run()
+        sys.stdout.flush()
+    except BrokenPipeError:
+        return stopped_reading()
+    return code
+
+
+def _run():
     args = sys.argv[1:]
     check_arity(args)
+    batch_lines = None
+    if args and args[0] == "--batch":
+        # The whole list is decoded before the TV is contacted, so a bad byte refuses the run instead of
+        # stopping it half way. utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
+        raw = sys.stdin.buffer.read()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError as e:
+            # e.start counts from after a BOM; a lone CR ends a line too, as it does in the loop below.
+            head = raw[:e.start + (3 if raw.startswith(b"\xef\xbb\xbf") else 0)]
+            bad_line = head.replace(b"\r\n", b"\n").replace(b"\r", b"\n").count(b"\n") + 1
+            print(f"--batch: line {bad_line} of the list is not UTF-8; nothing was sent to the TV. "
+                  f"Save the file as UTF-8 and run it again.", file=sys.stderr)
+            return 2
+        # NUL is valid UTF-8 but cannot be passed as a command argument to native ADB. In particular,
+        # BOM-less UTF-16 made from ASCII commands decodes as UTF-8 with NULs between the letters.
+        if "\0" in text:
+            head = text.split("\0", 1)[0]
+            bad_line = head.replace("\r\n", "\n").replace("\r", "\n").count("\n") + 1
+            print(f"--batch: line {bad_line} of the list contains a NUL byte; nothing was sent to the TV. "
+                  "Check the file encoding and save it as UTF-8 without NUL bytes.", file=sys.stderr)
+            return 2
+        batch_lines = io.StringIO(text, newline=None)
     try:
         dev = connect()
     except Exception as e:
@@ -556,31 +840,59 @@ def main():
         for p in ("ro.product.model", "ro.product.device", "ro.build.version.release",
                   "ro.build.version.sdk", "ro.build.display.id", "ro.product.manufacturer",
                   "ro.adb.secure", "service.adb.tcp.port"):
-            print(f"{p} = {dev.shell(f'getprop {p}').strip()}")
+            try:
+                got = dev.shell(f'getprop {p}').strip()
+            except Exception as e:
+                why = lost_connection(e, f"getprop {p}")
+                if why is None:
+                    raise
+                print(why, file=sys.stderr)
+                return 1
+            print(f"{p} = {got}")
     elif args[0] == "--screenshot":
         local, keys, wait = screenshot_args(args[1:])
-        status = screenshot(dev, local, keys, wait)
+        try:
+            status = screenshot(dev, local, keys, wait)
+        except Exception as e:
+            why = lost_connection(e, " ".join(args))
+            if why is None:
+                raise
+            print(why, file=sys.stderr)
+            return 1
     elif args[0] == "--push" and len(args) == 3:
-        dev.push(args[1], args[2], transport_timeout_s=300.0, read_timeout_s=300.0)
-        print(f"pushed {args[1]} -> {args[2]}")
+        status = push(dev, args[1], args[2])
     elif args[0] == "--pull" and len(args) == 3:
-        dev.pull(args[1], args[2], transport_timeout_s=300.0, read_timeout_s=300.0)
-        print(f"pulled {args[1]} -> {args[2]}")
+        status = pull(dev, args[1], args[2])
     elif args[0] == "--batch":
         # one shell command per stdin line, each run separately on the same connection.
-        # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
-        sys.stdin.reconfigure(encoding="utf-8-sig")
-        for line in sys.stdin:
+        sent = 0
+        for line in batch_lines:
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
-            out = dev.shell(line, read_timeout_s=120.0)
+            sent += 1
+            try:
+                out = dev.shell(line, read_timeout_s=120.0)
+            except Exception as e:
+                why = lost_connection(e, line, sent)
+                if why is None:
+                    raise
+                print(why, file=sys.stderr)
+                return 1
             sys.stdout.write(f"$ {line}\n{out}")
             if out and not out.endswith("\n"):
                 sys.stdout.write("\n")
             sys.stdout.flush()
     else:
-        out = dev.shell(" ".join(args), read_timeout_s=120.0)
+        line = " ".join(args)
+        try:
+            out = dev.shell(line, read_timeout_s=120.0)
+        except Exception as e:
+            why = lost_connection(e, line)
+            if why is None:
+                raise
+            print(why, file=sys.stderr)
+            return 1
         sys.stdout.write(out)
     dev.close()
     return status

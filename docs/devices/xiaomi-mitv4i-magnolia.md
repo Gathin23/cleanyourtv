@@ -1,7 +1,13 @@
 # Xiaomi MiTV4I (`magnolia`): launcher setup and app order
 
 Tested on a Xiaomi MiTV4I (`magnolia`), Android TV 9 / API 28, firmware `PI.3698`.
-This is a launcher-only record; no debloat list was applied.
+This page is the launcher-only record of that setup: no debloat was applied in the session it describes.
+The list this model ships is
+[`examples/xiaomi-mitv4i-magnolia/`](../../examples/xiaomi-mitv4i-magnolia/debloat.txt) - 22 packages on
+the same firmware (Xiaomi and Google telemetry, PatchWall and its Sensara rows, TV Manager and the cleaner
+services, preloaded video and music), with the phone remote and the firmware updater left as comments and
+the before/after memory figures in the folder's README. What this page adds to it: the dock and app-grid
+order set here, the inputs the set showed, and the ADB state it was left in.
 
 ## Launcher and inputs
 

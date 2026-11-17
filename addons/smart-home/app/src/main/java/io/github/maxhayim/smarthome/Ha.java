@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,10 +15,12 @@ import java.util.Locale;
  * so the JVM tests cover it against the documented responses.
  */
 final class Ha {
-    /** At most this many rows, so a large installation can't make the screen slow. */
+    /** At most this many rows in the list, so a large installation can't make the screen slow. */
     static final int MAX_ENTITIES = 80;
+    /** At most this many fuel-price sensors in the glance header. */
+    static final int MAX_PRICES = 6;
 
-    enum Kind { SCENE, TOGGLE, CLIMATE, SENSOR, OPENING, LOCK }
+    enum Kind { WEATHER, PRICE, SCENE, TOGGLE, CLIMATE, SENSOR, OPENING, LOCK }
 
     static final class Entity {
         final String id;
@@ -47,6 +50,8 @@ final class Ha {
         }
 
         boolean available() {
+            // A scene's state is the time it last ran, and "unknown" until it has run once: that one can still run.
+            if (kind == Kind.SCENE) return !"unavailable".equals(state);
             return !"unavailable".equals(state) && !"unknown".equals(state);
         }
 
@@ -54,6 +59,10 @@ final class Ha {
         String value() {
             if (!available()) return "Unavailable";
             switch (kind) {
+                case WEATHER:
+                    return Double.isNaN(current) ? capital(state) : number(current) + "°";
+                case PRICE:
+                    return price(state) + (unit.isEmpty() ? "" : " " + unit);
                 case SCENE:
                     return "Run";
                 case TOGGLE:
@@ -79,6 +88,53 @@ final class Ha {
         }
     }
 
+    /**
+     * What the glance header shows: one weather entity and up to {@link #MAX_PRICES} fuel prices.
+     * {@link #icon} names the weather drawable in the header.
+     */
+    static final class Glance {
+        final Entity weather;
+        final List<Entity> prices;
+        /** One line, for example "21° · E10 1.689 €/L · Diesel 1.549 €/L". Empty when nothing to show. */
+        final String text;
+        /** clear, cloudy, rain, snow, storm, fog, night, or empty. */
+        final String icon;
+
+        Glance(Entity weather, List<Entity> prices) {
+            this.weather = weather;
+            this.prices = Collections.unmodifiableList(prices);
+            this.icon = weather == null || !weather.available() ? "" : weatherIcon(weather.state);
+            this.text = line(weather, prices);
+        }
+
+        boolean empty() {
+            return text.isEmpty();
+        }
+
+        private static String line(Entity weather, List<Entity> prices) {
+            StringBuilder b = new StringBuilder();
+            if (weather != null && weather.available() && !Double.isNaN(weather.current)) {
+                b.append(number(weather.current)).append('°');
+            }
+            for (Entity p : prices) {
+                if (!p.available()) continue;
+                if (b.length() > 0) b.append(" · ");
+                b.append(shortName(p.name));
+                b.append(' ').append(price(p.state));
+                if (p.unit != null && !p.unit.isEmpty()) b.append(' ').append(p.unit);
+            }
+            return b.toString();
+        }
+
+        /** First word of the friendly name, capped so the header line stays short. */
+        private static String shortName(String name) {
+            String n = name == null ? "" : name.trim();
+            int space = n.indexOf(' ');
+            if (space > 0) n = n.substring(0, space);
+            return n.length() > 12 ? n.substring(0, 12) : n;
+        }
+    }
+
     /** One service call: POST path with body. */
     static final class Call {
         final String path;
@@ -95,6 +151,26 @@ final class Ha {
 
     /** The rows, sorted into sections (scenes, lights and switches, climate, sensors, doors and windows, locks). */
     static List<Entity> parse(String json) throws JSONException {
+        return parse(json, Collections.emptyList());
+    }
+
+    /**
+     * The same, with the glance header's entities (picked by {@code glanceIds} as in {@link #glance}) kept ahead of
+     * the cap: one weather, up to {@link #MAX_PRICES} prices, then up to {@link #MAX_ENTITIES} list rows. Many price
+     * or weather entities can't push the switches out.
+     */
+    static List<Entity> parse(String json, List<String> glanceIds) throws JSONException {
+        return parse(json, glanceIds, null, null, false);
+    }
+
+    /**
+     * The same, with the list rows filtered before the cap, so a row named in {@code show} is never lost behind 80
+     * others: {@code show} non-empty keeps only those ids, in that order within each section; {@code hide} drops ids
+     * or "prefix*" matches; {@code hideUnavailable} drops rows {@link Entity#available()} rejects. The glance header
+     * is not filtered.
+     */
+    static List<Entity> parse(String json, List<String> glanceIds, List<String> show, List<String> hide,
+                              boolean hideUnavailable) throws JSONException {
         JSONArray all = new JSONArray(json);
         List<Entity> out = new ArrayList<>();
         for (int i = 0; i < all.length(); i++) {
@@ -104,7 +180,114 @@ final class Ha {
             if (e != null) out.add(e);
         }
         out.sort((a, b) -> a.kind != b.kind ? a.kind.compareTo(b.kind) : a.name.compareToIgnoreCase(b.name));
-        return out.size() > MAX_ENTITIES ? new ArrayList<>(out.subList(0, MAX_ENTITIES)) : out;
+        Glance header = glance(out, glanceIds);
+        List<Entity> kept = new ArrayList<>();
+        if (header.weather != null) kept.add(header.weather);
+        kept.addAll(header.prices);
+        boolean only = show != null && !show.isEmpty();
+        List<Entity> rows = new ArrayList<>();
+        for (Entity e : out) {
+            if (!inList(e)) continue;
+            if (only && !show.contains(e.id)) continue;
+            if (matches(hide, e.id)) continue;
+            if (hideUnavailable && !e.available()) continue;
+            rows.add(e);
+        }
+        if (only) {
+            // Sections stay together; within a section, the order of show.
+            rows.sort((a, b) -> a.kind != b.kind ? a.kind.compareTo(b.kind)
+                    : Integer.compare(show.indexOf(a.id), show.indexOf(b.id)));
+        }
+        kept.addAll(rows.size() > MAX_ENTITIES ? rows.subList(0, MAX_ENTITIES) : rows);
+        return kept;
+    }
+
+    /** Whether id equals an entry, or starts with an entry that ends in '*'. */
+    static boolean matches(List<String> patterns, String id) {
+        if (patterns == null) return false;
+        for (String p : patterns) {
+            if (p.endsWith("*") ? id.startsWith(p.substring(0, p.length() - 1)) : id.equals(p)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Weather and fuel prices for the glance header. With {@code ids} empty: the first available weather
+     * entity and up to {@link #MAX_PRICES} price sensors. With ids set: those entities, in that order.
+     */
+    static Glance glance(List<Entity> all, List<String> ids) {
+        if (ids != null && !ids.isEmpty()) {
+            Entity weather = null;
+            List<Entity> prices = new ArrayList<>();
+            for (String id : ids) {
+                Entity e = find(all, id);
+                if (e == null) continue;
+                if (e.kind == Kind.WEATHER && weather == null) weather = e;
+                else if (e.kind == Kind.PRICE && prices.size() < MAX_PRICES) prices.add(e);
+            }
+            return new Glance(weather, prices);
+        }
+        Entity weather = null;
+        List<Entity> prices = new ArrayList<>();
+        for (Entity e : all) {
+            if (e.kind == Kind.WEATHER && weather == null && e.available()) weather = e;
+            else if (e.kind == Kind.PRICE && prices.size() < MAX_PRICES) prices.add(e);
+        }
+        if (weather == null) {
+            for (Entity e : all) {
+                if (e.kind == Kind.WEATHER) {
+                    weather = e;
+                    break;
+                }
+            }
+        }
+        return new Glance(weather, prices);
+    }
+
+    /** Rows for the remote list: weather and prices live in the glance header only. */
+    static boolean inList(Entity e) {
+        return e.kind != Kind.WEATHER && e.kind != Kind.PRICE;
+    }
+
+    /**
+     * Closed vocabulary for the Home line and the in-app icon: clear, cloudy, rain, snow, storm, fog, night.
+     * Unknown Home Assistant states map to cloudy.
+     */
+    static String weatherIcon(String state) {
+        if (state == null) return "cloudy";
+        switch (state) {
+            case "sunny":
+            case "clear":
+                return "clear";
+            case "clear-night":
+                return "night";
+            case "cloudy":
+            case "partlycloudy":
+            case "windy":
+            case "windy-variant":
+                return "cloudy";
+            case "fog":
+                return "fog";
+            case "rainy":
+            case "pouring":
+            case "hail":
+                return "rain";
+            case "snowy":
+            case "snowy-rainy":
+                return "snow";
+            case "lightning":
+            case "lightning-rainy":
+                return "storm";
+            default:
+                return "cloudy";
+        }
+    }
+
+    static boolean priceUnit(String unit) {
+        if (unit == null) return false;
+        String u = unit.trim().toUpperCase(Locale.ROOT).replace(" ", "");
+        return u.equals("€") || u.equals("EUR") || u.equals("€/L") || u.equals("EUR/L")
+                || u.equals("€/LITRE") || u.equals("EUR/LITRE");
     }
 
     static Entity entity(JSONObject o) {
@@ -119,6 +302,9 @@ final class Ha {
         String deviceClass = a.optString("device_class", "");
         String unit = a.optString("unit_of_measurement", "");
         switch (domain) {
+            case "weather":
+                return new Entity(id, Kind.WEATHER, name, state, -1, a.optDouble("temperature", Double.NaN),
+                        Double.NaN, "°");
             case "scene":
                 return new Entity(id, Kind.SCENE, name, state, -1, Double.NaN, Double.NaN, "");
             case "light":
@@ -132,6 +318,9 @@ final class Ha {
                 return new Entity(id, Kind.CLIMATE, name, state, -1, a.optDouble("current_temperature", Double.NaN),
                         a.optDouble("temperature", Double.NaN), "°");
             case "sensor":
+                if (priceUnit(unit)) {
+                    return new Entity(id, Kind.PRICE, name, state, -1, Double.NaN, Double.NaN, unit);
+                }
                 if (!deviceClass.equals("temperature") && !deviceClass.equals("humidity")) return null;
                 return new Entity(id, Kind.SENSOR, name, state, -1, Double.NaN, Double.NaN, unit);
             case "binary_sensor":
@@ -164,10 +353,13 @@ final class Ha {
         if (e.kind == Kind.TOGGLE && e.domain().equals("light")) {
             return call("light", "turn_on", e.id, "\"brightness_step_pct\":" + (direction * 10));
         }
-        if (e.kind == Kind.CLIMATE && !Double.isNaN(e.target)) {
-            return call("climate", "set_temperature", e.id, "\"temperature\":" + number(e.target + direction * 0.5));
-        }
+        if (e.kind == Kind.CLIMATE && !Double.isNaN(e.target)) return temperature(e, e.target + direction * 0.5);
         return null;
+    }
+
+    /** A thermostat's new target, in degrees. */
+    static Call temperature(Entity e, double target) {
+        return call("climate", "set_temperature", e.id, "\"temperature\":" + number(target));
     }
 
     private static Call call(String domain, String service, String entity, String extra) {
@@ -212,7 +404,26 @@ final class Ha {
         return v == Math.rint(v) ? String.valueOf((long) v) : String.format(Locale.ROOT, "%.1f", v);
     }
 
+    /**
+     * A price exactly as Home Assistant reports it, never rounded: fuel prices come with three decimals (1.689),
+     * and the last one is the tenth of a cent the station charges. At least two decimals, so 2.1 reads 2.10.
+     */
+    static String price(String state) {
+        try {
+            java.math.BigDecimal d = new java.math.BigDecimal(state.trim());
+            if (d.scale() < 2) d = d.setScale(2);
+            return d.toPlainString();
+        } catch (NumberFormatException | ArithmeticException e) {
+            return state;
+        }
+    }
+
     private static String capital(String s) {
         return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
+    private static Entity find(List<Entity> all, String id) {
+        for (Entity e : all) if (e.id.equals(id)) return e;
+        return null;
     }
 }

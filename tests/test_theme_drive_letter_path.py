@@ -48,8 +48,10 @@ class ThemeDriveLetterPathTest(unittest.TestCase):
                 base = Path(tmp)
                 tools = self.prepare(base / "repo")
                 result, capture = self.run_theme(tools, missing, cwd=base)
-                self.assertEqual(result.returncode, 1, result.stderr)
-                self.assertEqual(result.stderr, f"no config.json in {missing}\n")
+                # 2 and the sentence every refusal that sends nothing ends with: a folder that is not a theme
+                # is a command line this script cannot use, not a push the TV refused.
+                self.assertEqual(2, result.returncode, result.stderr)
+                self.assertEqual(result.stderr, f"no config.json in {missing}. Nothing was sent to the TV.\n")
                 self.assertFalse(capture.exists(), "a missing theme must not reach the TV transport")
 
 

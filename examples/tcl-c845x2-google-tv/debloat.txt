@@ -2,6 +2,8 @@
 # Android 14 (Google TV), firmware V8-0012T01-LF1V667, product G08_4K_GB, fingerprint UTT2.250416.001 AU04.
 # Same G08 board and package set as examples/tcl-c755-google-tv and examples/tcl-qm6k-google-tv; the C755 list was the starting point.
 # Applied on a real 75C845X2 on 2026-10-20: Home, the CleanYourTV launcher and its dock apps worked afterwards.
+# Second unit: 55C845X2, same product and firmware, remote BT_RC833_U1, 2026-10-27: a subset of this list with
+# YouTube kept; remote keycodes, config.json and the key-repeat cost of HOME_KEY_SERVICE=1 are in README.md.
 #
 # Extra choices on this unit compared with the C755 list: YouTube (com.google.android.youtube.tv) and
 # Google Play Movies & TV (com.google.android.videos) are disabled because SmartTube is used instead;

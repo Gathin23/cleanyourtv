@@ -1,0 +1,10 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "in.startv.hotstar",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "live_tv_package": "com.android.tv",
+  "hidden_apps": ["com.android.tv"]
+}

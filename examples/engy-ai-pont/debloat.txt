@@ -1,0 +1,73 @@
+# ENGY AI PONT (DVB64, built by Changhong; the set reports ro.product.brand=CHiQ,
+# device alimos), Google TV 14 (API 34), firmware UKN6.260116.094, MediaTek mt5896,
+# about 1.8 GB RAM. Same "AI PONT" family as examples/rca-ai-pont (device redwood),
+# examples/aiwa-ai-pont-sa (osaka) and examples/chiq-ai-pont (DVB93CQ, Android TV 11);
+# this board is alimos, product DVB64, firmware UKN6.260116.094. The vendor layer is
+# Homwee (com.homwee.*); content recognition and FAST channels come from Anoki.
+#
+# Status: 2026-11-10 — disabled in one session on one set, still off after a power cycle,
+# and in daily use from that date. Same-day testing, not a multi-day soak. Packages
+# marked "already disabled" shipped that way.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/engy-ai-pont/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/engy-ai-pont/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx — pass it to restore.sh; the scripts'
+# default stock launcher, com.google.android.tvlauncher, is not on this firmware.
+# Live TV: com.mediatek.tv.oneworld.tvcenter (PROTECTED below).
+#
+# KEEP, even though the names look like bloat:
+# - com.homwee.factory, com.homwee.upgrade, com.homwee.dmt.upgrade and
+#   com.mediatek.tv.systemupdater: the factory menu (never launch it) and the firmware
+#   updaters. The updaters stay enabled on purpose; an owner who wants them off comments
+#   them in here.
+# - com.homwee.mmp.screenshare, com.homwee.multiscreenshare, com.mediatek.miracast:
+#   screen mirroring.
+# - com.google.android.katniss, com.google.android.tts: Google Assistant and its TTS.
+# - com.google.android.apps.mediashell: Chromecast.
+# - com.gdch.gameoptimiser: binds a remote GLOBAL_BUTTON key; disabling it can lose a
+#   remote key.
+# - tv.mopa.ginga: ISDB-T interactive-TV middleware (used in LatAm).
+# - com.google.android.marvin.talkback: accessibility, kept for safety.
+# - com.google.android.apps.tv.dreamx: the ambient screensaver.
+# - com.google.android.tv.remote.service: the phone remote.
+#
+# com.google.android.tungsten.setupwraith (disabled below): on Google TV it can own the
+# saved Wi-Fi network — check `dumpsys wifi | grep -o 'cname=[^ ]*'` first, because if the
+# network was saved during setup it belongs to setupwraith and disabling it deletes the
+# network (re-join in Settings first; tools/disable.sh skips it until you do) — and
+# without it casting stops in the Google apps. Comment it out if you keep casting.
+#
+# PROTECTED — TV framework, inputs, tuner and overlays, never touched:
+# com.mediatek.tis, com.mediatek.tv.agent, com.gdch.tv.agent, com.mediatek.tv.settings,
+# com.android.tv.settings, com.mediatek.browservice, com.mediatek.dialservice,
+# com.mediatek.autopair, com.mediatek.tv.launcher.partner, the tvinput tuners and the
+# com.google.android.overlay.modules* overlays. com.cltv.hybrid, com.cltv.mal,
+# com.mediatek.opapp, com.mediatek.dtv.tvinput.dvbtuner and
+# com.mediatek.dtv.tvinput.atsctuner ship disabled and are left that way — never
+# re-enable them.
+
+# --- Manufacturer content, ads and ACR telemetry ---
+com.homwee.store                    # Homwee app store (content + ads)
+com.homwee.help                     # e-manual
+tv.anoki.acr.anokiacroptin          # Anoki automatic-content-recognition telemetry
+com.google.android.partnersetup     # Google partner promo / preload setup
+com.google.android.feedback         # feedback telemetry
+com.android.tv.feedbackconsent      # feedback consent
+com.google.android.syncadapters.calendar  # calendar sync adapter, not needed on a TV
+
+# --- Preloaded apps this set's owner does not use ---
+# This set has YouTube Music, Kick and MHEG off; shared lists keep TV middleware and streaming apps on, so uncomment
+# them if you want them off too.
+# com.google.android.youtube.tvmusic  # YouTube Music
+com.google.android.play.games       # Play Games
+# com.kick.mobile                   # Kick
+com.audiocn.karaoke.global.micmanager   # karaoke mic manager
+
+# --- Region middleware and misc preloads ---
+# org.obs.mhegservice               # MHEG-5 (UK Freeview) — not used in LatAm
+com.esaba.downloader                # SABA URL downloader preload
+
+# --- Google TV setup wizard (see the Wi-Fi and casting note above) ---
+com.google.android.tungsten.setupwraith

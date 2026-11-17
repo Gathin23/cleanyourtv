@@ -1,0 +1,41 @@
+# Artel 43D1200B (Yandex TV / YaOS, CVTE board, MediaTek m5621), Uzbekistan, Android 9 (API 28),
+# build PPR2.180905.006.A1, incremental 2951076306 (2025-03-21). About 0.9 GB RAM, low_ram, armeabi-v7a.
+# Stock Home: com.yandex.tv.home/.HomeActivity. Same m5621 platform as docs/devices/hi-vhix-43f169msy.md.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/artel-43d1200b/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/artel-43d1200b/debloat.txt com.yandex.tv.home
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Kept on purpose:
+#   com.yandex.tv.services*, com.yandex.io.sdk: the Yandex account (Kinopoisk sign-in) and the system glue.
+#   com.yandex.tv.setupwizard, com.yandex.tv.vendor.config, com.yandex.tv.settings, com.yandex.tv.live,
+#   ru.yandex.androidkeyboard.tv (the only on-screen keyboard), com.mediatek.tvinput (HDMI, tuner, AV)
+#   and the rest of the MediaTek/CVTE TV stack.
+#   com.yandex.launcher.updaterapp: installs and updates YouTube and Kinopoisk, there is no Play Store.
+#   com.cultraview.osupdate, com.example.upgrad: firmware updates.
+#   com.android.se: still starts at boot when disabled, so disabling it gains nothing.
+#   Factory and test packages (com.ctv.newfactorytest, mediatek.factorymenu.ui, com.cultraview.factory.debug,
+#   com.ctv.autotest.helper): never touched, never started.
+#
+# Tested on one set for a week with YouTube (com.yandex.tv.ytplayer) and Kinopoisk: every line below,
+# active or commented out, was disabled on it. Nothing came back when the Yandex system apps updated
+# (3.245 to 3.367), and tools/check.py found nothing re-enabled a week later.
+
+# Yandex telemetry and leftovers
+com.yandex.android.advid               # Yandex advertising ID
+com.yandex.tv.bugreportsender          # bug report sender
+com.yandex.prebuiltstub                # empty stub, no components
+com.yandex.tv.daydream                 # Yandex video screensaver; the screensaver setting still names it (README.md)
+com.yandex.tv.webplayer                # Yandex web player; YouTube and Kinopoisk play without it
+
+# Off on the tested set by the owner's choice; uncomment what you do not use
+# com.yandex.tv.alice                  # Alice voice assistant
+# com.yandex.browser.tv                # Yandex Browser
+# com.yandex.tv.music                  # Yandex Music
+# com.yandex.tv.videoplayer            # Yandex video player, also smart-home camera streams
+# com.yandex.tv.input.efir             # Yandex online channels ("Efir") input and EPG; HDMI/tuner/AV stay on com.mediatek.tvinput
+# com.cultraview.newfilemanager        # USB media player and file manager
+# com.mediatek.androidbox              # WFDSinkTest: the Miracast receiver
+
+# Stock Home, last: only after the new launcher is Home and survived a reboot (CVTE rule)
+com.yandex.tv.home                     # Yandex TV Home, about 80 MB with its Metrica process

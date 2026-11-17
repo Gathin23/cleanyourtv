@@ -1,0 +1,13 @@
+<resources>
+    <string name="remote_hours">"Hours"</string>
+    <string name="remote_minutes">"Minutes"</string>
+    <string name="remote_day">"Day"</string>
+    <string name="remote_month">"Month"</string>
+    <string name="remote_year">"Year"</string>
+    <string name="remote_hint">"Left / Right: field · Up / Down: value · OK: next · Back: cancel"</string>
+    <string name="remote_page_hint">"Choose a row with the arrows and press OK. Changes apply after Save."</string>
+    <string name="remote_events">"WEEKLY EVENTS"</string>
+    <string name="remote_exclusions">"PERIODS WITHOUT AUTOMATIC WAKE"</string>
+    <string name="remote_wake_time">"Wake time"</string>
+    <string name="remote_sleep_time">"Sleep time"</string>
+</resources>

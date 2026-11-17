@@ -142,4 +142,17 @@ public class GridNavigationTest {
         }
         return false;
     }
+
+    @Test public void editDockDimsOnlyTheOtherDockPlaces() {
+        assertEquals(1f, GridNavigation.idleAlpha(1, 4, true, 1, true), 0f);
+        assertEquals(0.45f, GridNavigation.idleAlpha(2, 4, true, 1, true), 0f);
+        assertEquals(1f, GridNavigation.idleAlpha(6, 4, true, 1, true), 0f);
+        assertEquals(1f, GridNavigation.idleAlpha(2, 4, true, -1, true), 0f);
+    }
+
+    @Test public void moveModeDimsEveryTile() {
+        assertEquals(0.45f, GridNavigation.idleAlpha(1, 4, false, -1, true), 0f);
+        assertEquals(0.45f, GridNavigation.idleAlpha(6, 4, false, -1, true), 0f);
+        assertEquals(1f, GridNavigation.idleAlpha(6, 4, false, -1, false), 0f);
+    }
 }

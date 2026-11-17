@@ -1,0 +1,54 @@
+# PRISM+ P4KA 4K AI TV (device SW6H, made by Skyworth/Coocaa, MStar/MTK board)
+# Android TV 11 (SDK 30), firmware RTT2.220103.001, HOME is com.google.android.apps.tv.launcherx.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/prismplus-p4ka-sw6h/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/prismplus-p4ka-sw6h/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Google's setup wizard (com.google.android.tungsten.setupwraith) is in the list: after the stock
+# launcher is disabled Home resolved to its RecoveryActivity and the install script refuses to
+# finish. Wi-Fi is owned by uid system here, so disabling it is safe on this build.
+# Disabling it gives Home back but can cost casting (Chromecast); re-enable it if you need cast.
+# Skyworth's own copy of the wizard (com.smartdevice.setupwraith) is KEPT: it does not claim HOME
+# here and the twin-wizard caution in TROUBLESHOOTING is about the Realtek R10G family, not this board.
+#
+# The firmware re-enables com.google.android.apps.tv.launcherx at every boot (kept in this list so
+# tools/check.py --fix disables it again). Everything else survived one reboot.
+#
+# Tested on one set with pm disable-user --user 0: Home, HDMI inputs and Live TV after a reboot;
+# the owner keeps Assistant, Chromecast and OTA, so those stay out of this list.
+
+# --- Skyworth retail / demo / junk ---
+com.coocaa.demonow.lightining
+com.smartdevice.epopplayer
+com.smartdevice.aftersale
+com.smartdevice.dailymanage
+com.smartdevice.dailyshortcut
+com.smartdevice.myapp
+com.tianci.localmedia
+
+# --- factory / service / manuals ---
+com.smartdevice.factory
+mediatek.factorymenu.ui
+com.Smartdevice.emanual
+fusion.android.tv.demo
+com.mstar.android.tv.disclaimercustomization
+
+# --- Google, non-voice, non-cast, non-OTA ---
+com.google.android.videos
+com.google.android.feedback
+com.google.android.tungsten.setupwraith
+
+# --- stock launcher; firmware re-enables it at every boot, check.py --fix disables it again ---
+com.google.android.apps.tv.launcherx
+
+# --- sideload seen on this unit, owner may still want it: not disabled ---
+# org.liskovsoft.androidtv.rukeyboard
+
+# --- deliberately kept ---
+# com.google.android.katniss            (Assistant)
+# com.google.android.apps.mediashell    (Chromecast receiver)
+# com.google.android.partnersetup
+# com.smartdevice.setupwraith           (Skyworth's own setup wizard; no HOME claim on this build)
+# com.mediatek.tv.service, com.mediatek.tvinput, com.smartdevice.livetv (Live TV + inputs)
+# com.dolby.android.audio.service

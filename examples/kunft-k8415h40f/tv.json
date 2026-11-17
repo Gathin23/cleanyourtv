@@ -1,0 +1,6 @@
+{
+  "tv": "KUNFT K8415H40F (Changhong AI PONT, redwood, DVB92KT)",
+  "os": "Android TV 11",
+  "brand": "KUNFT",
+  "notes": "Homwee portal/store/tools and installers, recommendations; no ACR or FAST app on this build; partnercustomizer, imageplayer (AirPlay) and both updaters kept; cold boot opens Live TV, fixed with power_on_home_always + key_filter false (held volume keeps ramping)"
+}

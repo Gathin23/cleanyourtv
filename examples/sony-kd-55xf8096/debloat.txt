@@ -13,6 +13,12 @@
 # Applied and reboot-checked on 2026-10-22. Home, live TV, HDMI inputs, DLNA, IR remote and HbbTV
 # (red button) all work after reboot. Re-enable anything that breaks with `pm enable <package>`.
 #
+# Second unit: Sony BRAVIA KD-43XF8096 (Ukraine), model string "BRAVIA 4K GB ATV3", product BRAVIA_ATV3_4K_EU,
+# Android TV 9, firmware PTT1.190515.001.S54 672201, 2 GB RAM, Ukrainian locale. This list applied unchanged on
+# 2026-10-31 with the Clean Your TV launcher as Home. Three reboots later tools/check.py reports nothing drifted,
+# and Home, HDMI-CEC (a PlayStation 5 on HDMI 4 shows up as a device) and the HDMI inputs kept working.
+# The notes at the end ("Second unit") are what that TV added.
+#
 # Stock launcher: com.google.android.tvlauncher. Its HOME filter has priority 2,
 # so `cmd package set-home-activity` reports Success but does nothing until it is disabled.
 # Live TV / input app: com.sony.dtv.tvx. Keep it: it drives every HDMI input too.
@@ -83,3 +89,30 @@ com.android.printspooler
 # com.vewd.core.integration.dia                # HbbTV / red button
 # screnmirroring.com                           # Screen mirroring (Miracast)
 # com.sony.dtv.networkapp.wifidirect
+
+# Second unit (KD-43XF8096, Ukraine): disabled by choice, so they stay commented here. Uncomment any you want.
+# Google Assistant and the ambient screensaver, disabled on 2026-11-01. The remote's mic button does nothing
+# without katniss. With backdrop off, screensaver_components still names it and this TV simply turned its
+# screen off after the 15 minutes of screen_off_timeout; pointing both settings at the launcher's clock
+# fixes that (restore.sh does not undo them):
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#   settings put secure screensaver_default_component com.gathin.tvhome/.ClockDream
+# com.google.android.katniss
+# com.google.android.backdrop
+#
+# Also disabled on 2026-11-02 and not yet reboot-checked: the packages examples/sony-kd-55xf7596/ lists and
+# this list leaves on (same board, same firmware build).
+# com.google.android.leanbacklauncher                      # old Android TV launcher, no HOME activity on this build
+# com.google.android.speech.pumpkin                        # offline voice parser for the Assistant
+# com.sony.dtv.b2b.importexport                            # hotel/pro mode settings import/export
+# com.sony.dtv.b2b.prosettings                             # hotel/pro mode settings
+# com.sony.dtv.tvlaunchercustomizer.overlay.apporder       # app order overlay for the stock home
+# com.sony.dtv.osat.music                                  # Music, plays music from USB
+# com.sony.dtv.smartmediaapp                               # Media Player, plays files from USB
+#
+# Remote and inputs on this unit, not disables:
+# - The Netflix button sends keycode 191 (KEYCODE_BUTTON_4). With the launcher's HomeKeyService enabled
+#   (HOME_KEY_SERVICE=1) and app_keys set to "191:<package>" in a theme or config.xml it opens that app;
+#   tried on the real remote with CloudStream.
+# - HDMI 2 and 3 are the ports that carry the Enhanced signal format: the TV's own HDMI signal format screen
+#   says so. Settings, External inputs, HDMI signal format, Enhanced, for a console on one of them.

@@ -1,6 +1,6 @@
 {
-  "tv": "Sony BRAVIA KD-43X80L (2023, BRAVIA_VH22, MediaTek MT5895), EU",
+  "tv": "Sony BRAVIA KD-43X80L / KD-55X80L (2023, BRAVIA_VH22, MediaTek MT5895), EU",
   "os": "Google TV 12",
   "brand": "Sony",
-  "notes": "Samba TV ACR and Sony telemetry off; tuner (TVX), HDMI 1-4/eARC, Bravia Sync and the remote kept; setupwraith off for the launcher (Wi-Fi owned by tv.settings); tested and lived with"
+  "notes": "Samba TV ACR and Sony telemetry off; tuner (TVX), HDMI 1-4/eARC, Bravia Sync and the remote kept; setupwraith off for the launcher (Wi-Fi owned by tv.settings); tested and lived with; a KD-55X80L second unit took it unchanged; 32-bit userspace (armeabi-v7a only)"
 }

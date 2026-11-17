@@ -9,18 +9,29 @@ Then push the theme as usual: tools/theme.sh <theme folder>. The launcher never 
 the only thing that does, once, on your computer. The data comes from Jolpica (https://jolpi.ca), the free
 community successor to the Ergast API: no key, no account. Run it again when F1 moves a session or a new
 season starts. Races that are already over are left out. The theme folder has to exist (config.json in it is
-created if it is not there yet).
+created if it is not there yet), and its name cannot be empty: `race_calendar.py "$THEME"` with the variable
+unset would otherwise write the calendar into the directory you ran it from.
+
+A session name is a contract with the launcher as well: RaceWeekend.java answers each name `SESSIONS` writes
+in its two switches and falls back to the raw name for one it does not know, so a session Jolpica starts
+publishing needs that case (and its two strings) there too, and tests/test_race_calendar_contract.py fails
+until both sides name the same sessions.
 
 Exit status: 0 the calendar is in the theme, 1 the season has no race left to show, 2 this run could not do
-its job - the folder is not there, its config.json is not the JSON object a theme has (or cannot be read or
-written), --season is not a year, or the fetch failed - and says why on stderr. Nothing is written on 1 or
-2: the theme stays as it was.
+its job - the folder is not there (or was left empty, or the filesystem cannot be asked about it at all),
+its config.json is not the JSON object a theme has (or cannot be read or written), --season is not a year,
+or the fetch failed - and says why on stderr. Nothing is written on 1 or 2: the theme stays as it was.
 """
 import argparse
 import datetime
+import http.client
 import json
+import os
 from pathlib import Path
+import re
+import shutil
 import sys
+import tempfile
 import urllib.error
 import urllib.request
 
@@ -42,14 +53,20 @@ SESSIONS = (
 
 def instant(block):
     """"2026-10-23" + "17:30:00Z" as one UTC timestamp; None when the time is not published yet."""
+    if not isinstance(block, dict):
+        raise TypeError("a session is not an object")
     if not block.get("date") or not block.get("time"):
         return None
+    if not isinstance(block["date"], str) or not isinstance(block["time"], str):
+        raise ValueError("session date and time must be strings")
     return f"{block['date']}T{block['time']}" if block["time"].endswith("Z") else f"{block['date']}T{block['time']}Z"
 
 
 def calendar(races, now):
     out = []
     for race in races:
+        if not isinstance(race, dict):
+            raise TypeError("Races contains a race that is not an object")
         sessions = []
         for key, name in SESSIONS:
             if key in race and (start := instant(race[key])):
@@ -61,10 +78,34 @@ def calendar(races, now):
         # The launcher keeps a weekend on screen for four hours after the start; a day covers that.
         if datetime.datetime.fromisoformat(start.replace("Z", "+00:00")) < now - datetime.timedelta(days=1):
             continue
+        # Strict checks apply only to exported sessions; the race was already parsed for the cutoff.
+        for session in sessions:
+            value = session["start"]
+            if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                                r"(?:\.[0-9]{1,9})?Z", value):
+                raise ValueError(f"invalid UTC session timestamp: {value!r}")
+            if session is not sessions[-1]:
+                datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+        try:
+            number = int(race["round"])
+        except (TypeError, ValueError, OverflowError):
+            raise TypeError("race round is not a number") from None
+        name = race["raceName"]
+        if not isinstance(name, str):
+            raise TypeError("raceName is not a string")
+        circuit = race.get("Circuit", {})
+        if not isinstance(circuit, dict):
+            raise TypeError("Circuit is not an object")
+        location = circuit.get("Location", {})
+        if not isinstance(location, dict):
+            raise TypeError("Circuit.Location is not an object")
+        place = location.get("locality", "")
+        if not isinstance(place, str):
+            raise TypeError("Circuit.Location.locality is not a string")
         out.append({
-            "round": int(race["round"]),
-            "name": race["raceName"],
-            "place": race.get("Circuit", {}).get("Location", {}).get("locality", ""),
+            "round": number,
+            "name": name,
+            "place": place,
             "sessions": sessions,
         })
     return out
@@ -89,6 +130,17 @@ def refuse(message):
 
 
 def main():
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    # The theme folder is the argument the reader types, and it is on the last line of a run that has already
+    # written config.json: a folder named with a character the console cannot encode ended that run in a
+    # UnicodeEncodeError traceback and the exit status 1 this file's docstring gives "the season has no race left
+    # to show" - the theme was updated and the run said otherwise. tools/tv.py, match.py and the picture scripts
+    # set the same two streams for their own output; this tool's last line is the one name nothing else covers.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     parser = argparse.ArgumentParser(description="Put this season's F1 calendar into a theme.")
     parser.add_argument("theme", help="theme folder that already exists; its config.json is created if "
                                      "missing")
@@ -96,11 +148,33 @@ def main():
                         help="season year, default the current one")
     args = parser.parse_args()
 
+    # `race_calendar.py "$THEME"` with THEME unset passes the empty word, and Path("") is Path(".") - the
+    # directory this run was started in, which is always there - so the check below let it through and
+    # the run wrote a config.json where the reader stood, printed its usual line and exited 0, as if the
+    # calendar were in their theme. An empty name is not a theme's name (#2100 judged the empty
+    # --screenshot value the same way), so it is refused before the folder is looked at.
+    if not args.theme.strip():
+        return refuse(f"there is no theme folder in {args.theme!r}: an empty or blank name means this "
+                      f"directory, not a theme, so the calendar would be written where you stand. "
+                      f"Nothing was written: name the theme's folder - themes/aurora - and if the name "
+                      f"came from a shell variable, that variable was empty.")
     # A folder that is not there is nearly always a typo in the theme's name, and the run used to make
     # that folder and put a calendar in it: the author then pushed, or debugged, a theme that is not the
     # one they meant. The config.json inside is still created for a folder that does exist.
     folder = Path(args.theme)
-    if not folder.is_dir():
+    # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a theme path whose name
+    # is longer than NAME_MAX, or one under a folder this user may not traverse, went straight past
+    # this check as a traceback with exit 1 - the code this script keeps for "no race left this
+    # season". Both are a run that could not do its job, which the docstring's 2 covers, and the
+    # sentence says the theme was left alone.
+    try:
+        is_folder = folder.is_dir()
+    except OSError as e:
+        return refuse(f"could not look at {args.theme} ({e.strerror or e}). Nothing was written: a "
+                      f"theme is a folder of its own under themes/, so check the path you passed - a "
+                      f"name too long for this filesystem, or a folder your user cannot open, is what "
+                      f"this run cannot read.")
+    if not is_folder:
         return refuse(f"there is no theme folder at {args.theme}. Nothing was written: a theme is a "
                       f"folder of its own under themes/, so check the name you passed - this run will not "
                       f"create one for you.")
@@ -139,12 +213,29 @@ def main():
         with urllib.request.urlopen(request, timeout=30) as response:
             payload = json.load(response)
     except urllib.error.HTTPError as e:
-        return refuse(f"Jolpica answered {e.code} {e.reason} for {endpoint}. Nothing was written: try "
+        # The error is the answer itself, body still attached: refusing without closing it leaves the
+        # connection to the garbage collector, and Python 3.14's addbase then prints `ResourceWarning:
+        # Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>` right after this refusal
+        # (3.12 prints nothing, which is why this is not a status the docstring changes).
+        code, reason = e.code, e.reason
+        e.close()
+        return refuse(f"Jolpica answered {code} {reason} for {endpoint}. Nothing was written: try "
                       f"again later, or pass --season with a year it serves.")
     except (urllib.error.URLError, TimeoutError) as e:
         return refuse(f"could not reach Jolpica at {endpoint} ({getattr(e, 'reason', e)}). Nothing was "
                       f"written: this is the one step that goes online, so check the connection - a "
                       f"proxy or a captive portal is the usual cause - and run it again.")
+    except (ConnectionError, http.client.HTTPException) as e:
+        # The two shapes urllib does not wrap: a connection closed before a status line
+        # (http.client.RemoteDisconnected) and a body that stops early (IncompleteRead, raised out of
+        # json.load()) come from http.client itself, so they passed every handler above and ended the
+        # run in a traceback with exit 1 - the code this script keeps for "no race left this season".
+        # A captive portal, a proxy that filters the host and a link that drops all do this; the fetch
+        # is the one step here that depends on someone else's network.
+        return refuse(f"Jolpica closed the connection before the answer was complete ({e}) for "
+                      f"{endpoint}. Nothing was written: this is the one step that goes online, so "
+                      f"check the connection - a proxy, a captive portal or a filtered network is the "
+                      f"usual cause - and run it again.")
     except ValueError as e:
         return refuse(f"Jolpica answered something that is not JSON ({e}) for {endpoint}. Nothing was "
                       f"written: this is usually a proxy or a login page answering instead of the API, "
@@ -152,32 +243,69 @@ def main():
     now = datetime.datetime.now(datetime.timezone.utc)
     try:
         table = payload["MRData"]["RaceTable"]
-        races = calendar(table["Races"], now)
+        if not isinstance(table, dict):
+            raise TypeError("RaceTable is not an object")
     except (KeyError, TypeError):
-        return refuse(f"the answer for the {args.season} season has no MRData.RaceTable in it. Nothing "
+        return refuse(f"Jolpica's answer for the {args.season} season has no MRData.RaceTable in it. Nothing "
                       f"was written: run it again, or pass --season with a year.")
+    # Resolve the response's year before writing: even the success message needs it.
+    response_season = table.get("season")
+    if type(response_season) is int:
+        response_season = str(response_season)
+    if (not isinstance(response_season, str) or len(response_season) != 4
+            or not response_season.isdecimal() or int(response_season) < FIRST_SEASON):
+        return refuse("Jolpica's RaceTable.season is missing or is not a championship year. Nothing "
+                      "was written: run it again, or pass --season with a year.")
+    try:
+        if not isinstance(table.get("Races"), list):
+            raise TypeError("RaceTable.Races is not an array")
+        races = calendar(table["Races"], now)
+    except (KeyError, TypeError) as e:
+        return refuse(f"Jolpica's {response_season} calendar has invalid race data ({e}). Nothing was "
+                      f"written: run it again when the API serves a complete calendar.")
     except ValueError as e:
-        return refuse(f"a session time in the {args.season} calendar is not a timestamp this script "
+        return refuse(f"a session time in the {response_season} calendar is not a timestamp this script "
                       f"understands ({e}). Nothing was written: the API has changed how it writes a "
                       f"session's time.")
     if not races:
-        sys.stderr.write(f"no upcoming races in the {table['season']} calendar; try --season with next "
+        sys.stderr.write(f"no upcoming races in the {response_season} calendar; try --season with next "
                          f"year\n")
         return 1
     theme["race_calendar"] = races
     text = json.dumps(theme, indent=2, ensure_ascii=False) + "\n"
-    # The write is the other half of the same file, and a write that could not start (a read-only
-    # checkout, a folder of another user's, config.json a symlink into a folder that is not there) used
-    # to be an OSError traceback with exit 1, after the fetch - so a run that did nothing reported the
-    # code this script keeps for an answer.
+    # Stage beside the actual target: a failed write must leave the theme alone, and a symlinked
+    # config.json must still update its target without replacing the link itself.
+    published = False
     try:
-        config.write_text(text, encoding="utf-8")
+        try:
+            target = config
+            if config.is_symlink():
+                try:
+                    target = config.resolve(strict=True)
+                except FileNotFoundError:
+                    target = config.resolve()
+        except RuntimeError as e:   # Path.resolve() reports symlink loops this way before Python 3.13.
+            raise OSError(str(e)) from e
+        if target.is_file():
+            # Check write permission without truncation; rename alone can bypass a read-only file.
+            with target.open("r+", encoding="utf-8"):
+                pass
+        with tempfile.TemporaryDirectory(prefix=".race-calendar-", dir=target.parent) as staging:
+            part = Path(staging) / target.name
+            part.write_text(text, encoding="utf-8")
+            if target.is_file():
+                shutil.copymode(target, part)
+            os.replace(part, target)
+            published = True
     except OSError as e:
-        return refuse(f"could not write {config} ({e.strerror or e}). The {table['season']} calendar was "
-                      f"fetched but is not in the theme: check the folder's permissions, or move what is "
-                      f"at that path aside, and run it again.")
+        if not published:
+            return refuse(f"could not write {config} ({e.strerror or e}). The {response_season} calendar was "
+                          f"fetched but is not in the theme: check the folder's permissions, or move what is "
+                          f"at that path aside, and run it again.")
+        print(f"warning: the {response_season} calendar is in {config}, but its staging folder {staging} "
+              f"could not be cleaned up ({e.strerror or e}).", file=sys.stderr)
     first = races[0]
-    print(f"{len(races)} races from the {table['season']} season -> {config}")
+    print(f"{len(races)} races from the {response_season} season -> {config}")
     print(f"next: round {first['round']} {first['name']}, race {first['sessions'][-1]['start']}")
     return 0
 

@@ -96,4 +96,7 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Na żywo</string>
+    <string name="clock_format_system">Systemowy</string>
+    <string name="clock_format_12">12-godzinny</string>
+    <string name="clock_format_24">24-godzinny</string>
 </resources>

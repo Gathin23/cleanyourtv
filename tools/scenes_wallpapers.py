@@ -17,7 +17,10 @@ wallpaper_captions shows under the top-right pills; tests/test_scenes_captions.p
 import math
 import os
 import random
+import shutil
+import stat
 import sys
+import tempfile
 
 W, H = 1280, 720
 
@@ -422,6 +425,12 @@ def write(out):
     refusals here use, before anything else is written; the second says how much did land, so a
     half-filled folder cannot be mistaken for the 14 the script promises.
     """
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     try:
         os.makedirs(out, exist_ok=True)
     except OSError as e:
@@ -430,10 +439,34 @@ def write(out):
         sys.exit(2)
     for done, (name, scene) in enumerate(SCENES):
         path = os.path.join(out, f"{name}.svg")
+        published = False
         try:
-            with open(path, "w") as f:
-                f.write(scene())
+            text = scene()
+            target = os.path.realpath(path)   # Follow destination symlinks as open(path, "w") did.
+            try:
+                previous = os.stat(target)
+            except FileNotFoundError:
+                previous = None
+            if previous is not None:
+                if not stat.S_ISREG(previous.st_mode):
+                    raise OSError("the destination is not a regular file")
+                if previous.st_nlink > 1:
+                    raise OSError("cannot safely replace a hard-linked destination")
+                # Rename alone can bypass a read-only file; check write access without truncating it.
+                os.close(os.open(target, os.O_WRONLY))
+            with tempfile.TemporaryDirectory(prefix=".scenes-", dir=os.path.dirname(target)) as staging:
+                part = os.path.join(staging, os.path.basename(target))
+                with open(part, "w") as f:
+                    f.write(text)
+                if previous is not None:
+                    shutil.copymode(target, part)
+                os.replace(part, target)
+                published = True
         except OSError as e:
+            if published:
+                print(f"warning: {path} was written, but staging cleanup failed: {e.strerror or e}",
+                      file=sys.stderr)
+                continue
             print(f"scenes_wallpapers.py: cannot write {path}: {e.strerror or e}", file=sys.stderr)
             print(f"stopped after {done} of {len(SCENES)} scenes, which are left in {out} as they "
                   "are.", file=sys.stderr)

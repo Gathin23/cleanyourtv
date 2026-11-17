@@ -1,0 +1,96 @@
+# Kodak 55CA0909 (India, built by SPPL on a Skyworth board: ro.product.model "SWTV", product SW3_ATV_T,
+# device SW3_ATV, build flavor open_uhd_ap, MediaTek MT5886, 32-bit ARM), Android TV 9 (API 28),
+# build PTT1.181130.001 (fingerprint SW/SW3_ATV_T/SW3_ATV:9/PTT1.181130.001/...), security patch 2020-07-05.
+# ~1.2 GB RAM (MemTotal 1221760 kB). 4K panel; Android draws the UI at 1920x1080, its only display mode.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/kodak-55ca0909/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/kodak-55ca0909/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Applied on 2026-11-03 in small batches with a screenshot after each, then the CleanYourTV launcher
+# (launcher/build-and-install.sh); two reboots afterwards came back to the new Home with every package
+# below still disabled. Same-day test, not a several-day one.
+#
+# Connecting: Developer options has USB debugging only (no Network debugging, no Wireless debugging), and
+# USB debugging alone never opened 5555. A USB A-to-A cable from the TV to a Mac worked: the TV enumerates
+# as "SWTV" (18d1:5203 with MTP, ADB interface 255/66/1), then `adb tcpip 5555` opens the network port until
+# the next reboot. Through a small USB 2.0 hub with a built-in card reader every transfer failed
+# (macOS adb: usb_read failed e00002ed; libusb: LIBUSB_ERROR_IO on the first packet), and each failure reset
+# the TV's "Select USB configuration" back to Charging; through a USB 3 dock the same cable worked at once.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home). Other HOME claimants: only
+# com.android.tv.settings' FallbackHome; com.google.android.leanbacklauncher is installed but not Home.
+# setupwraith does not claim HOME here, but it owned the Wi-Fi network saved in first setup
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'` printed cname=com.google.android.tungsten.setupwraith). After
+# forgetting that network and joining it again in Settings it read cname=android.uid.system, and only then
+# was setupwraith disabled (commented below); Wi-Fi and ADB stayed up. Re-enable it before a factory reset.
+# Live TV app: com.smartdevice.livetv (also serves AndroidTvSupportTvinputService; keep it enabled).
+# Real input services (`pm query-services --components -a android.media.tv.TvInputService`):
+# com.mediatek.tvinput (HDMI 1-3, AV, tuners), com.smartdevice.livetv, com.mediatek.agent,
+# com.mediatek.partner.netflix. All seven inputs stayed registered after every batch (dumpsys tv_input).
+# No HDMI source was connected on this unit, so an HDMI picture was not tested.
+#
+# TV_INPUT_HARDWARE: com.smartdevice.acr.recommendation and com.smartdevice.multimediaplayer (commented
+# below) ask for it, so tools/disable.sh skips them unless TVINPUT_ALLOW=1. Neither serves a TvInputService
+# (checked with pm query-services above). Apply this list with TVINPUT_ALLOW=1 only after checking the same
+# on your unit; nothing else in it asks for the permission.
+#
+# Kept on purpose: the input packages above, com.mediatek.tunerservice, com.mediatek.wwtv.setupwizard,
+# com.mediatek.network, mtktvapi.agent, com.smartdevice.factory and com.smartdevice.dtv.factorywritekey
+# (factory packages, never launched), com.google.android.inputmethod.latin, Play Store, Play Services.
+# Already disabled from the factory, so not listed (restore.sh would turn it ON): com.smartdevice.tvworkwithalexa.
+#
+# Persistent system services that disabling does not stop: com.skyworth.skyworthscanner,
+# com.mediatek.dmagent and com.mediatek.OledFuctionService are flags=[ SYSTEM PERSISTENT ] under
+# android.uid.system. Disabled, they stopped until the next boot, then ran again (~38 MB each) while still
+# marked disabled. No gain, so they are not in this list.
+#
+# com.smartdevice.demonow came back enabled once during the session before the reboots, with no logcat line
+# saying who enabled it; disabled again it stayed off across both reboots.
+
+# Telemetry and ad tracking
+tv.alphonso.alphonso_eula                    # Alphonso ACR ad tracking (background service)
+com.smartdevice.acr.recommendation           # Skyworth ACR; needs TVINPUT_ALLOW=1 (see header)
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# Skyworth retail demo and manual
+com.smartdevice.demonow                      # retail store demo
+com.Smartdevice.emanual                      # on-screen e-manual
+
+# Stock home extras
+com.google.android.leanbacklauncher.recommendations  # recommendations for the Leanback launcher, which is not Home
+com.google.android.backdrop                  # ambient screensaver; launcher/ has its own clock screensaver
+
+# Stock home recommendation rows: disable after the new launcher owns Home
+com.google.android.tvrecommendations
+
+# Partner hooks the new launcher does not use; none asks for TV_INPUT_HARDWARE or serves a TV input
+android.autoinstalls.config.SW               # Play auto-install config for partner apps
+com.google.android.leanbacklauncher.partnercustomizer  # partner rows for the Leanback launcher
+com.google.android.leanbacklauncher          # installed, never Home here; restore.sh turns it back on as a stock launcher
+
+# Android leftovers a TV does not use; TV Settings still opened afterwards
+com.android.printspooler                     # printing
+com.google.android.syncadapters.calendar     # Google Calendar sync
+com.google.android.syncadapters.contacts     # Google Contacts sync
+com.google.android.onetimeinitializer        # first-setup initializer
+com.android.settings.intelligence            # Settings search suggestions (~25 MB running)
+
+# Off by the owner's choice on this unit. Ask before disabling; uncomment only what is not used.
+# com.google.android.videos                  # Google Play Movies & TV
+# com.google.android.play.games              # Google Play Games
+# com.google.android.music                   # Google Play Music
+# com.google.android.katniss                 # Google Assistant / voice search (remote mic button)
+# com.google.android.speech.pumpkin          # offline voice actions, only used by the Assistant
+# com.google.android.apps.mediashell         # Chromecast built-in
+# com.google.android.tts                     # Google text-to-speech (~90 MB at boot; screen reader needs it)
+# com.google.android.tv.remote.service       # phone remote app support (~69 MB); the mic button may need it
+# com.smartdevice.multimediaplayer           # USB media player and DLNA renderer; needs TVINPUT_ALLOW=1
+# com.google.android.marvin.talkback         # TalkBack screen reader
+
+# Setup wizard: only after the saved Wi-Fi network no longer belongs to it (see header).
+# com.google.android.tungsten.setupwraith
+
+# Stock home: build-and-install.sh disabled it once the new launcher was confirmed as Home.
+# com.google.android.tvlauncher

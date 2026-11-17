@@ -1,0 +1,95 @@
+# DEXP 65UHG2, sold in Russian retail under that name. The set reports product HKC_4K_GTV_PA,
+# device lakeside, model "4K PA Google TV" (HKC is the ODM, CVTE ships alongside it).
+# Google TV 14 (API 34), firmware UKNV.260704.001, build date 2026-07-04, MediaTek m7332 (4 cores).
+# 2 GB RAM (MemTotal 1902044 kB), 4 GB /data. 3840x2160 panel, UI rendered at 1920x1080 (wm size override), 320 dpi.
+# The closest sets here are the other MediaTek m7332 ones, examples/durabrand-durat32isdb and
+# examples/anker-nebula-mars-3-air, on different firmware.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/dexp-65uhg2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/dexp-65uhg2/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER).
+# Live TV: com.mediatek.wwtv.tvcenter (.nav.TurnkeyUiMainActivity, the LEANBACK_LAUNCHER entry).
+# The HDMI, composite and tuner inputs are served by com.mediatek.tvinput and com.mediatek.tv.service.
+#
+# Tested the same day on one set, not a multi-day soak: Home opens, the Inputs menu lists HDMI 1-3,
+# Composite and TV channels, the volume key steps, and after a reboot Home still opens the new launcher.
+#
+# KEEP, even though the names look like bloat:
+# - com.hkc.globalkey (HKC_HotKey): the remote's hot keys. It stayed a bound service throughout.
+# - com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter: inputs, tuner and Live TV.
+# - com.mediatek.wwtv.mediaplayer, com.mediatek.autopair, com.mediatek.bootlogoservice,
+#   com.dolby.android.audio.service.
+# - com.google.android.katniss (Assistant), com.google.android.apps.mediashell and com.android.vending.
+#
+# Quirks on this firmware, all checked on the TV:
+# - With USB debugging on, network ADB answered on port 5555 in plaintext straight away; the Wireless
+#   debugging port the set also offers asks for TLS and needs `adb pair` first, so turn USB debugging off when you are done.
+# - `cmd package set-home-activity` from the shell does not stick while the stock home is enabled:
+#   Home kept resolving to com.google.android.apps.tv.launcherx. It sticks once launcherx and
+#   setupwraith are disabled; a third-party HOME filter is capped at priority 0.
+# - com.google.android.tungsten.setupwraith answers HOME with priority=1
+#   (com.google.android.tungsten.setupwraith/.RecoveryActivity), so it has to go with the stock home or
+#   the new launcher loses Home on the next press.
+# - setupwraith also held a saved network that was not the one in use. The connected network belonged to
+#   android.uid.system:1000, so forgetting and re-joining it first was enough: disabling setupwraith then
+#   removed only the unused config and the connection and remote ADB survived. Check
+#   `dumpsys wifi | grep -o 'cname=[^ ]*'` and `cmd wifi list-networks` before disabling it, as the
+#   folder README describes.
+# - The Inputs pill reads the TV's own input names; HDMI 1-3, Composite and TV channels came back on this
+#   set without com.mediatek.android.leanbacklauncher.partnercustomizer being touched.
+# - The remote's gear button needs the launcher's key helper. `dumpsys window policy` routes
+#   KEYCODE_NOTIFICATION (and KEYCODE_GUIDE) to launcherx's GlobalKeyListener_Receiver, so the press does
+#   nothing once launcherx is gone. The press arrives as Linux code 249 and the framework keycode is 83:
+#   install with HOME_KEY_SERVICE=1, put 83 in settings_key_keycodes and 249 in settings_key_scancodes
+#   (config.xml, a rebuild), and set settings_key_panel, and the gear opens the launcher's panel. The
+#   folder README has the reading, including why an injected key does not test it.
+#   That helper costs the volume ramp on this board: bound, a held Volume Up steps once; gone, it ramps.
+#   consume_volume_keys does not restore it (the set's audio path keeps the volume keys away from the
+#   service). The build this list was written from keeps the gear, because its panel opens over whatever
+#   is playing and picture settings get reached mid-film; the one-step volume was the price accepted.
+#   Build with key_filter false and no helper instead to trade the other way.
+# - com.google.android.marvin.talkback ships disabled on this set; it is not listed below.
+
+# Retail demo / store display
+fusion.android.tv.demo                 # /system_ext/app/HKC_RetailDisplay
+fusion.android.tv.demo2                # /system_ext/app/HKC_RetailDisplay_polytron
+
+# Factory and service menus (CVTE/MediaTek test builds; none of them serves a TV input)
+com.cvte.tv.hkcfac                     # HKC_FACTORY_AT
+com.at.factory.factorymanager          # HKC_FactoryManager
+com.at.factory.androidtvaidlservice
+mediatek.factorymenu.ui
+com.cvte.tv.at
+
+# Hotel mode
+com.cvte.tv.hotel                      # HKC_AnTv
+
+# ACR: content recognition, fingerprints what is on screen
+tv.anoki.acr.anokiacroptin             # /system/priv-app/AnokiAcrOptin
+
+# Tests and leftovers
+com.mediatek.androidbox                # WFDSinkTest, Wi-Fi Display sink test
+com.hkc.tv.hkc_help                    # HKC_Help
+com.mstar.android.tv.disclaimercustomization
+
+# Feedback and telemetry prompts
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Google ad services: candidate, listed for another Google TV 14 set in this repo but not tried on this
+# one, so it is left on. Uncomment it and check the Play Store and the launcher's own tiles afterwards.
+#com.android.adservices.api
+
+# Stock home. Disable only after the new launcher is installed and answers HOME.
+com.google.android.tungsten.setupwraith  # its RecoveryActivity otherwise takes Home (priority 1)
+com.google.android.apps.tv.launcherx
+
+# Left commented out on this set: used here, or not tested.
+#com.google.android.play.games          # Play Games, unused here
+#com.google.android.videos              # Google TV movies and shows
+#com.google.android.youtube.tvmusic     # YouTube Music
+#com.google.android.apps.tv.dreamx      # ambient mode / screensaver
+#com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows; reports say disabling it
+#                                       # crash-loops tv.service on some MediaTek boards, so it stayed

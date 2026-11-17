@@ -1,0 +1,62 @@
+# Noblex DR55X9500 (55" QLED 4K; ro.product.model "Smart TV 4K", product SW6H_Noblex_NF, device SW6H,
+# Skyworth-built, MediaTek m7332), Android TV 11 (API 30) with the Google TV home, firmware RTT2.220103.001
+# (build date 2023-06-19). Argentina (ISDB-T).
+# Same board and firmware as examples/prismplus-p4ka-sw6h; this list starts from that one and from
+# examples/thomson-sppl-4k-sw6h. Not the same set as examples/noblex-shinjuku (Skyworth, classic Android TV
+# home) or examples/noblex-db58x7550 (Changhong).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/noblex-dr55x9500/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/noblex-dr55x9500/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock Home: com.google.android.apps.tv.launcherx; setupwraith's RecoveryActivity also claims HOME.
+# Live TV app: com.smartdevice.livetv. Remote buttons and power-on: see README.md in this folder.
+#
+# Disabled from the factory, so not listed (restore.sh would turn them ON):
+# com.smartdevice.myapp, com.smartdevice.recommendation.
+#
+# Status: applied on one TV on 2026-11-05 in six batches with a Home screenshot after each, then launcher/
+# installed as Home and three reboots; `pm list packages -d` matched every time (this firmware re-enabled
+# nothing, launcherx included). Hours of use when submitted, not days: treat it as a starting point.
+# Live TV, HDMI (a PS5 over CEC), Chromecast tab and screen casting, Flow, YouTube and Spotify checked.
+#
+# Kept on purpose: com.smartdevice.livetv + overlay_SANLUX, com.mediatek.* (Live TV, HDMI, hot keys),
+# com.smartdevice.dailyshortcut (quick menu and the vendor input picker), duplebluetooth + bleconnectservice
+# (remote pairing), com.smartdevice.setupwraith, com.mediatek.android.leanbacklauncher.partnercustomizer,
+# com.smartdevice.factory and mediatek.factorymenu.ui (never launched), Play Store, Play Services, Gboard,
+# com.google.android.apps.mediashell (Chromecast, by choice) and every streaming app.
+# No separate firmware-updater package on this build.
+
+# --- Batch 1: telemetry and after-sale
+com.google.android.feedback
+com.google.android.partnersetup               # RLZ partner-attribution pings, boot receiver
+com.google.android.apps.nbu.smartconnect.tv   # Google background data service, boot receiver
+com.smartdevice.aftersale                     # boot + network receivers, can install APKs
+com.smartdevice.dailymanage                   # boot service, no documented purpose
+
+# --- Batch 2: voice (by choice; the remote's mic button stops working)
+com.google.android.katniss
+com.google.android.tv.assistant
+
+# --- Batch 3: Skyworth content, auto-installs, retail demos
+com.smartdevice.leanbacklauncher.customizer   # partner config that injects rows into the home screen
+android.autoinstalls.config.google.gtvpai     # Play auto-installs of partner apps
+com.smartdevice.epopplayer                    # ePop shop demo player
+fusion.android.tv.demo                        # shop demo player
+com.coocaa.demonow.lightining                 # "Demo Now" retail mode
+com.Smartdevice.emanual                       # on-screen manual
+com.mstar.android.tv.disclaimercustomization  # retail legal-disclaimer dialogs
+
+# --- Batch 4: Google preloads
+com.google.android.videos
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.google.android.apps.tv.dreamx             # Google TV ambient screensaver
+
+# --- Batch 5: Miracast / DLNA (by choice; Chromecast kept)
+com.smartdevice.dtv.icast
+com.mediatek.androidbox
+
+# --- Handover, only once launcher/ owns Home (build-and-install.sh does launcherx itself)
+com.google.android.apps.tv.launcherx          # stock Google TV home
+com.google.android.tungsten.setupwraith       # RecoveryActivity otherwise steals Home; it owned the setup Wi-Fi (see README.md)

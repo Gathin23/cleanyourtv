@@ -1,0 +1,18 @@
+{
+  "columns": 5,
+  "background_color": "#02050A",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 60,
+  "wallpaper_order": "sequential",
+  "wallpaper_captions": true,
+  "icon_only_buttons": true,
+  "dock_glass": true,
+  "dock_opacity": 50,
+  "dock_even_padding": true,
+  "dock_title": false,
+  "ambient_glow": false,
+  "app_glow": false,
+  "fade_rows": true,
+  "focus_overshoot": false,
+  "advanced_effects": true
+}

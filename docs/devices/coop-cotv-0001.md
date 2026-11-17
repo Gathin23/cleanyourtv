@@ -15,7 +15,7 @@ re-applied the list in batches. That second half is why this note exists — the
 
 | Field | Value |
 | :--- | :--- |
-| Retail model | COOP COTV-0001 ("TV LED HD SMART"), serial 001909 |
+| Retail model | COOP COTV-0001 ("TV LED HD SMART") |
 | Product / board | `rtd298x_tv001` |
 | SoC | Realtek `rtd298x` |
 | Kernel | 3.7.2-298x |
@@ -26,6 +26,9 @@ re-applied the list in batches. That second half is why this note exists — the
 | Packages | 58 |
 | Ports | 2× USB-A host, Ethernet, Wi-Fi; no visible recovery button or service port |
 | Developer options | USB debugging only (KitKat has no network-ADB toggle) |
+
+The unit's serial number is not quoted here, and neither is its LAN address: the model, the build
+string, the package count and the ports are what the steps below need to be followed again.
 
 ## How the set was reached
 

@@ -1,0 +1,6 @@
+{
+  "dock_apps": ["com.netflix.ninja", "net.oqee.androidtv.store", "com.google.android.youtube.tv", "com.disney.disneyplus"],
+  "hidden_apps": ["com.tcl.tv", "com.tcl.suspension", "com.tcl.partnercustomizer", "tv.wuaki.apptv", "com.tcl.usercenter"],
+  "live_tv_package": "com.tcl.tv",
+  "reduced_motion": true
+}

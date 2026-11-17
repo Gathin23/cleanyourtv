@@ -1,0 +1,53 @@
+# Vityas "Hi TV" 50 (KTC/KGZN vendor build, board m7332, MediaTek), Android TV 11, firmware build m7332_vityas-userdebug 11 RP1A.200720.011 eng.nobody.20240606.092540
+# A budget CIS set sold under the "Hi TV" name; the same KGZN/KTC stack likely ships on other m7332 re-badges.
+# Debug firmware: ro.adb.secure is unset on this userdebug build, so network ADB on port 5555 accepts any
+# device on the LAN without an "Allow" prompt. Turn debugging off when done and check with tools/adb-closed.py.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/vityas-hitv-50-m7332/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vityas-hitv-50-m7332/debloat.txt com.kgzn.mslauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Stock launcher: com.kgzn.mslauncher (the last entry; tools/disable.sh skips it until another launcher answers HOME).
+# Live TV package: com.kgzn.tvplayer (kept: it is the tuner/HDMI player; its EPG com.kgzn.epg stays too).
+#
+# Tested on 2026-11-05 in one session on a real set: every entry disabled, home handed to the reference
+# launcher (com.gathin.tvhome, 4 columns, dock: Play Store and Spotify, live_tv_package com.kgzn.tvplayer
+# in launcher/app/src/main/res/values/config.xml), and everything held across a reboot.
+# Kept: Play Store and Play services, the MTK TV middleware (com.mediatek.tv.service, com.mediatek.tvinput),
+# remote and Bluetooth (com.mediatek.autopair, com.mediatek.bluetooth, com.mtk.bluetooth.dualmode),
+# the vendor settings app com.kgzn.setting, com.kgzn.media, com.kgzn.filemanager, HbbTV
+# (com.seraphic.hbbtv.mtk, com.seraphic.webview), com.actions.hidaudio (BT remote audio) and
+# android.systemupdate.service (the updater stays enabled).
+# Untested candidate: com.kgzn.assistant — a vendor assistant holding CAMERA, INTERNET and boot permissions;
+# read with dumpsys only, left enabled. Disable it if you do not use the vendor assistant.
+# The two setup wizards are safe to disable here: dumpsys wifi shows the saved network owned by
+# android.uid.system, not by a wizard — re-check that on your unit before disabling them.
+# The three factory packages are disabled, never launched: opening a factory menu on some boards flips a
+# factory-mode flag the shell cannot undo.
+
+# telemetry and ad/store bridges
+com.kgzn.inforeport                       # vendor reporting service (INTERNET, boot receiver)
+com.zeasn.deviceportal.asdprovider.ktc    # Zeasn ad/store ecosystem provider (boot receiver)
+cn.kgzn.asp.vstoresubclient               # "vstore" app-store bridge (INTERNET, READ_PHONE_STATE)
+com.example.android.bluetoothlegatt       # leftover AOSP BLE sample app
+
+# vendor extras the owner declined
+com.mstar.android.tv.disclaimercustomization   # vendor disclaimer screen at boot
+com.google.android.katniss                # Google voice assistant for TV
+com.kgzn.castscreen                       # vendor screen share (RECORD_AUDIO, CAMERA, location)
+com.kgzn.castscreen.overlay               # its overlay helper
+
+# preloaded streaming apps the owner does not use
+ru.rt.video.app.tv                        # Wink
+com.vk.tv                                 # VK Video
+ru.more.play                              # More Play
+
+# setup wizards, factory packages and boot cosmetics (disable after the new launcher is Home)
+com.kgzn.oobe                             # vendor out-of-box setup wizard
+com.mediatek.wwtv.setupwizard             # MTK TV setup wizard
+kgzn.factorymenu.ui                       # factory menu
+mediatek.factorymenu.ui                   # factory menu
+com.kgzn.tv.factory                       # vendor factory app
+com.kgzn.serialport                       # serial-port service holding INTERNET and LOCATION
+com.mediatek.bootvideo                    # boot video
+com.mediatek.loadingequalizer             # boot loading animation
+com.kgzn.mslauncher                       # stock home; tools/disable.sh skips it until another launcher answers HOME

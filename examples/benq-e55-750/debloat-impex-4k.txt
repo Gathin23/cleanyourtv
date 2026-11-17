@@ -1,0 +1,61 @@
+# Impex 4K (India), Google TV on Android 11 (SDK 30), firmware RTM7.230903.184. Built by Changhong:
+# ro.product.model "AI PONT", product DVB96IP, device/board central, MediaTek m7632, about 1.8 GB RAM.
+# The Android 11 unit of the Changhong DVB96 board this folder's BenQ E55-750 (DVB96BQ,
+# RTM8.240401.136) also is. The newer Google TV 14 line of the same board is
+# examples/tuvio-td43ufbcv5 (UKNV.260506.001), and docs/devices/tuvio-tm55ufbcv5.md is the note for an
+# RTM8 unit nobody has written a list for yet.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-e55-750/debloat-impex-4k.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-e55-750/debloat-impex-4k.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested on: the owner's own unit, one session, reported in #3794. The eleven packages below were
+# disabled, setupwraith and launcherx among them for the Home handover, and the owner reports the
+# launcher installed and running on that firmware with the apps they kept still working. That is one
+# session, not the multi-day soak this folder's BenQ list has: no reboot, HDMI or tuner playback,
+# casting or standby/wake check was reported, so read the list back with `pm list packages -d` after a
+# reboot before you rely on it.
+#
+# Quirks on this firmware, as the owner found them (#3794), the first two the same as this folder's
+# BenQ list:
+# - USB debugging alone opens port 5555; there is no separate Wireless debugging toggle.
+# - HOME candidates: setupwraith at priority 1 above launcherx at priority 2, so setupwraith is
+#   disabled first and the launcher installed after it.
+#   Disabling setupwraith gives Home back but costs casting (Chromecast built-in); keep it enabled if you cast to this TV.
+# - The saved Wi-Fi network was owned by android.uid.system, not setupwraith
+#   (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so disabling setupwraith left the network in place. That
+#   is not true of every DVB96 unit: examples/tuvio-td43ufbcv5 found setupwraith owning it and had to
+#   forget and re-join the network first. Check the cname on your own set.
+# - The default screensaver is dreamx's Backdrop. Point it at the launcher's clock before disabling
+#   dreamx:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#   tools/restore.sh does not undo it. The BenQ list beside this one also sets
+#   screensaver_default_component; the Impex owner set screensaver_components only.
+
+# Changhong / Homwee store and help
+com.homwee.store
+com.homwee.help
+
+# Google TV recommendations, ambient mode and the setup-time auto-installs
+com.google.android.videos                # Google TV app, the home screen's recommendation source
+com.google.android.apps.tv.dreamx        # ambient mode; set another screensaver first
+android.autoinstalls.config.google.gtvpai  # stub that preloads partner apps at setup
+
+# Google's feedback and partner attribution
+com.google.android.feedback
+com.google.android.partnersetup
+
+# Play Games, unused in this home. This folder's BenQ list keeps it on purpose, so the two reports
+# differ here by the owner's choice, not by the board.
+com.google.android.play.games
+
+# YouTube Music, not used here
+com.google.android.youtube.tvmusic
+
+# Stock home. Disable only after the new launcher is installed and set as home.
+com.google.android.tungsten.setupwraith  # its RecoveryActivity otherwise takes over Home
+com.google.android.apps.tv.launcherx
+
+# Kept on purpose, as the owner reports: Prime Video (com.amazon.amazonvideo.livingroom, which this
+# folder's BenQ list disables by choice), the YouTube and JioHotstar apps, the MediaTek TV and HDMI
+# input apps, com.homwee.dynamicbacklight, and com.homwee.upgrade (firmware updates).

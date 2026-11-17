@@ -1,0 +1,33 @@
+<resources>
+    <string name="sched_0">"電視排程"</string>
+    <string name="sched_1">"時間屬於所選日期。排除期間只阻止自動喚醒。返回會放棄未儲存的變更。"</string>
+    <string name="sched_2">"排程：開啟"</string>
+    <string name="sched_3">"排程：關閉"</string>
+    <string name="sched_4">"+ 新增喚醒／待機時間"</string>
+    <string name="sched_5">"不自動開機："</string>
+    <string name="sched_6">"不自動喚醒的期間"</string>
+    <string name="sched_7">"編輯日期"</string>
+    <string name="sched_8">"刪除"</string>
+    <string name="sched_9">"+ 新增排除期間"</string>
+    <string name="sched_10">"儲存"</string>
+    <string name="sched_11">"喚醒  "</string>
+    <string name="sched_12">"待機  "</string>
+    <string name="sched_13">"新增事件"</string>
+    <string name="sched_14">"喚醒"</string>
+    <string name="sched_15">"待機"</string>
+    <string name="sched_16">"星期"</string>
+    <string name="sched_17">"取消"</string>
+    <string name="sched_18">"時間"</string>
+    <string name="sched_19">"請至少選擇一天"</string>
+    <string name="sched_20">"結束日期不得早於開始日期"</string>
+    <string name="sched_21">"最後一天（含）"</string>
+    <string name="sched_22">"第一天（含）"</string>
+    <string name="sched_23">"星期一"</string>
+    <string name="sched_24">"星期二"</string>
+    <string name="sched_25">"星期三"</string>
+    <string name="sched_26">"星期四"</string>
+    <string name="sched_27">"星期五"</string>
+    <string name="sched_28">"星期六"</string>
+    <string name="sched_29">"星期日"</string>
+    <string name="schedule_row">"排程"</string>
+</resources>

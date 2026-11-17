@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65P615 (Europe, BeyondTV, Realtek RTD2851, AP06, V8-R851T02-LF1V637)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "Same AP06 / TCL-EU-RT2851-S1 family as `tcl-beyondtv-rt2851/` (software LF1V637 vs V606); voice and Miracast off by choice; updater and T-Cast left on in the shared list, Chromecast kept; launcher installed, reboot-checked 2026-10-27; not yet lived with for days"
+}

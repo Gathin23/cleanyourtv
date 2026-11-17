@@ -38,6 +38,10 @@
 #    null before. Undo: settings delete global private_dns_mode; settings delete global private_dns_specifier
 # 5. Checked with the real remote after the launcher took over: Home, SOURCES drawer, the launcher's
 #    Inputs menu, Ambilight, and casting YouTube from a phone.
+# 6. Cold boot RTC & Private DNS: MediaTek MT5887 SoC lacks an RTC backup battery. On a complete power
+#    outage, the hardware clock reverts to the firmware build date (Dec 2025). If Private DNS (DoT) is
+#    enabled, TLS certificate verification fails before NTP can sync, causing a total network deadlock.
+#    If DNS fails after a cold boot, set private_dns_mode=off.
 #
 # Second unit: Philips 55PUS9435/12, Germany, on Wi-Fi. Same firmware and fingerprint as above
 # (STT2.230526.001/4215). Cleaned on 27 Oct 2026 and used for one day with one reboot, not a
@@ -109,3 +113,14 @@ org.droidtv.nettvapp4546                  # MEGOGO
 org.droidtv.nettvapp5245                  # TV SpieleCenter
 org.droidtv.nettvapp5326                  # Toon Goggles
 org.droidtv.nettvapp5512                  # Fishing TV
+
+# Batch 6: Broadcast / DVB tuner suite, for streaming-only sets with no aerial. Left as comments: uncomment
+# them only if you never watch broadcast TV; Live TV, channel scans and teletext stop working. The tester had them off.
+# Disabling this permanently eliminates the modal "No Signal" trap on power-on and when pressing
+# the remote's TV button (scancode 170 / KEY_ISO). Android rejects the activity instantly, Home/Back
+# remain 100% responsive, and no accessibility key-filter is required (avoiding the Volume Up/Down repeat lag).
+# HDMI input switching (org.droidtv.channels / SourcesDrawerActivity) remains 100% functional.
+# org.droidtv.playtv                        # Live TV / tuner front-end
+# org.droidtv.euinstallertc                 # DVB-T/C cable/terrestrial installer
+# org.droidtv.euinstallersat                # DVB-S satellite installer
+# org.droidtv.teletext                      # Teletext engine

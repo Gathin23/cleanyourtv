@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA XBR-55X805G (2019, BRAVIA_ATV3_4K_BR, MediaTek MT5891), Brazil",
+  "os": "Android TV 9",
+  "brand": "Sony",
+  "notes": "Same S54 build as the X900F and X8000G (ATV3): Samba TV ACR, Sony Select/Discover, recommendation rows, partner auto-installs, demo mode, Sony/Qterics agents, help apps, hotel/pro-mode b2b; mirroring, DLNA, USB players and the Vewd browser off by choice, the phone remote left as a comment; Assistant, Chromecast, Alexa setup and firmware updates kept; ISDB-T via BrzTunerInputService; launcher works; the Apps button needs HomeKeyService, which costs the held-volume repeat here; reboot-checked, same day"
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "Turbo-X 40AS60T (Vestel-built, BARTU_TurboX, menlo, MediaTek mt5867), Greece",
+  "os": "Android TV 14",
+  "brand": "Turbo-X",
+  "notes": "Same Vestel platform as Cecotec shandao: Vestel reporter/smartlogger/speedup/smartcenter, ad services, feedback; fusion.android.tv.demo KEPT (Input key); Assistant, Chromecast, Miracast, Freeview Play off by choice; Prime Video, Google Play, Menu and star keys remapped by scancode ([README](turbo-x-40as60t/README.md))"
+}

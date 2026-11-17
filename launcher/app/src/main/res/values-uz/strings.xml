@@ -111,4 +111,7 @@
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
     <string name="game_live">Hozir jonli</string>
+    <string name="clock_format_system">Tizim</string>
+    <string name="clock_format_12">12 soatlik</string>
+    <string name="clock_format_24">24 soatlik</string>
 </resources>

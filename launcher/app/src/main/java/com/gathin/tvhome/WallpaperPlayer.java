@@ -213,9 +213,14 @@ final class WallpaperPlayer {
         text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         text.setTextColor(0xD9FFFFFF);
         text.setShadowLayer(6 * dp, 0, dp, 0xCC000000);
+        // Room for the shadow (6 dp of blur, 1 dp down) inside the view: Home's root, and the layer a fade draws
+        // through, cut everything at the view's edges, which left a hard-edged dark box around the text. The
+        // margins below take the padding back, so the text stays where it was.
+        int pad = Math.round(8 * dp);
+        text.setPadding(pad, pad, pad, pad);
         text.setSingleLine(true);
         text.setEllipsize(TextUtils.TruncateAt.END);
-        text.setMaxWidth(Math.round(520 * dp));
+        text.setMaxWidth(Math.round(520 * dp) + 2 * pad);
         text.setFocusable(false);
         text.setAlpha(0f);
         try {
@@ -225,8 +230,8 @@ final class WallpaperPlayer {
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
-        params.topMargin = Math.round(110 * dp);
-        params.setMarginEnd(Math.round(62 * dp));
+        params.topMargin = Math.round(110 * dp) - pad;
+        params.setMarginEnd(Math.round(62 * dp) - pad);
         root.addView(text, params);
         return text;
     }

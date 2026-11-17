@@ -1,0 +1,46 @@
+# Durabrand DB Android TV 4K (product DURAT32ISDB, device dupont, m7332 Haier/CVTE board), Android TV 11 (API 30),
+# firmware RTM6.230109.232, security patch 2023-08-01.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/durabrand-durat32isdb/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/durabrand-durat32isdb/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher; launcher/build-and-install.sh disables it once the new
+# launcher owns Home. On this firmware the Home button kept opening it until it was disabled.
+# Live TV and the Input panel: com.mediatek.wwtv.tvcenter (keep it).
+# Already disabled before this debloat: com.google.android.marvin.talkback, not in this list.
+#
+# Tested on one set for four days with the real remote, the reference launcher as Home and two reboots:
+# Home, Back and volume keys, the Input panel, YouTube, Stremio and an IPTV app all worked.
+# HDMI-CEC, a real Chromecast session and a firmware update were not tried.
+#
+# Comes back at every boot, so it is not listed (docs/devices/durabrand-durat32isdb.md):
+# - com.google.android.katniss (Assistant): disabled here, enabled again by the firmware at the next boot.
+# - com.google.android.tvrecommendations, com.haier.launcher.haiermatrix: re-enabled by
+#   com.at.factory.factorymanager, as the first owner report found.
+#
+# KEEP, even though the names look like bloat:
+# - com.cvte.tv.hkcfac: the hidden production menu. Never open it: it switches off the Input key and CEC,
+#   and the next boot disables Play services, Chromecast and Assistant (docs/TROUBLESHOOTING.md).
+# - com.haier.tv.hmagicboard: receives the remote's hot keys.
+# - com.google.android.tungsten.setupwraith: owns a saved Wi-Fi network on this firmware; forget and
+#   rejoin it first or the TV goes offline (docs/TROUBLESHOOTING.md).
+# - com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.google.android.apps.mediashell (Chromecast),
+#   com.android.vending, com.google.android.gms.
+
+# Retail demo and Haier store promos
+fusion.android.tv.demo                           # HRetailDisplay_2K store demo
+com.haier.apps                                   # store shortcuts
+com.haier.apps.evoSmart                          # store / partner promo
+# com.mstar.android.tv.disclaimercustomization   # store disclaimer: disabled in the first owner report, not on this set
+
+# Haier cleaner
+com.haier.tvhousekeeper                          # "TV Assistant" cleaner (/product/app/TV_Assistant)
+
+# Google apps and services a TV does not use
+com.google.android.feedback
+com.google.android.videos                        # Play Movies
+com.google.android.play.games
+com.google.android.youtube.tvmusic               # YouTube Music, off by choice
+com.google.android.syncadapters.calendar         # calendar sync
+com.android.printspooler                         # printing

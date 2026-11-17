@@ -24,6 +24,7 @@ sources so a rename fails here rather than in a maintainer's run.
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import ast
+import hashlib
 import importlib.util
 import os
 import shutil
@@ -49,19 +50,21 @@ def source(script):
     return script.read_text(encoding="utf-8")
 
 
-def read_paths(script):
+def read_paths(script, halloween=False):
     """The picture paths a script checks before Pillow: INPUTS' names, or LOGOS' docs/press/<name>.png."""
     tree = ast.parse(source(script))
+    paths = []
     for node in tree.body:
         if not isinstance(node, ast.Assign) or not isinstance(node.value, (ast.List, ast.Tuple)):
             continue
         name = getattr(node.targets[0], "id", "")
-        items = [elt.value for elt in node.value.elts
-                 if isinstance(elt, ast.Constant) and isinstance(elt.value, str)]
-        if name == "INPUTS":
-            return items
         if name == "LOGOS":
-            return [f"docs/press/{n}.png" for n in items]
+            return [f"docs/press/{n}.png" for n in ast.literal_eval(node.value)]
+        if name == "INPUTS" or (halloween and name == "HALLOWEEN_INPUTS"):
+            paths.extend(item[0] if isinstance(item, tuple) else item
+                         for item in ast.literal_eval(node.value))
+    if paths:
+        return paths
     raise AssertionError(f"{script.name} has no INPUTS or LOGOS list")
 
 
@@ -201,6 +204,175 @@ class CardPicturesTest(unittest.TestCase):
                 with self.subTest(script=script.name, picture=path):
                     self.assertTrue((ROOT / path).is_file(), f"{script.name} reads {path}, which is not here")
         self.assertGreaterEqual(len(read_paths(FEATURED)), 10, "the LOGOS read found almost nothing")
+
+
+class SourceCollisionTest(unittest.TestCase):
+    """Run even the destructive red phase only on copied scripts and copied source assets."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.directory = Path(self.tmp.name)
+        self.template = self.directory / "template"
+        (self.template / "tools").mkdir(parents=True)
+        for script in (CARD, FEATURED):
+            shutil.copy2(script, self.template / "tools" / script.name)
+            # picture_file.py is imported from beside the script: the staging write it publishes with.
+            shutil.copy2(TOOLS / "picture_file.py", self.template / "tools" / "picture_file.py")
+        shutil.copy2(LAUNCHER_FONT, self.template / "font.ttf")
+        for name in set(read_paths(CARD, halloween=True) + read_paths(FEATURED)):
+            target = self.template / name
+            self.assertTrue(target.resolve().is_relative_to(self.template.resolve()))
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / name, target)
+        self.shadow = self.directory / "shadow"
+        self.serial = 0
+
+    def checkout(self):
+        self.serial += 1
+        checkout = self.directory / str(self.serial)
+        shutil.copytree(self.template, checkout)
+        return checkout
+
+    def run_script(self, checkout, script, output, halloween=False, blocked=False):
+        copied_script = checkout / "tools" / script.name
+        self.assertTrue(copied_script.resolve().is_relative_to(checkout.resolve()))
+        destination = Path(output)
+        if not destination.is_absolute():
+            destination = checkout / destination
+        self.assertTrue(destination.resolve().is_relative_to(checkout.resolve()))
+        argv = ["-B", str(copied_script), *(["--halloween"] if halloween else []), "font.ttf", str(output)]
+        if blocked:
+            return run_without_pillow(argv, checkout, self.shadow)
+        # Keep any existing local package path; no dependency is installed for these optional draws.
+        return subprocess.run([sys.executable, *argv], cwd=checkout, env=dict(os.environ),
+                              capture_output=True, text=True, timeout=30)
+
+    def hashes(self, checkout):
+        return {p.relative_to(checkout).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in checkout.rglob("*") if p.is_file()}
+
+    def assert_collision(self, script, image, halloween=False, spelling="direct"):
+        checkout = self.checkout()
+        target = checkout / image
+        output = image
+        if spelling == "absolute":
+            output = str(target)
+        elif spelling == "relative":
+            output = os.path.relpath(target, checkout)
+        elif spelling == "dot":
+            output = "./" + image
+        elif spelling == "dotdot":
+            (target.parent / "nested").mkdir()
+            output = str(target.parent / "nested" / ".." / target.name)
+        elif spelling in ("symlink", "hardlink"):
+            alias = checkout / ("alias" + target.suffix)
+            try:
+                if spelling == "symlink":
+                    alias.symlink_to(target)
+                else:
+                    os.link(target, alias)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"this filesystem cannot create a {spelling}: {error}")
+            output = str(alias)
+        elif spelling == "case":
+            output = image.upper()
+            if not (checkout / output).is_file():
+                self.skipTest("this directory is case-sensitive")
+        original = self.hashes(checkout)
+        names = set(checkout.rglob("*"))
+        for blocked in ((True, False) if HAVE_PIL else (True,)):
+            with self.subTest(blocked_pillow=blocked):
+                done = self.run_script(checkout, script, output, halloween, blocked)
+                try:
+                    self.assertEqual(done.returncode, 1, done.stderr)
+                    self.assertIn(str(output), done.stderr)
+                    self.assertIn(image, done.stderr)
+                    self.assertIn("same file", done.stderr)
+                    self.assertIn("Nothing was written.", done.stderr)
+                    self.assertNotIn("needs Pillow", done.stderr)
+                    self.assertNotIn("Traceback", done.stderr)
+                    self.assertEqual(done.stdout, "")
+                finally:
+                    after = self.hashes(checkout)
+                    self.assertEqual(after[image], original[image], image)
+                    self.assertEqual(after, original)
+                    self.assertEqual(set(checkout.rglob("*")), names, "an unrelated output was created")
+
+    def test_card_source_collisions(self):
+        self.assertGreaterEqual(len(read_paths(CARD)), 4)
+        halloween_paths = read_paths(CARD, halloween=True)
+        for name in ("docs/new-home-halloween.jpg", "docs/stats-halloween.png"):
+            self.assertIn(name, halloween_paths)
+        for halloween in (False, True):
+            for image in read_paths(CARD, halloween=halloween):
+                with self.subTest(halloween=halloween, image=image):
+                    self.assert_collision(CARD, image, halloween)
+
+    def test_logo_source_collisions(self):
+        logos = read_paths(FEATURED)
+        self.assertIn("docs/press/techcrunch.png", logos)
+        self.assertIn("docs/press/techpp.png", logos)
+        for image in logos:
+            with self.subTest(image=image):
+                self.assert_collision(FEATURED, image)
+
+    def alias_collisions(self, spelling):
+        for script, image, halloween in ((CARD, "docs/new-home.jpg", False),
+                                         (CARD, "docs/new-home-halloween.jpg", True),
+                                         (FEATURED, "docs/press/techcrunch.png", False)):
+            with self.subTest(script=script.name, halloween=halloween, spelling=spelling):
+                self.assert_collision(script, image, halloween, spelling)
+
+    def test_spelling_collisions(self):
+        for spelling in ("absolute", "relative", "dot", "dotdot"):
+            self.alias_collisions(spelling)
+
+    def test_symlink_collisions(self):
+        self.alias_collisions("symlink")
+
+    def test_hardlink_collisions(self):
+        self.alias_collisions("hardlink")
+
+    @unittest.skipUnless(os.name == "nt", "Windows case-insensitive path spelling")
+    def test_windows_case_collisions(self):
+        self.alias_collisions("case")
+
+    def test_missing_distinct_outputs_reach_the_pillow_check(self):
+        for script, halloween in ((CARD, False), (CARD, True), (FEATURED, False)):
+            with self.subTest(script=script.name, halloween=halloween):
+                checkout = self.checkout()
+                original = self.hashes(checkout)
+                done = self.run_script(checkout, script, "new.png", halloween, blocked=True)
+                self.assertEqual(done.returncode, 1)
+                self.assertIn("needs Pillow", done.stderr)
+                self.assertNotIn("same file", done.stderr)
+                self.assertNotIn("Traceback", done.stderr)
+                self.assertEqual(done.stdout, "")
+                self.assertEqual(self.hashes(checkout), original)
+
+    @unittest.skipUnless(HAVE_PIL, "drawing the card needs existing Pillow")
+    def test_rendering_controls_create_and_overwrite_distinct_outputs(self):
+        from PIL import Image
+        for script, halloween in ((CARD, False), (CARD, True), (FEATURED, False)):
+            for existing in (False, True):
+                with self.subTest(script=script.name, halloween=halloween, existing=existing):
+                    checkout = self.checkout()
+                    name = "featured.png" if script == FEATURED else "card.jpg"
+                    output = checkout / name
+                    if existing:
+                        shutil.copy2(DOCS / name, output)
+                    original = self.hashes(checkout)
+                    done = self.run_script(checkout, script, str(output), halloween)
+                    self.assertEqual(done.returncode, 0, done.stderr)
+                    self.assertEqual(done.stdout, "")
+                    self.assertEqual(done.stderr, "")
+                    self.assertGreater(output.stat().st_size, 1000)
+                    with Image.open(output) as picture:
+                        self.assertEqual(picture.width, 1600)
+                        self.assertEqual(picture.format, "PNG" if script == FEATURED else "JPEG")
+                    self.assertEqual({p: h for p, h in self.hashes(checkout).items() if p != name},
+                                     {p: h for p, h in original.items() if p != name})
 
 
 if __name__ == "__main__":

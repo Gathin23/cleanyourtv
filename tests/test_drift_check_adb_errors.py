@@ -147,15 +147,21 @@ class CheckAdbErrorTest(unittest.TestCase):
         self.assertIn("KeyboardInterrupt", result.stderr)
         self.assertNotIn("could not read the TV", result.stderr)
 
-    def test_an_exit_from_tv_py_is_left_as_it_is(self):
+    def test_an_exit_from_tv_py_is_2(self):
         # tv.py and recovery.py stop with SystemExit and their own message (TV_HOST unset, adb_shell
-        # missing); that is not an ADB error and keeps its own wording and exit code.
+        # missing); that is not an ADB error, so it keeps its own wording, but the TV was never asked
+        # and the answer is 2 - the code for a check that never ran - not the 1 Python gives it, which
+        # the page tells a weekly job to mail about as drift.
         message = "Set TV_HOST to your TV's IP address"
         self.tv(connect_raises={"type": "SystemExit", "message": message})
         result = self.run_check(str(self.list_path))
-        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertIn(message, result.stderr)
+        self.assertIn("Nothing was checked or changed.", result.stderr)
         self.assertNotIn("could not read the TV", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(self.sent(), [], "the TV was asked by a run that could not read it")
 
 
 if __name__ == "__main__":

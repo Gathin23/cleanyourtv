@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 50S434 (4-Series, C03_4K_NA, BeyondTV4, Realtek rtd288o, 2 GB), US AR02 build",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "US 4-Series C03_4K_NA AR02 on the same BeyondTV4 / rtd288o family as `tcl-50c725k/` (BeyondTV6 AR10) and `tcl-beyondtv4-uk/` (AR05): TCL telemetry, Channel, HOME, promos, Guard, gallery and the USB media player off; stock `tvlauncher` replaced by `launcher/` with remote app, Input and gear buttons and volume repeat still working, no key helper needed; setupwraith off after re-joining Wi-Fi; firmware updater left enabled in the shared list; Chromecast kept; reboot-checked and lived with for two weeks"
+}

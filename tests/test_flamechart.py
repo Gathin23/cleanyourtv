@@ -18,7 +18,11 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+import warnings
 from unittest import mock
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_trace_report import first_frame_trace  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -30,9 +34,20 @@ PKG = "com.gathin.tvhome"
 MS = 1_000_000
 
 
-def fake_trace():
+# Every fake trace stays referenced until the module ends and is closed there: an unreferenced one would be
+# collected at a random point and its ResourceWarning could land in a test that captures stderr.
+_FAKE_DBS = []
+
+
+def tearDownModule():
+    while _FAKE_DBS:
+        _FAKE_DBS.pop().close()
+
+
+def fake_trace(extra_threads=()):
     """The launcher brought to the front at 1000 ms: performStart, onResume with nested work, a traversal, a frame."""
     db = sqlite3.connect(":memory:")
+    _FAKE_DBS.append(db)
     db.row_factory = sqlite3.Row
     db.executescript("""
         create table process (upid integer, pid integer, name text);
@@ -50,7 +65,24 @@ def fake_trace():
             (5, 1050, 4, 1, "RV OnBindView", 10, 4), (6, 1055, 10, 0, "DrawFrames 1", 20, None)]
     db.executemany("insert into slice values (?, ?, ?, ?, ?, ?, ?)",
                    [(i, ts * MS, dur * MS, depth, name, track, parent) for i, ts, dur, depth, name, track, parent in rows])
+    if extra_threads:
+        db.execute("insert into process values (1, 200, 'com.example.other')")
+    for utid, upid, name in extra_threads:
+        db.execute("insert into thread values (?, ?, ?, ?)", (utid, upid, 100 + utid, name))
+        db.execute("insert into thread_track values (?, ?)", (utid * 10, utid))
+        db.execute("insert into slice values (?, ?, ?, ?, ?, ?, ?)",
+                   (100 + utid, 1010 * MS, MS, 0, "worker task", utid * 10, None))
     return lambda sql: [dict(r) for r in db.execute(sql)]
+
+
+def fake_pillow():
+    """Enough Pillow for draw() to reach the final image save without the optional dependency."""
+    pil = mock.MagicMock()
+    image = pil.Image.new.return_value
+    image.size = (1600, 100)
+    pil.ImageDraw.Draw.return_value.textlength.return_value = 0
+    pil.ImageFont.load_default.return_value = object()
+    return pil, image
 
 
 class HighlightTest(unittest.TestCase):
@@ -65,6 +97,47 @@ class HighlightTest(unittest.TestCase):
         rows = flamechart.lanes(fake_trace(), PKG, ["main"], 0, 2000 * MS)[0][1]
         total, _ = flamechart.highlighted(rows, re.compile("^activityResume$"), 1020 * MS, 2000 * MS)
         self.assertEqual(total, 15)
+
+
+class UniqueThreadTest(unittest.TestCase):
+    RX = re.compile(r"^(activityResume|RV OnBindView|DrawFrames 1)$")
+
+    def test_repeated_names_and_main_aliases_count_each_physical_thread_once(self):
+        for names, labels in (
+            (["main", "RenderThread"], ["main thread", "RenderThread"]),
+            (["main", "main", "RenderThread", "RenderThread"], ["main thread", "RenderThread"]),
+            (["main", PKG, "RenderThread"], ["main thread", "RenderThread"]),
+            ([PKG, "main", "RenderThread"], [PKG, "RenderThread"]),
+            (["RenderThread", PKG, "main", "RenderThread"], ["RenderThread", PKG]),
+        ):
+            with self.subTest(names=names):
+                lanes = flamechart.lanes(fake_trace(), PKG, names, 1000 * MS, 1065 * MS)
+                # Main: onResume 30 ms plus binding 4 ms; RenderThread: draw 10 ms.
+                total = sum(flamechart.highlighted(rows, self.RX, 1000 * MS, 1065 * MS)[0]
+                            for _, rows in lanes)
+                self.assertEqual(total, 44)
+                self.assertEqual([label for label, _ in lanes], labels)
+                ids = [row["id"] for _, rows in lanes for row in rows]
+                self.assertEqual(len(ids), len(set(ids)))
+
+    def test_main_passes_unique_lanes_and_the_correct_total_to_the_renderer(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace, out = Path(tmp, "nav-1.pftrace"), Path(tmp, "chart.png")
+            trace.write_bytes(b"")
+            q, close = fake_trace(), mock.Mock()
+            with mock.patch.dict(sys.modules, {"PIL": mock.MagicMock()}), \
+                    mock.patch.object(flamechart.trace_report, "opener", return_value=lambda path: (q, close)), \
+                    mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw, \
+                    contextlib.redirect_stdout(io.StringIO()):
+                flamechart.main([str(trace), "--out", str(out), "--threads",
+                                 f"main,{PKG},RenderThread,main", "--highlight", self.RX.pattern])
+            close.assert_called_once_with()
+            draw.assert_called_once()
+            panels, rx = draw.call_args.args[:2]
+            panel = panels[0]
+            self.assertEqual(sum(flamechart.highlighted(rows, rx, panel["t0"], panel["t1"])[0]
+                                 for _, rows in panel["lanes"]), 44)
+            self.assertEqual([label for label, _ in panel["lanes"]], ["main thread", "RenderThread"])
 
 
 class WindowTest(unittest.TestCase):
@@ -161,7 +234,9 @@ class ArgumentTest(unittest.TestCase):
 
 class OutputArgumentTest(unittest.TestCase):
     def assert_rejected_before_trace_work(self, argv, out, flag):
-        with (mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
+        # Another test's unclosed file can be finalised mid-call; its ResourceWarning would then be stderr's last line.
+        with (warnings.catch_warnings(action="ignore", category=ResourceWarning),
+              mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
               mock.patch.object(flamechart.trace_report, "opener") as opener,
               mock.patch.object(flamechart.trace_report, "expand") as expand,
               mock.patch("builtins.__import__", wraps=__import__) as imports,
@@ -203,6 +278,246 @@ class OutputArgumentTest(unittest.TestCase):
                         args = flamechart.parse(argv)
                         self.assertEqual(args.out, out)
                         self.assertEqual(args.width, 1600 if width is None else width)
+
+
+class WriteFailureTest(unittest.TestCase):
+    def test_a_png_that_cannot_be_written_is_named_without_a_traceback(self):
+        """A write can fail after trace work even when --out passed its argument checks."""
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart.png")
+            close = mock.Mock()
+            refusal = OSError(28, "No space left on device")
+            pil, image = fake_pillow()
+            image.save.side_effect = refusal
+            with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                    mock.patch.object(flamechart.trace_report, "opener",
+                                      return_value=lambda path: (fake_trace(), close)), \
+                    contextlib.redirect_stdout(io.StringIO()) as output, \
+                    contextlib.redirect_stderr(io.StringIO()) as error, \
+                    self.assertRaises(SystemExit) as caught:
+                flamechart.main([str(trace), "--out", str(out)])
+        self.assertEqual(f"cannot write {out}: No space left on device", caught.exception.code)
+        self.assertEqual("", output.getvalue())
+        stray = [l for l in error.getvalue().splitlines() if "ResourceWarning" not in l and not l.startswith("  ")]
+        self.assertEqual([], stray)   # a GC ResourceWarning from another test may land here; nothing else may
+        image.save.assert_called_once()
+        self.assertNotEqual(str(out), image.save.call_args.args[0])
+        close.assert_called_once_with()
+
+    def test_a_failed_save_keeps_the_chart_already_there(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart.png")
+            out.write_bytes(b"old chart")
+            pil, image = fake_pillow()
+
+            def truncate_then_fail(path, **options):
+                Path(path).write_bytes(b"half")
+                raise OSError(28, "No space left on device")
+            image.save.side_effect = truncate_then_fail
+            with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                    mock.patch.object(flamechart.trace_report, "opener",
+                                      return_value=lambda path: (fake_trace(), mock.Mock())), \
+                    contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(io.StringIO()), \
+                    self.assertRaises(SystemExit):
+                flamechart.main([str(trace), "--out", str(out)])
+            self.assertEqual(b"old chart", out.read_bytes())
+
+    def test_a_font_load_failure_is_not_called_an_output_write_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart.png")
+            close = mock.Mock()
+            pil, image = fake_pillow()
+            pil.ImageFont.load_default.side_effect = OSError("cannot open resource")
+            with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                    mock.patch.object(flamechart.trace_report, "opener",
+                                      return_value=lambda path: (fake_trace(), close)), \
+                    contextlib.redirect_stdout(io.StringIO()) as output, \
+                    contextlib.redirect_stderr(io.StringIO()) as error, \
+                    self.assertRaises(OSError) as caught:
+                flamechart.main([str(trace), "--out", str(out)])
+        self.assertEqual("cannot open resource", str(caught.exception))
+        self.assertNotIn("cannot write", str(caught.exception))
+        self.assertEqual("", output.getvalue())
+        self.assertEqual("", error.getvalue())
+        pil.ImageFont.load_default.assert_called_once_with(size=11)
+        pil.Image.new.assert_not_called()
+        image.save.assert_not_called()
+        close.assert_called_once_with()
+
+
+class ThreadNamesTest(unittest.TestCase):
+    NAMES = ("main", "RenderThread", "Binder:100_1", "Jit thread pool", "worker/io", "Thread (pooled)",
+             "O'Brien", "quote''only", "worker+io", "GL worker [0]", "worker@io", r"worker\io")
+
+    def test_thread_names_accept_printable_punctuation(self):
+        for name in self.NAMES:
+            with self.subTest(name=name), contextlib.redirect_stderr(io.StringIO()):
+                args = flamechart.parse(["nav-1.pftrace", "--out", "chart.png", "--threads", name])
+                self.assertEqual(args.thread_names, [name])
+
+    def test_thread_names_keep_comma_splitting_and_whitespace_trimming(self):
+        with contextlib.redirect_stderr(io.StringIO()):
+            args = flamechart.parse(["nav-1.pftrace", "--out", "chart.png", "--threads",
+                                     " main, , RenderThread, worker/io, "])
+        self.assertEqual(args.thread_names, ["main", "RenderThread", "worker/io"])
+
+    def test_thread_names_refuse_invalid_values_before_trace_work(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp, "chart.png")
+            for value in ("", " , , ", "main;rm", "worker;io", "worker\tio", "worker\nio", "worker\rio",
+                          "worker\x00io", "worker\x1fio", "worker\x7fio", "worker\u200bio"):
+                with (self.subTest(value=value),
+                      mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
+                      mock.patch.object(flamechart.trace_report, "expand") as expand,
+                      mock.patch.object(flamechart.trace_report, "opener") as opener,
+                      mock.patch("builtins.__import__", wraps=__import__) as imports,
+                      contextlib.redirect_stderr(io.StringIO()) as err,
+                      self.assertRaises(SystemExit) as caught):
+                    flamechart.main(["nav-1.pftrace", "--out", str(out), "--threads", value])
+                self.assertEqual(caught.exception.code, 2)
+                self.assertIn("--threads", err.getvalue())
+                self.assertIn("main,RenderThread", err.getvalue())
+                expand.assert_not_called()
+                opener.assert_not_called()
+                self.assertFalse(out.exists())
+                self.assertFalse(any(call.args[0].split(".")[0] in ("PIL", "perfetto")
+                                     for call in imports.call_args_list))
+
+    def test_thread_names_select_exact_slices_and_keep_original_labels(self):
+        threads = [(utid, 2, name) for utid, name in enumerate(self.NAMES[2:], 3)]
+        q = fake_trace(threads)
+        for utid, _, name in threads:
+            with self.subTest(name=name):
+                label, rows = flamechart.lanes(q, PKG, [name], 0, 2000 * MS)[0]
+                self.assertEqual(label, name)
+                self.assertEqual([r["id"] for r in rows], [100 + utid])
+
+    def test_thread_names_treat_sql_expressions_as_literals(self):
+        name = "worker' OR 1=1 --"
+        q = fake_trace([(3, 1, name), (4, 2, "unrelated"), (5, 2, name)])
+        label, rows = flamechart.lanes(q, PKG, [name], 0, 2000 * MS)[0]
+        self.assertEqual(label, name)
+        self.assertEqual([r["id"] for r in rows], [105])
+        self.assertEqual(flamechart.lanes(q, PKG, ["missing' OR 1=1 --"], 0, 2000 * MS),
+                         [("missing' OR 1=1 --", [])])
+
+    def test_thread_names_keep_default_missing_and_duplicate_selection(self):
+        q = fake_trace([(3, 1, "worker-io"), (6, 2, "worker-io"), (4, 2, "worker-io")])
+        args = flamechart.parse(["nav-1.pftrace", "--out", "chart.png"])
+        self.assertEqual(args.thread_names, ["main", "RenderThread"])
+        lanes = flamechart.lanes(q, PKG, [*args.thread_names, "worker-io", "missing-thread"], 0, 2000 * MS)
+        self.assertEqual([(label, [r["id"] for r in rows]) for label, rows in lanes],
+                         [("main thread", [1, 2, 3, 4, 5]), ("RenderThread", [6]),
+                          ("worker-io", [104]), ("missing-thread", [])])
+
+    def test_thread_names_flow_through_main_to_draw(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp, "chart.png")
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            for name in ("worker/io", "Thread (pooled)", "O'Brien", "quote''only", "worker' OR 1=1 --"):
+                q = fake_trace([(3, 2, name)])
+                close = mock.Mock()
+                with (self.subTest(name=name),
+                      mock.patch.dict(sys.modules, {"PIL": mock.MagicMock(), "perfetto": None}),
+                      mock.patch.object(flamechart.trace_report, "expand", return_value=[str(trace)]) as expand,
+                      mock.patch.object(flamechart.os.path, "isfile", return_value=True),
+                      mock.patch.object(flamechart.trace_report, "opener", return_value=lambda path: (q, close)) as opener,
+                      mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw,
+                      contextlib.redirect_stdout(io.StringIO()) as output,
+                      contextlib.redirect_stderr(io.StringIO())):
+                    flamechart.main(["nav-1.pftrace", "--out", str(out), "--threads", name])
+                    expand.assert_called_once_with(["nav-1.pftrace"])
+                    opener.assert_called_once_with(None)
+                    close.assert_called_once_with()
+                    draw.assert_called_once()
+                    panels, _, title, subtitle, path, width = draw.call_args.args
+                    self.assertEqual(panels, [{"label": "Before", "note": "nav-1.pftrace",
+                                              "t0": 1000 * MS, "t1": 1065 * MS,
+                                              "lanes": [(name, [{"id": 103, "ts": 1010 * MS, "dur": MS,
+                                                                "depth": 0, "name": "worker task",
+                                                                "parent_id": None}])]}])
+                    self.assertEqual((title, subtitle), ("Launcher: start to first frame", ""))
+                    self.assertEqual((path, width), (str(out), 1600))
+                    self.assertEqual(output.getvalue(), f"{out}: 1600x100\n")
+                    self.assertFalse(out.exists())
+
+
+class InputPanelsTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.folder = Path(self.tmp.name)
+        self.before = self.folder / "before"
+        self.before.mkdir()
+        for n, value in ((10, 100), (1, 1000), (2, 10)):
+            (self.before / f"home-{n}.pftrace").write_text(str(value), encoding="utf-8")
+        self.opened = []
+
+    def open_trace(self, path):
+        self.opened.append(path)
+        q = first_frame_trace(int(Path(path).read_text(encoding="utf-8")))
+        return q, q.close
+
+    def run_chart(self, inputs):
+        self.opened.clear()
+        with mock.patch.dict(sys.modules, {"PIL": mock.MagicMock()}), \
+                mock.patch.object(flamechart.trace_report, "opener", return_value=self.open_trace) as opener, \
+                mock.patch.object(flamechart, "window", return_value=(0, MS)), \
+                mock.patch.object(flamechart, "lanes", return_value=[]), \
+                mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw, \
+                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            code = flamechart.main([*map(str, inputs), "--out", str(self.folder / "chart.png")])
+        return code, draw.call_args.args[0], opener
+
+    def alias_in_folder(self, kind):
+        original = self.before / "home-2.pftrace"
+        alias = self.before / "home-20.pftrace"
+        try:
+            (os.symlink if kind == "symlink" else os.link)(original, alias)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"cannot create {kind}: {error}")
+        code, panels, _ = self.run_chart([self.before])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(self.before / f"home-{n}.pftrace") for n in (1, 2, 10, 10)])
+        self.assertEqual(panels[0]["note"], "median of 3 runs by time to first frame (home-10.pftrace)")
+
+    def test_folder_symlink_does_not_select_the_fast_run_as_median(self):
+        self.alias_in_folder("symlink")
+
+    def test_folder_hardlink_does_not_select_the_fast_run_as_median(self):
+        self.alias_in_folder("hardlink")
+
+    def test_matching_positional_panels_remain_independent(self):
+        path = self.before / "home-10.pftrace"
+        code, panels, _ = self.run_chart([path, path])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(path), str(path)])
+        self.assertEqual([(p["label"], p["note"]) for p in panels],
+                         [("Before", path.name), ("After", path.name)])
+
+    def test_directory_and_contained_file_remain_separate_panels(self):
+        path = self.before / "home-1.pftrace"
+        code, panels, _ = self.run_chart([self.before, path])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(self.before / f"home-{n}.pftrace") for n in (1, 2, 10, 10, 1)])
+        self.assertEqual([p["note"] for p in panels],
+                         ["median of 3 runs by time to first frame (home-10.pftrace)", path.name])
+
+    def test_overlapping_folders_remain_independent_panels(self):
+        code, panels, _ = self.run_chart([self.before, self.before])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(self.before / f"home-{n}.pftrace")
+                                      for _ in range(2) for n in (1, 2, 10, 10)])
+        self.assertEqual([p["note"] for p in panels],
+                         ["median of 3 runs by time to first frame (home-10.pftrace)"] * 2)
 
 
 @unittest.skipUnless(importlib.util.find_spec("PIL"), "drawing needs Pillow (tools/requirements-perf.txt)")

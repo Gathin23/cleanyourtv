@@ -1,0 +1,82 @@
+# Xiaomi Smart Projector L1 Pro (model C045RGN, codename tianshan, product "Brooke", FORMOVIE ODM,
+# MediaTek T32 / MT9630), Google TV on Android 14 (SDK 34), firmware build UKNV.260130.001,
+# security patch 2026-01-01. Native 1080p, Wi-Fi only, Bluetooth remote. ro.adb.secure=1.
+# Stock launcher: com.google.android.apps.tv.launcherx (left enabled; see the handover note below).
+# No Live TV app: com.mediatek.wwtv.tvcenter ships DISABLED from the factory on this unit, and so does
+# com.amazon.amazonvideo.livingroom. Leave both disabled when restoring.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-smart-projector-l1-pro-tianshan/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-smart-projector-l1-pro-tianshan/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# How far this was tested: applied in three batches in one session and checked after two reboots. All 17
+# were still disabled afterwards and the firmware re-enabled none. HDMI, every remote button, Bluetooth,
+# focus, keystone, Wi-Fi, Netflix and YouTube were confirmed on the real remote. That is one session, not
+# the several days CONTRIBUTING asks for, so treat this as a starting point rather than a long soak.
+#
+# Despite the Xiaomi branding (ro.product.brand=Xiaomi) the software is a FORMOVIE international Google TV
+# build: there is NO com.xiaomi.*, com.mitv.* or com.miui.* package on it at all. PatchWall, MiChannel,
+# Mi TV+, TV Manager, shoplugin and the com.xiaomi.tvqs* family are all absent, so a Xiaomi TV list does
+# not apply to this projector. Its vendor packages are com.fengmi.*, as on the Formovie XMing Page One
+# (examples/formovie-xming-page-one-tianshan), which is the same tianshan board on Android 11.
+#
+# Kept because the projector needs them: com.fengmi.projector.imaging (focus and keystone),
+# com.fengmi.Autopair (BLE remote pairing), com.fengmi.fmsettings, com.fengmi.platform,
+# com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.wwtv.*, com.google.android.tv.inputplayer
+# (HDMI), com.google.android.tv.remote.service, com.android.bluetooth, com.android.tv.settings.
+# Note that com.mediatek.tis, com.mediatek.tv.agent and com.cltv.mal do not exist on this build.
+# Kept by choice: com.dolby.android.audio.service, com.mstar.android.tv.disclaimercustomization,
+# fusion.android.tv.demo, Play Store and Services, Gboard, the Google Assistant (katniss, tv.assistant),
+# Chromecast (com.google.android.apps.mediashell), TalkBack, the Ambient screensaver
+# (com.google.android.apps.tv.dreamx, which is the active screensaver_components here),
+# com.google.android.play.games and every streaming app, because the owner uses them.
+# Never launch com.fengmi.testsuite or mediatek.factorymenu.ui (factory tools).
+# No firmware updater package of its own was found on this build.
+#
+# Launcher handover on Android 14 - the part that differs from the XMing Page One. HOME is resolved by
+# intent priority and the saved default home is ignored, so `cmd package set-home-activity` prints Success
+# and changes nothing. Measured on this unit with `cmd package query-activities`:
+#   launcherx/.home.HomeActivity                    priority 2
+#   setupwraith/.RecoveryActivity                   priority 1
+#   a sideloaded launcher                           priority 0
+#   com.android.tv.settings/.system.FallbackHome    priority -1000
+# The saved Wi-Fi network belongs to com.google.android.tungsten.setupwraith
+# (dumpsys wifi | grep -o 'cname=[^ ]*') and this projector is Wi-Fi only with no wired fallback, so
+# disabling setupwraith would take it off the network and off ADB with no way back. setupwraith and
+# launcherx therefore both stay enabled, and the reference launcher gets Home through the Home-key
+# redirect instead: HOME_KEY_SERVICE=1 plus "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+# (config.json in this folder).
+# Because of that, launcher/build-and-install.sh (and .ps1) stops with "Home resolves to
+# ...launcherx/.home.HomeActivity, not to the new launcher" and exits before it enables the Home-key
+# service. The APK is installed and working at that point; only the accessibility service still has to be
+# switched on. Trade-off, the same one the XMing Page One reports: with the helper on, holding Volume Up
+# gives one step per press instead of a ramp.
+# Sideloading works here, including a package that declares HOME: no INSTALL_FAILED_VERIFICATION_FAILURE.
+# Optional extra, not part of this list: Private DNS with an ad-blocking resolver (see README).
+
+# Google telemetry and partner auto-installs
+com.google.android.feedback
+com.google.android.partnersetup               # Google RLZ attribution pings
+android.autoinstalls.config.fomovie           # Play auto-install of partner apps (sic, "fomovie")
+
+# Unused system services
+com.android.htmlviewer
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.android.hotspot2.osulogin
+com.google.android.syncadapters.calendar      # keep this one if you use the Google Calendar card
+
+# Android 14 Privacy Sandbox: Topics API, ad attribution measurement, on-device personalisation
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# UK Freeview DTT services, on a unit whose ro.vendor.mtk.system.marketregion is "us"
+# uk.co.freeview.fvpconfigauth  # TV middleware, kept on in the shared list; this set has it off
+# uk.co.freeview.mdsclient  # TV middleware, kept on in the shared list; this set has it off
+# uk.co.freeview.tifbridge  # TV middleware, kept on in the shared list; this set has it off
+
+# Health Connect: a phone health-data platform with nothing to do on a projector
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore

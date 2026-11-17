@@ -1,0 +1,12 @@
+{
+  "hidden_apps": [
+    "com.sony.dtv.tvx"
+  ],
+  "live_tv_package": "com.sony.dtv.tvx",
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx",
+  "app_keys": [
+    "scan:646:settings",
+    "scan:485:com.google.android.youtube.tv",
+    "scan:490:com.amazon.amazonvideo.livingroom"
+  ]
+}

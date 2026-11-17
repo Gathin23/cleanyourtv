@@ -1,0 +1,7 @@
+{
+  "hidden_apps": ["com.vt.tv.tvcenter", "com.android.tv.settings", "com.vt.tv.singlelisten", "com.vt.tv.mediacenter"],
+  "live_tv_package": "com.vt.tv.tvcenter",
+  "handle_view_inputs": false,
+  "settings_key_panel": true,
+  "key_filter": false
+}

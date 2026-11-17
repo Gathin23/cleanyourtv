@@ -1,8 +1,8 @@
 """SHOWCASE.md's brand index has one line per brand, and every row has to be reachable from it.
 
 "Find a project by TV brand" is the index a reader uses to answer "which of these runs on my set", and
-docs/workflows/showcase.md asks for a new row to be added under its TV brand. Two things went wrong
-there, both caught by the tests below.
+docs/workflows/showcase.md asks for a new row to be added under its TV brand. Three things went wrong
+there, all caught by the tests below.
 
 A brand named twice: when the Bluetooth pill fork landed (row 47, nikhiltalreja's tree) a second
 `- **Xiaomi:**` line was written below XGIMI instead of the fork being added to the Xiaomi line already
@@ -15,11 +15,19 @@ sets generally, so no single brand) were both written into the tables and never 
 what happens when the recipe says only "under its TV brand" and the project has none. Both are in the
 index now, and step 1 of the recipe names the generic line for a project like that.
 
+An index link no row carries, the other direction: M-khalifa's fork was renamed and repinned in the
+tables ("Prayer and weather card on Home" at 8f8cb362 -> "Home widget with add-on pages" at ff04ba66,
+52487475 and 5474b2b9), and the TCL line kept the earlier commit under the old name - the fold-in merge
+that resolved both sides of that line wrote them into one bullet. A reader on the TCL line then had two
+entries for one fork, one of them an older commit whose row no longer exists. The link is gone and the
+test below reads the index back against the tables.
+
 These tests read the index into brand -> links and the tables into rows. A brand named twice fails and
 prints the links only one of the two lines carries; a row no index line links fails with its line
-number. Rows whose TV cell names no brand at all (NO_BRAND below) are exempt, and a test keeps each
-exemption honest: one that is no longer on the page fails instead of hiding a row forever. The brand
-labels are not compared in any order: the list is grouped by hand and is not alphabetical today.
+number, and so does a link no row carries. Rows whose TV cell names no brand at all (NO_BRAND below) are
+exempt from the first direction, and a test keeps each exemption honest: one that is no longer on the
+page fails instead of hiding a row forever. The brand labels are not compared in any order: the list is
+grouped by hand and is not alphabetical today.
 
 A row is matched to an index link by its address, not its label, so renaming a project on one side stays
 free; a trailing page name (`.../tree/x/FORK.md`) is ignored, so the two can address the same tree
@@ -113,6 +121,22 @@ def unindexed(lines):
     return [(number, url) for number, url in rows(lines) if not any(same_project(url, one) for one in listed)]
 
 
+def stray(lines):
+    """[(line number, brand, name, url)] for the index links no table row carries.
+
+    The other direction of `unindexed`: a reader who looks their TV up and clicks a project gets a page
+    the tables never describe, so the project as the page states it (what it is, the TV it was tried on,
+    its author) is not there to read.
+    """
+    found = [url for _, url in rows(lines)]
+    return [
+        (number, brand, name, url)
+        for number, brand, links in index(lines)
+        for name, url in links
+        if not any(same_project(url, one) for one in found)
+    ]
+
+
 def generic_label(lines):
     """The index line for projects with no brand of their own: the one labelled 'Any ...'."""
     for _, brand, _ in index(lines):
@@ -201,6 +225,18 @@ class BrandIndex(unittest.TestCase):
             stale,
             "these rows are exempted from the index test above but are no longer on the page: drop the\n"
             "exemption, or fix the address it was written with.\n" + "\n".join(stale),
+        )
+
+    def test_every_index_link_reaches_a_row(self):
+        found = rows(self.lines)
+        self.assertGreaterEqual(len(found), 90, "the page's project rows should be read; the parser found fewer")
+        missing = [f"line {number} ({brand}): [{name}]({url})" for number, brand, name, url in stray(self.lines)]
+        self.assertEqual(
+            [],
+            missing,
+            "these projects are linked from 'Find a project by TV brand' but no row in SHOWCASE.md's tables\n"
+            "carries them, so a reader who looks up their TV and clicks one lands on a page the page never\n"
+            "describes: drop the link, or write the row it should point at.\n" + "\n".join(missing),
         )
 
 
@@ -303,6 +339,46 @@ class TheReaderItself(unittest.TestCase):
     def test_two_projects_in_one_tree_are_not_the_same_project(self):
         self.assertFalse(same_project("https://example.com/fork", "https://example.com/fork-2"))
         self.assertTrue(same_project("https://example.com/fork", "https://example.com/fork/FORK.md"))
+
+    def test_an_index_link_with_no_row_is_reported(self):
+        lines = [
+            "| [One](https://example.com/one) | what it is | TCL 43P615 | an author |",
+            "",
+            SECTION,
+            "- **TCL:** [One](https://example.com/one), [Two](https://example.com/two)",
+            END,
+        ]
+        self.assertEqual(
+            [(4, "TCL", "Two", "https://example.com/two")],
+            stray(lines),
+        )
+
+    def test_an_index_link_into_the_tree_of_a_row_is_quiet(self):
+        # The index links .../cleanyourtv/tree/x while the row links a page inside that tree, or the other
+        # way round: the same project, and the reader still lands on it.
+        lines = [
+            "| [Fork](https://example.com/fork/blob/abc123/FORK.md) | what it is | TCL | an author |",
+            SECTION,
+            "- **TCL:** [Fork](https://example.com/fork/tree/abc123)",
+            END,
+        ]
+        self.assertEqual([], stray(lines))
+
+    def test_the_same_fork_at_two_commits_is_two_projects_to_the_reader(self):
+        # What M-khalifa's fork looked like on the TCL line: the row pinned the v1.1 commit under the new
+        # name, and the index also kept the earlier commit under the old one. The addresses differ, so the
+        # row match cannot settle it - the link that reaches no row is the one reported.
+        lines = [
+            "| [Home widget with add-on pages](https://example.com/fork/blob/ff04ba66/FORK.md) | x | TCL | a |",
+            SECTION,
+            "- **TCL:** [Home widget with add-on pages](https://example.com/fork/blob/ff04ba66/FORK.md), "
+            "[Prayer and weather card on Home](https://example.com/fork/blob/8f8cb362/FORK.md)",
+            END,
+        ]
+        self.assertEqual(
+            [(3, "TCL", "Prayer and weather card on Home", "https://example.com/fork/blob/8f8cb362/FORK.md")],
+            stray(lines),
+        )
 
     def test_a_wrapped_step_is_joined_onto_its_first_line(self):
         page = '1. Add a row, and the project under its TV brand in\n   "Find a project by TV brand".\n2. Bump it.\n'

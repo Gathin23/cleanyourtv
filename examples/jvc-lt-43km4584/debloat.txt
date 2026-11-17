@@ -1,0 +1,30 @@
+# JVC LT-43KM4584 (KTC_JVC_2K_25GV1; device jagalchi), Android TV 14, build UKN7.260716.013
+# Internal Android model: 2K SMART TV; manufacturer: KTC; SoC: MediaTek MT5867.
+# Status (2026-10-29): all five entries were disabled on one real TV; basic functionality
+# remained operational in initial checks. A reboot was verified for the first three entries.
+# Longer-term stability and full feature coverage have NOT yet been established.
+# Keep any app you use by commenting out its package line.
+# Apply with the repository's tools/disable.sh; revert with tools/restore.sh.
+# IMPORTANT: Keep the stock Home com.google.android.apps.tv.launcherx ENABLED.
+# Disabling it caused the HOME button to hang on this unit, and re-enabling restored HOME.
+# Projectivy with accessibility launcher override made the YouTube, Prime Video, and
+# YouTube Music remote shortcuts fail; they worked again with stock Google TV.
+# Launcher selection is OPTIONAL; this list does not change Home or accessibility settings.
+# Keep Google Play Services, Chromecast, Google setupwraith, Live TV, HDMI and firmware updater.
+
+# Optional Google applications
+com.google.android.play.games          # Google Play Games; keep if used
+com.google.android.feedback            # Google feedback component
+
+# TV feedback opt-in
+com.android.tv.feedbackconsent         # Feedback consent UI
+
+# Manufacturer / partner opt-in
+tv.anoki.acr.anokiacroptin            # Anoki ACR consent UI; does not stop native ACR service
+
+# Optional built-in manual
+com.electronic.manual                  # Built-in electronic manual no longer available
+
+# Already disabled before testing: com.mediatek.wwtv.tvcenter.plus (not part of this list)
+# Deliberately kept: fusion.android.tv.demo, com.android.adservices.api,
+# com.google.android.apps.youtube.music, com.cltv.hybrid, ktc.factorymenu.ui.

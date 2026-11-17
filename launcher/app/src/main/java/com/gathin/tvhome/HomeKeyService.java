@@ -57,6 +57,7 @@ public class HomeKeyService extends AccessibilityService {
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
     private boolean settingsPanel;
+    private boolean settingsClearTask;
     /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
     private boolean consumeVolumeKeys;
     /** app_keys, the same maps InputKeyService reads, for setups that run only this service. */
@@ -76,22 +77,21 @@ public class HomeKeyService extends AccessibilityService {
     private long powerOnUntil;
     /** home_long_press_home: this service takes every Home press, held ones included. */
     private boolean homeLongPressHome;
-    /** app_keys "front:" entries, and the package of the activity in front, from window changes while there are any. */
+    /** app_keys "front:" entries; the package in front goes to RemoteKeys.frontPackage, for both helpers. */
     private Map<Integer, String> frontAppKeys = Collections.emptyMap();
     private Map<Integer, String> frontAppScancodes = Collections.emptyMap();
-    private String frontPackage = "";
     /** power_on_home_always: Home at every power-on, not only over Live TV. */
     private boolean powerOnAlways;
     /** power_on_home: re-arms after the screen turns on; null unless the key is on. */
     private BroadcastReceiver screenOnReceiver;
-    /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter, or before the unlock. */
+    /** Stops key filtering while a game controller is connected or after a volume change; null unless gamepad_passthrough or volume_pauses_filter, and key_filter, or before the unlock. */
     private GamepadPassthrough gamepads;
     /** Screen-off receiver while guard_off_in_standby is set; null otherwise. */
     private BroadcastReceiver standbyExit;
     /** disableSelf is how this service leaves for standby, not the user turning it off. */
     private boolean steppingOut;
     /** The bound helper, so the opt-in broadcast can arm it without waiting for a new connection. */
-    private static HomeKeyService running;
+    static HomeKeyService running;
 
     @Override
     protected void onServiceConnected() {
@@ -138,6 +138,8 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         if (running == this) running = null;
+        RemoteKeys.frontPackage = "";
+        RemoteKeys.release(this);
         stopWaitingForUnlock();
         if (screenOnReceiver != null) unregisterReceiver(screenOnReceiver);
         if (standbyExit != null) {
@@ -190,6 +192,7 @@ public class HomeKeyService extends AccessibilityService {
         if (repairRecord) ServiceRepair.connected(this, getClass());
         settingsKeycodes = config.settingsKeycodes;
         settingsPanel = config.settingsKeyPanel;
+        settingsClearTask = config.settingsKeyClearTask;
         consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
@@ -224,29 +227,33 @@ public class HomeKeyService extends AccessibilityService {
         AccessibilityServiceInfo info = getServiceInfo();
         if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront)) {
             info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+            // setServiceInfo() rewrites flags and drops the XML's flagRequestFilterKeyEvents, so a
+            // key_filter build that also uses a window-watching redirect loses key filtering (gear/app
+            // keys stop reaching the helper). Re-assert the filter flag here when key_filter is on.
+            if (config.keyFilter) info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
             setServiceInfo(info);
         }
         if (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty()) probeAtBoot();
         armStandbyExit();
         holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
         holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
-        // gamepad_passthrough, off by default. Only with key_filter on: off, the service never filters keys.
-        if (config.gamepadPassthrough && config.keyFilter && gamepads == null) {
-            gamepads = new GamepadPassthrough(this);
-            gamepads.start();
-        }
+        // gamepad_passthrough and volume_pauses_filter, off by default.
+        if (gamepads == null) gamepads = GamepadPassthrough.start(this, config);
     }
 
     /** A tap's target: the "front:" entry while the button's own app is already in front, else the usual one. */
     private String inFront(Map<Integer, String> keys, Map<Integer, String> front, int code) {
-        String target = keys.get(code);
-        String alt = front.get(code);
-        return alt != null && RemoteKeys.inFront(target, frontPackage) ? alt : target;
+        return RemoteKeys.tap(keys.get(code), front.get(code));
+    }
+
+    private boolean isSettingsScancode(KeyEvent event) {
+        for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
+        return false;
     }
 
     private boolean isSettingsKey(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
-        for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
+        if (isSettingsScancode(event)) return true;
         for (int code : settingsKeycodes) if (event.getKeyCode() == code) return true;
         return false;
     }
@@ -262,11 +269,25 @@ public class HomeKeyService extends AccessibilityService {
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, inFront(appScancodes, frontAppScancodes, event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
+        // A keycode app_keys entry with a tap target wins over the Settings keycodes (InputKeyService opens it too, and
+        // RemoteKeys answers a press once), but not over a button named in settings_key_scancodes. A hold-only entry
+        // leaves the tap to Settings and still runs its hold.
+        boolean settingsKey = isSettingsKey(event);
+        String tap = inFront(appKeys, frontAppKeys, event.getKeyCode());
+        String hold = holdAppKeys.get(event.getKeyCode());
+        if ((!settingsKey || (tap != null && !isSettingsScancode(event))) && RemoteKeys.handle(this, event, tap, hold)) {
+            return true;
+        }
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
-        if (isSettingsKey(event)) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+        if (settingsKey) {
+            RemoteKeys.handle(this, event, null, hold);
+            boolean held = hold != null && event.getEventTime() - event.getDownTime() >= RemoteKeys.HOLD_MS;
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled() && !held) {
                 Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
+                // settings_key_clear_task: on MediaTek boards KEYCODE_SETTINGS is also a global key that opens Display &
+                // Sound in the Settings task before this helper sees it; cleared, Back from Settings goes Home, not there.
+                if (settingsClearTask && !settingsPanel) open.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 try {
                     startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 } catch (ActivityNotFoundException | SecurityException unavailable) {
@@ -275,8 +296,6 @@ public class HomeKeyService extends AccessibilityService {
             }
             return true;
         }
-        if (RemoteKeys.handle(this, event, inFront(appKeys, frontAppKeys, event.getKeyCode()),
-                holdAppKeys.get(event.getKeyCode()))) return true;
         // home_long_press_home: Android never sees the Home key, so a held press cannot turn into ALL_APPS.
         if (homeLongPressHome && event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome();
@@ -294,6 +313,7 @@ public class HomeKeyService extends AccessibilityService {
     /** Unbound by Android: the user turned the helper off, so Home doesn't put it back (ServiceRepair). */
     @Override
     public boolean onUnbind(Intent intent) {
+        RemoteKeys.release(this);
         if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
         return super.onUnbind(intent);
     }
@@ -307,7 +327,7 @@ public class HomeKeyService extends AccessibilityService {
             try {
                 ComponentName window = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
                 getPackageManager().getActivityInfo(window, 0);
-                frontPackage = window.getPackageName();
+                RemoteKeys.frontPackage = window.getPackageName();
             } catch (PackageManager.NameNotFoundException notAnActivity) {
                 // a dialog, panel or overlay: the app under it is still in front
             }

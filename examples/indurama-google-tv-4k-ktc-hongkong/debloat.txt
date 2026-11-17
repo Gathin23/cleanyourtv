@@ -1,0 +1,85 @@
+# Indurama Google TV 4K (KTC ODM, device hongkong, MediaTek m7632), Ecuador, Google TV 14 (SDK 34).
+# Build: KTC/KTC_4K_ISDB_22GV1/hongkong:14/UKNV.260610.001/15607783
+# Same MediaTek `hongkong` board as examples/ktc-4k-smart-tv-hongkong (Taiwan build UKNV.260626.001).
+#
+# Everything here is pm disable-user, never uninstall. Base list inherited from the KTC
+# hongkong example + community evidence (tools/match.py over examples/) + owner keep-list:
+# YouTube, Prime Video, Disney+, Spotify, Google Assistant (katniss), Chromecast,
+# Miracast (com.mediatek.androidbox), DirecTV Go (dgo), TuneIn, Xuper/Magis TV (mgstv),
+# Mercado Play, Apple TV app, flar2.homebutton. Netflix and Max were NOT on the keep-list
+# -> OFF. Only YouTube Music and TalkBack were added to the Google group; the Apple TV app
+# and flar2.homebutton were kept by owner choice. setupwraith stays enabled by owner choice
+# until the launcher takes Home (see README.md in this folder).
+#
+# NEVER TOUCH (verified protected): com.mediatek.tvinput / wwtv.tvcenter (Live TV + ISDB
+# tuner + inputs), com.google.android.tv.inputplayer (HDMI), com.mediatek.tv.service
+# (middleware), com.mediatek.autopair (pairing), katniss (Assistant, keep by owner),
+# inputmethod.latin (keyboard), com.android.tv.settings, com.android.systemui, shell,
+# providers.*, ext.services/ext.shared, modulemetadata, permissioncontroller,
+# packageinstaller, gms/gsf/webview/vending, mediashell (Chromecast, keep),
+# com.mediatek.wwtv.mediaplayer (USB player), globalkeyoverlay* (remote keys).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/indurama-google-tv-4k-ktc-hongkong/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/indurama-google-tv-4k-ktc-hongkong/debloat.txt
+# Stock launcher: com.google.android.apps.tv.launcherx, off by hand after build-and-install.sh.
+# Live TV: com.mediatek.wwtv.tvcenter (ISDB, kept).
+# Home takeover (see README.md): build-and-install.sh first, then pm disable-user
+# launcherx; setupwraith off in the same pass if the Wi-Fi was saved during first setup
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`); the active network here was CREATOR_USER.
+
+# --- A. Telemetry / analytics / ad services ---
+tv.anoki.acr.anokiacroptin
+com.google.android.feedback
+com.google.android.partnersetup
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
+
+# --- B. OEM factory / production-line tools (never launched, dumpsys-inspected only) ---
+com.ktc.serialport
+com.ktc.tv.factory
+ktc.factorymenu.ui
+mediatek.factorymenu.ui
+
+# --- C. OEM preloads not used ---
+com.electronic.manual
+fusion.android.tv.demo
+com.mstar.android.tv.disclaimercustomization
+com.mediatek.wwtv.setupwizard
+com.mediatek.wwtv.webview
+com.esaba.downloader
+# com.eltelon.zapping              # disabled on the tested set by owner choice (uncomment to do the same)
+# KEEP by owner: com.android.mgstv (Mango TV == "xuper o magis"), com.mercadolibre.android.mplay_tv
+# (Mercado Play), com.apple.atve.androidtv.appletv, flar2.homebutton
+
+# --- D. Google apps not used ---
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+com.google.android.tts
+com.google.android.syncadapters.calendar
+com.google.android.marvin.talkback
+com.google.android.apps.tv.dreamx
+com.android.dreams.basic
+
+# --- E. System packages not applicable on a TV ---
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.cameraextensions
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.android.dynsystem
+com.android.se
+com.android.uwb.resources
+com.android.settings.intelligence
+com.android.nearby.halfsheet
+com.android.backupconfirm
+com.android.managedprovisioning
+com.android.hotspot2.osulogin
+com.android.htmlviewer
+com.android.wallpaperbackup
+
+# --- F. Streaming apps kept for a shared list (disabled on the tested set) ---
+# com.netflix.ninja                # disabled on the tested set by owner choice (uncomment to do the same)
+# com.wbd.stream                   # disabled on the tested set by owner choice (uncomment to do the same)

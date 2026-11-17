@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="weather_settings">Impostazioni meteo</string>
+    <string name="settings_done">Fine</string>
+    <string name="setting_units">Unità di temperatura</string>
+    <string name="unit_c">Celsius (°C)</string>
+    <string name="unit_f">Fahrenheit (°F)</string>
+    <string name="setting_both_units">Mostra entrambe le unità</string>
+    <string name="setting_days">Durata delle previsioni</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d giorno</item>
+        <item quantity="many">%1$d giorni</item>
+        <item quantity="other">%1$d giorni</item>
+    </plurals>
+    <string name="setting_humidity">Mostra umidità</string>
+    <string name="setting_wind">Mostra vento</string>
+    <string name="setting_reset">Ripristina impostazioni meteo</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">Attivo</string>
+    <string name="option_off">Disattivo</string>
     <string name="app_name">Meteo</string>
 
     <string name="feels_like">Percepita %1$d°</string>

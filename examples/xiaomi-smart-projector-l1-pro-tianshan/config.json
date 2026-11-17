@@ -1,0 +1,14 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.google.android.youtube.tvmusic",
+    "com.android.vending"
+  ],
+  "hidden_apps": [
+    "com.mediatek.wwtv.tvcenter"
+  ],
+  "live_tv_package": "",
+  "columns": 5,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+}

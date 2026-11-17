@@ -1,0 +1,6 @@
+{
+  "dock_apps": ["com.yandex.tv.home", "com.vk.tv", "ru.rutube.app", "innova.films.android.tv", "org.smarttube.stable"],
+  "hidden_apps": ["com.stb.factorymenu", "de.szalkowski.activitylauncher", "com.mediatek.androidbox"],
+  "input_uri_scheme": "live-tv",
+  "reduced_motion": true
+}

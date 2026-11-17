@@ -1,0 +1,17 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "ru.kinopoisk.tv"
+  ],
+  "hidden_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tvmusic",
+    "com.google.android.play.games",
+    "com.creative.fastscreen.tv",
+    "com.apps.biz.ds",
+    "com.apps.function.audiolink"
+  ],
+  "live_tv_package": "com.realtek.tv",
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx",
+  "key_filter": false
+}

@@ -12,9 +12,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
- * For firmware that locks the shell out of Android/data (TCL G07, Android 11): install.sh writes config.json
- * here with `content write`, as tools/theme.sh does for the launcher. Write-only, one file name, and only the
- * shell can call it (WRITE_SECURE_SETTINGS on the provider). The file is imported once it is closed.
+ * install.sh writes config.json here with `content write`, as tools/theme.sh does for the launcher, so the file
+ * belongs to the app: a copy the shell makes is the shell's, which the app cannot open on Android 14 (#3016), and
+ * some firmware locks the shell out of Android/data altogether (TCL G07, Android 11). Write-only, one file name,
+ * and only the shell can call it (WRITE_SECURE_SETTINGS on the provider). The file is imported once it is closed.
  */
 public class ConfigProvider extends ContentProvider {
     private static final String NAME = "config.json";

@@ -1,0 +1,6 @@
+{
+  "tv": "Magyar Telekom TV box (SDMC DV8519B, Amlogic, 2 GB), Hungary",
+  "os": "Android TV 12",
+  "brand": "Magyar Telekom",
+  "notes": "Operator IPTV box: Google feedback/recommendations, Play Games, YouTube Music and Assistant left commented out, Ambient + basic dreams, calendar sync/provider, SDMC partner auto-installs, Telekom tester/self-care and `com.tataelxsi.icx` device management + telemetry (Firebase/Kinesis); stock launcher and Live TV are both `com.telekom.onetv.tv` (kept -- disabling it leaves no live TV); every `com.sdmc.*` hardware service, the setup hook, Chromecast and the firmware/app updaters kept; AdGuard Private DNS works; debloat only"
+}

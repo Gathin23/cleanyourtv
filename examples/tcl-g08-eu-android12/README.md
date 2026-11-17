@@ -172,7 +172,7 @@ disabled package stayed disabled, and Home and Wi-Fi came back each time. One da
   `settings_key_scancodes` is `config.xml`-only, the gear button is mapped via `app_keys` with the
   `settings` action: `scan:233:settings`. Other 55C7K owners whose gear button does nothing after
   `launcherx` is disabled should capture their scancode with `getevent -t` (`adb shell 'timeout 12 getevent
-  -t'`, the `0001 <hex> 00000001` line is the scancode) and use the same `scan:<code>:settings` form.
+  -t'`, the `0001 <hex> 00000001` line is the scancode, in hex: write it in decimal, `00e9` is 233) and use the same `scan:<code>:settings` form.
 - **The volume trade-off applies here too.** With `HomeKeyService` bound, holding Volume moves one step per
   press instead of ramping; clearing the helper restores the ramp. The owner kept the two button mappings
   and accepted stepwise volume, as on the second and third units.

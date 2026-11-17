@@ -224,7 +224,8 @@ class RemoteScancodeTest(unittest.TestCase):
         self.assertIn("only from", self.body)  # config.xml, not the theme
 
     def test_testing_needs_the_real_remote(self):
-        self.assertIn("getevent -lt", self.body)
+        # -t, not -lt: -l prints the key's name in place of the number the list takes.
+        self.assertIn("getevent -t", self.body)
         self.assertIn("never\nreaches an accessibility service", self.body.replace("  ", " "))
 
     def test_working_buttons_come_from_the_firmware_routing(self):
@@ -247,7 +248,7 @@ class DocsPointersTest(unittest.TestCase):
         self.assertIn("`KEY_UNKNOWN`", bullet)
         self.assertIn("`KEY_PROGRAM`", bullet)
         self.assertIn("settings_key_scancodes", bullet)
-        self.assertIn("getevent -lt", bullet)
+        self.assertIn("getevent -t", bullet)
         self.assertIn("HOME_KEY_SERVICE=1", bullet)
         self.assertIn("devices/fpd-cg50-c3.md", bullet)
 

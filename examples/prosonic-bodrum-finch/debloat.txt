@@ -1,0 +1,97 @@
+# Prosonic Android TV (Vestel-built, product/board BODRUM, device finch, MediaTek m7332), Android 14 (API 34),
+# firmware UKNV.260428.001, security patch 2026-05-01. Fingerprint My/BODRUM/finch:14/UKNV.260428.001/15307670.
+# ro.product.manufacturer = vestel, ro.product.brand = My, ro.product.model = "Android TV". Denmark.
+# About 1.4 GB of RAM (418 MB available before this list). Same Vestel platform as
+# examples/cecotec-shandao and examples/jvc-android-tv-menlo.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/prosonic-bodrum-finch/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/prosonic-bodrum-finch/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher:  com.google.android.tvlauncher (classic Android TV, not Google TV)
+# HOME claimers:   tvlauncher, dk.yousee.tv.leanback (YouSee's app registers as a home screen), FallbackHome.
+# Live TV app:     com.mediatek.wwtv.tvcenter
+# Inputs:          com.mediatek.tvinput and com.mediatek.tv.service (pm query-services TvInputService).
+#
+# KEEP, even though the names look like bloat (checked on this TV):
+# - fusion.android.tv.demo: receives com.mstar.android.intent.action.TV_INPUT_BUTTON, the remote's
+#   Input key, as on examples/jvc-android-tv-menlo.
+# - com.mediatek.android.leanbacklauncher.partnercustomizer: crash-loops com.mediatek.tv.service after
+#   a reboot on MediaTek sets (examples/chiq-ai-pont).
+# - com.google.android.tungsten.setupwraith: does not own the saved Wi-Fi here (cname is GMS, uid
+#   10044), but nothing is gained by disabling it while tvlauncher is Home.
+# - com.vestel.tv.service, com.vestel.tv.keycontroller, com.vestel.tv.backlight, com.vestel.tv.eib,
+#   com.mediatek.* (inputs, Live TV, Bluetooth remote pairing), com.dolby.android.audio.service.
+# - Never opened: com.mediatek.tv.factory, mediatek.factorymenu.ui (factory menus).
+#
+# Owner's choices: Viu, Crunchyroll, YouTube and TV Bro stay. Chromecast built-in stays.
+#
+# Also disabled by hand on this set, after the launcher took Home: com.google.android.tvlauncher (set-home-activity
+# said Success but Home stayed with it until it was disabled) and com.google.android.tvrecommendations.
+#
+# Netflix and Prime buttons: MediaTek's hotkey service (com.mediatek.tv.service) receives both as global buttons and
+# starts Netflix / Prime Video itself, so the launcher's app_keys never see them; with both apps disabled the
+# start fails quietly ("result code=-91" / "-92" in the log).
+#
+# Held volume: with a key-filtering accessibility helper on (the launcher's key_filter), a held volume key stops
+# ramping, and filtered volume keys never reach the helper, so consume_volume_keys cannot bring it back. Leave
+# key_filter off on this set.
+#
+# Backlight: Settings.Global picture_backlight (0 to 100) is the picture settings' Backlight slider, and
+# com.mediatek.tv.service (TVMenuSettingsService) pushes every change of it to the panel at once.
+
+# Vestel telemetry, logging and "cleaner"
+com.vestel.vestelreporter
+com.vestel.smartlogger
+com.vestel.tv.speedup
+com.vestel.smartcenter
+android.autoinstalls.config.vestel.malin         # Vestel auto-install stub (preloads apps at setup)
+
+# Google ads, personalisation and feedback
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Streaming and media apps. Netflix, Prime Video and YouTube Music are in the system image; the rest are not:
+# the Play Store installs them in the first minutes after sign-in, from the partner list the auto-install stub
+# above points at (the same batch brought ANT+, Meet and Google TV). Off on this set; left commented so a shared
+# run keeps the ones you use. Uncomment the rest.
+# com.netflix.ninja                                # Netflix
+# com.amazon.amazonvideo.livingroom                # Prime Video
+# com.disney.disneyplus                            # Disney+
+# com.hbo.hbonow                                   # HBO Max
+# com.viaplay.android                              # Viaplay
+# com.spotify.tv.android                           # Spotify
+# tv.twitch.android.app                            # Twitch
+# dk.dr.tvplayer                                   # DR TV
+# dk.yousee.tv.leanback                            # YouSee; also claims HOME
+# com.google.android.youtube.tvmusic               # YouTube Music
+
+# Google apps not used here
+com.google.android.videos                        # Google TV / Play Movies store
+com.google.android.play.games                    # Play Games
+com.google.android.apps.tachyon                  # Google Meet / Duo
+# Off on this set by the owner's choice; uncomment to disable. Google Assistant and voice search is the
+# biggest resident app on a 1.4 GB set, but the remote's mic button needs it.
+# com.google.android.katniss                     # Google Assistant and voice search
+
+# Dead weight on a TV
+com.dsi.ant.plugins.antplus                      # ANT+ fitness sensors
+com.dsi.ant.service.socket
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.managedprovisioning
+com.android.dynsystem
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.google.android.syncadapters.calendar
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.se                                   # Secure Element; the TV has no NFC or eSIM
+
+# MediaTek extras
+com.mediatek.wwtv.mediaplayer                    # MMP, the USB media player; not a TvInputService here.
+                                                 # disable.sh skips it unless TVINPUT_ALLOW=1.

@@ -33,7 +33,7 @@ class LogTV:
         self.logs = iter(logs)
         self.commands = []
 
-    def shell(self, command):
+    def shell(self, command, *, retry=False):
         self.commands.append(command)
         if command.startswith("logcat -d "):
             logcat, separator, grep = command.partition(" | grep ")

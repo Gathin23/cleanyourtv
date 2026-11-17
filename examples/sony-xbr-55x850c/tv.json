@@ -1,6 +1,6 @@
 {
-  "tv": "Sony BRAVIA XBR-55X850C (2015, \"BRAVIA 4K 2015\", SVP-DTV15, MediaTek), US firmware",
+  "tv": "Sony BRAVIA XBR-55X850C and XBR-75X850C (2015, \"BRAVIA 4K 2015\", SVP-DTV15, MediaTek), US firmware",
   "os": "Android TV 8.0",
   "brand": "Sony",
-  "notes": "Same build as the KD-65X9300D; Samba TV, Sony Select/Discover/BIVL, launcher customizer, Sony/Qterics device agents, SDDP vendorprotocol, tutorials, dead Play Music/Movies; voice and unused streaming apps off by choice; Chromecast, mirroring, updates kept; 1.5 GB; Inputs lists HDMI 1-4 with CEC names; reboot-checked"
+  "notes": "Same build as the KD-65X9300D; Samba TV, Sony Select/Discover/BIVL, launcher customizer, Sony/Qterics device agents, SDDP vendorprotocol, tutorials, dead Play Music/Movies; voice and unused streaming apps off by choice; Chromecast, mirroring, updates kept; 1.5 GB; Inputs lists HDMI 1-4 with CEC names; reboot-checked; 75-inch second unit as a display for an Apple TV: [debloat-display-only.txt](sony-xbr-55x850c/debloat-display-only.txt) adds Sony's interactive-TV measurement plugins (Kantar/Kuyun/ShopTv) and log collectors, the Sony Firebase push listener, Backdrop, DLNA/DIAL/Miracast/Chromecast and the USB players, with the streaming apps and the phone-remote service left as a choice"
 }

@@ -1,0 +1,87 @@
+# TCL 50S434 (reports as "Smart TV", device BeyondTV4, product C03_4K_NA, board Realtek rtd288o), 2 GB RAM
+# Android TV 11 (SDK 30), 32-bit userspace, build RP1A.200622.001 / incremental AR02.
+# Fingerprint: TCL/C03_4K_NA/BeyondTV4:11/RP1A.200622.001/AR02:user/release-keys
+#
+# Same BeyondTV4 / rtd288o family as examples/tcl-50c725k (product BeyondTV6, AR10) and
+# examples/tcl-beyondtv4-uk (BeyondTV6, AR05), but a US 4-Series C03_4K_NA AR02 preload: do not apply
+# those lists here. This build has no Freeview apps, no com.tcl.channelplus / overseasappshow / browser,
+# and uses com.google.android.tvlauncher (not launcherx). The US Google TV 55S546 list
+# (examples/tcl-55s546-us, G03_4K_US) is a different OS skin on the same device name.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-50s434/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-50s434/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (HOME priority 2). Not listed here:
+#   launcher/build-and-install.sh installs com.gathin.tvhome and disables it afterwards. The only other
+#   HOME claimant on this build is com.android.tv.settings/.system.FallbackHome.
+# Live TV app: com.tcl.tv, inputs: com.tcl.tvinput (both kept; set live_tv_package to com.tcl.tv).
+#   TvInputManager lists the tuner plus four passthrough ports (the retail spec has three HDMI).
+#
+# DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput, com.tcl.settings, com.tcl.system.server,
+# com.tcl.providers.config, com.tcl.initsetup, com.tcl.factory.view, com.tcl.tcl_bt_rcu_service,
+# com.tcl.autopair, com.tcl.keyhelp, com.tcl.partnercustomizer (TKey / Coming Soon tile; also kept
+# with the remote on the AR05 UK list), com.google.android.tv.remote.service,
+# com.google.android.inputmethod.latin, com.google.android.apps.mediashell (Chromecast), com.tvos.
+#
+# Kept by the owner's choice: Netflix, Prime Video, YouTube, YouTube TV, Chromecast, Play Store.
+# Off by choice: Google Assistant / TCL voice / Alexa, YouTube Music, Play Movies, Play Games,
+# TCL Channel, TCL HOME, Gallery, the USB media player, and TCL Guard. The firmware updater
+# stayed off on the tested set, but it is commented out below so a shared list keeps it on.
+#
+# setupwraith owned the saved Wi-Fi network after first setup (`dumpsys wifi` showed
+# cname=com.google.android.tungsten.setupwraith). The network was forgotten and joined again in
+# Settings first so it belonged to com.android.tv.settings, then setupwraith was disabled. Skip that
+# line until you have done the same, or Wi-Fi and ADB drop with it.
+#
+# Tested on a real unit 2026-10-26, then lived with through 2026-11-08 (cold starts included): every
+# package stayed disabled (this build re-enables nothing at boot), Home came up on launcher/
+# (mFocusedApp checked), Wi-Fi stayed up. With tvlauncher off, the real remote's Netflix, YouTube,
+# Input and Settings/gear buttons kept working, and holding Volume Up still ramped: no
+# InputKeyService / HomeKeyService needed. Gallery and ui_mediaCenter request TV_INPUT_HARDWARE on
+# this platform (see examples/tcl-beyondtv4-uk); they were disabled here anyway and HDMI/Live TV
+# still worked on this AR02 build.
+
+# ---- 1. TCL and Google telemetry ----
+com.tcl.bi                                  # TCL BI analytics
+com.tcl.xian.StartandroidService            # background reporting service
+com.google.android.feedback                 # crash / feedback reporting
+
+# ---- 2. TCL and Google content, ads and recommendation rows ----
+android.autoinstalls.config.tcl.device      # silently installs partner apps
+com.google.android.partnersetup             # partner-app attribution
+com.google.android.onetimeinitializer       # one-time setup leftovers
+com.tcl.esticker                            # sticker / emoji overlay
+com.tcl.messagebox                          # TCL message / promo box
+com.tcl.dashboard                           # TCL dashboard / promo backend
+com.tcl.waterfall.overseas                  # TCL Channel (terms dialog names it)
+com.tcl.tv.tclhome_passive                  # TCL HOME content push
+com.google.android.tvrecommendations        # stock Home recommendation rows
+
+# ---- 3. Background services and preloaded extras ----
+org.chromium.webview_shell                  # WebView test shell
+com.google.android.syncadapters.calendar    # calendar sync, no calendar on a TV
+com.tcl.usercenter                          # TCL account sign-in nags
+com.google.android.apps.nbu.smartconnect.tv # Nearby Share
+com.tcl.guard                               # TCL Guard / online support
+com.tcl.externaldevice.update               # USB accessory updater
+com.tcl.gallery                             # photo gallery; HDMI still worked on this AR02 build
+com.tcl.ui_mediaCenter                      # USB / local media player; same HDMI note
+com.google.android.play.games               # Play Games
+com.google.android.videos                   # Play Movies & TV
+com.google.android.youtube.tvmusic          # YouTube Music
+
+# ---- 4. Off by choice: voice assistants not used ----
+# Chromecast (com.google.android.apps.mediashell) stays.
+com.tcl.smartalexa                          # Alexa bridge
+com.google.android.katniss                  # Google Assistant / voice search
+com.google.android.tv.assistant             # Assistant LED / helper
+com.tcl.assistant                           # TCL voice assistant
+
+# ---- 5. Firmware updater ----
+# off on the tested set (not meant to take OTA); shared lists keep the updater on
+# com.tcl.versionUpdateApp
+
+# ---- 6. First-run wizard: claims HOME once tvlauncher is off ----
+# Forget the Wi-Fi network and join it again first if dumpsys wifi still shows cname=...setupwraith.
+com.google.android.tungsten.setupwraith

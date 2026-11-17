@@ -1,6 +1,6 @@
 {
-  "tv": "TCL 55S470G (G10, G10_4K_US_NF, Realtek), US",
+  "tv": "TCL 55S470G (G10, G10_4K_US_NF, Realtek), US; also TCL 65S450G-CA, Canada (same build)",
   "os": "Google TV 12",
   "brand": "TCL",
-  "notes": "Same build as the G10 list, but Samba TV, logkit and ttvs ship enabled; ttvs kept (it hosts the firmware updater) and re-enables Samba's front end at boot, so opt out in Settings > Privacy too; Assistant voice and Chromecast off by choice; setupwraith off (Wi-Fi belonged to android.uid.system); remote gear button (keycode 83) opens the quick settings panel and the app buttons are remapped (Pluto TV opens Tubi); `APP_AUTO_START` must be allowed for the launcher or TclAppBoot stops the key service at boot; reboot-checked"
+  "notes": "Same build as the G10 list, but Samba TV, logkit and ttvs ship enabled; ttvs kept (it hosts the firmware updater) and re-enables Samba's front end at boot, so opt out in Settings > Privacy too; Assistant voice and Chromecast off by choice; setupwraith off (Wi-Fi belonged to android.uid.system); remote gear button (keycode 83) opens the quick settings panel and the app buttons are remapped (Pluto TV opens Tubi); `APP_AUTO_START` must be allowed for the launcher or TclAppBoot stops the key service at boot; reboot-checked; on the Canada 65S450G-CA, Samba TV shipped disabled and refuses pm disable-user, Assistant and Chromecast were kept, Netflix, TCL TV+ and TCL Live were off by choice, and with the gear on HomeKeyService, consume_volume_keys brought back the held-volume ramp"
 }

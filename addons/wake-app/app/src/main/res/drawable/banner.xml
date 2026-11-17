@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A screen with a play triangle and a power ring above it, on a dark tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#15181F" android:pathData="M0,0h320v180h-320z" />
+    <!-- screen -->
+    <path android:fillColor="#2A2F3A" android:pathData="M70,34h180a12,12 0,0 1,12 12v78a12,12 0,0 1,-12 12h-180a12,12 0,0 1,-12 -12v-78a12,12 0,0 1,12 -12z" />
+    <!-- stand -->
+    <path android:fillColor="#2A2F3A" android:pathData="M130,140h60v8h-60z" />
+    <!-- play triangle -->
+    <path android:fillColor="#4FB3A9" android:pathData="M142,64 L142,116 L186,90 Z" />
+    <!-- power ring -->
+    <path android:strokeColor="#4FB3A9" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M226,60 L226,72 M214,64 A14,14 0,1 0 238,64" />
+</vector>

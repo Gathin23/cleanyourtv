@@ -2,6 +2,10 @@
 # Built by Changhong (ro.product.model="AI PONT", product DVB96BQ, board m7632), MediaTek, about 1.8 GB
 # RAM. Same product name as the E55-735 example but an older, Android 11 based firmware.
 #
+# A second list beside this one, debloat-impex-4k.txt, is the Impex 4K (India, DVB96IP,
+# RTM7.230903.184) unit of the same board: the same firmware quirks, four packages off there that this
+# list keeps, and Prime Video kept where this list turns it off.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-e55-750/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-e55-750/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

@@ -18,16 +18,50 @@ reader that changes its range, or stops reading a key, fails this test rather th
 theme quietly ignored. Keys read by another class (`race_calendar` in RaceCalendar.java,
 `wallpaper_moods` in WallpaperRotation.java) are not this file's business.
 
+Three keys are narrowed further, to a set of values rather than a type: `glow_style` (radial or horizon),
+`glass_style` (glass, rim or halo) and `wallpaper_order` (sequential or shuffle). `string()` keeps any
+string, so a value outside the set is not something the checks above see; the reader then folds it to its
+fallback without a word. `themes/cinematic` and `themes/red-rain` shipped `"glow_style": "off"`, a value
+`Config.glowStyle()` answers with radial, so a theme that meant to say "no glow here" said nothing at all -
+and a theme author who copies either one has the same line, since the Keys table named the two values it
+takes and said nothing about a third. The sets are read out of the constants those readers compare
+against, so a value the launcher stops taking fails this test rather than leaving a shipped theme on its
+fallback.
+
+The same bounds are stated a second time, in the Keys table of themes/README.md, and that copy is the
+one a theme author reads: the cell gives `0 to 300` for `wifi_label_width`, `1 to 8` for `columns`,
+and tools/manage.py set refuses a value outside that cell before it writes anything
+(manage.number_in_range). Nothing compared the two, so a reader whose range moved in Config.java left
+the table telling authors a number the launcher would drop - `columns` becoming `1, 7` while the row
+says 1 to 8 is a theme whose sixth and seventh tiles vanish - and set would keep writing the value it
+was told was fine. The tests below hold each range cell to the bounds the reader is handed, and each
+integer() reader to a row that states its range.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import json
 import re
+import sys
+import tempfile
 from pathlib import Path
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "Config.java"
+WALLPAPER_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "WallpaperRotation.java"
+KEYS_TABLE = ROOT / "themes" / "README.md"
+
+# The keys a reader narrows to a set of its own, and where that set is written down: the class holding the
+# constants, the prefix they share, and how the reader compares a value - `trimmed` for glowStyle() and
+# glassStyle(), which trim and equalsIgnoreCase, `exact` for WallpaperRotation.validOrder(), which compares
+# the string as it was read.
+ENUMS = {
+    "glow_style": ("Config.java", "GLOW_", "trimmed"),
+    "glass_style": ("Config.java", "GLASS_", "trimmed"),
+    "wallpaper_order": ("WallpaperRotation.java", "ORDER_", "exact"),
+}
+CONSTANT = r"\b{prefix}([A-Z_]+)\s*=\s*\"([a-z-]+)\""
 
 # The readers that take no bounds, and what the launcher needs for each. `string(json, ...)` is matched
 # before `stringList(json, ...)` would be by the alternation, so the longer name comes first.
@@ -35,6 +69,14 @@ PLAIN_READER = re.compile(r"\b(stringList|intArray|bool|string|color)\(\s*json\s
 # integer(json, "<key>", <fallback>, <min>, <max>): the fallback is a field or a literal, never a call.
 RANGE_READER = re.compile(r"\binteger\(\s*json\s*,\s*\"([a-z0-9_]+)\"\s*,[^,()]+,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)")
 COLOUR = re.compile(r"#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?")
+
+# Config.java's floor for `lunar_utc_offset` is -1, the "by locale" sentinel its Keys row's Meaning cell
+# calls Unset rather than a number a theme is meant to pass, so the table states 0 to 14 where the reader
+# takes -1 to 14. No other key may widen its floor like that; a test below keeps this one at -1.
+SENTINEL_FLOOR = {"lunar_utc_offset": -1}
+
+sys.path.insert(0, str(ROOT / "tools"))
+import manage  # noqa: E402  the same table reader tools/manage.py set judges a value against
 
 
 def readers(java_text):
@@ -47,8 +89,21 @@ def readers(java_text):
     return found
 
 
-def problems(values, kinds):
+def enum_values(java_text, prefix):
+    """Every value a class gives a constant named with that prefix, comments aside."""
+    return {value for _, value in re.findall(CONSTANT.format(prefix=prefix), java_text)}
+
+
+def accepted_enums():
+    """key -> (values, how), read out of the constants those readers compare a value against."""
+    java = {"Config.java": CONFIG_JAVA, "WallpaperRotation.java": WALLPAPER_JAVA}
+    return {key: (enum_values(java[name].read_text(encoding="utf-8"), prefix), how)
+            for key, (name, prefix, how) in ENUMS.items()}
+
+
+def problems(values, kinds, enums=None):
     """[(key, why)] for the values the launcher would drop, judged by the reader the key is read with."""
+    enums = enums or {}
     out = []
     for key, value in values.items():
         if key not in kinds:
@@ -60,6 +115,12 @@ def problems(values, kinds):
         elif kind == "string":
             if not isinstance(value, str):
                 out.append((key, f"{json.dumps(value)} is not a string, and string() keeps the fallback"))
+            elif key in enums:
+                allowed, how = enums[key]
+                seen = value.strip().lower() if how == "trimmed" else value
+                if seen not in allowed:
+                    out.append((key, f"{json.dumps(value)} is not one of {', '.join(sorted(allowed))}, "
+                                     f"and the launcher keeps the value it falls back to"))
         elif kind == "integer":
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 out.append((key, f"{json.dumps(value)} is not a number, and integer() keeps the fallback"))
@@ -81,14 +142,61 @@ def problems(values, kinds):
     return out
 
 
-def config_files():
-    """Every config.json a theme or an example ships, sorted."""
-    return sorted(ROOT.glob("themes/*/config.json")) + sorted(ROOT.glob("examples/*/config.json"))
+def config_files(root=None):
+    """Every config.json a theme or a list folder ships at any depth, sorted.
+
+    A list folder may ship a whole theme under theme/, and its README tells the owner to edit that
+    config.json and push it with tools/theme.sh (examples/philips-google-tv-ta7). Six folders ship
+    one; a glob of examples/*/config.json reads none of them, so a value the launcher drops there
+    went out without a word, the shape of the 320 above.
+    """
+    root = ROOT if root is None else root
+    return sorted((root / "themes").glob("*/config.json")) + sorted((root / "examples").rglob("config.json"))
+
+
+def table_ranges(text=None):
+    """key -> (low, high) for every Keys-table row whose type cell is a range, such as '0 to 300'.
+
+    Read the way tools/manage.py set reads it - manage.table_rows over the section, manage.plain to
+    drop the code marks, manage.declared_range for the cell - so a cell this test understands and set
+    does not (or the other way round) cannot happen either. A row's first cell can name two keys, and
+    one of them may also be named in the Meaning column: only the first cell is a definition.
+    """
+    text = KEYS_TABLE.read_text(encoding="utf-8") if text is None else text
+    if "## Keys" not in text:
+        raise AssertionError("themes/README.md has no ## Keys section")
+    out = {}
+    for row in manage.table_rows(text[text.index("## Keys"):], "| Key |"):
+        low, high = manage.declared_range(manage.plain(row[1]) if len(row) > 1 else "")
+        if low is None:
+            continue
+        for key in re.findall(r"`([a-z_]+)`", row[0]):
+            out[key] = (int(low), int(high))
+    return out
+
+
+def range_problems(table, kinds):
+    """[(key, why)] where the Keys table's range and Config.java's integer() disagree, or one is missing."""
+    out = []
+    for key, (low, high) in sorted(table.items()):
+        kind, bounds = kinds.get(key, ("", None))
+        if kind != "integer":
+            out.append((key, f"themes/README.md gives `{key}` the range {low} to {high} and Config.java "
+                             f"does not read it with integer()"))
+        elif bounds != (SENTINEL_FLOOR.get(key, low), high):
+            out.append((key, f"themes/README.md tells a theme author {low} to {high} and Config.java keeps "
+                             f"{bounds[0]} to {bounds[1]}"))
+    for key, (kind, bounds) in sorted(kinds.items()):
+        if kind == "integer" and key not in table:
+            out.append((key, f"Config.java reads `{key}` with integer() bounds {bounds[0]} to {bounds[1]} "
+                             f"and the Keys table states no range for it"))
+    return out
 
 
 class ShippedConfigValuesTest(unittest.TestCase):
     def setUp(self):
         self.kinds = readers(CONFIG_JAVA.read_text(encoding="utf-8"))
+        self.enums = accepted_enums()
 
     def test_the_readers_are_there(self):
         # A parser that read nothing would make every check below pass for any value.
@@ -103,18 +211,73 @@ class ShippedConfigValuesTest(unittest.TestCase):
         self.assertEqual(self.kinds.get("wifi_label_width"), ("integer", (0, 300)),
                          "wifi_label_width's bounds moved; the example and the Keys row follow them")
 
+    def test_the_enum_values_are_read_out_of_the_launcher(self):
+        # A constant parse that found nothing would let every value through, the way it did for "off".
+        self.assertEqual(self.enums.get("glow_style"), ({"radial", "horizon"}, "trimmed"))
+        self.assertEqual(self.enums.get("glass_style"), ({"glass", "rim", "halo"}, "trimmed"))
+        self.assertEqual(self.enums.get("wallpaper_order"), ({"sequential", "shuffle"}, "exact"))
+
+    def test_a_value_outside_the_set_is_reported(self):
+        # "off" is the value the two themes shipped: a string, so the type sweep passed it and
+        # glowStyle() answered radial. The spelling is the reader's - glow and glass trim and ignore
+        # case, validOrder() does not, so `Sequential` is not `sequential`.
+        for key, value, listed in (("glow_style", "off", "horizon, radial"),
+                                   ("glass_style", "frosted", "glass, halo, rim"),
+                                   ("wallpaper_order", "Sequential", "sequential, shuffle")):
+            with self.subTest(key=key, value=value):
+                reported = dict(problems({key: value}, self.kinds, self.enums))
+                self.assertIn(key, reported, f"`{key}: {value}` was let through")
+                self.assertIn(listed, reported[key])
+        for key, value in (("glow_style", " HORIZON "), ("glass_style", "rim"),
+                           ("wallpaper_order", "shuffle")):
+            with self.subTest(key=key, value=value):
+                self.assertEqual(problems({key: value}, self.kinds, self.enums), [])
+
+    def test_the_themes_that_want_no_glow_say_it_with_the_booleans(self):
+        # MainActivity reads `if (!ambientGlow) ambient.setVisibility(View.GONE)` and returns from
+        # setAmbient() while the glow is off, so these two booleans are what a theme has to say; there
+        # is no glow_style that means "none", and a third value reaches the screen as radial.
+        for name in ("cinematic", "red-rain"):
+            path = ROOT / "themes" / name / "config.json"
+            values = json.loads(path.read_text(encoding="utf-8"))
+            with self.subTest(theme=name):
+                self.assertFalse(values.get("ambient_glow"), f"{name} no longer turns the ambient glow off")
+                self.assertFalse(values.get("app_glow"), f"{name} no longer turns the app glow off")
+                self.assertEqual(problems(values, self.kinds, self.enums), [],
+                                 f"{name} asks for a value the launcher folds to its fallback")
+
     def test_no_shipped_value_is_one_the_launcher_drops(self):
         files = config_files()
         self.assertGreaterEqual(len(files), 50, "fewer config.json files found than the tree ships")
+        self.assertTrue(any(path.parent.name == "theme" for path in files),
+                        "no list folder's theme/config.json was read: is the walk one level deep again?")
         checked = 0
         for path in files:
             values = json.loads(path.read_text(encoding="utf-8"))
             checked += sum(1 for key in values if key in self.kinds)
-            for key, why in problems(values, self.kinds):
+            for key, why in problems(values, self.kinds, self.enums):
                 with self.subTest(file=str(path.relative_to(ROOT)), key=key):
                     self.fail(f"{path.relative_to(ROOT)} sets `{key}` and {why}: the launcher shows its "
                               f"built-in value instead, and nothing says so")
         self.assertGreaterEqual(checked, 150, "the sweep read far fewer values than the tree carries")
+
+    def test_a_value_in_a_theme_folder_below_a_list_folder_is_reported(self):
+        # The shape of the 320 above, in the file examples/philips-google-tv-ta7/README.md tells the
+        # owner to edit: 42 columns is outside the 1 to 8 the launcher keeps, and a one-level glob
+        # never read the file it is in.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            nested = root / "examples" / "acme-1" / "theme" / "config.json"
+            nested.parent.mkdir(parents=True)
+            nested.write_text('{"columns": 42, "dock_apps": ["com.example"]}\n', encoding="utf-8")
+            top = root / "examples" / "acme-1" / "config.json"
+            top.write_text('{"columns": 5}\n', encoding="utf-8")
+            files = config_files(root)
+            self.assertEqual([path.relative_to(root).as_posix() for path in files],
+                             ["examples/acme-1/config.json", "examples/acme-1/theme/config.json"])
+            reported = dict(problems(json.loads(nested.read_text(encoding="utf-8")), self.kinds))
+            self.assertEqual(sorted(reported), ["columns"])
+            self.assertIn("outside 1 to 8", reported["columns"])
 
     def test_the_acer_example_keeps_the_network_name_it_documents(self):
         # The fix for the 320 above is to ask for a width the launcher keeps, not to stop asking: the
@@ -175,6 +338,105 @@ class ShippedConfigValuesTest(unittest.TestCase):
         self.assertNotIn("wallpaper_moods", self.kinds)
         self.assertEqual(problems({"race_calendar": [{"round": 1}], "wallpaper_moods": {"morning": []}},
                                   self.kinds), [])
+
+
+class KeysTableRangesTest(unittest.TestCase):
+    """The Keys table's range cells are the bounds Config.java's integer() calls keep.
+
+    The table is the copy a theme author reads and the one tools/manage.py set refuses a value against, so
+    a range that moved on either side leaves the page telling authors a number the launcher drops: set writes
+    it, the push says nothing, and the launcher keeps its own default.
+    """
+
+    def setUp(self):
+        self.kinds = readers(CONFIG_JAVA.read_text(encoding="utf-8"))
+        self.table = table_ranges()
+
+    def test_every_range_in_the_table_is_the_one_the_reader_keeps(self):
+        # A table read as empty, or a Java parse that found no integer() call, would agree with anything.
+        self.assertGreaterEqual(len(self.table), 13,
+                                "fewer range cells found in the Keys table than before")
+        self.assertGreaterEqual(sum(1 for kind, _ in self.kinds.values() if kind == "integer"), 13,
+                                "fewer integer() readers found in Config.java than before")
+        # The two the page's own examples lean on: columns decides how many tiles fit, and 0 is the one
+        # wifi_label_width value MainActivity reads as "icon only", which is why the 320 above went wrong.
+        self.assertEqual(self.table.get("columns"), (1, 8))
+        self.assertEqual(self.table.get("wifi_label_width"), (0, 300))
+        # One failure per drifted key, so a range that moved is named on the side that moved it.
+        for key, why in range_problems(self.table, self.kinds):
+            with self.subTest(key=key):
+                self.fail(f"{why}: a theme set from the page is dropped without a word, and tools/manage.py "
+                          f"set keeps writing it")
+
+    def test_the_lunar_offset_keeps_its_unset_sentinel(self):
+        # The one row whose numbers differ on purpose: Config.java's floor is -1, the "by locale" sentinel,
+        # so SENTINEL_FLOOR lets the table state 0 to 14. If the reader ever stops taking -1, the sentinel
+        # is stale and the table would be hiding a real drift behind an exemption.
+        self.assertEqual(self.kinds.get("lunar_utc_offset"), ("integer", (-1, 14)),
+                         "lunar_utc_offset no longer reads its -1 'by locale' sentinel")
+        self.assertEqual(self.table.get("lunar_utc_offset"), (0, 14),
+                         "the Keys row for lunar_utc_offset no longer states 0 to 14")
+        self.assertEqual(SENTINEL_FLOOR, {"lunar_utc_offset": -1},
+                         "another key was given a sentinel floor; the table has to be held to it by name")
+
+    def test_a_range_that_moved_on_either_side_is_reported(self):
+        # A table and a set of readers written here, not read from the tree: this is the readers' own test,
+        # so it has to fail for the same reason whatever Config.java and the page say today.
+        kinds = {"sky_intensity": ("integer", (0, 90)), "columns": ("integer", (1, 8)),
+                 "lunar_utc_offset": ("integer", (-1, 14)), "dock_band": ("bool", None)}
+        table = {"sky_intensity": (0, 100), "columns": (1, 8), "lunar_utc_offset": (0, 14)}
+        reported = dict(range_problems(table, kinds))
+        self.assertEqual(sorted(reported), ["sky_intensity"], "a range that did not move was reported")
+        self.assertIn("0 to 100", reported["sky_intensity"])
+        self.assertIn("0 to 90", reported["sky_intensity"])
+        # A row with a range for a key read some other way is the page promising a number nothing keeps.
+        reported = dict(range_problems(dict(table, dock_band=(0, 1), dock_columns=(1, 8)), kinds))
+        self.assertIn("dock_band", reported)
+        self.assertIn("does not read it with integer()", reported["dock_band"])
+        self.assertIn("dock_columns", reported)
+        self.assertIn("does not read it with integer()", reported["dock_columns"])
+        # And a reader whose key lost its row: an author editing that key is told nothing at all.
+        reported = dict(range_problems(table, dict(kinds, tile_glow=("integer", (0, 50)))))
+        self.assertIn("tile_glow", reported)
+        self.assertIn("states no range for it", reported["tile_glow"])
+        # A wider floor is a drift too, except for the one key the table may not state it for.
+        reported = dict(range_problems(dict(table, columns=(-1, 8)), kinds))
+        self.assertIn("columns", reported)
+        self.assertIn("-1 to 8", reported["columns"])
+        self.assertEqual(range_problems({"columns": (1, 8), "sky_intensity": (0, 90),
+                                         "lunar_utc_offset": (0, 14)}, kinds), [],
+                         "lunar_utc_offset's sentinel floor was reported as a drift")
+
+    def test_the_reader_reads_a_table(self):
+        # The readers are Python over a Markdown page, so they are run over a page written here: the shape
+        # of the real one, a row in the section after it, a row whose type cell is not a range at all, a
+        # cell written with a link, and a key without code marks (the table's own style, which is what
+        # tools/manage.py set reads too - an unbackticked first cell names no key).
+        page = (
+            "## Keys\n"
+            "\n"
+            "| Key | Type | Meaning |\n"
+            "|---|---|---|\n"
+            "| `columns` | 1 to 8 | Tiles per row |\n"
+            "| `dock_apps` | list of package names | The dock row |\n"
+            "| `wifi_label_width` | 0 to 300 | The network name |\n"
+            "| `sky_intensity` | [0 to 90](https://example.test/x) | The backdrop |\n"
+            "| `lunar_date` | bool | The lunisolar date |\n"
+            "| columns | 2 to 4 | Not a key: no code marks |\n"
+            "\n"
+            "## Wallpapers\n"
+            "\n"
+            "| Key | Type | Meaning |\n"
+            "|---|---|---|\n"
+            "| `rows_below_dock` | 0 to 3 | Rows under the dock |\n"
+        )
+        self.assertEqual(table_ranges(page),
+                         {"columns": (1, 8), "wifi_label_width": (0, 300), "sky_intensity": (0, 90)})
+
+    def test_a_page_with_no_keys_section_is_reported(self):
+        # Reading nothing must not read as "no drift": an empty table agrees with every reader.
+        with self.assertRaises(AssertionError):
+            table_ranges("# Themes\n\nNo table here.\n")
 
 
 if __name__ == "__main__":

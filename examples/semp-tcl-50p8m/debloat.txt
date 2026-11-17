@@ -1,0 +1,139 @@
+# SEMP TCL 50P8M (Chassis R851T02, board RTD2851 rtd285o, client type C02_4K_US / TCL-LA-RT2851-S1,
+# software V8-R851T02-LF1V728.000041 V728), Android TV 11 (API 30), build PPR1.180610.011 AR05
+# (ro.build.fingerprint: TCL/BeyondTV/BeyondTV:11/PPR1.180610.011/AR05:user/release-keys),
+# security patch 2023-03-05, 2 GB RAM.
+#
+# Divergence from examples/tcl-beyondtv-rt2851/ (Android 9 V606 EU/Nordic):
+# 1. OS Generation: Runs Android 11 (API 30, build AR05) instead of Android 9 (API 28, build AP06).
+#    Android 11 ships separate modular AOSP subsystems (Secure Element com.android.se, DynSystem
+#    allocator, CompanionDeviceManager) that can be safely disabled on TV hardware.
+# 2. Regional ROM & Client: Brazilian/LATAM firmware (client C02_4K_US) carries additional
+#    promo waterfalls (com.tcl.waterfall.overseas), Alexa integration (com.tcl.smartalexa),
+#    and unstripped UK Freeview stubs (uk.co.freeview.*) absent or factory-disabled on EU V606.
+# 3. Terminal Firmware: V8-R851T02-LF1V728.000041 is the final/terminal release for R851T02.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/semp-tcl-50p8m/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/semp-tcl-50p8m/debloat.txt
+# Stock launcher: com.google.android.tvlauncher (restore.sh default). Other HOME claimants are only
+# fallbacks: com.tcl.keycustomfunctionservice/.FallbackHome and com.android.tv.settings FallbackHome.
+# Live TV app: com.tcl.tv. HDMI inputs: com.tcl.tvpassthrough. Tuner: com.tcl.tvinput.
+#
+# Install the launcher BEFORE group 5: com.tcl.tvweishi and com.tcl.appmarket2 both carry a
+# PackageInstallerService, and persist.tcl.whitelistpath points into appmarket2's data.
+#
+# Tested on a real SEMP TCL 50P8M unit running V728 (Android 11, build AR05):
+# Lived with this list in daily use since 2026-10-19 (10+ days) across multiple cold reboots
+# (adb reboot and full AC power-cycles) and daily Quick Start (Suspend-to-RAM) cycles. It survived
+# all reboots cleanly: Wi-Fi and Ethernet stayed up, D-pad, short-press Power, TCL's source menu,
+# the launcher's Inputs menu (HDMI via TvInputManager works, no source_panel fallback needed),
+# Bluetooth audio/remote, Settings and Home from HDMI all worked without issues.
+#
+# Quirks on this firmware (verified on 50P8M V728 / Android 11):
+# - Bluetooth & Quick Start (STR) bug fixed on Android 11 (V728): Unlike older Android 9 builds
+#   where Quick Start (Suspend-to-RAM) caused Bluetooth remote/audio drops or ALSA DMA lockups,
+#   the newer Android TV 11 release (V728 / AR05) does NOT exhibit the Bluetooth bug and resumes
+#   cleanly with quick_start_mode=1 enabled.
+# - TclAppBoot blocks third-party launcher autostart unless granted via appops:
+#   cmd appops set com.gathin.tvhome AUTO_START allow && cmd appops set com.gathin.tvhome APP_AUTO_START allow && appops write-settings
+# - OOBE Wi-Fi ownership (setupwraith): If Wi-Fi was configured during initial setup, the saved
+#   network carries cname=com.google.android.tungsten.setupwraith; keep setupwraith enabled (or
+#   forget and reconnect Wi-Fi via Settings so android.uid.system owns it).
+# - Intelligent Volume (AVL/DRC) audio drop: TCL's "Intelligent Volume" saturates when switching
+#   between stereo PCM and multichannel Dolby (AC3/E-AC3), muting audio until toggled. Turning off
+#   Intelligent Volume in Sound -> Advanced Settings resolves it completely.
+# - input keyevent KEYCODE_TV_INPUT is an "Unhandled key"; the remote's Source button goes through
+#   TCL's own path (com.tcl.sourcemananger/com.tcl.insrc.ShowWindowService -a com.tcl.insrc.SHOW_WINDOW).
+# - The voice processes (voice_ap, katniss:interactor) used ~45% of one core continuously until
+#   Group 6 disabled katniss; voice_ap is a native daemon and stays running without root.
+#
+# Disabled or left alone at the factory: com.tcl.bootadservice, com.tcl.common.terminalmanagerplus,
+# com.tcl.usercenter, com.tcl.notereminder, com.tcl.gallery, Prime Video, Stan, ZEE5, LINE TV,
+# Rakuten TV, Play Music, Play Games.
+#
+# DO NOT DISABLE (load-bearing on this firmware):
+# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough  # Live TV, tuner, HDMI. On R851T02, TclPhoneWindowManager
+# dispatches short presses of KEYCODE_POWER (key 26) via IPC to com.tcl.tv.service.GlobalKeyService inside
+# com.tcl.tv. If com.tcl.tv is disabled, short-pressing Power on the remote is silently dropped
+# (only long-press forced shutdown works).
+# com.tcl.sourcemananger                            # source/input menu (TIF_SourceMenu)
+# com.tcl.keycustomfunctionservice                  # remote key handling, fallback home
+# com.tcl.framework.custom                          # TCL key receiver
+# com.tcl.tcl_bt_rcu_service com.tcl.autopair       # Bluetooth remote
+# com.google.android.tv.remote.service              # remote control service
+# com.tcl.inputmethod.international                 # default keyboard (T_IME)
+# com.tcl.settings com.tcl.initsetup com.tcl.factory.view
+# com.tcl.showmode                                  # sound modes (Dolby/DTS/night), not just demo
+# com.tcl.xian.StartandroidService                  # device authentication
+# com.tcl.appstatecontroller                        # boot/network/package receivers, purpose unclear
+# com.realtek.netflix.setting com.android.WifiCountryService
+
+# 1. Telemetry and analytics
+com.tcl.bi                                  # TCL BI analytics (Firebase, Crashlytics, net monitor)
+com.google.android.feedback                 # "send feedback"
+com.google.android.tv.bugreportsender       # bug report uploader
+com.google.android.partnersetup             # partner-app attribution
+com.google.android.onetimeinitializer       # one-time setup leftovers
+android.autoinstalls.config.tcl.device      # partner-app auto installer
+
+# 2. Content, recommendation rows and promos
+com.google.android.tvrecommendations        # home-screen recommendation rows
+com.google.android.leanbacklauncher.recommendations
+com.tcl.partnercustomizer                   # TCL promo rows, T-key page
+com.tcl.messagebox                          # TCL message/promo box (ttvs)
+com.tcl.esticker                            # retail demo stickers
+com.tcl.cyberui                             # TCL's own launcher/content service, unused
+com.tcl.waterfall.overseas                  # overseas waterfall promo feed
+
+# 3. Preloads and background extras
+com.google.android.videos                   # Play Movies & TV
+com.tcl.ui_mediaCenter                      # USB media centre; nothing on USB here (players kept)
+com.tcl.useragreement                       # end-user agreement screens
+com.tcl.android.webview                     # unused, Google WebView is the active provider
+com.tcl.keyhelp                             # remote-key help overlays
+
+# 4. Off by choice on this unit
+# Off on this set by choice; uncomment to drop mirroring / the T-Cast phone remote.
+# com.tcl.miracast                          # Miracast screen mirroring
+# com.tcl.MultiScreenInteraction_TV         # TCL T-Cast phone app link
+# com.tcl.versionUpdateApp                  # TCL firmware updater, kept
+
+# 5. After the launcher is installed
+com.tcl.tvweishi                            # TCL "TV Guard" cleaner
+com.tcl.appmarket2                          # TCL app store (Play Store stays)
+
+# 6. Voice, off by choice. voice_ap and katniss:interactor used ~45% of one core all day.
+com.google.android.katniss                  # Google voice search and the mic button
+com.google.android.speech.pumpkin           # offline speech recognition
+com.tcl.assistant                           # TCL's Google Assistant bridge (TV/media/settings control by voice)
+com.tcl.micmanager                          # remote microphone manager (~83 MB footprint)
+com.google.android.tv.assistant             # Assistant LED service
+com.tcl.smartalexa                          # Alexa voice integration
+
+# 7. Unused mobile and wearable AOSP subsystems (verified on V728)
+com.android.se                              # Secure Element (eSIM, NFC payments; no SIM hardware on TV)
+com.android.dynsystem                       # Dynamic System Updates allocator
+com.android.companiondevicemanager          # WearOS pairing
+com.android.hotspot2.osulogin               # Hotspot 2.0 OSU login
+com.android.printspooler                    # print spooler
+com.android.soundpicker                     # ringtone / sound picker
+# com.android.vpndialogs                    # VPN permission dialogs, kept for VPN apps
+com.android.providers.calendar              # calendar provider
+com.android.providers.contacts              # contacts provider (android.process.acore)
+com.android.providers.userdictionary        # user dictionary provider
+
+# 8. Regional catch-up stubs (Freeview UK stubs shipped on global/LATAM V728 builds)
+uk.co.freeview.amc_catchup
+uk.co.freeview.amc_horror
+uk.co.freeview.bbc
+uk.co.freeview.bbc_sounds
+uk.co.freeview.ch4_vod
+uk.co.freeview.ch5
+uk.co.freeview.explore
+uk.co.freeview.fvpconfigauth
+uk.co.freeview.itv
+uk.co.freeview.mdsclient
+uk.co.freeview.onnow
+uk.co.freeview.stv
+uk.co.freeview.systemdistributor
+# uk.co.freeview.tifbridge                  # TV Input Framework bridge, kept
+uk.co.freeview.uktv

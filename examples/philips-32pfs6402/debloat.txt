@@ -1,0 +1,104 @@
+# Philips 32PFS6402/12 (TP Vision QM164E, device QM16XE_F, board 2K16EU1, MediaTek MT5861), France
+# Android TV 7.1.2 (API 25), build N2G48H, firmware QM164E.0.16.102.24, security patch 2018-08-05.
+# Fingerprint: PHILIPS/QM16XE_F/QM16XE_F:7.1.2/N2G48H/01610224:user/release-keys
+# 1.6 GB RAM, Wi-Fi. Same 2016 TP Vision platform as examples/philips-49pus6561 (QM163E, QM16XE_U), but this
+# FHD set stayed on Android 7.1.2; entries shared with that list were checked against this TV's `pm list packages`.
+#
+# Apply:   $env:TV_HOST="<tv ip>"; tools\disable.ps1  examples\philips-32pfs6402\debloat.txt   (Windows)
+#          TV_HOST=<tv ip> tools/disable.sh  examples/philips-32pfs6402/debloat.txt            (macOS/Linux)
+# Undo:    $env:TV_HOST="<tv ip>"; tools\restore.ps1 examples\philips-32pfs6402\debloat.txt   (Windows)
+#          TV_HOST=<tv ip> tools/restore.sh  examples/philips-32pfs6402/debloat.txt            (macOS/Linux)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# TVINPUT_ALLOW=1: without it disable.sh skips org.droidtv.usagelogger and org.droidtv.demome (both ask for
+# TV_INPUT_HARDWARE). Neither serves an input: the hardware inputs come from org.droidtv.tunerservice,
+# hdmiService (HDMI 1-4), scartService and componentService only. Apply the list without the override first,
+# reboot, check Live TV and your inputs, then run it again with TVINPUT_ALLOW=1.
+#
+# Stock launcher: com.google.android.leanbacklauncher. It is NOT in this list: the launcher half needs Android 8
+#                 (minSdk 26) and this set is API 25, so the stock home stays. Home also answers the fallback
+#                 com.android.tv.settings/.system.FallbackHome.
+# Live TV app:    org.droidtv.zapster (the TV powers on to Live TV).
+# Screenshots:    `screencap` returns 0 bytes on every screen of this firmware, Settings included; check with
+#                 `dumpsys activity activities | grep mResumedActivity` and the real screen instead.
+# Private DNS:    not available (Android 9 and newer only).
+#
+# ADB: USB debugging alone opens TCP 5555, with the RSA prompt (ro.adb.secure=1). Port 5555 stays OPEN after
+# turning USB debugging and Developer options off, revoking the authorisations, `settings put global
+# adb_enabled 0` (it still read 1 with the switch shown off) and a mains power cycle: tools/adb-closed.py
+# still reports it open after boot. With no key authorised, a connection only gets the on-screen prompt.
+# See README.md.
+#
+# Kept on purpose, do NOT disable: org.droidtv.zapster, org.droidtv.tunerservice, org.droidtv.hdmiService,
+# org.droidtv.scartService, org.droidtv.componentService, org.droidtv.xtv, org.droidtv.tvserver,
+# org.droidtv.GlobalKey (remote buttons), com.mediatek.autopair (remote pairing), org.droidtv.settings,
+# org.droidtv.tvsystemui, org.droidtv.nettvbrowser (HbbTV), org.droidtv.eum, org.droidtv.contentexplorer
+# (USB media player), org.droidtv.dlna, org.droidtv.oad (firmware updates), org.droidtv.alhuewizard and
+# org.droidtv.ambihuecommon, org.droidtv.icp (asks for TV_INPUT_HARDWARE, purpose unclear), org.droidtv.tv.upg,
+# com.google.android.apps.mediashell (Chromecast), com.google.android.tv.remote.service, Play Store and Play
+# Services. Factory packages (org.droidtv.factory*, org.droidtv.factimageview, org.droidtv.factthreed) were
+# not opened and are left alone.
+#
+# Status: 2026-11-11, applied in six batches with two reboots; every entry stayed disabled across both, none
+# came back by itself. Checked on the real remote after the first four batches and a reboot: Live TV picture,
+# Sources menu, Home. After the last two batches: Live TV at power-on.
+# 2026-11-14: three days of daily use with the whole list applied, no issues and nothing re-enabled; HDMI playback
+# with a source attached works.
+# Not checked: HbbTV, USB playback, Chromecast after the list.
+
+# Telemetry and analytics
+org.droidtv.candeebug                   # "DAC" analytics uploader
+org.droidtv.gel                         # "GEL" metrics collector, same process as candeebug; disable both
+org.droidtv.usagelogger                 # boot stats, keypress counts, panel telemetry (needs TVINPUT_ALLOW=1)
+org.droidtv.tv.frameworklogger          # reboot reasons and firmware-install records to the Philips logger
+com.google.android.feedback             # Market Feedback Agent
+com.google.android.tv.bugreportsender   # bug report uploader
+
+# Advertising, promotion and recommendation rows
+org.droidtv.nettvadvert                 # ad widget, ad data cache and an ad-impression accessibility service
+org.droidtv.demome                      # retail demo mode (needs TVINPUT_ALLOW=1)
+org.droidtv.nettvrecommender            # "Top Picks" content row
+org.droidtv.sticker                     # e-sticker and shop banners
+
+# Philips NetTV store, social and cloud extras, phone setup, remote support
+org.droidtv.nettv.market                # NetTV app gallery
+org.droidtv.nettvapps                   # NetTvApps manager (only needed by the web apps below)
+org.droidtv.nettv_launcherapp           # NetTV app launcher entry
+org.droidtv.nettvregistration           # Philips account registration for NetTV
+org.droidtv.twittershare                # Twitter share sheet
+org.droidtv.dropboxprovider             # Dropbox source in Media
+com.google.android.sss                  # Second Screen Setup (set up from phone)
+com.google.android.sss.authbridge       # Second Screen Setup auth bridge
+com.google.android.partnersetup         # Google partner setup
+com.google.android.onetimeinitializer   # runs once at first setup, nothing afterwards
+org.droidtv.dms                         # UPnP media server, started at boot; the DLNA renderer and USB player stay
+com.teamviewer.quicksupport.market      # TeamViewer QuickSupport remote access
+com.teamviewer.quicksupport.addon.tpvision2k16_v1 # its TP Vision add-on
+
+# Voice and casting, off by choice on this unit (comment out to keep)
+com.google.android.katniss              # Google Assistant / voice search
+com.media.playcast.PHILIPS.MTK          # Playcast screen mirroring; Chromecast (mediashell) is separate and kept
+
+# Preinstalled NetTV web apps (labels read from each APK's resources.arsc; comment out any you use)
+org.droidtv.nettvapp1815                # ARTE
+org.droidtv.nettvapp1984                # Dailymotion
+org.droidtv.nettvapp2000020             # FilmoTV
+org.droidtv.nettvapp3076                # Cinetrailer
+org.droidtv.nettvapp3814                # TV5Monde
+org.droidtv.nettvapp3983                # Rakuten TV
+org.droidtv.nettvapp4546                # MEGOGO
+org.droidtv.nettvapp4768                # France24
+org.droidtv.nettvapp4771                # Divan.TV
+org.droidtv.nettvapp4836                # Social TV
+org.droidtv.nettvapp5225                # Filmbox Live
+org.droidtv.nettvapp5326                # Toon Goggles
+org.droidtv.nettvapp5512                # Fishing TV
+
+# Preloaded apps. The streaming services the owner uses stay; Netflix, YouTube, Prime Video and Disney+ are
+# not in this list.
+com.google.android.videos               # Google Play Movies & TV (its preview TvInputService is not a hardware input)
+com.google.android.music                # Google Play Music (service discontinued)
+com.google.android.play.games           # Google Play Games
+com.gameloft.android.HEP.GloftANHP      # Gameloft game
+# tv.molotov.app                          # Molotov; off on the owner's set, may not be a factory preload
+# org.videolan.vlc                        # VLC; off on the owner's set, may not be a factory preload

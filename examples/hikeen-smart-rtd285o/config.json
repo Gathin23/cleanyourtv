@@ -1,0 +1,14 @@
+{
+  "dock_apps": [
+    "com.android.tv",
+    "com.hikeen.mediabrowser",
+    "com.hikeen.settings",
+    "com.android.vending"
+  ],
+  "hidden_apps": [],
+  "library_apps": [
+    "com.hikeen.settings"
+  ],
+  "live_tv_package": "com.android.tv",
+  "columns": 4
+}

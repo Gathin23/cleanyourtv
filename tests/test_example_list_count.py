@@ -1,15 +1,41 @@
 """Checks that an example folder's README says how many packages its debloat.txt disables.
 
 A folder README answers "what is in that file?" with a number, and that number is the only place a
-reader learns the size of the list before opening it. It states it in one of three ways:
+reader learns the size of the list before opening it. It states it in one of four ways:
 
     | `debloat.txt` | The 30 packages that were disabled, grouped and commented |
     The [debloat list](debloat.txt) disables 71 packages: everything the owner does not use
     1. **Debloated 23 packages** - ad services, app stores, background junk
+    The debloat list disables 12 packages.
 
 Nothing tied any of them to the file, so adding packages to a list leaves the README describing a list
 that no longer exists. Only the table row was read at first; the prose forms are read now, because a
 count restated in a sentence drifts the same way - two folders' lists had shrunk under theirs.
+
+The fourth form is the one that had no link to read: a sentence that names the file in words. Round
+AL commented the Hikeen set's owner-choice lines out (`examples/hikeen-smart-rtd285o/debloat.txt`,
+14 of them), which left that folder's "The debloat list disables 26 packages" describing a list that
+now sends 12 - and every other reader here needs `[...](debloat.txt)` or the bold step, so the suite
+stayed green. The words are read the same way the link is: the present tense "disables", a sentence
+that names the debloat list or `debloat.txt` itself, and nothing that names another list (a folder
+with a `debloat-keep-cast.txt` states its own count about that file).
+
+That sentence states the count in three further ways, and all three were unread: the file introduced
+as the list ("`debloat.txt` is the list: 33 packages"), what it holds ("The list contains 12
+packages"), and the same count in bold ("The list disables **5 packages**"). Four shipped pages use
+one each, so a list edit could leave one of them describing a list that no longer exists with the
+suite green, which is the Hikeen failure again. A sentence that says only "The list disables 10
+packages" is read while `debloat.txt` is the folder's only list, and left alone in the eight folders
+that ship a second one, where "the list" could be that file. A bare fragment ("28 packages, all
+disabled") names nothing and is not read.
+
+A sentence is read as a sentence, not as a line: these pages wrap their prose by hand at about 100
+characters, so the Haier HRA962X2 README ends one line with "the debloat list" and starts the next with
+"disables 40 packages". #2817 commented that list's two stock-home lines out and left it sending 38,
+and the words reader - which matched inside one line - saw no claim at all, the way the Hikeen count was
+invisible before. Its paragraph is joined before the match and split again where a sentence ends, so a
+number still has to sit in the same sentence as the words that name the list: a paragraph that grew a
+second sentence about a batch size is not a claim.
 
 The number is compared with the packages tools/disable.sh would actually send, parsed the way that
 script parses a list (a trailing `# comment` is not part of the line, whole-line `#` comments and
@@ -32,12 +58,45 @@ COUNT = re.compile(r"(\d+)\s+packages\b")
 # `The [debloat list](debloat.txt) disables 71 packages: everything the owner does not use` - the
 # number has to stay in the same sentence as the link, so the gap is short.
 PROSE_LINK = re.compile(r"\[[^\]]*\]\([^)]*debloat\.txt[^)]*\)[^\n]{0,80}?(\d+)\s+packages\b")
+# `The debloat list disables 26 packages.` - the same sentence with the file named in words instead of
+# linked, which is the form the Hikeen folder uses and no reader here saw. It has to name this folder's
+# own list ("the debloat list", or debloat.txt itself) and use the present tense, so a session's
+# account of a run ("all 34 packages stayed disabled") and a count about a `debloat-keep-cast.txt` are
+# not read as claims about debloat.txt.
+#
+# The same sentence states the count three more ways, and all three were unread: the file introduced as
+# the list (`debloat.txt` is the list: 33 packages, tcl-55q7d-pro-google-tv), what it holds (`The list
+# contains 12 packages`, xiaomi-mi-box-4s-pro-frozen) and the count set in bold (`The list disables
+# **5 packages**`, haam-hm4k75s11tnd). A stale one of those left the suite green the way the Hikeen
+# count did.
+PROSE_WORDS = re.compile(
+    r"(?:\bdebloat list\b|`debloat\.txt`)"
+    r"[^\n]{0,80}?(?:\bdisables\b|\bcontains\b|\bis the list:?)\s*\**\s*(\d+)\s+packages\b",
+    re.IGNORECASE,
+)
+# `The list disables 10 packages: telemetry, ...` names no file at all, so it is read only while
+# debloat.txt is the folder's only list: with a second list beside it the words could as easily be
+# about that file, and a page is not failed on a reading it does not have to mean.
+PROSE_THE_LIST = re.compile(
+    r"\b(?:the|this) list\b[^\n]{0,80}?(?:\bdisables\b|\bcontains\b)\s*\**\s*(\d+)\s+packages\b",
+    re.IGNORECASE,
+)
 # `1. **Debloated 23 packages** - ad services, app stores, background junk`
 PROSE_STEP = re.compile(r"\*\*[Dd]ebloated (\d+) packages\*\*")
+STEP = "the step that says what was done"
+THE_LIST = "the sentence that calls it the list"
+# The forms a page can wrap by hand, read a sentence at a time (see sentences() below). The words
+# reader needs no folder, so it is always read; `The list ...` is added by claims() only while
+# debloat.txt is the folder's only list.
 PROSE = (
     (PROSE_LINK, "the sentence about the debloat list"),
-    (PROSE_STEP, "the step that says what was done"),
+    (PROSE_WORDS, "the sentence that names the list in words"),
 )
+# Where one sentence ends and the next begins: the pages carry firmware builds with dots in them
+# (`PPR1.180610.011.20220314.`), so only punctuation followed by a space is a boundary.
+SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
+# A line that opens a list item starts its own paragraph, so a claim is not read across two items.
+BULLET = re.compile(r"^(?:[-*+]\s|\d+\.\s)")
 ROW = "the debloat.txt row"
 
 
@@ -55,11 +114,67 @@ def packages(list_path):
     return names
 
 
-def claims(readme_text):
+def paragraphs(readme_text):
+    """Every paragraph of a README's prose, its wrapped lines joined with one space.
+
+    A page here wraps its sentences by hand, so a claim can be split across two lines. Table rows,
+    headings and fenced blocks are left out (they are not sentences, and a row is read on its own), and
+    a list item starts a new paragraph, so two bullets are never read as one sentence.
+    """
+    out, current, fenced = [], [], False
+
+    def flush():
+        if current:
+            out.append(" ".join(current))
+            current.clear()
+
+    for line in readme_text.split("\n"):
+        text = line.strip()
+        if text.startswith("```"):
+            flush()
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        if not text or text.startswith(("#", "|")):
+            flush()
+            continue
+        if BULLET.match(text):
+            flush()
+        current.append(text)
+    flush()
+    return out
+
+
+def sentences(readme_text):
+    """The prose, one sentence at a time: the wrapped lines joined, then split where a sentence ends.
+
+    Reading a sentence and not a line is what makes a hand-wrapped claim readable - and keeping the
+    sentence boundary is what stops a paragraph's first sentence from lending its words to a number in
+    the second one.
+    """
+    for paragraph in paragraphs(readme_text):
+        for sentence in SENTENCE_END.split(paragraph):
+            if sentence.strip():
+                yield sentence
+
+
+def claims(readme_text, only_list=False):
     """Every package count the README states for its debloat.txt, as (where it says it, number).
 
     A line that is the table row is not searched for the prose forms as well: a row that names the
     file and repeats the number in a link would otherwise be the same claim read twice.
+
+    The prose forms can overlap: `The [debloat list](debloat.txt) disables 71 packages` is the link
+    reader's sentence and the words reader's too, since it names the list both ways. Both capture the
+    same digits, so a number already read in that sentence is not read again - one claim, one failure.
+
+    The row and the bold step are read line by line, where they are always written; the prose forms
+    are read a sentence at a time, so a sentence the page wrapped by hand is one claim.
+
+    `only_list` says debloat.txt is the only list the folder ships, which is what makes `The list
+    disables 10 packages` a claim about it. With a second list in the folder the sentence could be
+    about that file, so the words are not read at all.
     """
     found = []
     for line in readme_text.split("\n"):
@@ -69,14 +184,33 @@ def claims(readme_text):
             if count:
                 found.append((ROW, int(count.group(1))))
                 continue
-        for pattern, where in PROSE:
-            for match in pattern.finditer(line):
+        for match in PROSE_STEP.finditer(line):
+            found.append((STEP, int(match.group(1))))
+    patterns = (PROSE + ((PROSE_THE_LIST, THE_LIST),)) if only_list else PROSE
+    for sentence in sentences(readme_text):
+        read = []
+        for pattern, where in patterns:
+            for match in pattern.finditer(sentence):
+                span = match.span(1)
+                if any(span[0] < other[1] and other[0] < span[1] for other in read):
+                    continue
+                read.append(span)
                 found.append((where, int(match.group(1))))
     return found
 
 
 def folders():
     return sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and (p / "debloat.txt").is_file())
+
+
+def only_list(folder):
+    """True when debloat.txt is the only list the folder ships.
+
+    Eight folders carry a second list (`debloat-keep-cast.txt`, `debloat-extra.txt`,
+    `debloat-display-only.txt`, ...), and there `The list disables N packages` could be about either
+    file, so the words are left unread rather than guessed at.
+    """
+    return len([p for p in folder.glob("debloat*.txt") if p.is_file()]) == 1
 
 
 class ExampleListCountTest(unittest.TestCase):
@@ -86,7 +220,7 @@ class ExampleListCountTest(unittest.TestCase):
             readme = folder / "README.md"
             if not readme.is_file():
                 continue
-            stated = claims(readme.read_text(encoding="utf-8"))
+            stated = claims(readme.read_text(encoding="utf-8"), only_list(folder))
             if not stated:
                 continue
             checked += 1
@@ -111,10 +245,43 @@ class ExampleListCountTest(unittest.TestCase):
             if (folder / "README.md").is_file()
             and any(
                 where != ROW
-                for where, _ in claims((folder / "README.md").read_text(encoding="utf-8"))
+                for where, _ in claims(
+                    (folder / "README.md").read_text(encoding="utf-8"), only_list(folder)
+                )
             )
         ]
         self.assertTrue(prose, "no example README states its package count in prose any more")
+
+    def test_the_present_tense_shapes_are_read_on_the_tree(self):
+        # The three shapes this check grew for are shipped pages, one shape each: the file introduced
+        # as the list, what it holds, a count in bold, and `The list ...` with no file named. Pinned
+        # by folder so a page that stops stating its count - or a reader that stops reading one -
+        # fails here instead of passing quietly.
+        expected = {
+            "tcl-55q7d-pro-google-tv": ("`debloat.txt` is the list: 33 packages", 33),
+            "xiaomi-mi-box-4s-pro-frozen": ("The list contains 12 packages", 12),
+            "haam-hm4k75s11tnd": ("The list disables **5 packages**", 5),
+            "artel-a55lu8500": ("The list disables 10 packages", 10),
+        }
+        read = {}
+        for folder in folders():
+            readme = folder / "README.md"
+            if not readme.is_file():
+                continue
+            read[folder.name] = claims(readme.read_text(encoding="utf-8"), only_list(folder))
+        for name, (shape, count) in expected.items():
+            with self.subTest(folder=name, shape=shape):
+                self.assertIn(
+                    count, [claim for _, claim in read.get(name, [])],
+                    f"examples/{name}/README.md states {shape!r} and nothing read it as a claim "
+                    "about its debloat.txt",
+                )
+        # At least one of them has to be read as `The list ...`, or the reader added for that shape
+        # is exercised by no page at all.
+        self.assertIn(
+            THE_LIST, [where for claims_read in read.values() for where, _ in claims_read],
+            "no example README calls its list `The list` any more",
+        )
 
 
 class CountReaderTest(unittest.TestCase):
@@ -147,6 +314,136 @@ class CountReaderTest(unittest.TestCase):
             "not use, since they install their own apps from Play Store afterwards.\n"
         )
         self.assertEqual(claims(text), [("the sentence about the debloat list", 71)])
+
+    def test_a_sentence_that_names_the_list_in_words_is_read(self):
+        # The Hikeen folder's form, and the one no reader saw: the file is named, not linked.
+        text = "launcher is the stock Home. The debloat list disables 26 packages.\n"
+        self.assertEqual(claims(text), [("the sentence that names the list in words", 26)])
+
+    def test_the_file_introduced_as_the_list_is_read(self):
+        # tcl-55q7d-pro-google-tv's shape: the file is named, then the count after a colon.
+        text = (
+            "`debloat.txt` is the list: 33 packages, disabled with `tools/disable.sh` in batches,\n"
+            "reboot-checked. Undo:\n"
+        )
+        self.assertEqual(claims(text), [("the sentence that names the list in words", 33)])
+
+    def test_what_the_list_holds_is_read(self):
+        # xiaomi-mi-box-4s-pro-frozen's shape, and the file named in words before it.
+        text = (
+            "The debloat list contains 12 packages: four were already disabled before the session,\n"
+            "and eight were disabled in small batches with the project's tools.\n"
+        )
+        self.assertEqual(claims(text), [("the sentence that names the list in words", 12)])
+
+    def test_a_bold_count_is_read(self):
+        # haam-hm4k75s11tnd's shape: the number and its word set in bold.
+        text = "The list disables **5 packages**: stock Home recommendations and two demo apps.\n"
+        self.assertEqual(claims(text, only_list=True), [(THE_LIST, 5)])
+        named = "The debloat list disables **5 packages**: stock Home recommendations.\n"
+        self.assertEqual(claims(named), [("the sentence that names the list in words", 5)])
+
+    def test_the_list_with_no_file_named_is_read_only_for_a_single_list_folder(self):
+        # `The list disables 10 packages` could be about a `debloat-keep-cast.txt` beside it, so the
+        # words are read only while debloat.txt is the folder's only list.
+        text = "The list disables 10 packages: telemetry, ACR and the store.\n"
+        self.assertEqual(claims(text, only_list=True), [(THE_LIST, 10)])
+        self.assertEqual(claims(text), [])
+        self.assertEqual(claims(text, only_list=False), [])
+
+    def test_a_bare_count_fragment_names_no_list(self):
+        # acer-ar55ar2851udpro's shape: "28 packages, all disabled, none uninstalled." names nothing,
+        # so it is not a claim about debloat.txt however right it happens to be.
+        text = "28 packages, all disabled, none uninstalled. The header of [`debloat.txt`] says why.\n"
+        self.assertEqual(claims(text, only_list=True), [])
+
+    def test_the_list_words_do_not_read_a_second_list(self):
+        # The same shape, about the folder's other file: `The ... list` here is the cast list.
+        text = (
+            "The `debloat-keep-cast.txt` list disables 3 packages.\n"
+            "The cast list disables 3 packages.\n"
+        )
+        self.assertEqual(claims(text, only_list=True), [])
+
+    def test_a_sentence_the_page_wrapped_by_hand_is_read(self):
+        # The Haier HRA962X2 README's shape: `the debloat list` ends one line and the count opens the
+        # next, so a reader that matched inside one line saw no claim while the list lost two packages.
+        text = (
+            "firmware PPR1.180610.011.20220314. The stock Home is Youku's launcher; the debloat list\n"
+            "disables 40 packages: YunOS ad and telemetry services, the Aligenie voice stack.\n"
+        )
+        self.assertEqual(claims(text), [("the sentence that names the list in words", 40)])
+
+    def test_a_wrapped_link_sentence_is_read_once(self):
+        text = (
+            "The [debloat\n"
+            "list](debloat.txt) disables 71 packages.\n"
+        )
+        self.assertEqual(claims(text), [("the sentence about the debloat list", 71)])
+
+    def test_a_wrapped_sentence_about_another_file_is_not_read(self):
+        # The wrap must not turn `debloat-keep-cast.txt` into this folder's own list.
+        text = "The cast receivers live in\n`debloat-keep-cast.txt`, which disables 3 packages.\n"
+        self.assertEqual(claims(text), [])
+
+    def test_a_number_in_the_next_sentence_is_not_read(self):
+        # Joining the lines must not let one sentence's words reach the next one's number.
+        text = (
+            "This page describes the debloat list in the next paragraph\n"
+            "and says nothing about its size. It disables 40 packages of the 41 the firmware ships.\n"
+        )
+        self.assertEqual(claims(text), [])
+
+    def test_a_wrapped_bullet_is_read(self):
+        text = "- The debloat list\n  disables 12 packages, all of them telemetry.\n"
+        self.assertEqual(claims(text), [("the sentence that names the list in words", 12)])
+
+    def test_two_bullets_are_not_one_sentence(self):
+        # A claim's words in one item and a number in the next is not a claim about the list.
+        text = (
+            "- The debloat list is described below.\n"
+            "- **Debloated 23 packages** and left the rest alone.\n"
+        )
+        self.assertEqual(claims(text), [("the step that says what was done", 23)])
+
+    def test_a_table_row_is_not_joined_into_a_sentence(self):
+        text = (
+            "The debloat list\n"
+            "| `README.md` | the 40 packages explained |\n"
+            "disables 40 packages.\n"
+        )
+        self.assertEqual(claims(text), [])
+
+    def test_a_fenced_block_is_not_read(self):
+        text = (
+            "```\n"
+            "The debloat list disables 40 packages.\n"
+            "```\n"
+        )
+        self.assertEqual(claims(text), [])
+
+    def test_the_linked_sentence_is_read_once(self):
+        # Both readers match `The [debloat list](debloat.txt) disables 71 packages`; the number is one
+        # claim, so a stale count is one failure and not two.
+        text = "The [debloat list](debloat.txt) disables 71 packages.\n"
+        self.assertEqual(claims(text), [("the sentence about the debloat list", 71)])
+
+    def test_a_second_list_named_in_words_is_not_read_for_this_one(self):
+        # `examples/.../debloat-keep-cast.txt disables 3 packages` is a claim about that file; the
+        # folder's debloat.txt is the only one this check counts.
+        text = (
+            "debloat-keep-cast.txt disables 3 packages, the cast receivers.\n"
+            "The `debloat-keep-cast.txt` list disables 3 packages.\n"
+        )
+        self.assertEqual(claims(text), [])
+
+    def test_a_session_account_in_the_past_tense_is_not_a_claim(self):
+        # "all 34 packages stayed disabled" is what a run saw, not the size of the file.
+        text = (
+            "After a reboot all 34 packages stayed disabled, nothing re-enabled itself.\n"
+            "`pm list packages -d` held 41 packages in all after the list.\n"
+        )
+        self.assertEqual(claims(text), [])
 
     def test_a_step_that_says_what_was_done_is_read(self):
         text = "1. **Debloated 23 packages** - ad services, app stores, background junk\n"

@@ -28,8 +28,14 @@ address (Settings > Network on the projector).
    to `android.uid.system` and kept working after the disable. Re-enable it (restore.sh does)
    before a factory reset. Phone casting kept working here too. On other Google TV units the Cast receiver
    loses its credentials with setupwraith gone and phone casting fails with "Untrusted device"
-   ([docs/TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md)) — re-enable setupwraith if your
-   phone refuses to cast.
+   ([docs/TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md)) — re-enable setupwraith if your phone
+   refuses to cast, with launcherx enabled first (`pm enable com.google.android.apps.tv.launcherx`). With
+   launcherx off, Home has no other claimant and setupwraith's `.RecoveryActivity` takes it — the
+   behaviour quirk 1 above describes — and on a Xiaomi MiTV-MOEU0 (`V816.0.26.10.12.1`) a reboot in that
+   state never left the boot animation and only a factory reset brought the TV back
+   ([#3578](https://github.com/Gathin23/cleanyourtv/issues/3578)). `cmd package set-home-activity` did not
+   move Home off `.RecoveryActivity` with the wizard on, so order matters rather than the command. Disable
+   setupwraith and launcherx again once casting works, one package per call.
 2. **The firmware re-enables Assistant at every boot.** `com.google.android.katniss` comes back
    enabled after each reboot, and its LED service with it (the same behaviour as the
    [D2426 Capsule](../anker-nebula-d2426/) list). The owner keeps it on so the mic button works.

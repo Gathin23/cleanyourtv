@@ -2,6 +2,8 @@
 # software V8-R851T02-LF1V606), Android TV 9 (API 28), build PPR1.180610.011 AP06, security patch 2020-09-05,
 # 2 GB RAM. Freeview UK apps preloaded (factory-disabled). Different firmware from the India BeyondTV in
 # examples/tcl-beyondtv/, which is a separate list.
+# For the Brazilian/LATAM SEMP TCL 50P8M on Android 11 (V8-R851T02-LF1V728.000041 V728), see
+# examples/semp-tcl-50p8m/, which carries its own list tested on that firmware.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-beyondtv-rt2851/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-beyondtv-rt2851/debloat.txt
@@ -28,12 +30,28 @@
 # - The clock ran 6 h fast with automatic time on (last NTP success months earlier). Toggling
 #   `settings put global auto_time 0` then `1` forced a fresh sync.
 #
+# Second unit: TCL 50EP640X1 (same ro.product.model BeyondTV, RTD2851, V8-R851T02-LF1V606, AP06),
+# tested 2026-10-23 to 2026-11-05. The day after the first pass, the TV had turned five apps back on by
+# itself: com.tcl.smartalexa, tv.wuaki.apptv, com.tcl.notereminder, com.tcl.usercenter and com.tcl.cyberui
+# (the first four ship disabled). com.tcl.appstatecontroller is the likely cause: a system app with
+# receivers for boot, wake from standby, network changes and package changes, which puts TCL's app set
+# back. That unit ran with it off, and `pm list packages -d` still listed every package 12 days later,
+# across reboots, with Home, the remote, HDMI inputs, wake from standby and the network still working.
+# The group 7 line is commented out here because this list is shared, so a run leaves the package
+# enabled and TCL's app set can come back by itself, as it did there: uncomment it to repeat that
+# unit's result. If inputs or the remote misbehave with it off, re-enable it first:
+# TV_HOST=<tv ip> tools/tv.py 'pm enable com.tcl.appstatecontroller'
+#
 # Already disabled at the factory, left alone: the 14 uk.co.freeview.* apps, com.tcl.bootadservice,
-# com.tcl.common.terminalmanagerplus, com.tcl.usercenter, com.tcl.smartalexa, com.tcl.notereminder,
-# com.tcl.gallery, Prime Video, Stan, ZEE5, LINE TV, Rakuten TV, Play Music, Play Games.
+# com.tcl.common.terminalmanagerplus, com.tcl.gallery, Prime Video, Stan, ZEE5, LINE TV, Play Music,
+# Play Games. (com.tcl.usercenter, com.tcl.smartalexa, com.tcl.notereminder and Rakuten TV also ship
+# disabled but can come back on: group 7.)
 #
 # DO NOT DISABLE (load-bearing on this firmware):
-# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough  # Live TV, tuner, HDMI
+# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough  # Live TV, tuner, HDMI. On R851T02, TclPhoneWindowManager
+# dispatches short presses of KEYCODE_POWER (key 26) via IPC to com.tcl.tv.service.GlobalKeyService inside
+# com.tcl.tv. If com.tcl.tv is disabled, short-pressing Power on the remote is silently dropped
+# (only long-press forced shutdown works).
 # com.tcl.sourcemananger                            # source/input menu (TIF_SourceMenu)
 # com.tcl.keycustomfunctionservice                  # remote key handling, fallback home
 # com.tcl.framework.custom                          # TCL key receiver
@@ -43,7 +61,6 @@
 # com.tcl.settings com.tcl.initsetup com.tcl.factory.view
 # com.tcl.showmode                                  # sound modes (Dolby/DTS/night), not just demo
 # com.tcl.xian.StartandroidService                  # device authentication
-# com.tcl.appstatecontroller                        # boot/network/package receivers, purpose unclear
 # com.realtek.netflix.setting com.android.WifiCountryService
 
 # 1. Telemetry and analytics
@@ -86,5 +103,12 @@ com.tcl.appmarket2                          # TCL app store (Play Store stays)
 com.google.android.katniss                  # Google voice search and the mic button
 com.google.android.speech.pumpkin           # offline speech recognition
 com.tcl.assistant                           # TCL's Google Assistant bridge (TV/media/settings control by voice)
-com.tcl.micmanager                          # remote microphone manager
+com.tcl.micmanager                          # remote microphone manager (~83 MB footprint)
 com.google.android.tv.assistant             # Assistant LED service
+
+# 7. Apps the TV turns back on (second unit, 50EP640X1). Undo also enables the four that ship disabled.
+# com.tcl.appstatecontroller  # off on the 50EP640X1 only (12 days fine); uncomment if TCL apps come back on
+com.tcl.smartalexa                          # Alexa bridge; ships disabled, came back on by itself
+com.tcl.usercenter                          # TCL account centre; ships disabled, came back on by itself
+com.tcl.notereminder                        # TCL reminders; ships disabled, came back on by itself
+tv.wuaki.apptv                              # Rakuten TV; ships disabled, came back on by itself

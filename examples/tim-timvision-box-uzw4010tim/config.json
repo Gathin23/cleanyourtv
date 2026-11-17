@@ -1,0 +1,44 @@
+{
+  "columns": 5,
+  "dock_apps": [
+    "com.nuvio.tv",
+    "org.smarttube.stable",
+    "app.opentv",
+    "timvision.launcher",
+    "com.nordvpn.android"
+  ],
+  "hidden_apps": [
+    "com.google.android.tv.remote.service",
+    "com.marvell.tv.overscan",
+    "com.technicolor.android.remotecontrolservice"
+  ],
+  "fill_dock": false,
+  "app_labels": [
+    "com.nuvio.tv=Nuvio",
+    "org.smarttube.stable=SmartTube",
+    "app.opentv=OpenTV",
+    "timvision.launcher=Digitale Terrestre",
+    "com.technicolor.android.dtvscan.project=Sintonia DTT",
+    "com.nordvpn.android=NordVPN"
+  ],
+  "app_banners": [
+    "timvision.launcher=banner_tv",
+    "com.technicolor.android.dtvscan.project=banner_tv"
+  ],
+  "app_keys": [
+    "170:timvision.launcher"
+  ],
+  "live_tv_package": "timvision.launcher",
+  "restore_key_services": true,
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 60,
+  "cinematic_home": true,
+  "dock_glass": true,
+  "app_glow": true,
+  "dock_title": true,
+  "icon_only_buttons": true,
+  "show_network_pill": true,
+  "show_inputs_pill": true,
+  "focus_overshoot": false,
+  "advanced_effects": true
+}

@@ -91,3 +91,42 @@
 # TV). CATEGORY_LAUNCHER additionally has com.mitv.tvhome, com.xiaomi.mitv.settings,
 # com.xiaomi.mitv.smartshare and com.xiaomi.mitv.systemui. On a set with few TV apps the grid is
 # therefore empty until something else is installed.
+
+# ---- 55-inch twin (checked on a second set the same day, 2026-10-26) ----
+# Xiaomi TV 5 Pro 55", same board/firmware family (MiTV-ANSP0, jobs, 23.6.5.3226, Android 9). The list
+# above applies as-is. Four findings from that set that the notes above do not cover:
+
+# ---- Boot ad: the chain, and what actually stops it ----
+# The power-on ad is com.mitv.tvhome/.BootActivity. Its SDK (logcat tags AD-PLUGIN-MiAdServer /
+# BootUpADManager / BootCache) fetches from https://api.ad.xiaomi.com/ott/fetchAds (appKey
+# OTT_POWER_SERVICE) and caches material INSIDE the app-private /data/data area - not on /sdcard:
+# wiping /sdcard/Android/data/com.mitv.tvhome/cache/* (incl. a 40 MB afinalCache.0) did not stop it.
+# settings list system shows boot_ad=0 / boot_ad_sound_enable=0 / boot_ad_switch_show=0; those are not
+# effective switches, the ad plays regardless. Component-level disable is refused by the firmware:
+#   pm disable-user --user 0 com.mitv.tvhome/.ads.pushad.PushAdReceiver
+#   -> SecurityException: Shell cannot change component state
+# What worked, verified over two cold boots:
+#   1. block api.ad.xiaomi.com (and file.market.xiaomi.com for the material) at the router; fetchAds
+#      then answers {"code":1,"message":"no ad"}
+#   2. pm clear com.mitv.tvhome - the only way to reach the private-area material cache. Safe once the
+#      new launcher is the preferred Home (resolve-activity re-checked right after: still the new
+#      launcher; the set cold-boots straight into it with no ad).
+#      Note: pm clear wipes PatchWall's own data (settings, sign-in) and tools/restore.sh cannot undo it.
+
+# ---- com.cibn.tv re-enables itself ----
+# pm disable-user --user 0 com.cibn.tv held for about an hour, then the firmware brought the package
+# back enabled, with no reboot in between (the other five licensed-content packages disabled the same
+# day stayed disabled). Re-running pm disable-user takes it out again; seen once so far, so whether it
+# keeps reviving on this firmware stays an open question. Disable, never uninstall, as ever.
+
+# ---- 32-bit userspace ----
+# An arm64-v8a APK fails with INSTALL_FAILED_NO_MATCHING_ABIS (res=-113); armeabi-v7a installs fine.
+# Check ro.product.cpu.abilist in getprop before fetching anything large for this set.
+
+# ---- Soft reboot is not a cold boot ----
+# After set-home-activity (new launcher preferred, PatchWall kept enabled per the note above), adb
+# reboot landed on the new launcher, but a cold power cycle brought PatchWall's MainActivityUserMode
+# back to the front - with resolve-activity still answering the new launcher, so the preference was
+# intact and the firmware simply starts PatchWall on top. Rebuilding with HOME_KEY_SERVICE=1 and a
+# theme key "stock_home_redirect": "com.mitv.tvhome" keeps the new launcher in front on cold boots
+# too. Verify a handover on this firmware by pulling the power plug, not with adb reboot.

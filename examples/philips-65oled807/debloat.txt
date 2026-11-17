@@ -1,0 +1,94 @@
+# Philips 65OLED807/12 (65" 4K OLED with Ambilight, 2022 model), Germany
+# Android TV 11 (SDK 30), firmware RTT2.211108.001 build 21029, security patch 2025-10-01, board PH1M_EA_9970A
+# ro.product.model=2021/22 Philips UHD Android TV  ro.product.device=PH1M_EA_9970A  ro.product.manufacturer=TPV
+# Fingerprint: Philips/PH1M_EA_9970A/PH1M_EA_9970A:11/RTT2.211108.001/21029:user/release-keys
+# Philips SW TPM211EA_R.101.001.005.115. MediaTek MT5895. Wired Ethernet, nothing on USB.
+#
+# Same board and firmware build as examples/philips-50pus8517, examples/philips-55oled707,
+# examples/philips-65oled706 and examples/philips-65oled907. Read the 50PUS8517 quirks and its DO NOT DISABLE
+# block first: nothing from that block is disabled below (xtv, eum, aurora, playtv, GlobalKey, nettvbrowser...).
+# Own folder because this is a different retail model whose list goes further than the 706/907 lists: it also
+# turns off DLNA, IP control, the Play-Fi soft AP, the Philips framework logger and setupwraith.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-65oled807/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-65oled807/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (launcher/build-and-install.sh disables it after Home has moved)
+# Live TV app:    org.droidtv.playtv (live_tv_package); the launcher's Inputs menu lists HDMI 1-4 and Live TV.
+#
+# Status: applied 2026-10-22 in six batches with a screenshot after each, then the launcher from launcher/.
+# Reboot-checked the same day: only com.phorus.playfi.tv came back (see below), every other package stayed
+# disabled. tools/check.py again on 2026-10-25 and 2026-10-29: same result. Checked: Home, the Sources drawer (HDMI 1-4,
+# a games console and an eARC soundbar), the Live TV app opening (no channels tuned on this set), YouTube
+# playback and every remote button the owner uses. In daily use until 2026-10-29.
+# Idle log (30 s, TV on Home): 107 lines before, 83 after, no retry loop (method from 50PUS8517 quirk 5).
+#
+# Notes from this unit:
+# - com.phorus.playfi.tv re-enables itself at every boot, as on the 55OLED707; it is commented out below.
+# - org.droidtv.demome is refused by tools/disable.sh here (it asks for TV_INPUT_HARDWARE, #321), so it is
+#   not listed; the launcher can hide its tile with hidden_apps.
+# - The board reports analog inputs this set does not have (composite HW1, component HW2, SCART HW3, VGA HW4);
+#   input_sources "HW1=-" to "HW4=-" in config.xml keeps them out of the Inputs menu.
+# - Private DNS set to a public ad-blocking resolver bypassed a local split-DNS setup (an internal media server
+#   stopped resolving), so it was turned back off; check your own network before using it.
+#
+# Kept on purpose: firmware updates (org.droidtv.oad, com.easy.oad), Chromecast
+# (com.google.android.apps.mediashell), the phone remote service, Ambilight, the Media app, and the owner's
+# streaming apps (YouTube, Prime Video, Disney+ and others).
+
+# TP Vision and Google telemetry. Disable candeebug and gel together (gel runs in candeebug's process).
+org.droidtv.candeebug                     # "DAC" analytics uploader
+org.droidtv.gel                           # metrics collector in candeebug's process
+org.droidtv.usagelogger                   # boot stats and remote keypress counts feeding the above
+org.droidtv.tv.frameworklogger            # hands reboot reasons and firmware-install records to the Philips logger
+com.google.android.feedback               # Market Feedback Agent
+
+# Philips promos, app gallery and preinstalled extras
+org.droidtv.nettvrecommender              # "Top Picks" content row
+org.droidtv.recommendation                # its backend; disable the row above first
+org.droidtv.nettv.market                  # "Smart TV Collection" app storefront
+org.droidtv.nettvapps                     # the gallery's preload installer
+org.droidtv.nettvapp1814                  # ARTE (gallery web app)
+org.droidtv.nettvapp4546                  # MEGOGO (gallery web app)
+org.droidtv.nettvapp5512                  # Fishing TV (gallery web app)
+org.droidtv.nettvapp5245                  # "TV SpieleCenter" games (gallery web app)
+org.droidtv.android.fitness               # Fitness Buddy
+com.boosteroidtv.streaming                # Boosteroid cloud gaming, preinstalled
+com.google.android.play.games             # Play Games
+
+# Google first-setup leftovers
+com.google.android.partnersetup           # partner referrer / attribution
+com.google.android.onetimeinitializer     # runs once at first setup, nothing afterwards
+com.google.android.sss.authbridge         # set-up-from-phone helper
+com.google.android.syncadapters.calendar  # Google Calendar sync; no calendar app is installed
+
+# Philips features this owner does not use. Check each against your own setup.
+# org.droidtv.amazonalexa                 # Alexa bridge: untested here, no channels tuned so zapping and the guide were not checked
+com.phorus.playfi.softap                  # Play-Fi soft access point helper; stayed disabled
+# com.phorus.playfi.tv                    # Play-Fi app: off on this set, but it re-enables itself at every boot
+org.droidtv.dlna                          # DLNA/UPnP server and renderer (on PH1M_WW_9972 Google TV sets the Media app binds it)
+org.droidtv.ipcontrol                     # LAN control (volume, Ambilight). NOT the JointSpace API on 1925/1926, that is org.droidtv.xtv
+io.mimi.tvapp                             # Mimi sound personalisation app
+io.mimi.sdk.service                       # its service
+org.droidtv.astrahdplus                   # HD+ German satellite operator app; keep it if you subscribe
+org.droidtv.m7opapp                       # M7 satellite operator promo; keep it if you use one of those operators
+
+# Owner's choice: off on this set, left as comments so they are not disabled for everyone.
+# com.netflix.ninja                       # Netflix: off on this set (the remote's Netflix key then does nothing)
+# com.apple.atve.androidtv.appletv        # Apple TV: off on this set
+# com.google.android.youtube.tvmusic      # YouTube Music: off on this set
+# com.google.android.videos               # Google TV / Play Movies: off on this set
+# com.google.android.katniss              # Assistant and voice search: off on this set (the mic key does nothing)
+# com.google.android.marvin.talkback      # TalkBack screen reader: off on this set; keep it if anyone needs it
+
+# First-run wizard. On this Android TV set it does not claim Home, and the saved Wi-Fi network belonged to
+# android.uid.system (dumpsys wifi | grep -o 'cname=[^ ]*'), so disabling it was safe. If setupwraith owns
+# your saved Wi-Fi network, disabling it deletes that network: forget and re-join it in Settings first.
+# Re-enable it before a factory reset.
+com.google.android.tungsten.setupwraith
+
+# Stock launcher content engine. Disable it only after launcher/build-and-install.sh has moved Home and
+# disabled com.google.android.tvlauncher: tvlauncher holds a provider reference into it. It is also the only
+# handler of the Android TV notification panel, which goes with it.
+com.google.android.tvrecommendations

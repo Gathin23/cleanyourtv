@@ -55,6 +55,52 @@
 #   VTVgo (vn.vtv.vtvgotv), SmartTube (org.smarttube.stable), left to right; live_tv_package=com.tcl.tv.
 #   These are per-unit config.json/theme values, not shared launcher defaults.
 #
+# Brazil unit, 2026-10-28: same model "Smart TV", product C06_2K_GB and build AR2101 / AR13,
+# Android TV 11 (SDK 30), TCL software V8-T221T01-LF1V014 (persist.tcl.client_type TCL-LA-MT9221-01),
+# 1280x720 panel, about 922 MB RAM (low_ram=true). The settings menu calls the TCL layer "TV+ OS"; it is
+# this Android TV 11 build. One session of about an hour, not a several-day test.
+# - Applied the list above in three batches, with plain `pm disable-user --user 0`, plus TCL Alexa and
+#   the Assistant stub (labelled block at the end). Kept by choice: Chromecast (mediashell), Prime Video,
+#   ttvs. Voice, TalkBack/TTS, the photo screensaver and the four TCL USB players are off by choice.
+# - setupwraith was safe here: dumpsys wifi showed the saved networks under com.google.uid.shared, not
+#   setupwraith, and Wi-Fi and ADB stayed up after disabling it.
+# - Reboot too soon and the state is lost: `adb reboot` a few seconds after the last batch brought that
+#   whole batch back enabled. Disabled again, waited 60 s, rebooted: all of it stayed disabled.
+# - com.tcl.usercenter and com.tcl.smartalexa are switched back on at every boot, as on the
+#   32ES570F; both stay idle.
+# - MemAvailable: about 250 MB on the stock setup (TV running), about 320 MB after a reboot with the
+#   list, about 370-380 MB after a reboot with launcher/ as Home.
+# - launcher/ became Home with stock tvlauncher disabled (resolve-activity and mFocusedApp) and stayed
+#   Home after a reboot. Config: live_tv_package and hidden_apps com.tcl.tv, reduced_motion true (as on
+#   the L40S66E, same MT9221).
+# - Checked by the owner: the physical remote on Home and switching to an HDMI input. Not tested yet:
+#   streaming playback and casting from a phone.
+# - `adb exec-out screencap -p` wrote the firmware's "Init wrapper sys mutex successful" line into the
+#   file instead of a PNG; `screencap -p /data/local/tmp/s.png` followed by `adb pull` works.
+#
+# Second Asia-Pacific unit, 2026-11-15: same model "Smart TV", product C06_2K_GB, build AR2101,
+# Android TV 11 (SDK 30), persist.tcl.client_type TCL-AP-MT9221-01, security patch 2025-03-05,
+# 1280x720 panel, about 918 MB RAM (low_ram=true). One session, not a several-day test.
+# - Applied in three batches with tools/disable.ps1: the TCL block, the Google extras plus
+#   tvrecommendations and Prime Video (enabled on this unit, off by choice), then backdrop after
+#   switching the screensaver to AOSP Colors. Kept by choice: voice (katniss, tv.remote.service,
+#   com.google.android.tv.assistant), Google TTS, Chromecast (mediashell), ttvs and the four TCL USB
+#   players. TalkBack and Play Movies were already disabled and were left alone.
+# - setupwraith was safe here: dumpsys wifi showed every saved network under android.uid.system.
+# - sync, a 15 s wait, then one reboot: everything stayed disabled, usercenter included (it did not
+#   come back here, unlike the Brazil unit).
+# - launcher/ (built with tools/docker-build.ps1) became Home with stock tvlauncher disabled; after a
+#   reboot the TV goes FallbackHome -> launcher/ with no Live TV takeover (wm_set_resumed_activity).
+#   Pressed on the real remote by the owner, with no key helper enabled: Home, Input (TCL source
+#   picker), Settings and the mic (voice search) all work. The Inputs pill lists HDMI 1, HDMI 2, AV
+#   and Live TV.
+# - MemAvailable about 300 MB on the stock setup, about 370 MB with launcher/ as Home and a theme with
+#   a rotating wallpaper, uniform_tiles and advanced_effects; launcher/ PSS about 66 MB with that theme.
+#   gfxinfo over 24 D-pad moves: 0 janky frames of 563, 99th percentile 11 ms.
+# - Closing ADB: with USB debugging off and authorisations revoked, port 5555 still answered after
+#   Restart from the power menu; it refused only after the TV was unplugged for 30 s
+#   (tools/adb-closed.py).
+#
 # Known quirks on this firmware:
 # - The stock launcher declares HOME priority 2, so `cmd package set-home-activity` alone does not
 #   take Home while it is enabled (Home still opens it). Disabling it, as build-and-install.sh
@@ -83,6 +129,7 @@
 # com.tcl.settings                     # picture/sound settings
 # com.tcl.dashboard                    # "TCL HOME" tile; kept, only hidden in the launcher config
 # com.tcl.suspension                   # Quick Panel; kept, not tested without it
+# com.android.location.fused           # boot-looped a 43S5400A into recovery on V325 (#2803)
 # com.tcl.providers.config             # reported to drop Wi-Fi on the 65C725; not tried here
 # com.tcl.keyhelp                      # remote-key help/virtual keys; kept
 
@@ -130,3 +177,6 @@ com.tcl.imageplayer
 # com.tcl.dashboard                    # TCL HOME; kept on the EU/AP units above
 # com.tcl.suspension                   # Quick Panel; kept on the EU/AP units above
 # com.google.android.partnersetup      # includes an RLZ ping receiver
+
+# Additional choices on the Brazil unit only; uncomment only if wanted on your TV.
+# com.google.android.tv.assistant      # Assistant stub; disabled with katniss and tv.remote.service (voice off)

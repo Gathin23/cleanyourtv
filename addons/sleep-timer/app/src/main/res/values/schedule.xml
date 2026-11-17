@@ -1,0 +1,32 @@
+<resources>
+    <string name="sched_0">"TV schedule"</string>
+    <string name="sched_1">"Times belong to the selected calendar day. Exclusion periods block automatic wake only. Back cancels unsaved changes."</string>
+    <string name="sched_2">"Schedule: ON"</string>
+    <string name="sched_3">"Schedule: OFF"</string>
+    <string name="sched_4">"+ Add wake / sleep time"</string>
+    <string name="sched_5">"No wake: "</string>
+    <string name="sched_6">"Wake exclusion period"</string>
+    <string name="sched_7">"Edit dates"</string>
+    <string name="sched_8">"Delete"</string>
+    <string name="sched_9">"+ Add exclusion period"</string>
+    <string name="sched_10">"Save"</string>
+    <string name="sched_11">"Wake  "</string>
+    <string name="sched_12">"Sleep  "</string>
+    <string name="sched_13">"Add event"</string>
+    <string name="sched_14">"Wake"</string>
+    <string name="sched_15">"Sleep"</string>
+    <string name="sched_16">"Days of week"</string>
+    <string name="sched_17">"Cancel"</string>
+    <string name="sched_18">"Time"</string>
+    <string name="sched_19">"Select at least one day"</string>
+    <string name="sched_20">"End must be on or after start"</string>
+    <string name="sched_21">"Last day (included)"</string>
+    <string name="sched_22">"First day (included)"</string>
+    <string name="sched_23">"Monday"</string>
+    <string name="sched_24">"Tuesday"</string>
+    <string name="sched_25">"Wednesday"</string>
+    <string name="sched_26">"Thursday"</string>
+    <string name="sched_27">"Friday"</string>
+    <string name="sched_28">"Saturday"</string>
+    <string name="sched_29">"Sunday"</string>
+</resources>

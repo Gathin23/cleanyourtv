@@ -1,0 +1,6 @@
+{
+  "tv": "PRISM+ P4KA 4K AI TV (device SW6H, made by Skyworth/Coocaa)",
+  "os": "Android TV 11",
+  "brand": "PRISM+",
+  "notes": "Skyworth OEM board (Coocaa demo apps, smartdevice.* shelf/junk, MStar factory menus, Play Movies, feedback); stock Home is launcherx and the firmware re-enables it at every boot (in the list for a weekly check.py --fix); Google's setupwraith had to go with launcherx (Home fell to its RecoveryActivity), Skyworth's own copy stays and makes no HOME claim; Assistant, Chromecast and OTA kept"
+}

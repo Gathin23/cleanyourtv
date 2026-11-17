@@ -1,0 +1,23 @@
+plugins {
+    id 'com.android.library'
+}
+
+// Tatami itself: the plan, its two looks, the effects, the full-screen view, the effects list and the
+// screensaver. The apps that use it (app/ and home/app/) declare the activities and the screensaver.
+android {
+    namespace 'io.github.pbanddev.tatami'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 26
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}

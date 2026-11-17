@@ -1,0 +1,6 @@
+{
+  "tv": "SunWind SUN-LED32XS305 32\" (Yandex TV / YaOS, CVTE TP.MT9256.PB721, MediaTek MT9256), Russia",
+  "os": "Android 11",
+  "brand": "SunWind",
+  "notes": "Yandex ad ID, bug reports, screensaver, web player and Alice; Yandex Home stays enabled (CVTE) and Home goes to the launcher with `set-home-activity`; ADB only through the CVTE factory menu, `ro.adb.secure=0`: [notes](sunwind-sun-led32xs305/README.md)"
+}

@@ -1,6 +1,18 @@
 # Sony BRAVIA 4K GB (EU: device BRAVIA_ATV2_EU, product BRAVIA_ATV2). Android TV 9 (API 28).
-# Retail model reported on the same platform and firmware: KD-75XE8596.
+# Retail models reported on the same platform and firmware: KD-75XE8596, KD-65XD7505.
 # Firmware BRAVIA_ATV2_EU-user 9 PTT1.190515.001.S54 672201 release-keys
+#
+# Also confirmed 2026-10-26 on a Sony KD-65XD7505 (2016, EU, reports as BRAVIA 4K GB), same build, Wi-Fi.
+# Applied in four batches with screenshots between them; Home, the inputs and Settings kept working. Also
+# disabled by choice: com.google.android.katniss, com.google.android.tv.remote.service, com.sony.dtv.smartmediaapp,
+# com.sony.dtv.osat.music, screnmirroring.com, com.sony.dtv.tvxlauncher.titlelist, com.netflix.ninja,
+# com.amazon.amazonvideo.livingroom and com.vewd.core.integration.dia (the browser's UI; com.vewd.core.service
+# stayed on). launcher/ installed (live_tv_package com.sony.dtv.tvx, no key helper). Home and the disabled list held
+# through a reboot and a cold boot from mains, with no Live TV takeover. Home and Input work on a universal
+# remote; the original remote's app buttons were not tried. Ten days of use, nothing odd seen: boot_count went from
+# 1360 to 1374 (3 of those deliberate), and the most recent boots lasted about 80 s before standby; dropbox, which
+# held two days, had no crash, watchdog or kernel entry. No figure from before the list, so whether stock boots
+# as often is unknown. See #1592 for a KD-55XD8005 on this build.
 #
 # Also confirmed 2026-10-27 on a Sony XBR-49X705D, Latin America variant (product BRAVIA_ATV2_BR, model
 # BRAVIA 4K GB), same build: BRAVIA_ATV2_BR-user 9 PTT1.190515.001.S54 672201 release-keys. Wi-Fi.
@@ -13,6 +25,13 @@
 # HomeKeyService bound holding Volume Up moved one step per press instead of ramping (the key-repeat
 # loss in docs/devices/tcl-55p71b-g09-key-repeat.md, seen on this Sony too), so the helper was
 # removed again. Tested one day.
+#
+# Also confirmed 2026-11-05 on a Sony KD-55XE9005, Germany (device BRAVIA_ATV2_EU, model BRAVIA 4K GB), same build.
+# Applied in five batches with screenshots between them, together with the USB media lines and the Live TV lines at
+# the end, as Live TV is not watched there; com.sony.dtv.tvx stayed, as it carries the HDMI inputs. Every package was
+# disabled, including android.autoinstalls.config.sony.bravia and com.qterics.da.product, which the check above held
+# back on the XBR-49X705D. All stayed disabled across reboots. launcher/ installed; Home, HDMI and the remote's buttons
+# work. Channel Up/Down on Home open com.sony.dtv.tvx. Tested one day.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-gb/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-gb/debloat.txt
@@ -74,3 +93,27 @@ com.google.android.backdrop                    # ambient screensaver, replaced b
 # com.sony.huey.dlna.renderersettings
 # com.sonyericsson.dlna
 # com.google.android.tv.remote.service         # Android TV phone-app remote
+
+# Optional if Live TV is not watched: disabled on the KD-55XE9005. Keep com.sony.dtv.tvx, it carries the HDMI inputs.
+# com.sony.dtv.youview                         # YouView, a UK service
+# com.youview.tv.servicehost                   # YouView's reporting and update services
+# com.sony.dtv.hbbtvlauncher                   # HbbTV
+# com.sony.dtv.tuningconfirmation_dvbt         # DVB-T tuning prompt
+# com.sony.dtv.tuningconfirmation_dvbs         # DVB-S tuning prompt
+# com.sony.dtv.tvxlauncher.titlelist           # Recorded Title List tile
+
+#
+# Also confirmed on a Sony KD-55XE9005 (Italy, BRAVIA_ATV2_EU), Android TV 9,
+# build PTT1.190515.001.S54 / 672201.
+# Conservative debloat: only com.sony.dtv.promos, tv.samba.ssm and
+# com.sony.dtv.sonyselect were disabled initially.
+# com.google.android.tvlauncher was disabled only after installing and
+# verifying CleanYourTV Aurora as the replacement Home launcher.
+# Setting HOME via set-home-activity alone did not make the remote Home key
+# consistently open the replacement launcher; disabling the stock launcher
+# resolved the issue.
+# Live TV, EPG, HbbTV and HDMI-CEC were checked after reboot and remained working.
+# Chromecast, Google Assistant, ambient screensaver and Sony TV services were retained.
+# This is a conservative alternative to the full package list above.
+# Do not apply the entire list if the goal is to reproduce this setup.
+#

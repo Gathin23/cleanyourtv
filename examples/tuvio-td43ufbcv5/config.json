@@ -1,0 +1,19 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "ru.yourok.num",
+    "studio.scillarium.ottnavigator",
+    "xyz.anilabx.app"
+  ],
+  "hidden_apps": [
+    "com.mediatek.wwtv.tvcenter"
+  ],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "columns": 4,
+  "rows_below_dock": 0,
+  "library_button": true,
+  "show_library_pill": false,
+  "app_library": true,
+  "background_color": "#000000",
+  "wallpaper": false
+}

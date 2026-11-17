@@ -159,11 +159,10 @@ final class CalendarPanel extends LinearLayout {
     }
 
     private void month(BikramSambat today) {
-        BikramSambat first = new BikramSambat(today.year, today.month, 1).plusMonths(offset);
-        if (first == null) { // Past either end of the table: stay on the last month that has data.
-            offset -= Integer.signum(offset);
-            first = new BikramSambat(today.year, today.month, 1).plusMonths(offset);
-        }
+        BikramSambat current = new BikramSambat(today.year, today.month, 1);
+        // Past either end of the table, by Next/Previous or by today moving: stay on the edge month that has data.
+        offset = current.clampMonths(offset);
+        BikramSambat first = current.plusMonths(offset);
         title.setText(NepaliDate.monthTitle(first));
         LocalDate start = first.toGregorian();
         int lead = NepaliDate.weekday(start), length = BikramSambat.daysInMonth(first.year, first.month);

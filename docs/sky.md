@@ -25,7 +25,7 @@ day, which is what makes it drift instead of switching at fixed hours.
 
 It sits behind everything, over the wallpaper when there is one, and the palette was chosen dark on
 purpose: the white clock, the greeting, the hero name and the dock band all keep their contrast at
-the default 60.
+60, the value in the example above.
 
 ## Where the sun is
 

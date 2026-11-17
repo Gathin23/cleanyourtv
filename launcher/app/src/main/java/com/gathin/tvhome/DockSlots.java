@@ -45,6 +45,11 @@ final class DockSlots {
         return n;
     }
 
+    /** Whether a tile sits in the dock row: every tile of a single row, else the first `dockSize` of the grid. */
+    static boolean inDockRow(boolean dockRow, boolean singleRow, int position, int dockSize) {
+        return dockRow && (singleRow || position < dockSize);
+    }
+
     /** A position focus can land on: an empty slot sends it to the last dock app. */
     static int focusable(int position, int docked, int empty) {
         return empty > 0 && position >= docked && position < docked + empty ? docked - 1 : position;

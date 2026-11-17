@@ -1,0 +1,94 @@
+# CHiQ M75Q10S 75" 4K (Changhong "AI PONT MAX FF", product G4FFDVB87, device ventura, MediaTek mt5889)
+# Google TV 14 (SDK 34), firmware UKNV.260805.001, about 3.7 GB RAM, Wi-Fi, Hebrew-market unit (list is
+# language-neutral). CVTE/MediaTek firmware in the same family as examples/sharp-aquos-tve23a (UKNV build,
+# mt5889) and the Changhong/Homwee AI PONT sets (examples/chiq-gtvu65, examples/dexp-a651): the vendor
+# layer is Homwee (com.homwee.*), Live TV and the tuner are MediaTek.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/chiq-m75q10s/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/chiq-m75q10s/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER).
+# Live TV app: com.mediatek.wwtv.tvcenter; HDMI/tuner inputs: com.mediatek.tvinput.
+#
+# Applied and verified on 2026-11-15: screenshots after each batch, Home replaced with the repo launcher
+# and confirmed (dumpsys mFocusedApp, then a reboot), the two stock-home lines below disabled by
+# tools/disable.sh with its guards, one further reboot: the read-back after it listed the same disabled
+# packages, nothing came back, Home and ADB both came back. A same-day result, not a several-day soak -
+# say so if you reuse the list.
+# Port 5555 already listened with USB debugging on (service.adb.tcp.port=5555) and refused afterwards;
+# the Wireless debugging port did too (adb mdns services lists it as _adb-tls-connect._tcp).
+#
+# The saved Wi-Fi network belonged to android.uid.system, not setupwraith (`dumpsys wifi | grep -o
+# 'cname=[^ ]*'`), so setupwraith could go without losing the network. Its RecoveryActivity read
+# enabled=false from the factory, but the whole package still has to be disabled: with only launcherx
+# gone, Home falls to it on this firmware family (examples/chiq-gtvu65 sees the same).
+# CVTE-family rule: the new launcher was made Home (`cmd package set-home-activity`), the TV rebooted
+# once and Home plus ADB were confirmed before any key helper was considered (#741). The helper was left
+# off in the end (the volume-ramp trade). Without launcherx the remote's gear button and the
+# KEYCODE_ALL_APPS / GUIDE / PROFILE_SWITCH / MACRO_1 keys do nothing (they mapped to launcherx's
+# global-key receivers); the Netflix key opens the Netflix app through com.mstar.netflixobserver inside
+# com.mediatek.tv.service, with com.netflix.ninja commented out below it stays dead when that goes.
+# What opens at power-on was not checked from the outside (ADB was closed first); the DEXP AI PONT note
+# (examples/dexp-a651) says the firmware starts its Live TV app at power-on, and launcher/config.xml has
+# power_on_home + HOME_KEY_SERVICE for that.
+#
+# Factory and test packages present on the board (com.homwee.factory, com.mediatek.tv.factorykey):
+# never launch one to look (PROMPT.md). Both were read with `dumpsys package` only. com.homwee.factory
+# also carries the input-key broadcast receivers, so it is not disabled here.
+#
+# KEEP, even though the names look like bloat:
+# - com.mediatek.autopair: Bluetooth remote pairing (Airoha BLE) and the volume receiver
+# - com.homwee.factory (input key broadcasts), com.homwee.synckey (remote keys)
+# - com.homwee.dynamicbacklight, com.homwee.lightsensorservice (picture)
+# - com.homwee.upgrade and com.homwee.dmt.upgrade: firmware updates
+# - com.mediatek.tv.service / com.mediatek.tvinput / com.google.android.tv.inputplayer /
+#   com.mediatek.tv.inputplayeroverlay (Live TV, tuner and HDMI), com.mediatek.wwtv.tvcenter /
+#   setupwizard / webview, and the mediatek/homwee overlay packages, globalkeyoverlay included
+# - com.gdch.gameoptimiser: the firmware maps remote global-button keys (STAR, POUND, CLEAR,
+#   BUTTON_2) to its GlobalKeyReceiver; read with `dumpsys window policy`
+# - com.homwee.mmp.fileexplorer / com.homwee.mmp.imageplayer: the USB media and photo players
+# - com.mstar.android.tv.disclaimercustomization (first-boot disclaimer), com.android.devicelockcontroller
+#   (tools/disable.sh protects it)
+# - Play Store, Play services, Gboard, com.google.android.katniss + com.google.android.tv.remote.service
+#   (the mic button), Chromecast receiver and nearby half-sheet, your own user apps (none are listed)
+
+# --- Telemetry, ad and personalisation services ---
+tv.anoki.acr.anokiacroptin                   # Anoki ACR: recognises what is on screen
+com.google.android.feedback
+com.android.tv.feedbackconsent               # feedback consent dialog
+com.android.adservices.api                   # Android ad services
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# --- Homwee store, help and partner attribution ---
+com.homwee.store
+com.homwee.help
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows for the stock home; reboot-checked
+com.google.android.partnersetup              # Play partner-attribution pings at boot
+
+# --- Background services nobody uses on a TV ---
+com.google.android.syncadapters.calendar
+com.android.providers.calendar               # calendar storage (calendar sync is off above)
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.dynsystem                        # Dynamic System Updates (GSI loader), boot receiver
+com.android.wallpaperbackup                  # wallpaper backup agent
+com.google.android.tts                       # Google Text-to-Speech; voice typing does not use it
+
+# --- Stock Google TV home and setup wizard ---
+# Disable only after installing and verifying the new launcher! tools/disable.sh skips both while
+# nothing else on the TV answers HOME (the Home guard):
+# Disabling setupwraith gives Home back but costs casting (Chromecast/Cast to this TV); re-enable it if you cast.
+com.google.android.tungsten.setupwraith      # first-run wizard; claims HOME with .RecoveryActivity
+com.google.android.apps.tv.launcherx         # stock Google TV home
+
+# --- Off by choice on the tested set; uncomment what you also want gone ---
+# com.amazon.amazonvideo.livingroom          # Prime Video
+# com.netflix.ninja                          # Netflix (the remote's Netflix key opens only this app)
+# com.google.android.youtube.tvmusic         # YouTube Music
+# com.google.android.play.games              # Google Play Games
+# com.google.android.marvin.talkback         # screen reader; re-enable if you use it
+# com.google.android.apps.tv.dreamx          # ambient screensaver (idle photos)
+# com.homwee.mmp.screenshare                 # phone screen share
+# com.homwee.multiscreenshare                # multi-screen share
+# com.mediatek.androidbox                    # its MiracastService is the Miracast receiver

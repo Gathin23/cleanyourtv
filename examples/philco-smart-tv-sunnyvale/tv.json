@@ -1,0 +1,6 @@
+{
+  "tv": "Philco Smart TV (Skyworth-built, sunnyvale, MediaTek; also sold as the Britania Smart TV), Brazil",
+  "os": "Android TV 14",
+  "brand": "Philco",
+  "notes": "Skyworth shop demos, home-row customizer, DailyPlay recommendations and Play partner auto-installs; Google feedback and Android ad services; FAST channels, Assistant, Play Games and ambient mode off by choice (commented out); Live TV opens at every power-on, power_on_home brings Home back; port 5555 opens with USB debugging alone; reboot-checked on a Philco and a Britania unit; a held Volume Up still repeats with the Home key helper on; 0.9 GB"
+}

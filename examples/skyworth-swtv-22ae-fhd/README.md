@@ -16,6 +16,23 @@ written on Android 14 (SDK 34), firmware `UKNV.260211.001`, and this Android 11 
 list. An entry this build does not ship reads the same as one it does, so run `pm list packages` and
 comment out what your set does not have before applying it.
 
+## Third unit: sold as Spanio (2K NSTV)
+Same firmware (`UKNV.260211.001`, Android 14) and `ro.product.odm.model` `SWTV-22AE-FHD`; `ro.product.model` reads
+`2K NSTV` and the brand string is the maker's own. Tested on 2026-10-31, one long session, with a reboot after the
+last change; not yet several days. Everything in `debloat.txt` was applied except three lines, see below.
+
+- **Remote app button:** with `com.smartdevice.dailyshortcut`, `com.smartdevice.dailymanage` and
+  `com.smartdevice.myapp` disabled the button did nothing. The kernel logs it as `KEY_EDIT`, Skyworth's
+  `SkwGlobalKeyReceiver` receives it, and the owner re-enabled all three; the button then opened Skyworth's panel.
+  Those three are commented out in the list for that reason.
+- **Remote gear button:** it sends Android's `KEYCODE_NOTIFICATION` (83), which only the stock Google TV launcher
+  answered. With the stock launcher disabled it did nothing. The launcher's `HomeKeyService` with
+  `settings_key_keycodes` set to `[83]` opened Settings, but any bound key-filtering service made a held volume
+  key step once per press (also with the helper in its own process, and with `consume_volume_keys`). The owner kept
+  smooth volume and left the gear button unmapped.
+- **Casting:** not re-tested after setupwraith was disabled.
+- **Private DNS** (`dns.adguard-dns.com`) worked: YouTube still loaded.
+
 ## Stock launcher
 - **Launcher:** `com.google.android.apps.tv.launcherx` (`.home.HomeActivity`)
 - When restoring, pass it to `tools/restore.sh` as the second argument; when building/installing, pass `STOCK_LAUNCHER=com.google.android.apps.tv.launcherx` to `launcher/build-and-install.sh`.
@@ -57,3 +74,30 @@ STOCK_LAUNCHER=com.google.android.apps.tv.launcherx TV_HOST=<tv ip> launcher/bui
 - Debloat applied cleanly
 - CleanYourTV launcher (`com.gathin.tvhome`) installed and set as default HOME
 - Stock `com.google.android.apps.tv.launcherx` disabled
+
+## Additional SWTV-22SA-FHD units (28 October 2026)
+
+Owner report: [#2726](https://github.com/Gathin23/cleanyourtv/issues/2726).
+
+The similar **SWTV-22SA-FHD** model also reports `umeda` and product `SW7_B`.
+Two separate units were inspected during setup; this was not an Android 11-to-14
+upgrade test, and their builds do not replace the SWTV-22AE-FHD information above.
+
+| Reported model | Android / SDK | Firmware build |
+| --- | --- | --- |
+| SWTV-22SA-FHD | 11 / 30 | `RTM6.230109.128` |
+| SWTV-22SA-FHD | 14 / 34 | `UKNV.260211.001` |
+
+On these units, `cmd package set-home-activity` reported success while the Home
+resolver still selected `com.google.android.apps.tv.launcherx/.home.HomeActivity`.
+Do not use that success message alone as proof of a completed Home handover.
+On the Android 14 unit, the Home query listed launcherx at priority 2 and
+`com.google.android.tungsten.setupwraith/.RecoveryActivity` at priority 1.
+
+Only a subset of the optional telemetry/demo packages was disabled, in small
+batches. On the Android 14 unit, the post-reboot check found recordactivation,
+recommendation, Google feedback, the two store demos and the launcher customizer
+still disabled; recommendation had already been disabled before the session.
+The full list in this folder, its factory/test entries and the setupwraith removal
+path were **not** validated on these units. This note adds observations only; it
+does not expand the tested package list or change its defaults.

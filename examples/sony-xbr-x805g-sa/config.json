@@ -1,0 +1,17 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.spotify.tv.android",
+    "com.stremio.one"
+  ],
+  "hidden_apps": [
+    "com.sony.dtv.tvx",
+    "com.sony.dtv.tvxlauncher.programguide",
+    "com.ndcsolution.androidtv.leankeykeyboard"
+  ],
+  "live_tv_package": "com.sony.dtv.tvx",
+  "columns": 5,
+  "launcher_settings_button": true,
+  "inputs_connected_only": true
+}

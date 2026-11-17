@@ -67,7 +67,7 @@ the app buttons, so the kernel reports `KEY_UNKNOWN` (scancode 240) and TCL's in
 | YouTube | `0x000c0057` | `BUTTON_3` (190) | a global key: Android sends it to launcherx's `GlobalKeyListener_Receiver`, no window sees it |
 | Apple TV | `0x000c0086` | 4160 | reaches the focused window, nothing opens |
 | TCL tv+ | `0x000c0150` | 4184 | TCL's `TclShortCutKeyManager` starts `tcl://com.tcl.tvplus`, which fails with TCL TV+ disabled |
-| Disney+ | | | still opens: TCL starts it itself |
+| Disney+ | `0x000c004d` | 4141 | still opens: TCL starts it itself (codes from the fifth unit) |
 
 Input, Back, Home, the Assistant button and volume work as before. `dumpsys window policy` lists the global keys
 that go to launcherx on this build: `GUIDE`, `BUTTON_3`, `PROFILE_SWITCH`, `FEATURED_APP_1` and `MACRO_1`.
@@ -126,3 +126,90 @@ wizard disabled for a custom Home app. Seen 22 and 23 October 2026.
 - **Reinstalling the Home app can switch the TV to an input.** While Home restarts, TCL's player `com.tcl.tv` is next
   in the back stack: it resumes, re-tunes its last input (here the AirPlay input) and stays in front.
   `am force-stop com.tcl.tv` before `pm install -r` avoids it.
+
+## Fifth unit: a 98-inch set on AU14
+
+A 98-inch `G08_4K_US` set, model "Smart TV Pro", client type `TCL-NA-MT9653-S1`, firmware `UTT2.250416.001 AU14`
+(older than the AU16 above), on Wi-Fi, with a soundbar on HDMI eARC. Its firmware reports `ro.odm.tcl.panel_size`
+55, so that property says nothing about the real size. Set up on 13 November 2026 with this list less AirPlay and
+Prime Video (kept by the owner), plus `com.tcl.ttvs` and `com.tcl.UpdatePeripheral`, which the owner wanted off
+(no firmware or soundbar updates); then launcherx and the setup wizard for the reference launcher. Two days of use,
+several reboots.
+
+- **`com.tcl.ttvs` turned off cleanly.** `dumpsys package` shows what it carries: TCL's firmware updater
+  (`versionUpdateApp`, the System update screens), BI telemetry, the Samba TV ACR service (`SambaVideoService`),
+  T-Cast and Alexa hooks. With it disabled, Home, the Input menu, Live TV, HDMI switching from an app, Settings,
+  Cast and AirPlay all kept working. The cost: Settings > System > About > System update needs it, so the TV takes
+  no firmware updates until it is enabled again.
+- **AirPlay never showed up, and the debloat was not why.** `logcat` repeated
+  `FAIRPLAY_CA: ... Failed to call MTTZ_MFI_CopyCertFromTEE()` and `FairplayKey status = false`: the set had no Apple
+  AirPlay key installed. Re-enabling every package from this list and rebooting changed nothing. Opening Settings >
+  System > AirPlay and HomeKit Settings > Apple AirPlay and HomeKit made `com.tcl.airplay2` download the key from TCL
+  and write it into the TEE (SELinux denials on `/dev/tee0` are logged during the write, but it succeeds). The TV
+  then advertised `_airplay._tcp`, and the key stayed through reboots with `com.tcl.ttvs` disabled. Details in
+  [TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#working-on-the-tv).
+- **Energy Modes > Increased ("Always connected") leaves Low Power Standby on.** `low_power_standby_enabled` stays
+  1 and the firmware sets it back to 1 at every boot, so apps lose the network while the TV sleeps
+  (`blocked=LOW_POWER_STANDBY` in `dumpsys netpolicy`). Only the system and the shell can write that setting.
+## Fifth unit: TCL 55Q77K with Google TV's home kept
+TCL 55Q77K, model "Smart TV Pro", product `G08_4K_US`, the same firmware `UTT2.250416.001 AU16`, on Wi-Fi with
+the TV speakers, remote `BT_RC923A_B1`, a Google account signed in. Set up on 14 November 2026 with
+`tools/disable.sh`: this list without AirPlay (kept by that owner) and with launcherx left enabled, plus Pluto TV
+and the Roku app, which this set had in /data/app (commented out in the list). The saved Wi-Fi network belonged to
+the setup wizard, so it was forgotten and joined again in Settings before the wizard was disabled, as in the notes
+above. Everything came through a reboot the same day, and each button below was pressed on the real remote.
+### Why launcherx stayed enabled
+With launcherx disabled and the new launcher as Home, the mic showed its listening icon in the corner and nothing
+else. The Assistant ends the session a few milliseconds after it starts, and `logcat` has:
+```
+I/katniss_search_KatnissVoiceInteractionSession: #onHandleAssist
+I/katniss_search_KatnissVoiceInteractionSession: AccountIdMissing
+```
+It looks like a third form of the voice failures in
+[TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#working-on-the-tv) ("Sorry, not available in this profile yet"
+and the voice results that never open): the account was signed in, and enabling launcherx again fixed it. The
+Settings, Netflix and YouTube buttons did nothing in the same state. What kept all of them:
+- launcherx enabled, and `stock_home_redirect` set to `com.google.android.apps.tv.launcherx` in
+  `launcher/app/src/main/res/values/config.xml`.
+- `launcher/build-and-install.sh` run in `launcher/` with `STOCK_LAUNCHER=none HOME_KEY_SERVICE=1`. The script
+  checks that Home resolves to the new launcher, so it was run while launcherx was still disabled, and launcherx
+  was enabled afterwards with `pm enable --user 0 com.google.android.apps.tv.launcherx`.
+- Home and power-on land on the new launcher. Google TV shows for a moment at boot before the redirect.
+- The mic, Netflix, YouTube, Settings and Apple TV buttons then work as on a stock set. Unlike the Philips TA5 in
+  [App buttons stopped working after launcherx was re-enabled for the redirect](../../docs/TROUBLESHOOTING.md#app-buttons-stopped-working-after-launcherx-was-re-enabled-for-the-redirect),
+  no `appops` step was needed.
+- The same helper answers `app_keys` for the buttons whose apps the list disables. These were the owner's
+  picks; any package works:
+  ```xml
+  <item>4099:com.stremio.one</item>          <!-- Prime Video button -->
+  <item>4141:com.spotify.tv.android</item>   <!-- Disney+ button, free once Disney+ is disabled -->
+  <item>4184:com.cbs.ott</item>              <!-- TCL TV+ button, free once TCL TV+ is disabled -->
+  ```
+### Held volume with the remapped buttons
+The trade the third unit did not measure, measured here with `key_filter` on:
+- While the helper filters keys, a held Volume button moves one step and stops.
+- `consume_volume_keys` changed nothing: the helper never receives the volume keys on this board, as on the Xiaomi
+  MOEU0 and Sony VU3 in
+  [TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating).
+- `"volume_pauses_filter": true` in the theme's `config.json`, pushed with `tools/theme.sh`, brings the ramp back
+  as tap-then-hold: tap Volume once, then hold it within 4 s. A hold from cold still moves one step. During those
+  4 s a remapped button goes to TCL instead and nothing opens; press it again after the pause.
+- It is a theme key, so a theme pushed later needs it in its own `config.json` too.
+### More remote buttons
+Read from `getevent -lt` and the `TIDD:` lines in `logcat`, as for the second unit, with launcherx enabled:
+| Button | HID usage | Keycode | Does |
+| --- | --- | --- | --- |
+| Input | `0x000c0049` | `TV_INPUT` (178) | TCL's input bar along the bottom (`com.tcl.suspension`) |
+| ☰ | `0x000c0050` | 4514 | TCL's quick settings panel |
+| 123 | `0x000c0052` | 4056 | away from Live TV, TCL shows "This page does not support virtual remote" |
+| ⓘ | `0x000c0076` | `INFO` (165) | nothing on Home |
+| Channel + / - | `0x000c009c` / `0x000c009d` | `CHANNEL_UP` (166) / `CHANNEL_DOWN` (167) | nothing on Home |
+### Privacy settings
+- **TCL:** Settings > Privacy > Terms & Privacy (`com.tcl.useragreement`). Unticking "Terms of User Experience
+  Improvement Program" and "Share Diagnostics Data" and pressing Agree moves `settings get global tcl_uxp_status`
+  from 1 to 0. `com.tcl.ttvs` still starts `BIService`, `UsagestService` and `TrackDataService` after a reboot, so
+  whether they send less cannot be seen from the shell. Its `SambaVideoService` (Samba TV ACR) was not running.
+- **Google:** Usage & Diagnostics (Settings > Privacy) is a slice from the setup wizard
+  (`com.google.android.settings.usage.UsageDiagnosticsPreferenceProvider` in setupwraith), so with the wizard
+  disabled OK on it opens nothing. Switch it off before applying the list, or enable setupwraith, change it, and
+  apply the list again.

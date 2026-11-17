@@ -3,7 +3,8 @@
 # Same com.jamdeo.* / com.hisense.* namespace as examples/vidda-mt9653/, an older and
 # stricter firmware: several of its locks are documented below.
 # Stock launcher: com.jamdeo.tv.vod (聚好看 JuUI). It STAYS ENABLED on this list — see
-# the Home-key note; there is no launcher swap here, only the debloat.
+# the Home-key note. The C1S kept 聚好看 as Home; on the C1 unit (below) the reference
+# launcher took the Home key with 聚好看 still enabled, see README.md in this folder.
 #
 # Apply:   TV_HOST=<projector ip> tools/disable.sh examples/vidda-c1s-mt9669/debloat.txt
 # Undo:    tools/restore.sh examples/vidda-c1s-mt9669/debloat.txt
@@ -50,6 +51,18 @@
 # with a focus check between batches, then two cold reboots. Home, Wi-Fi, casting, IMEs,
 # Bluetooth remote, voice, 聚好看 playback all checked the same day; not yet lived with
 # for weeks.
+#
+# Second unit: Vidda C1 4K tri-colour laser projector (China), the same device MT9669, board
+# m7642 and build PPR2.180905.006.A1 (02.02.60.02), VIDAA 6.6, 3.6 GB, ro.adb.secure=1.
+# Nothing was disabled at the factory on this one. No Aerial: the active screensaver stayed
+# the desk clock, so com.jamdeo.screensaver is not the dream either; the screensaver timeout
+# was not waited out after disabling it. Two packages the C1S notes do not name were found
+# and disabled (cloudfalcon, fusion.android.tv.demo, marked C1 below); the owner's own picks
+# are the commented block at the end. Applied in six batches with a screenshot between them,
+# then reboot-checked twice on 2026-11-01: every entry stayed disabled; Wi-Fi, the source
+# panel and the Bluetooth remote kept working (casting was not tried), and free memory went
+# from about 1.87 GB to 2.38 GB. The 双11 skin and side banner on 聚好看's home
+# went with the ad services; its sponsored rows did not. Not yet lived with for days.
 
 # Hisense telemetry, reporting and push
 com.hisense.hitv.das
@@ -61,6 +74,7 @@ com.hisense.service.message                     # the vendor push channel
 com.hisense.business.ad                         # ships Alibaba Baichuan + CIBN shopping SDKs; installed as a user app
 com.hisense.service.ad                          # its WatchingAccessibilityService was registered in enabled_accessibility_services
 com.hisense.tv.weather                          # weather card, a content feed
+com.hisense.cloudfalcon                         # C1: user app hosting com.hisense.service.ad's boot and network-change receivers
 
 # Retail, hotel, factory and leftovers
 com.hisense.demonstrate
@@ -68,7 +82,8 @@ com.hisense.hotelmenu
 com.hisense.autotest
 com.hisense.electronictutorial                  # e-manual
 com.hisense.ar.baike
-com.jamdeo.tv.fte                               # first-run wizard, long done
+com.jamdeo.tv.fte                               # first-run wizard, long done; shares android.uid.system, Wi-Fi survived
+fusion.android.tv.demo                          # C1: RetailDisplay store demo in /system/product/priv-app
 # com.hisense.usbupgrade                        # kept: the USB firmware upgrade and recovery path
 
 # Duplicate / unused lifestyle apps (casting stacks deliberately kept)
@@ -81,6 +96,19 @@ com.jamdeo.screensaver
 
 # AOSP leftovers on a TV
 com.android.printspooler
+
+# The C1 owner has these off as well; they stay on for everyone else. Uncomment what you don't use.
+# com.keylab.speech.view.vidaa                  # voice UI; the remote's mic key stops working (the C1S owner keeps it)
+# com.android.wechathci                         # WeChat photo push: an always-on WebService process and WechatAD pages
+# com.audiocn.karaoke.micmanager                # karaoke mic manager: boot, network, screen and USB receivers, a resident service
+# com.hisense.smartimages                       # HiSmartImage screen recognition: ScreenCapService, SIWindowMonitorService accessibility
+# com.hisense.familymessage                     # 家庭留言 family message board
+# com.vision.palette                            # AI 画板
+# com.speech.enchatroom                         # AI 英语聊天室, pushed as a user app in 2025
+# com.hisense.aiot                              # smart-home and IR appliance control
+# Streaming apps this set has off: com.hunantv.license (芒果TV), com.newtv.cboxtv (央视频TV),
+#   com.ju.miguvideoTV.cmcc (咪咕视频), com.vcinema.client.tv (华数南瓜电影), com.tencent.start.tv
+#   (腾讯START). JuUI tiles that deep-link into one of them stop opening.
 
 # ---------------------------------------------------------------------------------------------
 # Do NOT disable (checked on this device):

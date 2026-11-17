@@ -6,22 +6,29 @@ there, both ended in a FileNotFoundError traceback - exit 1 - before, which is t
 gives. The script's own docstring names 2 for "what it was given cannot be read", and `--font` on a path that is
 not there already exits 2 through ap.error, so this is one rule applied to its other two paths.
 
-Every test runs the real script in a subprocess, since the exit status and the line on stderr are what a
-maintainer sees; the trees come from tests/test_gen_tables.py, so a valid checkout is built the same way there.
+Path checks run the real script in a subprocess, since the exit status and the line on stderr are what a
+maintainer sees. Metadata read failures are injected at the file read so they work across platforms; the trees
+come from tests/test_gen_tables.py, so a valid checkout is built the same way there.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import contextlib
+import errno
+import io
 import json
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tests"))
 sys.path.insert(0, str(ROOT / "tools"))
 from test_gen_tables import add, tree, tv  # noqa: E402  (the small checkout the other gen_tables tests use)
+import gen_tables  # noqa: E402
 
 SCRIPT = ROOT / "tools" / "gen_tables.py"
 
@@ -35,6 +42,33 @@ def run(*args, cwd=None):
 def valid(tmp):
     """The small checkout tests/test_gen_tables.py builds: examples/ with two folders and the three files."""
     return tree(tmp, [("tcl-a", tv("TCL A", "TCL")), ("sony-b", tv("Sony B", "Sony"))])
+
+
+class FontTest(unittest.TestCase):
+    def test_an_empty_font_is_refused_before_writing_tables_or_adopting_metadata(self):
+        # An unset shell variable in --font "$FONT" is an explicit unusable path, not an omitted option.
+        for mode in ("rewrite", "check", "adopt"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as tmp:
+                root = valid(tmp)
+                args = ["--root", str(root), "--font", ""]
+                if mode == "adopt":
+                    add(root, "tcl-d", None)
+                    patch = root / "pr.diff"
+                    patch.write_text("| `tcl-d/` | TCL D | Android TV 11 | ads off |\n", encoding="utf-8")
+                    args += ["--adopt", str(patch)]
+                else:
+                    add(root, "tcl-c", tv("TCL C", "TCL"))
+                    if mode == "check":
+                        args += ["--check"]
+                before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                code, out, err = run(*args, cwd=root)
+                after = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                self.assertEqual(after, before, "a refused font must not publish tables or metadata")
+                self.assertEqual(code, 2, err)
+                self.assertEqual(out, "")
+                self.assertIn("font", err)
+                self.assertIn("''", err)
+                self.assertNotIn("Traceback", err)
 
 
 class RootTest(unittest.TestCase):
@@ -64,6 +98,38 @@ class RootTest(unittest.TestCase):
             code, _, err = run("--root", str(root), "--check")
             self.assertEqual(code, 2, err)
             self.assertIn(f"--root '{root}'", err)
+
+    def test_a_root_the_filesystem_refuses_to_stat_is_the_not_read_exit(self):
+        # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a --root whose name is
+        # longer than NAME_MAX - or one under a folder this user may not traverse - ended the run in
+        # that OSError as a traceback, exit 1: the answer the README-tables job reads as "the tables
+        # are out of date", over a run that read nothing at all.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / ("a" * 300)
+            try:
+                os.stat(root)
+            except OSError:
+                pass
+            else:
+                self.skipTest("this filesystem stats a 300-character name")
+            code, out, err = run("--root", str(root), "--check")
+            self.assertEqual(code, 2, err)
+            self.assertIn(f"--root '{root}'", err)
+            self.assertIn("cannot be looked at", err)
+            self.assertIn("Nothing was read or written", err)
+            self.assertNotIn("Traceback", err)
+            self.assertEqual(out, "")
+
+    def test_an_os_error_from_the_root_check_is_the_same_reason(self):
+        # The same branch without a filesystem that refuses one: a root this user may not look at, on
+        # any platform, in-process - the shape MetadataReadTest injects for the same reason.
+        refused = PermissionError(errno.EACCES, "Permission denied")
+        with mock.patch.object(Path, "is_dir", side_effect=refused):
+            patch, reason = gen_tables.read_inputs(Path("/somebody elses checkout"), None)
+        self.assertIsNone(patch)
+        self.assertIn("/somebody elses checkout", reason)
+        self.assertIn("Permission denied", reason)
+        self.assertIn("Nothing was read or written", reason)
 
     def test_a_folder_that_is_not_a_checkout_names_what_is_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -125,7 +191,8 @@ class AdoptTest(unittest.TestCase):
             root = valid(tmp)
             code, out, err = run("--root", str(root), "--adopt", tmp)
             self.assertEqual(code, 2, err)
-            self.assertIn("Is a directory", err)
+            # Windows refuses to open a folder with "Permission denied" where POSIX says "Is a directory".
+            self.assertIn("Permission denied" if sys.platform == "win32" else "Is a directory", err)
             self.assertIn("Nothing was written", err)
             self.assertEqual(out, "")
 
@@ -139,6 +206,44 @@ class AdoptTest(unittest.TestCase):
             self.assertIn("cannot read ''", err)
             self.assertIn("Nothing was written", err)
             self.assertEqual(out, "")
+
+    ROW = "| `tcl-x/` | TCL X | Android TV 11 | notes |"
+
+    def adopted(self, tmp, payload):
+        """(exit status, stdout, stderr, tv.json path, README.md bytes before) of --adopt on a patch holding these bytes."""
+        root = valid(tmp)
+        add(root, "tcl-x", None)
+        before = (root / "README.md").read_bytes()
+        patch = Path(tmp) / "pr.diff"
+        patch.write_bytes(payload)
+        code, out, err = run("--root", str(root), "--adopt", str(patch))
+        return code, out, err, root / "examples" / "tcl-x" / "tv.json", before
+
+    def test_a_utf16_patch_is_adopted_like_a_utf8_one(self):
+        # Windows PowerShell 5.1 `gh pr diff N > pr.diff` writes UTF-16LE with a BOM.
+        diff = f"diff --git a/examples/README.md b/examples/README.md\n@@ -1,1 +1,2 @@\n+{self.ROW}\n"
+        for name, payload in (("utf-16-le", diff.encode("utf-16")), ("utf-16-be", b"\xfe\xff" + diff.encode("utf-16-be"))):
+            with self.subTest(name), tempfile.TemporaryDirectory() as tmp:
+                code, out, err, tv_json, _ = self.adopted(tmp, payload)
+                self.assertEqual(code, 0, err + out)
+                self.assertEqual(json.loads(tv_json.read_text(encoding="utf-8"))["tv"], "TCL X")
+
+    def test_a_utf8_bom_does_not_drop_the_first_row(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out, err, tv_json, _ = self.adopted(tmp, b"\xef\xbb\xbf" + f"+{self.ROW}\n".encode("utf-8"))
+            self.assertEqual(code, 0, err + out)
+            self.assertEqual(json.loads(tv_json.read_text(encoding="utf-8"))["tv"], "TCL X")
+
+    def test_a_patch_that_is_not_text_exits_2_and_writes_nothing(self):
+        for payload in (b"\x80\x81", b"\xff\x00\xd8"):
+            with self.subTest(payload=payload), tempfile.TemporaryDirectory() as tmp:
+                code, out, err, tv_json, before = self.adopted(tmp, payload)
+                self.assertEqual(code, 2, err)
+                self.assertIn("is not UTF-8 or UTF-16 text. Nothing was written.", err)
+                self.assertNotIn("Traceback", err)
+                self.assertEqual(out, "")
+                self.assertFalse(tv_json.exists())
+                self.assertEqual((Path(tmp) / "README.md").read_bytes(), before)
 
     def test_the_root_is_judged_before_the_patch_is_applied(self):
         # A readable patch and a root with nothing of the repository in it: no tv.json may appear.
@@ -198,6 +303,54 @@ class CheckAdoptTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = valid(tmp)
             self.assert_conflict(*run("--root", str(root), "--check", "--adopt", "", cwd=root))
+
+
+class MetadataReadTest(unittest.TestCase):
+    def assert_unreadable_metadata(self, mode):
+        for error in (PermissionError(errno.EACCES, "metadata access denied"),
+                      OSError(errno.EIO, "metadata read failed")):
+            with self.subTest(mode=mode, error=error.errno), tempfile.TemporaryDirectory() as tmp:
+                root = valid(tmp)
+                metadata = root / "examples" / "tcl-a" / "tv.json"
+                patch = Path(tmp) / "pr.diff"
+                patch.write_text("| `tcl-d/` | TCL D | Android TV 11 | ads off |\n", encoding="utf-8")
+                add(root, "tcl-d", None if mode == "adopt" else tv("TCL D", "TCL"))
+                # A normal rewrite would change the stale tables, and --adopt would create this tv.json.
+                before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                read_text = Path.read_text
+
+                def read(path, *args, **kwargs):
+                    if path == metadata:
+                        raise error
+                    return read_text(path, *args, **kwargs)
+
+                argv = ["--root", str(root)]
+                if mode == "adopt":
+                    argv += ["--adopt", str(patch)]
+                elif mode == "check":
+                    argv += ["--check"]
+                with mock.patch.object(Path, "read_text", read), \
+                        contextlib.redirect_stdout(io.StringIO()) as out, \
+                        contextlib.redirect_stderr(io.StringIO()) as err:
+                    code = gen_tables.main(argv)
+                self.assertEqual(code, 2, err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+                self.assertIn("examples/tcl-a/tv.json", err.getvalue())
+                self.assertIn(error.strerror, err.getvalue())
+                self.assertNotIn("not valid JSON", err.getvalue())
+                self.assertNotIn("Traceback", err.getvalue())
+                self.assertEqual({p: p.read_bytes() for p in root.rglob("*") if p.is_file()}, before)
+                if mode == "adopt":
+                    self.assertFalse((root / "examples" / "tcl-d" / "tv.json").exists())
+
+    def test_check_refuses_unreadable_metadata_without_reporting_stale_tables(self):
+        self.assert_unreadable_metadata("check")
+
+    def test_adopt_refuses_unreadable_metadata_before_creating_any(self):
+        self.assert_unreadable_metadata("adopt")
+
+    def test_rewrite_refuses_unreadable_metadata_before_changing_tables(self):
+        self.assert_unreadable_metadata("rewrite")
 
 
 class UnchangedTest(unittest.TestCase):

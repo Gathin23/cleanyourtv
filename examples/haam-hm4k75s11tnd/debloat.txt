@@ -1,0 +1,21 @@
+# HAAM HM4K75S11TND (SCBC R4), Android TV 11, RTT7.221026.001/3172, V8-T851MGL-0001103
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/haam-hm4k75s11tnd/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/haam-hm4k75s11tnd/debloat.txt
+# Windows commands and evidence limits: see README.md in this folder.
+# Disabled, never uninstalled. Comment out any package whose feature you want.
+# Stock Home: com.google.android.tvlauncher (not disabled by this list).
+# Live TV: com.apps.livetv; keep com.apps.dtv, com.apps.atv and all input services.
+# Keep streaming/IPTV apps, casting, voice, firmware updates, Settings, keyboard,
+# remote/Bluetooth pairing, Play Store and Play Services. No tuner changes.
+# These five entries remained disabled between checks from 2026-10-20 to 2026-11-02.
+
+# Stock Home recommendations and Google feedback
+com.google.android.tvrecommendations
+com.google.android.feedback
+
+# Retail demonstration apps
+com.apps.eshow                          # E-SHOW demonstration
+com.apps.esticker                       # Retail feature sticker overlay
+
+# Optional cleaner
+com.mk.tv.booster                       # TV Booster

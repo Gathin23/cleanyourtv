@@ -45,7 +45,13 @@ class ThemeConfigRootTest(unittest.TestCase):
         (self.tools / "tv.py").write_text(FAKE_TV)
         venv = self.tools / "venv" / "bin"
         venv.mkdir(parents=True)
-        (venv / "python").symlink_to(sys.executable)
+        try:
+            (venv / "python").symlink_to(sys.executable)
+        except OSError:
+            # Windows without the symlink privilege (WinError 1314). Only the theme.sh runs use this
+            # python, and they skip there; the checks of theme.ps1 still run.
+            if os.name != "nt":
+                raise
         self.theme = self.base / "my-theme"
         self.theme.mkdir()
         self.log = self.base / "tv-calls.log"
@@ -70,7 +76,8 @@ class ThemeConfigRootTest(unittest.TestCase):
     def assert_refused_as_not_an_object(self, text):
         self.theme_with(text)
         result = self.run_theme()
-        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        # 2: the run stops before anything is sent, the status theme.sh's header gives that shape.
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
         self.assertIn("is not a JSON object", result.stderr, result.stderr)
         self.assertIn(str(self.theme / "config.json"), result.stderr, "the message has to name the file")
         self.assertIn("themes/README.md", result.stderr, "and the page that says what a theme holds")
@@ -90,7 +97,7 @@ class ThemeConfigRootTest(unittest.TestCase):
             with self.subTest(config=text.strip()):
                 self.theme_with(text)
                 result = self.run_theme()
-                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertEqual(2, result.returncode, result.stdout + result.stderr)
                 self.assertIn("is not valid JSON", result.stderr, result.stderr)
                 self.assertNotIn("is not a JSON object", result.stderr)
                 self.assertEqual([], self.tv_calls())

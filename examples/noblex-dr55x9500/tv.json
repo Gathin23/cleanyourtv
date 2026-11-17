@@ -1,0 +1,6 @@
+{
+  "tv": "Noblex DR55X9500 (Skyworth SW6H, MediaTek m7332, same board and firmware as `prismplus-p4ka-sw6h/`), Argentina",
+  "os": "Android TV 11 (Google TV home)",
+  "brand": "Noblex",
+  "notes": "Skyworth after-sale, dailymanage, recommendation customizer, auto-installs, ePop/Demo Now demos, e-manual, disclaimers; partnersetup, smartconnect, feedback; Assistant, Miracast/DLNA, ambient screensaver off by choice; `com.google.android.apps.mediashell` kept; setupwraith owned the setup Wi-Fi (forget + re-join first); remote keycodes and the volume-repeat cost of the key helpers: [notes](noblex-dr55x9500/README.md)"
+}

@@ -110,4 +110,7 @@
     <string name="race_finished">Bendera finis</string>
     <string name="last_opened">Terakhir dibuka %1$s</string>
     <string name="game_live">Langsung sekarang</string>
+    <string name="clock_format_system">Sistem</string>
+    <string name="clock_format_12">12 jam</string>
+    <string name="clock_format_24">24 jam</string>
 </resources>

@@ -1,0 +1,68 @@
+# Philco Smart TV (Android-reported model; Skyworth-built, device sunnyvale, MediaTek), Brazil,
+# Android TV 14 (SDK 34), firmware UKNV.260821.001, about 0.9 GB RAM, UI 1280x720 (the firmware's own wm size
+# override on a 1920x1080 panel; leave it). Retail model number not on the About screen: match the firmware.
+# Same board as examples/skyworth-swtv-21ae (UKNV.260824.001) and the same build as examples/bgh-smart-tv-android14.
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home). Live TV and inputs: com.mediatek.wwtv.tvcenter.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philco-smart-tv-sunnyvale/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philco-smart-tv-sunnyvale/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested on: Philco Smart TV, Android TV 14, UKNV.260821.001, 3 November 2026. Applied in four batches with a
+# Home screenshot after each; rebooted twice the same day and `pm list packages -d` was unchanged both times
+# (nothing re-enabled by the firmware). Same-day test, not yet lived with for days.
+# Disabled before this debloat, so not listed (restore.sh would turn them ON):
+# com.google.android.youtube.tvmusic, com.google.android.marvin.talkback.
+#
+# Second unit: Britania Smart TV (Android-reported model "Britania Smart TV", device sunnyvale, manufacturer
+# skyworth), Brazil, Android TV 14, the same firmware UKNV.260821.001: the same set sold under the Britania name.
+# Applied 8 November 2026 in three batches with a Home screenshot after each; rebooted twice and
+# `pm list packages -d` was unchanged both times; in daily use through 10 November with nothing re-enabled. The owner also uncommented katniss, play.games and backdrop
+# and kept com.cltv.fast. Only talkback was disabled out of the box on this unit (tvmusic was enabled).
+# The saved Wi-Fi network belonged to setupwraith here too; the list does not touch it, and the Home handover
+# needed no setupwraith step. power_on_home with HOME_KEY_SERVICE=1 brought Home back under a second after
+# Live TV took the screen at boot. With HomeKeyService on, the real remote's Home, Input, Settings and app
+# buttons worked and a held Volume Up still repeated.
+#
+# Quirks on this firmware, all checked on the TV:
+# - Port 5555 opened with USB debugging alone (no Wireless debugging pairing); off again with USB debugging off.
+# - setupwraith does not answer HOME here (only tvlauncher and Settings' FallbackHome do), so
+#   launcher/build-and-install.sh hands Home over and disables tvlauncher with no setupwraith step.
+# - The firmware puts com.mediatek.wwtv.tvcenter on screen at every power-on, over the new Home (also noted
+#   on the BGH set). power_on_home with HOME_KEY_SERVICE=1 sent it back to Home about 2 s later, checked
+#   on a reboot. The real remote's Home, Input, app and Settings buttons were checked before the helper was
+#   on; whether a held Volume Up still repeats with it on was not checked.
+# - screensaver_components still names com.google.android.backdrop after it is disabled; point it at
+#   com.gathin.tvhome/.ClockDream (docs/launcher.md, Clock screensaver).
+# - Private DNS has no row in this firmware's Settings; the settings keys from the README work.
+
+# Skyworth content, ads and preloads
+fusion.android.tv.demo                       # shop demo player (Skyworth ePop)
+com.coocaa.demonow.lightining                # shop demo
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects rows into the home screen
+com.smartdevice.recommendation               # DailyPlay: Skyworth recommendation rows (enabled out of the box here)
+android.autoinstalls.config.SW               # Play auto-installs of partner apps
+com.Smartdevice.emanual                      # on-screen manual
+
+# Telemetry, feedback and ad services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api                   # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services # on-device ad personalisation
+com.android.federatedcompute.services        # federated learning for the above
+
+# Off on this set by the owner's choice; uncomment only what you do not use
+# com.cltv.fast                              # "Free TV" FAST channels with ads, about 80 MB resident from boot
+# com.google.android.play.games
+# com.google.android.katniss                 # Assistant / voice search: the remote's mic button stops working
+# com.google.android.backdrop                # ambient screensaver; see the screensaver note above
+
+# Stock home. Disable only after the new launcher is installed and set as home.
+com.google.android.tvrecommendations         # recommendation rows for the stock launcher
+# com.google.android.tvlauncher   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved
+
+# Kept on purpose: com.mediatek.wwtv.tvcenter / com.mediatek.tvinput / com.mediatek.tv.service (Live TV, HDMI),
+# com.mediatek.autopair (remote pairing), com.smartdevice.global.service (remote keys), com.smartdevice.firewall,
+# com.tianci.localmedia (USB media), com.google.android.apps.mediashell (Chromecast),
+# com.google.android.tv.remote.service (phone remote), the keyboard, Play Store, Play Services.
+# Never launch com.smartdevice.factory or mediatek.factorymenu.ui (factory menus).

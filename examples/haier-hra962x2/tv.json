@@ -1,0 +1,6 @@
+{
+  "tv": "Haier HRA962X2 (HRA962X2_2G_ALI6G_A)",
+  "os": "Android TV 9",
+  "brand": "Haier",
+  "notes": "YunOS/Ali6G set: Youku stock home, Yun ad services, Aligenie voice, U+ IoT; the Home key needs the YunOS homeshell intent ([notes](haier-hra962x2/README.md))"
+}

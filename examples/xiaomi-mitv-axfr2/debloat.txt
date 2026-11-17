@@ -1,0 +1,68 @@
+# Xiaomi MiTV-AXFR2 (codename watchmen, product watchmen; MediaTek, 1 GB RAM, India), Google TV 14 (SDK 34),
+# firmware UKG3.250107.001.
+# Same firmware family as xiaomi-mitv-axfr0 / axfr1.
+# Live TV app: com.mitv.livetv (also inputs via mitv.service).
+# Stock launcher: com.google.android.apps.tv.launcherx.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-axfr2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-axfr2/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - Sideloading works (pm install over the shell), and third-party HOME app is accepted.
+# - setupwraith does not own the saved Wi-Fi network (cname is system uid 1000).
+# - Disabling com.google.android.apps.tv.launcherx and setupwraith hands HOME to com.gathin.tvhome. Disabling
+#   setupwraith gives Home back but can cost casting.
+# - PatchWall (com.mitv.tvhome.atv) and related OEM tabs are safe to disable.
+# - The remote's YouTube button sends 190 (KEYCODE_BUTTON_3) which routes to launcherx;
+#   can be mapped in the launcher's config.xml as 190:com.google.android.youtube.tv.
+# - PatchWall button sends 192 (KEYCODE_BUTTON_5).
+
+# Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+
+# PatchWall, content rows, sponsored rows
+com.mitv.tvhome.atv
+com.xm.webcontent
+com.mitv.tvhome.michannel
+com.mitv.tvhome.oemtab
+com.mitv.tvhome.mitvplus
+android.autoinstalls.config.xioami.dangal
+
+# Xiaomi background services
+com.xiaomi.mitv.tvmanager
+com.xiaomo.tv.milegal
+com.mitv.toolhouse
+com.mitv.overseaservice
+
+# Screen mirroring (kept per user preference; uncomment to disable)
+# com.xiaomi.mitv.smartshare
+# com.xiaomi.wfdsinkhelperservice
+
+# Voice assistant and Chromecast (kept per user preference; uncomment to disable)
+# com.google.android.katniss
+# com.google.android.apps.mediashell
+
+# Firmware updates (kept per user preference; uncomment to disable)
+# com.xiaomi.mitv.updateservice
+
+# Preloaded / unused apps
+com.xiaomi.mimusic2
+com.google.android.videos
+com.google.android.youtube.tvkids
+com.google.android.youtube.tvmusic
+
+# Preloaded streaming apps
+# This set has these off by the owner's choice; uncomment to disable
+# com.netflix.ninja
+# com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom
+# in.startv.hotstar
+# com.sonyliv
+# com.graymatrix.did
+# com.esaba.downloader
+
+# Setup wizard and stock launcher (disabled to make com.gathin.tvhome default Home)
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

@@ -9,6 +9,16 @@ TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt            
 TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt com.google.android.apps.tv.launcherx  # Google TV
 ```
 
+On Windows the same undo is:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost 192.168.1.50 examples\<your tv>\debloat.txt
+```
+
+and on Google TV the call takes the stock launcher as well, `-Stock
+com.google.android.apps.tv.launcherx`, after the list. `TV_HOST=... tools/restore.sh` does not run in
+PowerShell: it sets a variable and then calls a program Windows does not have.
+
 ## What the record holds
 
 Before `tools/disable.sh` changes anything it writes down what the TV looked like:
@@ -19,6 +29,9 @@ Before `tools/disable.sh` changes anything it writes down what the TV looked lik
 
 That record lives in `~/.cleanyourtv/`, one file per TV and list.
 
+- The file is named after the address the TV was reached at, so `TV_HOST` is what picks the record:
+  a run without it stops with tv.py's line and sends nothing to the TV, rather than falling back to
+  the whole list for a record it cannot name.
 - A second run of the same list keeps the first record instead of saving the cleaned-up state over it.
 - If you added packages to the list since, that run adds them to the record before disabling them, and
   a listed package that was not installed then but is installed and enabled now is recorded as enabled.
@@ -43,8 +56,14 @@ is enabled again only if it was:
 
 ## Without a record
 
-Without a record (an older run, or a record you deleted) the script says so and falls back to
-enabling the whole list and resetting the scales to `1.0`, which is what it used to do.
+Without a record (an older run, a record you deleted, or the TV reached at a new address - a record
+is filed under the address it was taken at) the script says so and falls back to enabling the whole
+list and resetting the scales to `1.0`, which is what it used to do.
+
+A record for the same list under another address is named with its file before that batch runs, as
+that is the case where the fallback turns on packages you had disabled before cleanup: run the undo
+at that address instead, or move the record to the name the run prints. If the other address is a
+second TV you cleaned with the same list, both records are right and nothing is wrong.
 
 ## What restore leaves alone
 

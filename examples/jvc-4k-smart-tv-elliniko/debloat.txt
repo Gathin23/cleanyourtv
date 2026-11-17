@@ -1,0 +1,55 @@
+# JVC 4K Smart TV (KTC ODM, MediaTek merak / mt5896, device elliniko, product KTC_JVC_4K_24GV1), 1.8 GB RAM
+# Google TV on Android 14 (API 34), build UKN4.250714.142
+# Same KTC board as examples/siragon-4k-smart-tv-elliniko (newer build UKN6.260116.117 there).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/jvc-4k-smart-tv-elliniko/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/jvc-4k-smart-tv-elliniko/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it, not this list)
+# Live TV:        com.mediatek.tv.oneworld.tvcenter (set it as live_tv_package)
+#
+# Network ADB: Wireless debugging only, port 5555 stays closed. Use tools/native-adb.md (TV_ADB_BINARY).
+# Wireless debugging needs Wi-Fi: Android switches it off while the TV is on Ethernet.
+#
+# setupwraith: the saved Wi-Fi network belonged to android.uid.system:1000, not to setupwraith, so the TV
+# stayed online. setupwraith does carry the CastInfoProvider here, but YouTube casting from a phone kept
+# working after a reboot with it disabled (checked over a week). Turning setupwraith back on even briefly
+# hands it Home (RecoveryActivity): run `cmd package set-home-activity` for the new launcher afterwards.
+#
+# Remote keys once launcherx is off: the gear button sends KEY_CALENDAR (scancode 397) and does nothing
+# until HOME_KEY_SERVICE=1 with settings_key_scancodes 397 (see README.md). Any key-filtering accessibility
+# service (the launcher's helper, or Button Mapper) makes held Volume step once instead of repeating.
+#
+# Kept: Chromecast (com.google.android.apps.mediashell), Netflix, Miracast, Ginga (tv.mopa.ginga),
+# the firmware updater. YouTube Music ships disabled on this firmware.
+#
+# Lived with for a week (2026-10-21 to 2026-10-28, removed for user 0 at first, then re-added and disabled
+# with tools/disable.ps1), reboots included; after the reboot check nothing had re-enabled itself.
+
+# Tracking, ads, feedback
+tv.anoki.acr.controller                          # Anoki ACR: automatic content recognition of what is on screen
+com.google.android.feedback                      # Google feedback reporter
+com.google.android.partnersetup                  # partner/OEM attribution
+android.autoinstalls.config.google.gtvpai        # auto-install stub that preloads apps at setup
+
+# Not tested here; the Siragon list on the same board disables them:
+# com.android.adservices.api
+# com.android.ondevicepersonalization.services
+# com.android.federatedcompute.services
+# com.android.tv.feedbackconsent
+# com.mediatek.tv.launcher.partner
+
+# Demo and preloads
+com.mediatek.tv.retaildemo                       # store demo loop
+com.electronic.manual                            # on-screen user manual
+com.google.android.play.games                    # Play Games
+
+# Ambient screensaver with suggestions; the basic screensaver takes over
+com.google.android.apps.tv.dreamx
+
+# Voice assistant, off by choice: the remote's mic button and voice search stop working
+com.google.android.katniss
+
+# Setup wizard: answers HOME ahead of the new launcher on Google TV (see the header before disabling)
+com.google.android.tungsten.setupwraith

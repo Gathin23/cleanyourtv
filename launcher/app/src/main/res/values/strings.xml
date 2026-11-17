@@ -18,6 +18,7 @@
     <string name="good_night">Good night</string>
     <string name="festival_dussehra_greeting">Happy Dussehra</string>
     <string name="festival_diwali_greeting">Happy Diwali</string>
+    <string name="festival_halloween_greeting">Happy Halloween</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Not available on this TV</string>
@@ -154,4 +155,7 @@
     <string name="last_opened">Last opened %1$s</string>
     <!-- game_day: a game on now, in the race panel. -->
     <string name="game_live">Live now</string>
+    <string name="clock_format_system">System</string>
+    <string name="clock_format_12">12-hour</string>
+    <string name="clock_format_24">24-hour</string>
 </resources>

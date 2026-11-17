@@ -1,0 +1,6 @@
+{
+  "tv": "onn 4K Pro Streaming Device (Gen 2, Walmart; jarvis2, Amlogic S905X5M), US",
+  "os": "Google TV 14",
+  "brand": "onn",
+  "notes": "Google feedback, Privacy Sandbox APEX modules, Play Games, Print Spooler, TalkBack, calendar/contacts/dictionary providers, ambient mode (`dreamx`), launcherx + setupwraith; YouTube and Netflix are option and off by choice, Assistant, Chromecast and OTA kept; port 5555 opens without Wireless debugging pairing; reboot-checked"
+}

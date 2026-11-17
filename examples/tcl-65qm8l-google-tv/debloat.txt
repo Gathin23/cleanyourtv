@@ -36,6 +36,13 @@
 # - Custom HDMI input names (e.g. "Cable" on HDMI 3) live in `settings get secure tv_input_custom_labels`, as
 #   `<input id>,<name>` pairs joined by `:`. The launcher's `inputs_connected_only` hides every port here, because
 #   all four report cable_connection_status=0 even with a CEC device plugged in; leave it off.
+#
+# Second unit: TCL 75QM8L, the same product G17_4K_US and firmware UTT2.250416.001 AU27 (US), with a BT_RC933B
+# remote. Applied 2026-11-14 in batches with screenshots between them and lived with for two days across two
+# reboots: this list plus the commented groups at the end, which that owner does not use (40 packages in all,
+# launcherx included). com.tcl.t_solo, left alone above, was among them: Bluetooth headphones still pair in
+# Settings > Remotes & Accessories without it. Kept there: YouTube, Chromecast and AirPlay. Its remote notes
+# (the star button, the TV button's 4001, held Volume with the key helper on) are in README.md.
 
 # TCL telemetry and analytics
 com.tcl.ttvs                           # Samba TV ACR viewing tracking, TCL BI analytics
@@ -74,3 +81,26 @@ com.tcl.UpdatePeripheral               # TCL soundbar/speaker firmware updates (
 com.google.android.tungsten.setupwraith
 com.google.android.apps.tv.dreamx
 com.google.android.apps.tv.launcherx
+
+# Optional, off on the TCL 75QM8L (see the header): uncomment what you don't use.
+# TCL and Google extras
+# com.tcl.tv.plus                        # TCLtv+ free streaming app; untick its shortcut in the Input panel's "+" editor too
+# com.tcl.gamebar                        # game bar overlay on HDMI inputs
+# com.tcl.ui_mediaCenter                 # USB media player
+# com.tcl.browser                        # TCL web browser
+# com.google.android.play.games          # Play Games
+# com.tcl.t_solo                         # T-Solo "listen alone" screen; headphones still pair in Settings without it
+
+# Streaming apps (the last five are placeholders that download the app when opened)
+# com.netflix.ninja                      # Netflix
+# com.amazon.amazonvideo.livingroom      # Prime Video
+# com.google.android.youtube.tvmusic     # YouTube Music
+# com.disney.disneyplus                  # Disney+
+# com.hulu.livingroomplus                # Hulu
+# com.google.android.youtube.tvunplugged # YouTube TV
+# com.tubitv                             # Tubi
+# com.haystack.android                   # Haystack News
+# com.instagram.airwave                  # Instagram for TV
+
+# Voice assistant: the remote's mic button stops working without it
+# com.google.android.katniss             # Google Assistant, voice search and Gemini

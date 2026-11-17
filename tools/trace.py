@@ -10,16 +10,24 @@ tools/trace.md first: it says which scenario to use and what can mislead.
 Recording needs nothing beyond tools/requirements.txt; the perfetto client already ships on Android 9
 and later. Set TV_HOST to the TV's IP (and TV_PORT if it is not 5555). Usage:
 
-    tools/trace.py home --runs 5 --out traces/before
-    tools/trace.py cold|coldsys|home|nav --runs N --out DIR [--package PKG] [--app COMPONENT]
-    tools/trace.py custom --setup 'input keyevent KEYCODE_HOME' --setup 'sleep 2' \\
-                          --step 'input keyevent KEYCODE_DPAD_RIGHT' --step 'sleep 1' --out DIR
+    tools/venv/bin/python -I tools/trace.py home --runs 5 --out traces/before
+    tools/venv/bin/python -I tools/trace.py cold|coldsys|home|nav --runs N --out DIR [--package PKG] [--app COMPONENT]
+    tools/venv/bin/python -I tools/trace.py custom --setup 'input keyevent KEYCODE_HOME' --setup 'sleep 2' \
+                                         --step 'input keyevent KEYCODE_DPAD_RIGHT' --step 'sleep 1' --out DIR
 
 --out DIR is the folder the traces go into; it is created if it is not there. A file where the folder
 goes, a path through a file, and an empty --out are refused as argument errors (exit 2) before the TV is
 asked anything, so a typo cannot read as a recording that failed. Started with a Python that lacks the
 packages, it runs again under tools/venv's Python, or says how to make that venv, the way tools/bench.py
 does.
+
+Exit status: 0 every run is recorded and written; 2 an argument this run cannot use (an --out that is a
+file or passes through one, an empty --out, a --package or --app that is not one, --runs outside 1 to 50)
+and a TV that cannot be reached - tools/tv.py's own sentence is printed, whether it refused the target as
+it was imported (no TV_HOST, a TV_PORT that is not a port number) or connect_error() worded the failure -
+both judged before anything is recorded, so nothing was written and --out was not made; 1 a recording that
+started and then failed. A recording still running after 60 completion checks is not pulled or published;
+any previous local trace is kept, and the remote recording is left alone.
 
 Scenarios (setup runs before the recording starts, so it stays out of the trace):
     cold     another app in front, the launcher force-stopped, then started with `am start -W`
@@ -35,7 +43,9 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
+import tempfile
 import time
 
 PACKAGE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$")
@@ -190,12 +200,21 @@ def record_one(dev, setup, steps, package, out_path, run_shell=None):
         if run_shell(alive).strip() != "running":
             break
         time.sleep(1)
-    dev.pull(REMOTE, out_path, transport_timeout_s=300.0, read_timeout_s=300.0)
-    run_shell(f"rm -f {REMOTE}")
-    size = os.path.getsize(out_path)
-    if size == 0:
-        os.remove(out_path)
-        raise RuntimeError("perfetto wrote an empty trace; run with --runs 1 and see tools/trace.md")
+    else:
+        raise RuntimeError("perfetto is still running after the completion wait; no trace was pulled")
+    # A failed or empty pull must not truncate an earlier recording. Stage on the same filesystem so
+    # the completed trace replaces it only after the download and remote cleanup both succeed.
+    folder, name = os.path.split(os.path.abspath(out_path))
+    with tempfile.TemporaryDirectory(prefix=".trace-", dir=folder) as staging:
+        part = os.path.join(staging, name)
+        dev.pull(REMOTE, part, transport_timeout_s=300.0, read_timeout_s=300.0)
+        run_shell(f"rm -f {REMOTE}")
+        size = os.path.getsize(part)
+        if size == 0:
+            raise RuntimeError("perfetto wrote an empty trace; run with --runs 1 and see tools/trace.md")
+        if os.path.isfile(out_path):
+            shutil.copymode(out_path, part)
+        os.replace(part, out_path)
     return size
 
 
@@ -272,12 +291,40 @@ def main(argv=None):
     if argv is None:
         client_python_or_exit()
     import bench  # noqa: E402  the accessibility helpers bench.py already tested
-    import tv  # noqa: E402
+    try:
+        import tv  # noqa: E402
+    except SystemExit as exit_request:
+        # tv.py refuses two shapes while it is imported, before it has a connection: no TV_HOST
+        # ("Set TV_HOST to your TV's IP address") and a TV_PORT it cannot read ("not a port number:
+        # 'abc'", which is also what a `:port` in the address with a bad or out-of-range number gets).
+        # The interpreter answers such a text with 1 - the status this file keeps for a recording that
+        # started and then failed - so a run that never reached the TV read as one whose trace was
+        # lost, which is the one thing a perf-ab comparison has to tell apart. 2 is what the docstring
+        # promises for "a TV that cannot be reached" and what the connect() handler below answers.
+        # tv.py's own text is printed here; a client module that exits 0 answered the call itself, and
+        # that status stands (the branch tools/theme_restart.py keeps).
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            print(exit_request.code, file=sys.stderr)
+        print(f"Nothing was recorded: {args.out} is made when the first run starts.", file=sys.stderr)
+        raise SystemExit(2) from exit_request
 
     try:
         dev = tv.connect()
-    except OSError as e:
-        sys.exit(f"cannot reach the TV at {tv.HOST}:{tv.PORT} ({e}). Is it on and awake, with network debugging on?")
+    except Exception as error:
+        # tv.py words the failures that mean the TV was not reached: a port that refuses, a Wireless
+        # debugging port that asks for TLS, an address nothing answers on, and the macOS Local Network
+        # denial that looks like one. This file answered those with a line of its own and exit 1 - the
+        # status a recording that started and then failed leaves - and it caught only OSError, so the TLS
+        # one (adb_shell's InvalidCommandError is not an OSError) ended in a traceback. bench.py, check.py
+        # and b64push.py answer both with tv.py's sentence and exit 2. The errors tv.py has nothing to add
+        # to (a key file it cannot read, a reset in the handshake) keep their traceback.
+        why = tv.connect_error(error)
+        if why is None:
+            raise
+        print(f"{why}\nNothing was recorded: {args.out} is made when the first run starts.", file=sys.stderr)
+        raise SystemExit(2) from error
     shell = lambda cmd: dev.shell(cmd, read_timeout_s=120.0)
     try:
         home = shell("cmd package resolve-activity --brief -a android.intent.action.MAIN "
@@ -301,10 +348,16 @@ def main(argv=None):
             for run in range(1, args.runs + 1):
                 path = os.path.join(args.out, f"{args.scenario}-{run}.pftrace")
                 size = record_one(dev, setup, steps, args.package, path, shell)
-                with open(path[:-len(".pftrace")] + ".json", "w") as f:
-                    json.dump({"scenario": args.scenario, "run": run, "package": args.package,
-                               "launcher": launcher, "other_app": other, "setup": setup, "steps": steps,
-                               "tv": about, "recorded": time.strftime("%Y-%m-%dT%H:%M:%S")}, f, indent=1)
+                sidecar = path[:-len(".pftrace")] + ".json"
+                with tempfile.TemporaryDirectory(prefix=".trace-", dir=os.path.dirname(path)) as staging:
+                    part = os.path.join(staging, os.path.basename(sidecar))
+                    with open(part, "w") as f:
+                        json.dump({"scenario": args.scenario, "run": run, "package": args.package,
+                                   "launcher": launcher, "other_app": other, "setup": setup, "steps": steps,
+                                   "tv": about, "recorded": time.strftime("%Y-%m-%dT%H:%M:%S")}, f, indent=1)
+                    if os.path.isfile(sidecar):
+                        shutil.copymode(sidecar, part)
+                    os.replace(part, sidecar)
                 print(f"{path}: {size} bytes")
         finally:
             if helpers:

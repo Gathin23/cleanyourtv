@@ -1,0 +1,76 @@
+# Philips 65PUS8602/12 (65" 4K UHD LED, 3-sided Ambilight, 2017 model), Germany
+# Android TV 8.0.0 (API 26), firmware TPM171E_R.107.001.143.000, security patch 2021-01-05
+# ro.tpvision.product.id=TPM171E_R  ro.product.device=PH7M_EU_5596  ro.product.board=TPM17XE_96, MediaTek mt5891,
+# 1.9 GB RAM. Fingerprint: Philips/PH7M_EU_5596/PH7M_EU_5596:8.0.0/OC/4718:user/release-keys
+#
+# Same platform, device AND firmware build as this folder's debloat.txt (65PUS8102/12, identical fingerprint);
+# only the model number differs. Read that list's header first. This is a second unit with another owner's
+# choices, and one finding that changes the NetTV block (note 1).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-65pus8102/debloat-65pus8602.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-65pus8102/debloat-65pus8602.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (not in this list; launcher/build-and-install.sh disables it
+#                 after the new Home is running). Live TV app: org.droidtv.playtv.
+# Launcher config used: live_tv_package org.droidtv.playtv; hidden_apps org.droidtv.eum, org.droidtv.demome,
+# org.droidtv.nettv.market; six dock slots with Live TV (org.droidtv.playtv) and Media
+# (org.droidtv.contentexplorer) pinned.
+#
+# Tested on: one session on 2026-11-15, wired Ethernet (built-in port), a USB stick plugged in. Applied from
+# Windows with the PowerShell twin of tools/disable.sh, in six batches with a screenshot after each. After one reboot `pm list packages -d`
+# was identical, Home resolved to com.gathin.tvhome and the real remote's Home key opened it. Live TV,
+# Jellyfin and the ARD web app opened, the JointSpace API on 1926 still answered and the USB stick stayed
+# mounted with USB debugging on. Not yet lived with for days; no HDMI, standby/wake or Ambilight+Hue check.
+#
+# Notes from this unit:
+# 1. Keep the NetTV store packages if the NetTV web apps are used. org.droidtv.nettvapp3093 (ARD Mediathek,
+#    a "Lieblings-App" tile on German sets) and nettvapp1814 (ARTE) start, then hand off an
+#    android.intent.action.VIEW of type application/vnd.droidtv.nettv. Only org.droidtv.nettv_launcherapp
+#    handles that type, so with it disabled the app logs "No activity found for intent" and nothing opens.
+#    Re-enabling nettv_launcherapp alone was not enough here; with nettv.market, nettvapps, nettv_launcherapp
+#    and nettvregistration all enabled again and one reboot, ARD worked. This folder's debloat.txt disables
+#    all four together with every NetTV web app, so it never hit this.
+# 2. Do not `am force-stop org.droidtv.nettvbrowser` while testing: afterwards the web apps opened to a black
+#    screen until the next reboot, which reads as damage from the debloat when it is not.
+# 3. tools/disable.sh skips org.droidtv.usagelogger and org.droidtv.demome (both ask for TV_INPUT_HARDWARE).
+#    They were left on rather than forced with TVINPUT_ALLOW=1, so they are not listed below.
+# 4. ADB: the RSA prompt never showed for tools/tv.py, after revoking authorisations, toggling USB debugging
+#    and a mains power cycle. `adb connect <tv ip>:5555` with Google's platform-tools raised it at once;
+#    afterwards tools/tv.py ran through that transport with TV_ADB_BINARY set (tools/native-adb.md).
+# 5. Load average reads 18-29 on this board even straight after boot; with no crash or ANR in logcat, that is
+#    the board, not the debloat.
+# 6. The scenes theme bands in the night skies at the launcher's default RGB_565 decode; wallpaper_true_color
+#    fixed it, and the set had memory to spare at 1.9 GB.
+# 7. With the new Home the TV still powers on to Live TV by itself; the owner kept it that way.
+
+# Telemetry (as this folder's debloat.txt)
+org.droidtv.candeebug                             # "DAC" analytics uploader
+org.droidtv.gel                                   # "GEL" metrics collector, runs inside the candeebug process
+org.droidtv.tv.frameworklogger                    # Hands reboot reasons and firmware-install records to the Philips logger
+tv.inscape.tvclient.inscapeacr                    # "Inscape" ACR client: identifies what is on screen, HDMI included
+
+# Promotion and Google extras
+org.droidtv.nettvrecommender                      # Philips NetTV / Top Picks recommendation row
+com.google.android.feedback                       # Market Feedback Agent
+com.google.android.tvtutorials                    # Android TV first-run tutorials
+
+# Recommendation rows, disabled after the new Home was running
+com.google.android.tvrecommendations              # Android TV recommendations/content rows
+com.google.android.leanbacklauncher.recommendations
+
+# Preinstalled apps, off by choice
+com.opera.sdk.example                             # Opera TV SDK sample app
+com.google.android.music                          # Google Play Music (service discontinued)
+
+# Voice assistants, off by choice: the remote's microphone button does nothing afterwards
+com.google.android.katniss                        # Google Assistant / voice search
+org.droidtv.amazonalexa                           # Alexa
+
+# Streaming apps: all four are off on this unit by the owner's choice (they use Plex, Jellyfin, ZDF and the
+# ARD web app). Left commented out here, since which streaming apps go is each owner's call: uncomment the
+# ones you do not use.
+# com.netflix.ninja                               # Netflix
+# com.amazon.amazonvideo.livingroom               # Prime Video
+# com.google.android.youtube.tv                   # YouTube
+# com.google.android.videos                       # Google Play Movies & TV

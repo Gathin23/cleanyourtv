@@ -1,6 +1,10 @@
 # Hisense VIDAA_TV / AMLOGICT963 (China, Android 9): Home handover
 
-This is an owner-observed launcher note, **not a tested debloat list**. The
+This is an owner-observed launcher note: the handover below is one session's
+observation. The debloat list for the same build is separate, five ad and
+telemetry packages in
+[`examples/hisense-amlogict963-android9/debloat.txt`](../../examples/hisense-amlogict963-android9/debloat.txt),
+applied on 2026-10-27 and still off after a week of ordinary use. The
 retail model could not be established from the TV's software; use the device
 and build below to decide whether another set is comparable. The CleanYourTV
 reference launcher was not installed on this set.

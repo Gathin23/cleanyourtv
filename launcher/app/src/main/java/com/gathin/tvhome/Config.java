@@ -43,6 +43,7 @@ final class Config {
     static final String ROWS_BELOW_DOCK_KEY = "rows_below_dock";
     static final String WALLPAPER_CHOICE_KEY = "wallpaper_choice";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
+    static final String CLOCK_FORMAT_KEY = "clock_format";
     /**
      * Counts the changes made in Launcher settings. Home remembers the count it was built with and rebuilds on
      * resume when it differs, however the settings were left (see MainActivity#onResume).
@@ -109,6 +110,8 @@ final class Config {
     final boolean openOnStartChoice;
     /** Seconds the boot's app waits for a validated network; 0 opens it at once (open_on_start_network_wait). */
     final int openOnStartNetworkWait;
+    /** The Open on start app also opens when the screen comes back on (config.xml, open_on_start_on_wake). */
+    final boolean openOnStartOnWake;
     /** The focused dock app's name in large type above the dock (config.xml, dock_title). */
     final boolean dockTitle;
     /** The dock as its own row: band, no names, parked low (config.xml dock_row). false: one plain grid. */
@@ -129,6 +132,14 @@ final class Config {
     final boolean iconOnlyButtons;
     /** The Inputs pill as a round icon button too (config.xml icon_only_inputs). */
     final boolean iconOnlyInputs;
+    /** With vpn_pill, the VPN pill as a round lock button (config.xml / theme icon_only_vpn). */
+    final boolean iconOnlyVpn;
+    /** Back on the Home screen opens the clock screensaver instead of doing nothing (config.xml / theme back_opens_clock). */
+    final boolean backOpensClock;
+    /** The ambient glow takes a new app's colour in one frame instead of dipping and fading (config.xml / theme glow_snap). */
+    final boolean glowSnap;
+    /** The remote's Settings button clears the TV Settings task before opening it (config.xml / theme settings_key_clear_task). */
+    final boolean settingsKeyClearTask;
     /** App library as a round button in the top bar (config.xml library_button); needs app_library. */
     final boolean libraryButton;
     /** The App library pill after the last Home row; false hides it while libraryButton is on (show_library_pill). */
@@ -170,6 +181,10 @@ final class Config {
     final boolean gamepadPassthrough;
     /** With keyFilter on, the key services swallow Volume Up/Down and repeat a held one themselves (consume_volume_keys). */
     final boolean consumeVolumeKeys;
+    /** With keyFilter on, a volume change stops the key services filtering for a few seconds (volume_pauses_filter). */
+    final boolean volumePausesFilter;
+    /** Channel Up/Down do nothing while Home is in front, instead of opening the TV's Live TV app. */
+    final boolean homeIgnoreChannelKeys;
     /** Stock launcher whose home screen is sent back here if the firmware revives it (config.xml stock_home_redirect). */
     final String stockHomeRedirect;
     /** A Live TV window the firmware opens by itself at power-on is sent back to Home (power_on_home). */
@@ -180,6 +195,10 @@ final class Config {
     final boolean powerOnHomeAlways;
     /** The Inputs menu lists only inputs reporting connected; the rest fold behind a More inputs row (config.xml / theme inputs_connected_only). */
     final boolean inputsConnectedOnly;
+    /** Only CEC device rows in the Inputs menu show a connection state, never a bare HDMI port (config.xml / theme inputs_cec_state_only). */
+    final boolean inputsCecStateOnly;
+    /** "12", "24" or "system" (theme clock_format, or Launcher settings' Clock row); see ClockFormat. */
+    final String clockFormat;
     /** The Settings button opens the quick settings panel instead of the TV's Settings (settings_key_panel). */
     final boolean settingsKeyPanel;
     /** Home puts the remote's accessibility helpers back after a force stop (restore_key_services; ServiceRepair). */
@@ -278,8 +297,9 @@ final class Config {
                    List<RaceWeekend.Race> raceCalendar, boolean cinematicHome, boolean ambientGlow, boolean appGlow, boolean fadeRows, int homeIdleClockMinutes,
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
-                   Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait) {
+                   Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean volumePausesFilter, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
+                   int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
+                   boolean settingsKeyClearTask) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -328,6 +348,10 @@ final class Config {
         this.showInputsPill = showInputsPill;
         this.iconOnlyButtons = iconOnlyButtons;
         this.iconOnlyInputs = iconOnlyInputs;
+        this.iconOnlyVpn = iconOnlyVpn;
+        this.backOpensClock = backOpensClock;
+        this.glowSnap = glowSnap;
+        this.settingsKeyClearTask = settingsKeyClearTask;
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -373,11 +397,16 @@ final class Config {
         this.wallpaperMoods = wallpaperMoods;
         this.gamepadPassthrough = gamepadPassthrough;
         this.consumeVolumeKeys = consumeVolumeKeys;
+        this.volumePausesFilter = volumePausesFilter;
+        this.homeIgnoreChannelKeys = homeIgnoreChannelKeys;
         this.powerOnHome = powerOnHome;
         this.homeLongPressHome = homeLongPressHome;
         this.powerOnHomeAlways = powerOnHomeAlways;
         this.inputsConnectedOnly = inputsConnectedOnly;
+        this.inputsCecStateOnly = inputsCecStateOnly;
         this.openOnStartNetworkWait = openOnStartNetworkWait;
+        this.openOnStartOnWake = openOnStartOnWake;
+        this.clockFormat = clockFormat;
         this.wifiStatusWarnings = wifiStatusWarnings;
         this.topBarApps = Collections.unmodifiableList(topBarApps);
         this.showGreeting = showGreeting;
@@ -443,6 +472,7 @@ final class Config {
         boolean bootToLiveTv = res.getBoolean(R.bool.boot_to_live_tv);
         boolean openOnStartChoice = res.getBoolean(R.bool.open_on_start_choice);
         int openOnStartNetworkWait = res.getInteger(R.integer.open_on_start_network_wait);
+        boolean openOnStartOnWake = res.getBoolean(R.bool.open_on_start_on_wake);
         boolean dockTitle = res.getBoolean(R.bool.dock_title);
         boolean dockRow = res.getBoolean(R.bool.dock_row);
         boolean topMenu = res.getBoolean(R.bool.top_menu);
@@ -452,6 +482,10 @@ final class Config {
         boolean showInputsPill = res.getBoolean(R.bool.show_inputs_pill);
         boolean iconOnlyButtons = res.getBoolean(R.bool.icon_only_buttons);
         boolean iconOnlyInputs = res.getBoolean(R.bool.icon_only_inputs);
+        boolean iconOnlyVpn = res.getBoolean(R.bool.icon_only_vpn);
+        boolean backOpensClock = res.getBoolean(R.bool.back_opens_clock);
+        boolean glowSnap = res.getBoolean(R.bool.glow_snap);
+        boolean settingsKeyClearTask = res.getBoolean(R.bool.settings_key_clear_task);
         boolean libraryButton = res.getBoolean(R.bool.library_button);
         boolean showLibraryPill = res.getBoolean(R.bool.show_library_pill);
         int wifiLabelWidth = res.getInteger(R.integer.wifi_label_width);
@@ -485,10 +519,14 @@ final class Config {
         boolean keyFilter = res.getBoolean(R.bool.key_filter);
         boolean gamepadPassthrough = res.getBoolean(R.bool.gamepad_passthrough);
         boolean consumeVolumeKeys = res.getBoolean(R.bool.consume_volume_keys);
+        boolean volumePausesFilter = res.getBoolean(R.bool.volume_pauses_filter);
+        boolean homeIgnoreChannelKeys = res.getBoolean(R.bool.home_ignore_channel_keys);
         boolean powerOnHome = res.getBoolean(R.bool.power_on_home);
         boolean homeLongPressHome = res.getBoolean(R.bool.home_long_press_home);
         boolean powerOnHomeAlways = res.getBoolean(R.bool.power_on_home_always);
         boolean inputsConnectedOnly = res.getBoolean(R.bool.inputs_connected_only);
+        boolean inputsCecStateOnly = res.getBoolean(R.bool.inputs_cec_state_only);
+        String clockFormat = res.getString(R.string.clock_format);
         boolean dockGlass = res.getBoolean(R.bool.dock_glass);
         boolean dockEvenPadding = res.getBoolean(R.bool.dock_even_padding);
         boolean dockBand = res.getBoolean(R.bool.dock_band);
@@ -551,6 +589,7 @@ final class Config {
             bootToLiveTv = bool(json, "boot_to_live_tv", bootToLiveTv);
             openOnStartChoice = bool(json, "open_on_start_choice", openOnStartChoice);
             openOnStartNetworkWait = integer(json, "open_on_start_network_wait", openOnStartNetworkWait, 0, 600);
+            openOnStartOnWake = bool(json, "open_on_start_on_wake", openOnStartOnWake);
             dockTitle = bool(json, "dock_title", dockTitle);
             dockRow = bool(json, "dock_row", dockRow);
             topMenu = bool(json, "top_menu", topMenu);
@@ -560,6 +599,10 @@ final class Config {
             showInputsPill = bool(json, "show_inputs_pill", showInputsPill);
             iconOnlyButtons = bool(json, "icon_only_buttons", iconOnlyButtons);
             iconOnlyInputs = bool(json, "icon_only_inputs", iconOnlyInputs);
+            iconOnlyVpn = bool(json, "icon_only_vpn", iconOnlyVpn);
+            backOpensClock = bool(json, "back_opens_clock", backOpensClock);
+            glowSnap = bool(json, "glow_snap", glowSnap);
+            settingsKeyClearTask = bool(json, "settings_key_clear_task", settingsKeyClearTask);
             libraryButton = bool(json, "library_button", libraryButton);
             showLibraryPill = bool(json, "show_library_pill", showLibraryPill);
             wifiLabelWidth = integer(json, "wifi_label_width", wifiLabelWidth, 0, 300);
@@ -593,10 +636,14 @@ final class Config {
             keyFilter = bool(json, "key_filter", keyFilter);
             gamepadPassthrough = bool(json, "gamepad_passthrough", gamepadPassthrough);
             consumeVolumeKeys = bool(json, "consume_volume_keys", consumeVolumeKeys);
+            volumePausesFilter = bool(json, "volume_pauses_filter", volumePausesFilter);
+            homeIgnoreChannelKeys = bool(json, "home_ignore_channel_keys", homeIgnoreChannelKeys);
             powerOnHome = bool(json, "power_on_home", powerOnHome);
             homeLongPressHome = bool(json, "home_long_press_home", homeLongPressHome);
             powerOnHomeAlways = bool(json, "power_on_home_always", powerOnHomeAlways);
             inputsConnectedOnly = bool(json, "inputs_connected_only", inputsConnectedOnly);
+            inputsCecStateOnly = bool(json, "inputs_cec_state_only", inputsCecStateOnly);
+            clockFormat = string(json, CLOCK_FORMAT_KEY, clockFormat);
             dockGlass = bool(json, "dock_glass", dockGlass);
             dockEvenPadding = bool(json, "dock_even_padding", dockEvenPadding);
             dockBand = bool(json, "dock_band", dockBand);
@@ -644,6 +691,7 @@ final class Config {
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
         int dockOpacity = json == null ? 100 : integer(json, "dock_opacity", 100, 30, 100);
         dockOpacity = chosenDockOpacity(choices.getInt(DOCK_OPACITY_KEY, -1), dockOpacity);
+        clockFormat = choices.getString(CLOCK_FORMAT_KEY, clockFormat);
         String wallpaperOrder = json == null ? WallpaperRotation.ORDER_SHUFFLE
                 : string(json, "wallpaper_order", WallpaperRotation.ORDER_SHUFFLE);
         // An unknown order must not silently change how an existing collection rotates.
@@ -664,8 +712,9 @@ final class Config {
             wallpaper = chosen.isEmpty() ? null : chosen.get(0);
             wallpaperEnabled = !chosen.isEmpty();
         }
-        // A festive skin comes only from a theme; config.xml has no festival.
-        Festival festival = json == null ? Festival.NONE : Festival.parse(string(json, "festival", ""),
+        // A festive skin comes only from a theme; config.xml has no festival. seasonal_skin names one the same way
+        // but launchers before it ignore the key, so a theme can carry it without older ones showing the diya skin.
+        Festival festival = json == null ? Festival.NONE : Festival.parse(festivalName(json),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
 
         return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
@@ -679,10 +728,11 @@ final class Config {
                 json == null ? Collections.emptyList() : raceCalendar(json), cinematic, ambientGlow, appGlow, fadeRows,
                 Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding,
                 dockBand, cinematicDots, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough,
-                consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
+                consumeVolumeKeys, volumePausesFilter, homeIgnoreChannelKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
-                dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)));
+                dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
+                settingsKeyClearTask);
     }
 
     /**
@@ -726,12 +776,12 @@ final class Config {
             SharedPreferences.Editor editor = choices.edit();
             if (!"absent".equals(token)) editor.remove("columns").remove("animations")
                     .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
-                    .remove(DOCK_OPACITY_KEY);
+                    .remove(DOCK_OPACITY_KEY).remove(CLOCK_FORMAT_KEY);
             editor.putString(THEME_SIGNATURE_KEY, signature).commit();
         } else if (!seen.equals(signature)) {
             choices.edit().remove("columns").remove("animations").remove("advanced_effects")
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
-                    .putString(THEME_SIGNATURE_KEY, signature).commit();
+                    .remove(CLOCK_FORMAT_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
         }
     }
 
@@ -825,6 +875,12 @@ final class Config {
     private static String string(JSONObject o, String key, String fallback) {
         Object v = o.opt(key);
         return v instanceof String ? ((String) v).trim() : fallback;
+    }
+
+    /** The theme's festival: {@code festival}, or {@code seasonal_skin} when that is empty or missing. */
+    static String festivalName(JSONObject o) {
+        String name = string(o, "festival", "");
+        return name.isEmpty() ? string(o, "seasonal_skin", "") : name;
     }
 
     private static boolean bool(JSONObject o, String key, boolean fallback) {

@@ -1,0 +1,6 @@
+{
+  "tv": "DEXP 65UHG2 (HKC 4K PA Google TV, HKC_4K_GTV_PA, lakeside)",
+  "os": "Google TV 14",
+  "brand": "DEXP",
+  "notes": "HKC-built Google TV 14 on MediaTek m7332: retail demo, CVTE and MediaTek factory menus, hotel mode, Anoki ACR, help and feedback off; `com.google.android.tungsten.setupwraith` disabled with the stock home (its RecoveryActivity takes Home at priority 1); MediaTek partner customizer left alone; the gear button needs the key helper (HOME_KEY_SERVICE=1, keycode 83, scancode 249), which costs the volume ramp; Settings pill"
+}

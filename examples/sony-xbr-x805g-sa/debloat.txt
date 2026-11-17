@@ -1,0 +1,107 @@
+# Sony BRAVIA XBR-x805G (BRAVIA_ATV3_4K, MediaTek MT5891), Latin America firmware
+# Product BRAVIA_ATV3_4K_SA, model string "BRAVIA 4K GB ATV3". Android TV 9 (API 28), 2 GB RAM.
+# Firmware BRAVIA_ATV3_4K_SA-user 9 PTT1.190515.001.S54 672201 release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-xbr-x805g-sa/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xbr-x805g-sa/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same Android 9 build number (PTT1.190515.001.S54 / 672201) as examples/sony-xbr-65x900f (UC) and
+# sony-xbr-x900e, on the ATV3 / MT5891 platform. SA firmware is the Latin American product image.
+# Stock launcher: com.google.android.tvlauncher (restore.sh's default). HOME priority 2: disable it
+# after the replacement launcher is installed (launcher/build-and-install.sh does this).
+# Live TV / input app: com.sony.dtv.tvx. Keep it: HDMI and the tuner go through it.
+# Keep: com.sony.dtv.tvinput.*, braviasync*, remotepairing, rcpowerkey, uinputservice, imeproxy,
+# sonysystemservice, settingsprovider, mtktvapi.agent, the rest of com.mediatek.* (except the two
+# agents listed below), vewd.core.service (AirPlay), Chromecast (mediashell), Play Store / Services,
+# firmware updater.
+# Left alone on purpose: Google Assistant (katniss), firmware updates, Netflix/YouTube/Spotify and
+# other streaming the owner uses. Not in this list: stock launcher (install script handles it).
+#
+# Applied 2026-11-02 in batches with checks between; reboot-checked with the replacement launcher
+# as Home (HDMI and Live TV OK). Lived with through 2026-11-03. Re-enabled: none from this list.
+# Sony's tvlaunchercustomizer was tried briefly and restored after a remote hiccup; it is not listed.
+#
+# Notes from this firmware:
+# - ADB: Developer options > ADB debugging (Sony's label) opens port 5555; Android 9 has no Wireless
+#   debugging pairing. Accept "Allow USB debugging?" once.
+# - After switching Home to the custom launcher, reboot once before trusting HDMI: without that reboot
+#   the TV HAL can fail setSurface until the next cold start with the new Home.
+# - Empty screenshots while on an HDMI video plane are normal on this board.
+# - config.json: hide tvx and the program guide; live_tv_package com.sony.dtv.tvx;
+#   inputs_connected_only true (this firmware reports real per-port status).
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+
+# Sony and Google content, ads and promos
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Retail demo and hotel / B2B
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.b2b.vendorprotocol
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.webappruntimedrm
+com.sony.dtv.browser.webappruntimeextension
+com.sony.dtv.serviceinformation
+
+# Telemetry, remote support, logging and feedback
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.sonybugreportsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.mediatek.agent                             # MediaTek telemetry agent (not mtktvapi / panel)
+com.mediatek.dmagent
+com.sony.dtv.sonyloglevelsettingsys
+com.sony.dtv.sonyloglevelsettingvnd
+
+# Preloaded help apps
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+
+# Unused Google preloads (owner's choice)
+com.google.android.youtube.tvmusic
+com.google.android.videos                      # Google TV movies & shows
+com.google.android.play.games
+com.google.android.backdrop                    # ambient screensaver
+
+# USB media players and Opera/Vewd browser shell (keep vewd.core.service for AirPlay)
+com.sony.dtv.smartmediaapp                     # Media Player
+com.sony.dtv.osat.music                        # Music
+com.vewd.core.integration.dia                  # Internet Browser UI
+com.sony.dtv.browser.ceb
+com.sony.dtv.browser.webappruntime
+com.sony.dtv.browser.webappservice
+
+# Mirroring, DLNA, DIAL and Google sync leftovers
+screnmirroring.com                             # Screen mirroring (Miracast)
+com.sony.dtv.networkapp.wifidirect
+com.sony.huey.dlna.module
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna
+com.sony.dtv.dialservice
+com.google.android.partnersetup
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.android.providers.calendar
+
+# Low-value leftovers
+com.google.android.marvin.talkback
+com.android.printspooler
+com.android.dreams.basic
+com.sony.dtv.quicksetup
+com.sony.dtv.QuickSetupCustomizer

@@ -38,4 +38,11 @@ public class OpenOnStartTest {
         assertFalse(OpenOnStart.opensNow(false, 59_999, 60_000));
         assertTrue(OpenOnStart.opensNow(false, 60_000, 60_000));
     }
+
+    @Test
+    public void wakeNeedsBothTheRowAndTheSwitch() {
+        assertTrue(OpenOnStart.onWake(true, true));
+        assertFalse(OpenOnStart.onWake(true, false));
+        assertFalse(OpenOnStart.onWake(false, true));
+    }
 }

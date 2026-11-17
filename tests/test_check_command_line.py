@@ -246,6 +246,53 @@ class CheckCommandLineTest(unittest.TestCase):
         self.assertIn(f"nothing drifted: 2 listed packages are still disabled and Home is {LAUNCHERX}/",
                       result.stdout)
 
+    def test_an_installed_app_that_is_not_a_launcher_is_refused_not_drift(self):
+        # A typo that lands on another installed app: every weekly run reported drift no --fix could
+        # clear, and --fix itself stopped with exit 1, the code that means the TV drifted.
+        self.drifted_home(installed=["com.example.music", "com.example.store", STOCK, CUSTOM, LAUNCHERX,
+                                     "com.android.vending"])
+        for args in ((str(self.list_path), "com.android.vending"),
+                     ("--fix", str(self.list_path), "com.android.vending")):
+            with self.subTest(args=args):
+                result = self.run_check(*args)
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn(f"{args[-1]} is installed but", result.stderr)
+                self.assertIn("nothing was changed", result.stderr)
+                self.assertNotIn("drift", result.stdout)
+                self.assert_untouched(result)
+
+    def test_a_disabled_launcher_is_named_as_disabled(self):
+        # Disabled, its HOME activity is gone from the list: say how to turn it back on.
+        self.drifted_home(disabled=["com.example.music", "com.example.store", STOCK, CUSTOM],
+                          home_activities=[f"{LAUNCHERX}/.home.HomeActivity"])
+        result = self.run_check(str(self.list_path), CUSTOM)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn(f"{CUSTOM} is installed but disabled", result.stderr)
+        self.assertIn(f"pm enable --user 0 {CUSTOM}", result.stderr)
+        self.assert_untouched(result)
+
+    def test_a_package_whose_only_home_is_a_fallback_is_refused(self):
+        # A vendor FallbackHome answers HOME but is a placeholder, not a launcher (#435).
+        vendor = "com.tcl.keycustomfunctionservice"
+        self.drifted_home(installed=["com.example.music", "com.example.store", STOCK, CUSTOM,
+                                     LAUNCHERX, vendor],
+                          home_activities=[f"{LAUNCHERX}/.home.HomeActivity", f"{CUSTOM}/.MainActivity",
+                                           f"{vendor}/.FallbackHome"])
+        result = self.run_check(str(self.list_path), vendor)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn(f"{vendor} is installed but answers no HOME activity", result.stderr)
+        self.assert_untouched(result)
+
+    def test_a_tv_that_lists_no_real_home_activity_keeps_the_old_check(self):
+        # No working `cmd`, or a TV still locked after a reboot that lists only its FallbackHome
+        # placeholder: nothing to judge by, so the named launcher is taken on trust.
+        for claims in ([], ["com.android.tv.settings/.system.FallbackHome"]):
+            with self.subTest(claims=claims):
+                self.drifted_home(home_activities=claims)
+                result = self.run_check(str(self.list_path), CUSTOM)
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn(f"Home is {LAUNCHERX}/.home.HomeActivity, not {CUSTOM}", result.stdout)
+
     def test_a_tv_that_answers_no_packages_is_not_drift(self):
         self.tv(installed=[], disabled=[])
         result = self.run_check(str(self.list_path))

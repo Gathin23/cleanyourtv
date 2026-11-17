@@ -1,6 +1,6 @@
 # TCL BeyondTV AP08: initial setup report
 
-Checked on a real TV in one session on 2026-10-21, including a restart and owner checks with the physical remote and phone casting. This is **not a several-day tested debloat list**. The package changes below record this owner's choices, not a list to apply unchanged. The retail model was not established.
+Checked on a real TV in one session on 2026-10-21, including a restart and owner checks with the physical remote and phone casting. This is **not a several-day tested debloat list**. The package changes below record this owner's choices, not a list to apply unchanged. The retail model was not established on that unit; the [second unit](#second-unit-iffalcon-43k61-india-v656) is an iFFALCON 43K61 sold in India.
 
 ## Device identifiers
 
@@ -69,5 +69,78 @@ Ambiguous or input-related packages were retained, including `com.tcl.partnercus
 - The owner confirmed the TV appeared for phone casting and played video with sound after restart. Miracast and T-Cast were preserved but not separately exercised.
 - The post-restart crash buffer was empty at inspection. Standby cycles, prolonged use, firmware updates and every app's functionality were not tested.
 - Finally, the owner revoked USB-debugging authorizations, turned debugging off and restarted. A TCP connection attempt to port 5555 returned **connection refused**. Network debugging was not left enabled.
+
+## Second unit: iFFALCON 43K61 (India), V656
+
+One session on 2026-11-10, with a screenshot after each round of changes and two reboots (after the package rounds
+and after the launcher); not a several-day list. iFFALCON is TCL's
+sub-brand, and the K61 (43, 50 and 55 inch) is sold as Android TV in India.
+
+| Field | Observed value |
+|---|---|
+| Retail model | iFFALCON 43K61 |
+| Model / device / product | `BeyondTV` |
+| Board | `RTD2851` (`ro.board.platform` `rtd285o`) |
+| Android / API | Android TV 9 / 28 |
+| Software | `V8-R851T02-LF1V656`, version name `AP08` |
+| Client type | `TCL-AP-RT2851-S1` |
+| Security patch | `2021-01-05` |
+| Reported memory | `2097152 kB` |
+| Network | Ethernet |
+
+### Firmware and TCL's service update
+
+- TCL's system update reported no newer firmware for this client type. The first check after a boot said there was
+  no network while Android had validated the Ethernet link; `com.tcl.versionUpdateApp` had crashed and restarted
+  during boot. A second check a few minutes later answered normally.
+- The same updater also runs a separate **service update** (`AppUpdateService`) that replaces TCL's own apps. On
+  this day it installed `com.tcl.usercenter` 4.0.2.1 and `com.tcl.waterfall.overseas` 7.5.1.11, and an update
+  described as "Optimize the upgrade process for TTVS" was offered again after a reboot. This build has no
+  `com.tcl.ttvs` package (TCL's own code logs `NameNotFoundException` for it); the TTVS classes run inside
+  `com.tcl.bi`.
+- `com.tcl.versionUpdateApp` was disabled at this owner's request, after the firmware check above. It is not a
+  recommendation: keep it for firmware updates.
+
+### Packages
+
+Disabled one at a time, in three rounds with a screenshot after each, and kept after a reboot:
+`com.tcl.bi`, `com.google.android.feedback`, `com.google.android.tv.bugreportsender`,
+`com.tcl.tv.tclhome_passive`, `com.tcl.esticker`, `com.google.android.tvrecommendations`,
+`com.google.android.leanbacklauncher.recommendations`, `com.tcl.waterfall.overseas`,
+`com.tcl.partnercustomizer`, `com.tcl.messagebox`, `com.tcl.smartalexa`, `com.google.android.partnersetup`,
+`com.google.android.onetimeinitializer`, `com.tcl.useragreement`, `com.tcl.android.webview` (Google WebView is the
+active provider), `com.tcl.miracast`, `com.tcl.MultiScreenInteraction_TV` and `com.tcl.versionUpdateApp`. After the
+launcher handover below: `com.google.android.tvlauncher`, `com.tcl.tvweishi` and `com.tcl.appmarket2`.
+
+- `com.tcl.notereminder` and `com.tcl.usercenter` were enabled again by the first reboot, as on the RT2851 AP06
+  second unit (`com.tcl.appstatecontroller`). Both stay idle and were left enabled; `appstatecontroller` was not
+  touched.
+- Voice (`katniss`, `com.tcl.assistant`, `com.tcl.micmanager`) and `com.google.android.tv.remote.service` were kept.
+  Chromecast, the photo screensaver and TalkBack had already been switched off by the owner from the TV's own menus.
+- HDMI goes through `com.tcl.tvinput`; there is no separate `com.tcl.tvpassthrough` on this build, as on the first
+  unit.
+
+### Stock Home and the launcher
+
+- The stock Home (`com.google.android.tvlauncher` 7.7.15) shows server-side rows at the top ("Presented by …",
+  "Top-selling movies", "Trending on Google"). Settings > Home screen > Customize channels does not turn these off,
+  and disabling `tvrecommendations` and `partnercustomizer` did not remove them.
+- An unmodified `launcher/` built with `tools/docker-build.sh` (no local JDK), with only `live_tv_package` and
+  `hidden_apps` set to `com.tcl.tv` in `config.xml`, started with `am start -W` before the stock launcher was
+  disabled, then took Home with `cmd package set-home-activity`. The other HOME claimants were only
+  `com.tcl.keycustomfunctionservice/.FallbackHome` and `com.android.tv.settings/.system.FallbackHome`.
+- After a reboot the launcher was in front and `getprop sys.enable_key` was `true`: the locked arrows and OK seen on
+  the V237 build ([tcl-beyondtv-rt2851.md](tcl-beyondtv-rt2851.md)) did not occur.
+- Play Store updates to `com.google.android.tungsten.setupwraith` (1.0.993403918) and
+  `com.google.android.tv.remote.service` (7.00.999235495), installed with the stock launcher already disabled,
+  added no HOME claimant.
+- The owner checked on the physical remote, after the reboot: Home from inside an app, Back, the arrows and OK,
+  Source/Input with an HDMI device, Power, the mic button and the app buttons.
+
+### Not checked
+
+Tuner reception, standby over days, a firmware install and a full rollback.
+
+Afterwards Developer options were turned off; `tools/adb-closed.py` reported port 5555 closed.
 
 Private device dumps, network addresses, Wi-Fi names, screenshots containing network identifiers, signing keys and downloaded build tools are intentionally absent from this report.

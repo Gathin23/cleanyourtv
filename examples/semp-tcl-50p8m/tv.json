@@ -1,0 +1,6 @@
+{
+  "tv": "SEMP TCL 50P8M (Chassis R851T02, Realtek RTD2851)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL BI/TTVS analytics, promo rows, cyberui, cleaner, waterfall and store; unused AOSP subsystems; Freeview stubs; voice off by choice; Chromecast and updater kept; short-press power requires com.tcl.tv"
+}

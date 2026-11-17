@@ -7,7 +7,7 @@ from tools import bench
 
 class PssSummaryTest(unittest.TestCase):
     def read(self, output):
-        return bench.pss_of(SimpleNamespace(shell=lambda command: output), "com.gathin.tvhome")
+        return bench.pss_of(SimpleNamespace(shell=lambda command, *, retry=False: output), "com.gathin.tvhome")
 
     def test_android_8_summary(self):
         # ActivityThread.java, android-8.0.0_r1, lines 2547-2554.

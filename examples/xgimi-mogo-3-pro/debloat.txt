@@ -16,13 +16,17 @@
 #     "settings_key_keycodes": [83]            the gear button sends KEYCODE_NOTIFICATION
 #     "app_keys": ["KEYCODE_F4:com.google.android.youtube.tv",
 #                  "KEYCODE_F9:com.netflix.ninja",
-#                  "KEYCODE_F8:com.amazon.amazonvideo.livingroom"]
+#                  "KEYCODE_F8:com.amazon.amazonvideo.livingroom",
+#                  "KEYCODE_F5:mute",
+#                  "KEYCODE_F6:ignore"]
 #     "stock_home_redirect": "com.google.android.apps.tv.launcherx"
 #   XGIMI's xrmservice re-enables the disabled stock launcher on every one of its remote keys
-#   (docs/TROUBLESHOOTING.md). app_keys takes YouTube (F4), Netflix (F9) and Prime Video (F8) away from it.
-#   The programmable button (F5, mute by default), the profile button (F6, whose chooser lived in the stock
-#   launcher) and power (F11) still revive it: stock_home_redirect sends its home screen back, and
-#   re-applying this list disables it again.
+#   (docs/TROUBLESHOOTING.md). app_keys takes YouTube (F4), Netflix (F9), Prime Video (F8), the programmable
+#   button (F5, mute by default) and the profile button (F6) away from it; only power (F11) still revives it,
+#   and stock_home_redirect sends its home screen back.
+#   Left to xrmservice, the profile button starts launcherx's profile chooser, which a disabled launcherx no
+#   longer has: xrmservice crashes, and about 11 s after each restart the projector runs its autofocus.
+#   "KEYCODE_F6:ignore" takes the button so nothing crashes; it then does nothing (verified 2026-11-03).
 # - HDMI 1 opens through com.google.android.tv.inputplayer from the Inputs menu, so no input_action is needed
 #   (unlike the Horizon S Pro).
 # - The default Backdrop screensaver (dreamx) is disabled below: point the screensaver at

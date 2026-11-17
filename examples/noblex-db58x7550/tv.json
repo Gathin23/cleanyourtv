@@ -1,0 +1,6 @@
+{
+  "tv": "Noblex DB58X7550 (Changhong AI PONT, ISDB93CH, sindorim, MediaTek m7322), Argentina",
+  "os": "Android TV 11",
+  "brand": "Noblex",
+  "notes": "Based on chiq-ai-pont; AI PONT portal, recommendation rows, partner auto-installs, Homwee store/help/app updater and TV Manager; no ACR on this firmware; partnercustomizer and the firmware updater kept; casting and streaming apps left as comments; power_on_home_always with key_filter false, same-day test: [notes](noblex-db58x7550/README.md)"
+}

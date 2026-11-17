@@ -1,0 +1,104 @@
+# Toshiba 43V35KP (device hayward, product huashan_emT; Hisense/CVTE board, MediaTek mt5867),
+# Android TV 11 (SDK 30), firmware RTMA.250416.097, security patch 2025-06-01.
+# Fingerprint: Toshiba/huashan_emT/hayward:11/RTMA.250416.097/13725141:user/release-keys
+# EU-market unit (ro.vendor.mtk.system.marketregion=eu). ro.product.manufacturer=Hisense,
+# ro.product.model="Toshiba TV". 1920x1080 panel, ro.config.low_ram=true, armeabi-v7a only.
+# Same board (hayward, mt5867) as examples/polytron-2k-hayward (firmware .094, Indonesia) and
+# examples/motorola-mt4310 (different build). Same firmware level as docs/devices/toshiba-32v35mp.md
+# (32V35MP India unit, one-session report); this folder is the EU 43V35KP with a cold-boot check.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-43v35kp/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-43v35kp/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED with pm disable-user, never uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher:   com.google.android.tvlauncher (classic Android TV). Disabled by
+#                   launcher/build-and-install.sh after Home handover, not by this list.
+# Live TV / HDMI:   com.mediatek.wwtv.tvcenter. NEVER disable this or any com.mediatek.* package.
+# Keep enabled:     com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter,
+#                   com.airoha.android.btd (Bluetooth remote pairing), com.cvte.autobacklight (keep),
+#                   com.cvte.hotkey.receiver (if present — remote shortcut keys).
+# Note: com.cvte.tv.infoprovider is telemetry; it is disabled below.
+# NEVER open (even to look): com.cvte.tv.fac.*, com.cvte.tv.hisensefac, com.cvte.tv.at,
+#                   com.at.factory.*, mediatek.factorymenu.ui — on CVTE/Hisense boards, launching
+#                   any factory app can flip a persistent factory-mode flag the shell cannot undo.
+#
+# setupwraith: com.google.android.tungsten.setupwraith is disabled in this list. On this firmware
+# it did NOT claim HOME (confirmed: set-home-activity succeeded without it). Its RecoveryActivity
+# was not observed claiming Home. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first; if the TV's
+# active Wi-Fi network belongs to setupwraith, forget and re-join it in Settings before running this.
+# Note: setupwraith is kept on examples/motorola-mt4310 (also hayward). Disabling setupwraith gives Home back
+# but costs Chromecast built-in (casting); keep it enabled if you cast.
+#
+# com.at.factory.factorymanager: disabled and confirmed safe on this unit. On examples/motorola-mt4310
+# (same board, different firmware) it re-enables com.google.android.katniss and tvrecommendations at
+# every boot. That was NOT observed here — katniss and tvrecommendations remained disabled across
+# a full cold boot. Leave it enabled if you are unsure, or if those packages come back after a reboot.
+#
+# com.google.android.tvrecommendations: also confirmed stable across a full cold boot here. Disabled.
+# If recommendations rows reappear after a reboot, re-enable it and leave it in; on other hayward
+# firmware variants com.at.factory.factorymanager re-enables it at boot automatically.
+#
+# Status: disabled in batches on 2026-11-01. Full cold boot (mains power-off) verified on 2026-11-02.
+# Sleep/wake cycles tested (screensaver and Home correct after wake). Light daily use for four days.
+# INPUT button opens the HDMI input switcher; a live HDMI signal was not tested on this unit.
+# TTS (com.google.android.tts) is commented out below: it was disabled on this set but TTS stopped
+# working as a side-effect. Leave it enabled if you use voice or the accessibility reader.
+# Remote buttons (Home, Back, D-pad, volume, Input) all work without InputKeyService or HomeKeyService.
+
+# --- Silent installs and partner promo rows ---
+android.autoinstalls.config.hisense.hayward  # silently installs promoted apps
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner promo rows on the stock launcher
+com.google.android.tvrecommendations         # recommendation / sponsored rows (see header)
+
+# --- Manufacturer telemetry and analytics ---
+com.cvte.tv.infoprovider                     # CVTE device-info and telemetry service
+
+# --- Store demo and setup leftovers ---
+fusion.android.tv.demo                       # retail/shop demo mode
+com.mstar.android.tv.disclaimercustomization # first-setup disclaimer popup
+com.mediatek.wwtv.setupwizard                # TV setup wizard (setup already done)
+com.google.android.onetimeinitializer        # one-time first-boot initialiser
+
+# --- Factory / production apps ---
+# These must NEVER be opened, only disabled. See header warning.
+com.at.factory.androidtvaidlservice          # factory AIDL service bridge
+com.at.factory.factorymanager               # factory package manager (see header; leave enabled if unsure)
+com.cvte.tv.at                               # CVTE factory auto-test client
+com.cvte.tv.fac.menu                         # CVTE factory menu
+com.cvte.tv.hisensefac                       # Hisense factory tool
+com.cvte.tv.fac.aging                        # burn-in / aging test
+mediatek.factorymenu.ui                      # MediaTek factory menu UI
+
+# --- Google telemetry, tracking and partner services ---
+com.google.android.feedback                  # crash/feedback uploader to Google
+com.google.android.partnersetup             # partner/OEM attribution and RLZ pings
+com.google.android.syncadapters.calendar    # calendar sync, on a TV
+com.google.android.sss.authbridge           # Google sign-in auth bridge service (no UI)
+
+# --- Second Home claimant ---
+# See header: check Wi-Fi ownership before disabling.
+# Note: on some hayward variants this is left on; disable only if the launcher takes Home cleanly.
+com.google.android.tungsten.setupwraith
+
+# --- OEM browser preload ---
+com.tcl.browser                              # TCL-supplied browser (not used on Toshiba)
+
+# --- Ambient screensaver (safe once launcher owns Home) ---
+com.google.android.backdrop                  # ambient photo screensaver; replaced by ClockDream
+                                             # (settings put secure screensaver_components
+                                             #  com.gathin.tvhome/.ClockDream)
+
+# --- Preloaded streaming app (India / JioTV, not relevant on EU market) ---
+com.jio.media.stb.ondemand                  # JioTV / JioHotstar India streaming
+
+# --- Off by choice on this set (keep what you use) ---
+# com.google.android.tts                     # Google TTS — disabled here, but TTS then stops
+#                                            # working; keep it if you use voice or screen reader
+# Already disabled at the factory on this firmware:
+# com.google.android.youtube.tvmusic         # YouTube Music (factory-disabled; not in this list)
+# com.google.android.play.games              # Play Games (factory-disabled; not in this list)
+# com.google.android.marvin.talkback        # TalkBack (factory-disabled; not in this list)
+# com.his.tv.user.rus_apk                    # Russian regional APK (factory-disabled; not in this list)
+
+# --- Stock launcher: disabled by launcher/build-and-install.sh, not by this list ---
+# com.google.android.tvlauncher

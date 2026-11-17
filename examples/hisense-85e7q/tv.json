@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 85E7Q (VIDAA_TV, MediaTek MT9655), China",
+  "os": "Android 14",
+  "brand": "Hisense",
+  "notes": "China VIDAA firmware on Android 14 (MT9655, build 07.02.70.202605250010): ad SDK/service, telemetry and the DAS reporter, the vendor push channel, retail/hotel/meeting and first-run modes, preloaded content, weather and calendar; the stock Home `com.jamdeo.tv.vod` goes with the launcher swap, and two other launchers stay enabled so Home never empties; OTA kept; 19 packages; [folder README](hisense-85e7q/README.md), [device note](../docs/devices/hisense-85e7q.md)"
+}

@@ -7,10 +7,11 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 /**
- * A festive skin set by a theme's config.json: {@code festival}, {@code festival_until}, {@code greeting}
- * and {@code accent_color}. While it is active the pills get festive icons (a diya for the network, a bell
- * for Inputs, a marigold for Settings), the greeting is replaced and the focus glow takes the accent colour.
- * It switches itself off after {@code festival_until}, so nobody has to remember to undo it.
+ * A festive skin set by a theme's config.json: {@code festival} (or {@code seasonal_skin}), {@code festival_until},
+ * {@code greeting} and {@code accent_color}. While it is active the pills get festive icons (a diya for the
+ * network, a bell for Inputs, a marigold for Settings; for {@code halloween} a jack-o'-lantern, a bat and a
+ * ghost), the greeting is replaced and the focus glow takes the accent colour. It switches itself off after
+ * {@code festival_until}, so nobody has to remember to undo it.
  */
 final class Festival {
 
@@ -18,6 +19,12 @@ final class Festival {
 
     /** Warm diya gold, the accent when a theme names a festival but no colour. */
     static final int DEFAULT_ACCENT = 0xFFFFB23C;
+
+    /** The festival with its own skin (jack-o'-lantern, bat, ghost, bats on the first Home) instead of the diya's. */
+    static final String HALLOWEEN = "halloween";
+
+    /** Pumpkin orange, Halloween's accent when the theme names no colour. */
+    static final int PUMPKIN = 0xFFFF7A1A;
 
     /** Lower-case festival name, or "" for none. */
     final String name;
@@ -67,13 +74,21 @@ final class Festival {
                 return res.getString(R.string.festival_dussehra_greeting);
             case "diwali":
                 return res.getString(R.string.festival_diwali_greeting);
+            case HALLOWEEN:
+                return res.getString(R.string.festival_halloween_greeting);
             default:
                 return "";
         }
     }
 
     int accentColor() {
-        return accent != 0 ? accent : DEFAULT_ACCENT;
+        if (accent != 0) return accent;
+        return isHalloween() ? PUMPKIN : DEFAULT_ACCENT;
+    }
+
+    /** Whether this is the Halloween skin rather than the diya, bell and marigold. */
+    boolean isHalloween() {
+        return HALLOWEEN.equals(name);
     }
 
     /** {@code #RRGGBB} to an opaque colour, anything else to 0. */

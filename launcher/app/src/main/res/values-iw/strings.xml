@@ -18,6 +18,7 @@
     <string name="good_night">לילה טוב</string>
     <string name="festival_dussehra_greeting">חג דוסרה שמח</string>
     <string name="festival_diwali_greeting">חג דיוואלי שמח</string>
+    <string name="festival_halloween_greeting">ליל כל הקדושים שמח</string>
     <string name="ethernet">רשת קווית</string>
     <string name="offline">אין חיבור לרשת</string>
     <string name="not_available">לא זמין בטלוויזיה זו</string>
@@ -148,4 +149,7 @@
     <string name="race_countdown_days">%1$d ימ׳ %2$d שע׳</string>
     <string name="last_opened">פתיחה אחרונה: %1$s</string>
     <string name="game_live">בשידור חי עכשיו</string>
+    <string name="clock_format_system">מערכת</string>
+    <string name="clock_format_12">12 שעות</string>
+    <string name="clock_format_24">24 שעות</string>
 </resources>

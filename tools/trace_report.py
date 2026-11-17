@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """The standard launcher numbers from traces recorded with tools/trace.py: per run, median and range.
 
-    tools/trace_report.py traces/before                       one set of runs
-    tools/trace_report.py traces/before --vs traces/after     before against after, with the change
-    tools/trace_report.py ... --markdown                      tables to paste into a pull request
+    tools/venv/bin/python -I tools/trace_report.py traces/before                       one set of runs
+    tools/venv/bin/python -I tools/trace_report.py traces/before --vs traces/after     before against after, with the change
+    tools/venv/bin/python -I tools/trace_report.py ... --markdown                      tables to paste into a pull request
 
 TRACES are .pftrace files or folders of them. Needs the optional `perfetto` package
 (tools/venv/bin/pip install -r tools/requirements-perf.txt). Its first run downloads Perfetto's query
-engine; --engine PATH uses a trace_processor_shell you downloaded yourself. Read tools/trace.md first.
+engine; --engine PATH uses a trace_processor_shell you downloaded yourself, which has to be a file this
+script can run. Read tools/trace.md first.
+
+Exit status: 0 the tables printed, 1 a trace could not be read or the engine failed, 2 --engine names
+something that is not a file this script can run.
 
 For a start (cold, coldsys, home and custom traces) it reports the time from the launcher starting
 (bindApplication in a new process, else performStart) to its first frame drawn, the lifecycle steps
@@ -17,8 +21,10 @@ frame times and missed deadlines over the whole recording.
 import argparse
 import glob
 import json
+import math
 import os
 import re
+import stat
 import statistics
 import sys
 
@@ -128,7 +134,7 @@ def nav_metrics(q, package):
     if frames:
         out["frames"] = len(frames)
         out["frame median"] = statistics.median(frames)
-        out["frame p90"] = frames[min(len(frames) - 1, int(0.9 * len(frames)))]
+        out["frame p90"] = frames[math.ceil(0.9 * len(frames)) - 1]
     if render is not None:
         draws = [r["dur"] / MS for r in q(slices(render, "s.name like 'DrawFrame%' and s.dur >= 0", "s.dur"))]
         if not frames:
@@ -164,10 +170,30 @@ def expand(items):
     paths = []
     for item in items:
         if os.path.isdir(item):
-            paths += sorted(glob.glob(os.path.join(item, "*.pftrace")), key=_run_order)
+            paths += sorted(glob.glob(os.path.join(glob.escape(item), "*.pftrace")), key=_run_order)
         else:
             paths.append(item)
     return paths
+
+
+def unique_traces(paths):
+    """Keep the first path (and its sidecar) for each physical recording in one set."""
+    unique, seen = [], set()
+    for path in paths:
+        try:
+            info = os.stat(path)
+            if not stat.S_ISREG(info.st_mode):
+                raise ValueError(f"not a file: {path}")
+            # stat follows symlinks; device/inode identity also covers hardlinks.
+            # Some filesystems expose no inode, so fall back to the resolved path.
+            identity = ((info.st_dev, info.st_ino) if info.st_ino else
+                        os.path.normcase(os.path.realpath(path)))
+        except OSError as e:
+            raise ValueError(f"cannot identify trace {path}: {e}") from e
+        if identity not in seen:
+            seen.add(identity)
+            unique.append(path)
+    return unique
 
 
 def _run_order(path):
@@ -175,8 +201,44 @@ def _run_order(path):
     return (re.sub(r"-\d+\.pftrace$", "", path), int(m.group(1)) if m else 0)
 
 
+def engine_path(engine):
+    """The --engine path, judged before Perfetto is imported and before any trace is read.
+
+    tools/trace.md hands out "--engine PATH" to a reader who downloaded trace_processor_shell instead of
+    letting Perfetto fetch one, and nothing here read the path: an empty value, a typo, a folder or a file
+    without its execute bit went straight into TraceProcessor(trace=..., config=...), which is the first
+    thing that starts the engine. Perfetto answers the first three with a bare
+    Exception("Path to binary is not valid (<path>)") - not its own error class, so no caller can catch it -
+    and the fourth with PermissionError out of subprocess, each a traceback with exit 1, the status a run
+    that read a trace and failed returns, naming neither --engine nor tools/trace.md. flamechart.py opens
+    its traces with this same opener(), so it is answered here too.
+    """
+    if engine is None:
+        return None
+    if not engine.strip():
+        raise ValueError("--engine is empty: name the trace_processor_shell you downloaded, or leave "
+                         "--engine out to have Perfetto download one (tools/trace.md)")
+    if not os.path.isfile(engine):
+        raise ValueError(f"--engine {engine} is not a file: it is the trace_processor_shell you downloaded "
+                         "yourself (tools/trace.md), or leave --engine out to have Perfetto download one")
+    # Windows has no execute bit to read; the engine there is an .exe, and a wrong one fails to start.
+    if os.name == "posix" and not os.access(engine, os.X_OK):
+        raise ValueError(f"--engine {engine} is not executable: run chmod +x on the trace_processor_shell "
+                         "you downloaded (tools/trace.md)")
+    # Perfetto passes this to Popen: a bare POSIX filename searches PATH instead of running the file
+    # checked above. Keep paths containing / unchanged, including symlinks followed by .. .
+    if os.name == "posix" and not os.path.dirname(engine):
+        return os.path.join(".", engine)
+    return engine
+
+
 def opener(engine=None):
     """open(path) -> q(sql) returning rows as dicts, plus close(), using Perfetto's query engine."""
+    try:
+        engine = engine_path(engine)
+    except ValueError as e:
+        print(f"{e}. No trace was read.", file=sys.stderr)
+        sys.exit(2)
     try:
         from perfetto.trace_processor import TraceProcessor, TraceProcessorConfig
     except ImportError:
@@ -248,8 +310,12 @@ def compare(before, after, names, markdown):
 
 def render(head, rows, markdown):
     if markdown:
-        lines = ["| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
-        return "\n".join(lines + ["| " + " | ".join(r) + " |" for r in rows])
+        def row(cells):
+            # Run names come from filenames: a pipe must stay inside its table cell.
+            escaped = [str(c).replace("\\", "\\\\").replace("|", "\\|") for c in cells]
+            return "| " + " | ".join(escaped) + " |"
+        lines = [row(head), "|" + "---|" * len(head)]
+        return "\n".join(lines + [row(r) for r in rows])
     widths = [max(len(str(r[i])) for r in [head] + rows) for i in range(len(head))]
     return "\n".join("  ".join(str(c).ljust(w) for c, w in zip(r, widths)).rstrip() for r in [head] + rows)
 
@@ -294,6 +360,10 @@ def main(argv=None):
         missing = [p for p in paths if not os.path.isfile(p)]
         if missing:
             sys.exit("not a file: " + ", ".join(missing))
+    try:
+        sets = [unique_traces(paths) for paths in sets]
+    except ValueError as e:
+        sys.exit(str(e))
     families = [{"nav" if scenario_of(p) == "nav" else "start" for p in paths} for paths in sets]
     if any(len(family) > 1 for family in families):
         sys.exit("cannot mix nav and start traces in one set; report them separately")

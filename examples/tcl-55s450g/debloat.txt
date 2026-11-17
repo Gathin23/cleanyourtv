@@ -1,0 +1,73 @@
+# TCL 55S450G (retail model; Android reports "Smart TV", device BeyondTV4, product G03_4K_US_NF_DB),
+# Google TV on Android 11 (SDK 30), build RP1A.200622.001 incremental AR24, security patch 2023-03-05.
+# Fingerprint: TCL/G03_4K_US_NF_DB/BeyondTV4:11/RP1A.200622.001/AR24:user/release-keys
+# Same G03 / rtd288o platform as examples/tcl-55s546-us (GTV93) and examples/tcl-g03-google-tv.
+# Do not copy those lists: this AR24 build is not GTV93. With launcherx off and no key helper, the
+# real remote's Netflix, YouTube, Prime, Apple, TCL Channel, gear and Input buttons did nothing.
+# They work again with the reference launcher's HomeKeyService and InputKeyService both bound.
+# A held volume button still ramps with both bound.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55s450g/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55s450g/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI: com.tcl.tv.
+# The saved Wi-Fi in use belonged to com.android.tv.settings (android.uid.system:1000), not setupwraith.
+# Re-enable setupwraith before a factory reset. This build has APP_AUTO_START and no AUTO_START op.
+#
+# Disabled 2026-11-08, one package per call, then a 25-second wait and sync. Still disabled after a
+# restart that day. Used through 2026-11-10. Nothing was re-enabled.
+# Netflix, YouTube, Prime Video, Apple, TCL Channel, Home, gear, Input, a held volume button,
+# casting and HDMI playback all worked with launcherx off.
+#
+# Kept: com.tcl.tv, com.tcl.tvinput, com.tcl.suspension (Input source panel), com.tcl.settings,
+# com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup, com.tcl.tcl_bt_rcu_service,
+# com.tcl.autopair, com.google.android.katniss (Google voice), com.tcl.versionUpdateApp (firmware
+# updates), com.tcl.channelplus, streaming apps the household uses, Chromecast.
+# TCL assistant and the Alexa bridge are off because this household does not use them.
+#
+# DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput, com.tcl.suspension, com.tcl.settings,
+# com.tcl.system.server, com.tcl.providers.config, com.android.tv.settings.
+
+# ---- TCL and Google telemetry ----
+com.tcl.bi                                  # TCL BI analytics
+com.tcl.xian.StartandroidService            # background reporting service
+com.google.android.feedback                 # crash / feedback reporting
+
+# ---- TCL and Google content, ads and recommendation rows ----
+com.tcl.dashboard                           # TCL dashboard / promo backend
+com.tcl.partnercustomizer                   # partner customisation, promo rows
+com.tcl.messagebox                          # TCL message / promo box
+com.tcl.esticker                            # sticker overlay
+com.tcl.waterfall.overseas                  # TCL web-video portal
+com.tcl.tv.tclchannel                       # TCL Channel
+com.tcl.tv.plus                             # TCL+
+com.google.android.videos                   # Google TV Movies; the priced row is launcherx
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup             # partner-app attribution
+com.google.android.onetimeinitializer       # one-time setup leftovers
+
+# ---- Background services and preloaded extras ----
+com.tcl.guard                               # TCL online support
+com.tcl.usercenter                          # TCL account sign-in; on AR11 a 43C641 rebooted on every standby wake with it off (#3533), so re-enable it if this set does
+com.tcl.ocean.instructions                  # e-manual
+com.google.android.syncadapters.calendar    # calendar sync, no calendar on a TV
+com.google.android.play.games               # Play Games
+com.tcl.gallery                             # TCL photo gallery
+
+# ---- Off by choice: voice assistants not used ----
+com.tcl.smartalexa                          # Alexa bridge
+com.tcl.assistant                           # TCL voice assistant
+
+# ---- Google TV first-run wizard: claims HOME once launcherx is off ----
+# The in-use network was not owned by setupwraith. Re-enable before a factory reset.
+com.google.android.tungsten.setupwraith
+
+# ---- Google ambient screensaver ----
+# Switch the screensaver first: settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+# Undo that after re-enabling this package:
+#   settings put secure screensaver_components com.google.android.apps.tv.dreamx/.service.Backdrop
+com.google.android.apps.tv.dreamx
+
+# ---- Stock Google TV home, after com.gathin.tvhome is Home ----
+com.google.android.apps.tv.launcherx

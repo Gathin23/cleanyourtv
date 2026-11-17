@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sorgenti</string>
+    <string name="state_nothing">nessun dispositivo collegato</string>
+    <string name="state_standby">collegato, in standby</string>
+    <string name="state_connected">collegato</string>
+    <string name="live_tv">TV in diretta</string>
+    <string name="live_tv_detail">Il sintonizzatore d’antenna o via cavo della TV.</string>
+    <string name="no_sources">Nessuna sorgente</string>
+    <string name="no_sources_detail">Questa TV non segnala ingressi HDMI o sintonizzatore.</string>
+    <string name="cant_open">Questa TV non ha un’app che apra quella sorgente.</string>
+    <plurals name="devices_connected">
+        <item quantity="one">%1$d dispositivo collegato.</item>
+        <item quantity="other">%1$d dispositivi collegati.</item>
+    </plurals>
+</resources>

@@ -36,6 +36,11 @@
 #   dead with launcherx; examples/benq-gv32/config.json maps them with app_keys and HOME_KEY_SERVICE=1.
 # - A bound key-filtering helper costs held-key repeat (volume moves one step per press), as on the TCL G09
 #   (docs/devices/tcl-55p71b-g09-key-repeat.md); checked both ways here. The owner kept the buttons.
+# - 30 October 2026, launcher 3.2: launcherx re-enabled, "stock_home_redirect" to it and "key_filter": false keep the
+#   ramp and the Settings button (and voice search results), at the price of the profile button: the redirect closes
+#   launcherx's ProfileChooserActivity as it opens. Reboot-checked; examples/benq-gv32/README.md has the steps.
+# - Holding Power opens an empty power menu (grey circle): the firmware's product overlay sets config_globalActionsList
+#   to an empty array. Not caused by this list. Restart from Settings > System > Restart.
 # - Reboot-checked: everything listed stays disabled, Home and the helper survive, Wi-Fi stays connected.
 
 # Batch 1: telemetry, ads and partner plumbing

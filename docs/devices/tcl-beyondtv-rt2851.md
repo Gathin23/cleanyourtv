@@ -72,3 +72,32 @@ the same state 1 as an empty port, so the two cannot be told apart from the stat
 
 `com.tcl.versionUpdateApp` is TCL's system updater. It is disabled on this unit and in the example list
 (firmware stays on the installed build); re-enable it for firmware updates.
+
+## Another build, V237: the arrows and OK stay locked until Live TV starts
+
+Seen on a TCL 50P8M (Australia, `ro.product.model` BeyondTV, Android TV 9, software `V8-R851T02-LF1V237`,
+security patch 2019-07-05) on 2026-10-26; the empty property below came back after a reboot on 2026-11-03.
+The V606 unit above did not show it.
+
+With the reference launcher as Home and the stock launcher disabled, the remote's arrows and OK did nothing
+after a cold boot, while volume, Input and Settings still worked. Each D-pad or OK press injected over ADB
+logged
+
+```
+WindowManager: disable all key except volume and power
+```
+
+and `getprop sys.enable_key` was empty. Starting the Live TV app sets it to `true` and the keys come back
+until the next boot:
+
+```
+tools/tv.py 'am start -n com.tcl.tv/.TVActivity'
+```
+
+`tools/tv.py 'setprop sys.enable_key true'` released the lock too. Before the stock launcher was disabled
+the keys worked, but which part of the stock setup started Live TV, or set the property, was not traced.
+
+The lasting fix is `boot_to_live_tv` (`config.xml` or a theme) with `live_tv_package` set to `com.tcl.tv`:
+the first Home after boot opens Live TV, which releases the lock, and Home works from then on. The cost is
+that a cold boot lands on Live TV, or on the last HDMI input, which is what `com.tcl.tv` resumes; press Home
+once.

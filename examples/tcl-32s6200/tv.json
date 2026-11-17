@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 32S6200 (S65A, C06, C06_2K_GB, MediaTek MT9221), France",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "V8-T221T01-LF1V108 firmware, same platform as `tcl-32s5k/`; TCL account/TGuard/promo rows, Google extras, TTS/TalkBack, photo screensaver and USB players off; Chromecast, voice and the ttvs updater kept; usercenter and Rakuten re-enabled at every boot, the TCL video portal once in four days; setupwraith safe (system owns the Wi-Fi); remote buttons work with no key helper"
+}

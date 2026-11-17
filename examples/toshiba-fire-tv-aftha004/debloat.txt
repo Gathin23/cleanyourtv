@@ -8,7 +8,10 @@
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-fire-tv-aftha004/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-fire-tv-aftha004/debloat.txt com.amazon.tv.launcher
-# (restore.sh re-enables the stock launcher as a matter of routine; on Fire OS it was never disabled, which is harmless.)
+# (restore.sh re-enables every package the record holds as on, the stock launcher included, since it is what owned
+# Home. On Fire OS it was never off, and Fire OS refuses the attempt with a `Cannot disable a protected package`
+# stack trace once per run (reported on Fire OS 8), which the batch carries on past:
+# docs/TROUBLESHOOTING.md, 'Fire TV (Fire OS)'.)
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Kept on purpose: Alexa, OTA updates, AirPlay, DIAL/whisperplay (Netflix and YouTube casting), the streaming apps

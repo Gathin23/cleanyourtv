@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">File</string>
+    <string name="missing">Nessun gestore di file installato.\n\nInstalla Amaze File Manager (gratuito e open source, da F-Droid o github.com/TeamAmaze/AmazeFileManager), oppure X-plore, Solid Explorer, FX, CX File Explorer o Files di Google, poi riapri questa scheda.</string>
+</resources>

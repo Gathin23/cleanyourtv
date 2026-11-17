@@ -1,0 +1,43 @@
+{
+  "dock_apps": [
+    "org.pbskids.video",
+    "com.disney.disneyplus",
+    "org.smarttube.stable",
+    "com.amazon.amazonvideo.livingroom",
+    "com.hulu.livingroomplus",
+    "com.wbd.stream",
+    "com.peacocktv.peacockandroid"
+  ],
+  "fill_dock": true,
+  "hidden_apps": [
+    "com.vt.tv.tvcenter",
+    "com.google.android.youtube.tv"
+  ],
+  "live_tv_package": "com.vt.tv.tvcenter",
+  "columns": 7,
+  "dock_row": false,
+  "dock_title": false,
+  "rows_below_dock": 0,
+  "top_bar_apps": [
+    "com.android.vending"
+  ],
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "wifi_status_color": true,
+  "app_library": true,
+  "library_button": true,
+  "show_library_pill": true,
+  "show_greeting": true,
+  "power_on_home": true,
+  "back_opens_clock": true,
+  "key_filter": true,
+  "restore_key_services": true,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx",
+  "app_keys": [
+    "KEYCODE_GUIDE:screensaver",
+    "KEYCODE_TV:screensaver"
+  ],
+  "module_cards": true,
+  "reduced_motion": true,
+  "ambient_glow": false
+}

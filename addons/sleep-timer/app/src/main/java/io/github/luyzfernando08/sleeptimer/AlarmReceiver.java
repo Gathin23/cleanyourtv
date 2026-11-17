@@ -10,7 +10,20 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Timer.ACTION_TEST.equals(intent.getAction())) {
             // From adb only (the receiver needs WRITE_SECURE_SETTINGS): a timer of a few seconds, to try it out.
-            Timer.startSeconds(context, intent.getIntExtra("seconds", 70));
+            if (intent.getBooleanExtra("wake", false)) Schedule.testWake(context, intent.getIntExtra("seconds", 60));
+            else Timer.startSeconds(context, intent.getIntExtra("seconds", 70));
+            return;
+        }
+        if (Schedule.ACTION_TEST_WAKE.equals(intent.getAction())) {
+            Schedule.wakeScreen(context,goAsync()::finish);
+            return;
+        }
+        if (Schedule.ACTION_EVENT.equals(intent.getAction())) {
+            Schedule.fire(context,goAsync()::finish);
+            return;
+        }
+        if (Schedule.ACTION_BEDTIME.equals(intent.getAction())) {
+            Schedule.reschedule(context);
             return;
         }
         long end = Timer.end(context);

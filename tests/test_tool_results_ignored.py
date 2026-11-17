@@ -1,9 +1,10 @@
 """The folders a run leaves the owner's own TV in are the ones .gitignore keeps out of a checkout.
 
 `tools/bench.py` writes `bench-results/result.json` into the folder it was run from - its docstring's
-first usage line is `python tools/bench.py --keys 36 --series 3`, with no `--out-dir`, so the default is
-what a reader copies - and that file carries `"host": args.host`, the address the run was given, next to
-the TV's fingerprint, which the script reads with `getprop ro.build.fingerprint` into `environment`.
+first usage line is `tools/venv/bin/python -I tools/bench.py --keys 36 --series 3`, with no `--out-dir`,
+so the default is what a reader copies - and that file carries `"host": args.host`, the address the run
+was given, next to the TV's fingerprint, which the script reads with `getprop ro.build.fingerprint` into
+`environment`.
 CONTRIBUTING.md and AGENTS.md both forbid an IP address in the tree, and .gitignore already keeps every
 other place a run leaves the set: `backup/` (package dumps), `shots/` (session screenshots), `work/`
 (notes) and `traces/` (Perfetto traces, "they hold the TV's process list"), each with the reason in its

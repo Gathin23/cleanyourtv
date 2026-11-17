@@ -1,0 +1,41 @@
+# SunWind SUN-LED32XS305 32" HD (Yandex TV / YaOS, CVTE board TP.MT9256.PB721, MediaTek MT9256), Russia,
+# Android 11 (API 30), build RP1A.200720.011 dev-keys, armeabi-v7a.
+# Stock Home: com.yandex.tv.home/.HomeActivity. Fallback Home: com.android.tv.settings/.system.FallbackHome.
+# Same MT9256 chip as examples/sber-salute-tv-pb766, same YaOS app set as examples/artel-43d1200b.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sunwind-sun-led32xs305/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sunwind-sun-led32xs305/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Getting ADB on this firmware (see README.md):
+# - Developer options open (Build seven times), but YaOS removed the whole Debugging section, and
+#   com.android.tv.settings/.system.development.DevelopmentActivity opened directly shows the same cut page.
+# - ADB is "Debug > ADB ENABLE" in the full CVTE factory menu (com.cvte.fac.menu). On Android 11 it has no
+#   launchable activity; it was opened with a small community shortcut APK that starts its service.
+#   Touch nothing else in that menu.
+# - Network ADB then answered on 5555 with ro.adb.secure=0: no "Allow" prompt, any device on the network
+#   gets a shell. Close it afterwards with `settings put global adb_enabled 0`.
+#
+# Kept on purpose:
+#   com.yandex.tv.home: stock Home stays enabled (CVTE rule); Kinopoisk, Efir and Yandex Music live inside it.
+#   com.yandex.io.sdk, com.yandex.tv.services*: the Yandex account and system glue (Kinopoisk sign-in).
+#   com.yandex.launcher.updaterapp: installs and updates Yandex apps, there is no Play Store.
+#   com.yandex.tv.setupwizard, com.yandex.tv.settings, com.yandex.tv.vendor.config, com.yandex.tv.live,
+#   com.yandex.webview, ru.yandex.androidkeyboard.tv (the only on-screen keyboard), com.yandex_uni.rro.*,
+#   com.mediatek.tvinput and the rest of the MediaTek/CVTE TV stack.
+#   com.mediatek.androidbox: the Miracast receiver ("KindLink"), hidden in config.json, not disabled.
+#   Factory and test packages (com.cvte.fac.menu, com.cvte.factory.at, com.cvte.license.at, com.cvte.tv.burn,
+#   com.stb.factorymenu): never disabled; com.cvte.factory.at was never started.
+
+# Yandex telemetry and ads
+com.yandex.android.advid               # Yandex advertising ID
+com.yandex.tv.bugreportsender          # bug report sender
+com.yandex.tv.daydream                 # Yandex video screensaver (ad slot); set the launcher's ClockDream instead
+com.yandex.prebuiltstub                # empty stub
+com.yandex.tv.webplayer                # Yandex web player; Kinopoisk, VK Video and Rutube play without it
+
+# Voice assistant (the remote's voice key stops working; all other keys keep working)
+com.yandex.tv.alice                    # Alice
+
+# Disabled once, re-enabled by the owner's choice; uncomment if unused
+# com.yandex.tv.input.efir             # Yandex online channels ("Efir"), no antenna needed

@@ -139,6 +139,87 @@
 #   TPTvServiceAgent); `app_keys` scan:786:org.xbmc.kodi remaps it with HomeKeyService alone, so
 #   InputKeyService was not enabled and SOURCES stays the Philips drawer. Checked on the real remote: Home,
 #   SOURCES, Settings, YouTube, Netflix -> Kodi, and holding Volume + still ramps (sound out to a soundbar).
+#
+# FOURTH UNIT: another Philips 65PUS9206/12 (France), same board and build (PH1M_EA_9970A, RTT2.211108.001).
+# Its owner's own 25-entry selection, 22 of them from this list, applied on 23 October 2026 in three batches
+# with the real remote, then lived with for a week: tools/check.py ran every evening until 30 October and
+# nothing drifted. So the entries it shares with this list hold for days on this model, not only one day.
+# - io.mimi.tvapp (the Mimi hearing-test app, not the io.mimi.sdk.service sound path) was tried disabled and
+#   was back to enabled=1 after a reboot, like com.phorus.playfi.tv; leave it out of a list.
+# - The three entries not in this list stayed disabled all week with nothing missed: org.droidtv.astrahdplus,
+#   org.droidtv.dropboxprovider and com.phorus.playfi.softap (Play-Fi's speaker-setup access point; the
+#   playfi.tv service itself stays enabled, as above).
+# - Disabling katniss did not clear the secure voice_interaction_service / assistant settings on this unit, so
+#   restoring it needed no settings commands.
+# - The stock launcher's HOME filter has priority 2 on this firmware: the Home key kept opening tvlauncher until
+#   it was disabled, then resolved to the new launcher at once.
+# - aurora was off from the factory here too; no xtv retry loop in the 30 s idle log, nothing visible broke.
+#
+# FIFTH UNIT: Philips 43PUS8507/12 (France), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029), so this list applies. Applied on 24 October 2026 in
+# five batches with tools/disable.sh, a screenshot after each, then in daily use for a week.
+# - Disabled from this list: candeebug, gel, partnersetup, nettvrecommender, recommendation, nettv.market,
+#   onetimeinitializer, sss.authbridge, syncadapters.calendar, dlna and stock YouTube, then tvlauncher once
+#   the new launcher was Home. All still disabled after a reboot, checked with `pm list packages -d`.
+# - Disabled there beyond this list, nothing missed in a week: android.autoinstalls.config.tpv.device (Play
+#   auto-install of TP Vision partner apps), org.droidtv.nettvapps (the gallery's preload installer),
+#   org.droidtv.dropboxprovider and io.mimi.sdk.service (Mimi sound personalisation).
+# - Kept there (owner's choice): katniss, mediashell, Netflix, ipcontrol and the firmware updaters.
+# - Already missing for user 0 before this session (`pm list packages -u` lists them, `pm list packages`
+#   does not), so on a second-hand or refurbished set check for this first: usagelogger, demome, m7opapp,
+#   amazonalexa, astrahdplus, freeviewplayers, feedback, play.games, videos, youtube.tvmusic, talkback,
+#   tvrecommendations, Prime Video, Apple TV, Play-Fi (softap and tv), io.mimi.tvapp, printspooler and 15
+#   uk.co.freeview.* apps. `cmd package install-existing <package>` brings one back.
+# - Idle log (quirk 5's method): no handleConnectAurora or connectCotextService loop.
+# - Launcher: Live TV package org.droidtv.playtv; the Inputs menu lists HDMI 1-4, the analogue inputs and Live
+#   TV. The firmware starts on the last input it was on, so Home is one press away. The remote's Rakuten
+#   TV key sends Philips keycode 779 (KEYCODE_RAKUTEN_TV) and does nothing with no Rakuten app on the set;
+#   `app_keys` 779:org.smarttube.stable with HOME_KEY_SERVICE=1 opens SmartTube instead. Checked on the
+#   real remote: Home, SOURCES, Settings, TV guide, Rakuten -> SmartTube, and holding Volume + still ramps.
+#
+# SIXTH UNIT: Philips 70PUS8506/12 (Germany), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029, security patch 2025-10-01), so this list applies.
+# Applied on 22 October 2026 in small batches with tools/disable.sh, a screenshot after each, then in daily
+# use for three weeks with nothing missed.
+# - Disabled from this list: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   demome, m7opapp, partnersetup, onetimeinitializer, feedback, sss.authbridge, syncadapters.calendar,
+#   videos, Netflix, Prime Video and Apple TV, then tvlauncher once the new launcher was Home. Nothing came
+#   back after a reboot, checked with `pm list packages -d`.
+# - Disabled there beyond this list: org.droidtv.nettvapps (the gallery's preload installer), as on the
+#   fifth unit.
+# - Kept there (owner's choice): katniss, amazonalexa, stock YouTube, YouTube Music, play.games, dlna,
+#   ipcontrol, Play-Fi, mediashell and the firmware updaters; eum, fastip and nettvbrowser stay as above.
+# - disable.sh's TV-input guard held back usagelogger and demome. `pm query-services --components -a
+#   android.media.tv.TvInputService` names neither, so both were disabled with TVINPUT_ALLOW=1, as on the
+#   third unit; HDMI was checked after each.
+# - aurora was off from the factory here too (enabled=2 before the list).
+# - Launcher: Live TV package org.droidtv.playtv, hidden from the grid with hidden_apps;
+#   build-and-install.sh ran through on its own. The Inputs menu lists HDMI 1-4, Component, Composite,
+#   SCART, VGA and Live TV, and a console on HDMI 1 works.
+#
+# SEVENTH UNIT: Philips 58PUS8506/12 (Denmark), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029, security patch 2025-10-01), so this list applies.
+# Applied on 15 November 2026 in five batches with tools/disable.sh, a screenshot after each, with several
+# reboots that day; not yet lived with for days, so nothing below changes the list.
+# - Disabled from this list: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   nettvapp1814, demome, m7opapp, the five Google telemetry/setup entries, katniss, amazonalexa, play.games,
+#   videos, youtube.tvmusic, Prime Video and Apple TV, then tvlauncher once the new launcher was Home. All
+#   still disabled after each reboot, checked with `pm list packages -d`.
+# - Kept there (owner's choice): Netflix, Disney+, stock YouTube, dlna, ipcontrol, talkback, mediashell
+#   (quirk 4) and the firmware updaters. Not installed on that unit: the other nettvapp* web apps, Fitness
+#   Buddy, WhaleLive, Boosteroid, Vodafone TV, Sweet TV and Rakuten. Disabled from the factory:
+#   tvrecommendations, org.droidtv.aurora, org.droidtv.freeviewplayers and 15 uk.co.freeview.* apps.
+# - disable.sh's TV-input guard held back usagelogger and demome. `pm query-services --components -a
+#   android.media.tv.TvInputService` names neither, so both were disabled with TVINPUT_ALLOW=1, as on the
+#   third and sixth units. SOURCES and the Inputs menu switch inputs; nothing was plugged in, so a picture
+#   on HDMI or the tuner was not checked.
+# - Idle log after the last batch (quirk 5's method): no handleConnectAurora or connectCotextService loop.
+# - Launcher: Live TV package org.droidtv.playtv, hidden from the grid with hidden_apps. The firmware opens
+#   org.droidtv.playtv at every power-on; power_on_home with HOME_KEY_SERVICE=1 sent it to Home about 10 s
+#   after boot. Unlike the second, third and fifth units, holding Volume + then moved one step only: the
+#   key filter dropped the repeats. consume_volume_keys did not change that; volume_pauses_filter true gave
+#   the ramp back after one tap (tap Volume, then hold). Checked on the real remote: Home, SOURCES,
+#   Settings and the app keys.
 
 # TP Vision telemetry. org.droidtv.gel runs inside the candeebug process
 # (android:process="org.droidtv.candeebug"), so disabling candeebug alone leaves a process with

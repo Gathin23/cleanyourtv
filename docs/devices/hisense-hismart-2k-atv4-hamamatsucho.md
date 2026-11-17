@@ -1,8 +1,16 @@
 # Hisense HiSmart 2K ATV4 (hamamatsucho): one-session debloat and Home handover notes
 
 Checked on the owner's real TV in a single ADB session on 2026-10-27, followed by one cold reboot.
-This is **not a tested debloat list**: no several-day stability test has been completed. Do not copy
-the changes below as a proven package list.
+This is **not a tested debloat list**: no several-day stability test has been completed, so the
+eight packages of this session are not a proven list.
+
+The list `examples/` ships for this model is
+[`examples/hisense-hismart-2k-atv4-hamamatsucho/debloat.txt`](../../examples/hisense-hismart-2k-atv4-hamamatsucho/debloat.txt):
+14 packages from the session of 2026-10-30, applied in five batches with a screenshot after each and
+two cold reboots, and the eight below are all among them. Its header states the status (one session
+so far, not yet lived with for days) and the folder's `config.json` carries the Set-top box tile.
+This page keeps what that list cannot show: the guard's NOCHK answer on four of the eight, and the
+Home handover.
 
 ## Identify the exact firmware
 

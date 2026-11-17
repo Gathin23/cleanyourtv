@@ -5,6 +5,11 @@
     privacy.py --write <file>       write the candidates as a debloat list for tools/disable.sh
     privacy.py --write <file> --include-low
                                     also the packages that only matched by name
+    privacy.py --help               this text; needs no TV
+
+`--include-low` is read by the list `--write` writes and by nothing else, so on its own it is refused
+with this usage rather than accepted and ignored: the report prints the name matches either way, and a
+run that asked for them read as if it had got them.
 
 The honest part is the evidence, not the category. On firmware where most packages run under
 `android.uid.system`, about fifty of them "have" RECORD_AUDIO and none of them record anything;
@@ -15,14 +20,29 @@ package is listening.
 
 Disabling is left to `tools/disable.sh`, so the undo path is the one every list already uses: the
 record written before the first change, replayed by `tools/restore.sh`.
+
+Exit status: 0 the audit ran (the report printed, or the list written), or --help printed this text;
+1 it reached the TV and then failed (the list could not be written, nothing was identified to write, a
+file that appeared while the audit ran), 2 the run never got as far as the TV: an argument was
+refused, the `--write` target cannot be written, `tools/tv.py` could not be loaded, `TV_HOST` is not
+set or `TV_PORT` is not a port number (tv.py judges those at import and says so in its own words), or
+the connection failed in one of the ways tv.py explains (a refused port, a Wireless debugging port, a
+handshake that timed out, a TV that cannot be reached). Why it stopped goes to stderr, which a wrapper
+that throws the report on stdout away still shows.
 """
 import os
 import re
+import shlex
 import sys
+import tempfile
 
 # Names from the TV end up inside commands run by its shell, so nothing that could carry shell syntax
 # goes through. Same rule as tools/recovery.py.
 PACKAGE_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")
+
+USAGE = ("usage: privacy.py                       audit the connected TV\n"
+         "       privacy.py --write <file> [--include-low]\n"
+         "                                    write the candidates as a debloat list\n")
 
 # What we know about specific packages, from reports in examples/ and docs/ rather than from the name.
 # `category` drives the section in the report; `note` is what the owner reads before disabling it.
@@ -144,14 +164,38 @@ def connect():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     try:
         import tv
+    except SystemExit as exit_request:
+        # tv.py judges its own command line and its address at import time: with no TV_HOST it exits
+        # with "Set TV_HOST to your TV's IP address" and a TV_PORT it cannot read with "not a port
+        # number", each a string, so the interpreter printed it and exited 1 - the status this file
+        # keeps for "it reached the TV and then failed", which is what a wrapper around it reads, and
+        # what the owner reads when the audit was never run. Written here, so catching the exit does
+        # not hide the text; 2 is the status the docstring already gives a run that never got as far
+        # as the TV. theme_restart.py (#2763), recovery.py (#2767) and manage.py (#2692) answer the
+        # same import-time exits the same way. A module that exits 0 answered the call itself, and
+        # that status stands.
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            sys.stderr.write(exit_request.code + "\n")
+        sys.stderr.write("Nothing was asked of the TV.\n")
+        raise SystemExit(2)
     except ImportError as e:
-        raise SystemExit(f"cannot load tools/tv.py ({e}).\nrun: python3 -m venv tools/venv && "
-                         "tools/venv/bin/pip install -r tools/requirements.txt")
+        # Exit 2, where SystemExit(str) exits 1 by itself: no command was sent, and 1 is the status
+        # this file keeps for a run that reached the TV and then failed. b64push.py, check.py and
+        # bench.py split the two the same way, which is what a wrapper around this script reads.
+        sys.stderr.write(f"cannot load tools/tv.py ({e}).\n"
+                         "run: python3 -m venv tools/venv && "
+                         "tools/venv/bin/pip install -r tools/requirements.txt\n"
+                         "Nothing was asked of the TV.\n")
+        raise SystemExit(2)
     try:
         return tv.connect()
     except Exception as e:
-        raise SystemExit(f"cannot reach the TV at {os.environ.get('TV_HOST', 'TV_HOST')}: {e}\n"
-                         "Check TV_HOST and that USB debugging is still on (tools/tv.py --probe).")
+        sys.stderr.write(f"cannot reach the TV at {os.environ.get('TV_HOST', 'TV_HOST')}: {e}\n"
+                         "Check TV_HOST and that USB debugging is still on (tools/tv.py --probe).\n"
+                         "Nothing was asked of the TV.\n")
+        raise SystemExit(2)
 
 
 def query_packages(dev):
@@ -338,6 +382,7 @@ def list_lines(result, include_low, name):
                          "on the TV. Run the audit again to read them.")
     # The file outlives this run and may be shared (docs/workflows/tv-list.md), so the header uses
     # the placeholder every list uses rather than the TV's address.
+    name = shlex.quote(os.fspath(name))
     lines = [
         "# Privacy audit written by tools/privacy.py.",
         "# Voice, ACR and telemetry candidates this TV answered for. Everything is DISABLED, not",
@@ -376,7 +421,7 @@ def target_problem(path):
         # it through is an IsADirectoryError after the whole audit.
         return (f"{path} is a folder, and --write takes a file name to create, "
                 f"e.g. {os.path.join(path, 'privacy.txt')}.")
-    if os.path.exists(path):
+    if os.path.lexists(path):
         # A second audit of the same TV may legitimately differ, but silently replacing a list the
         # owner is about to apply is how a hand edit disappears.
         return f"{path} already exists; move it aside or choose another name."
@@ -396,8 +441,29 @@ def write_list(path, result, include_low):
     lines = list_lines(result, include_low, os.path.basename(path) if os.path.isabs(path) else path)
     text = "\n".join(lines) + "\n"
     try:
-        with open(path, "w") as f:
-            f.write(text)
+        if os.name == "nt":
+            # A sibling inherits the destination folder's ACL. Windows rename refuses existing
+            # entries, including dangling symlinks which open("x") can follow on Windows.
+            staged = None
+            try:
+                with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix=".privacy-",
+                                                 suffix=".tmp", dir=os.path.dirname(path) or ".",
+                                                 delete=False) as f:
+                    staged = f.name
+                    f.write(text)
+                os.rename(staged, path)
+                staged = None
+            finally:
+                if staged is not None:
+                    try:
+                        os.unlink(staged)
+                    except FileNotFoundError:
+                        pass
+        else:
+            # A failed write may leave this newly created file. Do not unlink a path another
+            # process could have replaced after creation.
+            with open(path, "x", encoding="utf-8") as f:
+                f.write(text)
     except OSError as error:
         # The audit is two shell calls for each package it probed, slow on old firmware: a file the
         # folder would not take should not cost the owner a second run of it. What was to be written
@@ -412,22 +478,40 @@ def write_list(path, result, include_low):
         print(f"{result['skipped']} more name matches were not probed (the audit stops at "
               f"{MAX_PROBES}), so the list leaves them out; check them by hand with "
               "`dumpsys package <name>`.")
-    print(f"apply:   TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/disable.sh {path}")
-    print(f"undo:    TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/restore.sh {path}")
-    print(f"read it first: the comments say what each one takes with it.")
+    quoted_path = shlex.quote(os.fspath(path))
+    print(f"apply:   TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/disable.sh {quoted_path}")
+    print(f"undo:    TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/restore.sh {quoted_path}")
+    print("read it first: the comments say what each one takes with it.")
 
 
 def main():
     args = sys.argv[1:]
+    # -h/--help is a reader asking for this note, not an argument the run cannot use: the other tools
+    # in tools/ answer it at 0 with the note on stdout (adb-closed.py is the exception, pinned by
+    # tests/test_adb_closed_address_words.py). This one printed the three usage lines on stderr and
+    # returned 2, the status its docstring gives to "the run never got as far as the TV: an argument
+    # was refused", so `tools/privacy.py --help | less` showed nothing and the report's four groups -
+    # the sentence that says the audit never claims a package is listening - were never printed by the
+    # command that asks what the tool does.
+    if args[:1] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        return 0
     include_low = "--include-low" in args
     args = [a for a in args if a != "--include-low"]
+    # --include-low is only read by the list --write makes (list_lines), so `privacy.py --include-low`
+    # was accepted and changed nothing: the report prints the name matches whether or not it was given,
+    # and the run read as if the ones the owner asked for had been folded in. The usage line below has
+    # always put the flag after --write; now the run says the same thing instead of ignoring it.
+    if include_low and not args:
+        sys.stderr.write(USAGE)
+        sys.stderr.write("--include-low is read by the list --write writes: pass it with --write, "
+                         "e.g. privacy.py --write privacy.txt --include-low\n")
+        return 2
     if args and (len(args) != 2 or args[0] != "--write" or not args[1]):
         # An empty name is what `--write "$OUT"` sends when OUT was never set - the same mistake as
         # leaving the name out, and os.path checks read "" as "a file in the folder I am in", so it
         # used to come back as a FileNotFoundError after the whole audit.
-        sys.stderr.write("usage: privacy.py                       audit the connected TV\n"
-                         "       privacy.py --write <file> [--include-low]\n"
-                         "                                    write the candidates as a debloat list\n")
+        sys.stderr.write(USAGE)
         return 2
 
     if args:
@@ -435,7 +519,11 @@ def main():
         # and `dumpsys package` is slow on old firmware, all for a file that could not be written.
         problem = target_problem(args[1])
         if problem:
-            raise SystemExit(f"{problem} Nothing was asked of the TV.")
+            # Exit 2: the argument was wrong, so no package was probed - the status the two usage
+            # refusals above answer, and the one a wrapper reads as "nothing was sent to the TV"
+            # rather than a run that reached it and failed. SystemExit(str) would exit 1.
+            sys.stderr.write(f"{problem} Nothing was asked of the TV.\n")
+            return 2
 
     dev = connect()
     try:

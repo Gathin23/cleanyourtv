@@ -1,0 +1,18 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "tatami"
+// The Tatami add-on: app/ is the installed app, plan/ draws Tatami. Tatami Home, the launcher with
+// Tatami behind the apps, is a separate build in home/ that uses the same plan/.
+include ':app', ':plan'

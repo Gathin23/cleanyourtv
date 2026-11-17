@@ -1,0 +1,71 @@
+# Sony BRAVIA 8 II, K-55XR8M2 (2025 QD-OLED, device BRAVIA_AE2, model "BRAVIA 4K AE2", UK/EU firmware)
+# Google TV 14 (API 34), build BRAVIA_AE2_EU-user 14 UKN4.250422.001 603100, security patch 2026-07-05. 4.5 GB RAM.
+# The North American firmware of the same board is examples/sony-bravia-ae2/.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-8-ii/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-8-ii/debloat.txt com.google.android.apps.tv.launcherx
+#          (restore.sh defaults to tvlauncher, which this TV does not have: pass launcherx)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Applied in four batches on 2026-11-08 with a screenshot and crash-log check after each, then the launcher
+# installed, the TV rebooted and `pm list packages -d` compared: the firmware re-enabled nothing. Not yet lived
+# with for days; if something breaks, re-enable it with `pm enable <package>` and please report it.
+#
+# Connecting: USB debugging alone leaves port 5555 closed. Pair once through Developer options > Wireless
+# debugging > Pair device with pairing code, then keep the encrypted connection and
+# point the tools at it with TV_ADB_BINARY (tools/native-adb.md); this list was applied that way. Wireless
+# debugging came back OFF after every reboot on this set, on a new port each time it is switched on.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx; com.google.android.tungsten.setupwraith also claims
+# HOME (priority 1), so it is in this list. On this unit the Wi-Fi saved during first setup belonged to
+# setupwraith (`dumpsys wifi | grep -o 'cname=[^ ]*'` printed its name, not android.uid.system): it was
+# forgotten and re-joined in Settings > Network & Internet before setupwraith was disabled, and stayed up.
+#
+# Keep (UK): com.youview.poa (Live TV & Catch Up / Freeview Play; docs/devices/sony-youview-uk-catchup.md).
+# This firmware also ships Sony's own BBC iPlayer, ITVX, All 4 and My5 launchers (com.sony.dtv.iplayerlauncher,
+# itvlauncher, all4launcher, my5launcher), which show as ordinary app tiles; they were kept.
+# Keep: com.sony.dtv.tvlin (input player; HDMI 1-4 switch through it), com.mediatek.external (HDMI inputs),
+# com.mediatek.tis, com.sony.dtv.tvinput.dvbtuner, com.sony.dtv.sonysystemservice, imeproxy, irblaster/irbservice,
+# com.uei.quicksetsdk, all com.mediatek.*. Never start mediatek.factorymenu.ui.
+# Kept by owner's choice: Sony firmware updates, voice / Gemini (katniss, assistantadapter, voicesearch),
+# Netflix, Prime Video, Sony Pictures Core.
+#
+# Launcher notes from this firmware (verified on the TV, 2026-11-08):
+# - config.xml: hidden_apps = com.sony.dtv.tvlin. With live_tv_package = com.sony.dtv.tvlin the Inputs menu
+#   lists HDMI 1-4 (CEC names, e.g. "PlayStation 5 - HDMI 4") and Live TV; with no aerial and no channels
+#   scanned, Live TV opens tvlin and drops straight back to Home, so this owner left live_tv_package empty.
+# - Power-on lands on the launcher (FallbackHome, then Home): no Live TV takeover, no power_on_home needed.
+# - The remote's Input key opens Sony's own input panel and held Volume ramps, with no key helper bound.
+# - Settings and the Netflix, YouTube, Prime Video, Disney+ and Crunchyroll buttons do nothing once launcherx is
+#   disabled (docs/devices/sony-bravia-4k-ae2-eu-remote-keys.md has why, and the keyboard-layout overlay that
+#   brings them back); this owner kept them dead rather than trade away the volume ramp.
+# - The UI is 1920x1080 over a 3840x2160 panel at density 320 by firmware (`wm size` shows the override):
+#   that is normal on this board, not damage.
+
+# ACR viewing tracker and telemetry
+tv.samba.ssm                                   # Samba TV, fingerprints what's on screen
+tv.samba.ssm.ui                                # Samba TV opt-in / privacy screens
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # Sony device agent
+com.sonyericsson.idd.agent                     # Sony IDD usage-data agent
+com.google.android.feedback
+
+# Sony promos and content feeds
+com.sony.dtv.promos                            # My BRAVIA promos
+com.sony.dtv.sonyselect                        # Sony Select app promos
+com.sony.dtv.sonytab                           # Sony tab on the stock home; unused once launcherx is off
+
+# Retail demo
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# Optional features, off on the tested set by owner's choice (left on in this list)
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.sony.dtv.airplayapp                      # AirPlay
+com.google.android.play.games                  # Google Play Games
+
+# Needed for a custom launcher on Google TV: the setup wizard grabs Home once launcherx is disabled.
+# Re-enable it (restore.sh does) before a factory reset. Check the Wi-Fi owner first (see the header).
+com.google.android.tungsten.setupwraith
+# com.google.android.apps.tv.launcherx   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved

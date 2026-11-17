@@ -35,6 +35,7 @@ itself is missing from the player screenshots because the TV keeps it out of scr
 | Installed live-TV apps | Shortcuts that open the app (Pluto TV, Tubi, Plex, Kodi, Channels, HDHomeRun, YouTube TV, Sling, Philo, Haystack, Live Channels, TiviMate, or any TV app you pick) |
 | Guide | Programme grid, now and next, categories, favourites, recently watched, search, programme details |
 | Player | Media3: HLS and progressive streams (MPEG-TS, MP4 and the other containers Media3 reads), channel up/down, previous channel, number entry, audio and subtitle tracks, recovery and fallback |
+| Play a channel when the app opens | Off by default. On, the app opens straight into the player on the last channel watched, or the lowest channel number the first time, the way a set-top box does. Back from the player returns to the hub |
 | Merging | Channels with the same `tvg-id` in several sources show once; the player falls back between their streams. Can be turned off |
 | CleanYourTV module card | Declared per spec 1 (`res/xml/module_card.xml`) |
 
@@ -89,6 +90,8 @@ the hub. Later, go to **Sources > Add a source**.
 
 **Check** reads a source once without saving, so a wrong address shows up straight away.
 
+**Settings > Play a channel when the app opens** turns the hub into a set-top box: the app opens on the player rather than Home, resuming the last channel watched, or the lowest channel number on a first run. Channel numbers come from `tvg-chno` in the playlist; without them the channels are still there in list order, only number entry has nothing to match.
+
 ## Remote control
 
 | Where | Key | Does |
@@ -139,6 +142,11 @@ changes nothing under `launcher/`. On other launchers the card is ignored and TV
 MOKA R8G (Android 14, 1080p, 2 GB RAM): sources, guide, playback, fallback, favourites and app
 shortcuts; results and what is still untested in [docs/TESTING.md](docs/TESTING.md). The card itself
 was checked in the built APK but not yet on a TV running this launcher.
+
+Hisense HiSmartTV A4 (xiaoyushan, MStar m7322, Android TV 9 / SDK 28, firmware PTMR.190127.037,
+1.8 GB RAM, armeabi-v7a): an M3U playlist of 106 channels with `tvg-chno`, guide, playback,
+channel up/down, number entry, and **Play a channel when the app opens** from a cold start. The
+module card was offered by the launcher and declined ("Keep hidden"), so the normal tile was used.
 
 ## Build
 

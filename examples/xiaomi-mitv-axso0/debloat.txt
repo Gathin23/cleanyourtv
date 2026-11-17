@@ -14,6 +14,10 @@
 # - Glance (com.glance.tv) puts news and ads on the lock/standby screen; with it off the screensaver is clean.
 # - Netflix, Prime Video and YouTube are preinstalled system apps, so they always get BOOT_COMPLETED.
 #   Other apps stay out of the boot-time rush after `am force-stop`, until someone opens them again.
+# - Power-on can land on Live TV's empty antenna input ("Set up your sources") instead of Home, even with
+#   the launcher installed. Xiaomi's `set_auto_play` setting (1 out of the box) does it:
+#   `settings put global set_auto_play 0` stops it, and the TV then starts on Home.
+#   Undo: `settings put global set_auto_play 1`.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics

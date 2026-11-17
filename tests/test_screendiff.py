@@ -21,6 +21,7 @@ and one that cannot be read is named as the before or the after screenshot, exit
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import argparse
+import base64
 import contextlib
 import importlib.util
 import io
@@ -30,6 +31,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
+import warnings
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("cyt_screendiff", ROOT / "tools" / "screendiff.py")
@@ -130,6 +133,22 @@ class CompareTest(unittest.TestCase):
         self.assertEqual(screendiff.compare(before, after, [(0, 0, 4, 4)], 8), (1, (5, 1, 6, 2), 9))
         self.assertEqual((before.tobytes(), after.tobytes()), original)
 
+    def test_the_largest_difference_is_read_without_reading_every_pixel(self):
+        # Pillow 13 - the version tools/requirements-photos.txt pins - deprecates Image.getdata and Pillow 14
+        # removes it, and this number was read with max(...getdata()): a DeprecationWarning on every run
+        # under that pin, and an AttributeError after the comparison was done once Pillow removes it.
+        before = self.Image.new("RGB", (8, 4), "black")
+        after = before.copy()
+        after.putpixel((5, 1), (0, 40, 0))
+        with warnings.catch_warnings(record=True) as seen:
+            warnings.simplefilter("always")
+            result = screendiff.compare(before, after, [(0, 0, 4, 4)], 8)
+        self.assertEqual(result, (1, (5, 1, 6, 2), 40),
+                         "the largest difference is still the largest channel difference")
+        self.assertEqual([str(w.message) for w in seen if "getdata" in str(w.message)], [],
+                         "the largest difference is read with Image.getdata, which Pillow 13 deprecates and "
+                         "Pillow 14 removes: read the peak with getextrema()")
+
     def test_compression_noise_under_the_threshold_is_ignored(self):
         a, b = self.shot("a.png"), self.shot("b.png", noise=3)
         self.assertEqual(self.run_tool([a, b])[0], 0)
@@ -162,7 +181,69 @@ class CompareTest(unittest.TestCase):
         self.assertIn(f"{out}: written", text)
         self.assertTrue(os.path.isfile(out) and os.path.isfile(diff))
 
-    def test_a_write_that_cannot_start_is_named_not_a_difference(self):
+    def test_positive_scales_keep_each_pair_dimension_at_least_one_pixel(self):
+        cases = (((200, 100), "0.001", (32, 61)),
+                 ((1, 1), None, (32, 61)),
+                 ((1, 8), None, (32, 64)),
+                 ((8, 1), None, (38, 61)),
+                 ((201, 101), None, (230, 110)))
+        for size, scale, expected in cases:
+            for different in (False, True):
+                with self.subTest(size=size, scale=scale, different=different):
+                    before = self.Image.new("RGB", size, "black")
+                    after = before.copy()
+                    if different:
+                        after.putpixel((0, 0), (255, 0, 0))
+                    a, b, out, diff = [os.path.join(self.tmp.name, name) for name in
+                                       ("a.png", "b.png", "pair.png", "diff.png")]
+                    before.save(a)
+                    after.save(b)
+                    args = [a, b, "--out", out, "--diff", diff]
+                    if scale is not None:
+                        args += ["--scale", scale]
+                    code, _ = self.run_tool(args)
+                    self.assertEqual(code, int(different))
+                    with self.Image.open(out) as pair:
+                        self.assertEqual(pair.size, expected)
+                    with self.Image.open(diff) as mask:
+                        self.assertEqual(mask.size, size)
+                        self.assertEqual(mask.getbbox() is not None, different)
+
+    def test_output_control_distinct_files_can_be_created_or_overwritten(self):
+        for different in (False, True):
+            for existing in (False, True):
+                with self.subTest(different=different, existing=existing):
+                    a, b = self.shot("a.png"), self.shot("b.png", noise=20 if different else 0)
+                    originals = {p: Path(p).read_bytes() for p in (a, b)}
+                    out, diff = [Path(self.tmp.name) / name for name in ("pair.png", "diff.png")]
+                    for path in (out, diff):
+                        path.unlink(missing_ok=True)
+                        if existing:
+                            self.Image.new("RGB", (3, 3), "red").save(path)
+                    code, _ = self.run_tool([a, b, "--out", str(out), "--diff", str(diff)])
+                    self.assertEqual(code, int(different))
+                    self.assertEqual({p: Path(p).read_bytes() for p in originals}, originals)
+                    with self.Image.open(out) as pair:
+                        self.assertEqual(pair.size, (230, 110))
+                    with self.Image.open(diff) as mask:
+                        self.assertEqual(mask.size, (200, 100))
+                        self.assertEqual(mask.mode, "L")
+                        self.assertEqual(mask.getbbox() is not None, different)
+
+    def test_output_control_the_same_input_can_be_compared_with_itself(self):
+        a = self.shot("a.png")
+        original = Path(a).read_bytes()
+        out, diff = [os.path.join(self.tmp.name, name) for name in ("pair.png", "diff.png")]
+        code, text = self.run_tool([a, a, "--out", out, "--diff", diff])
+        self.assertEqual(code, 0)
+        self.assertIn("identical", text)
+        self.assertEqual(Path(a).read_bytes(), original)
+        with self.Image.open(out) as pair:
+            self.assertEqual(pair.size, (230, 110))
+        with self.Image.open(diff) as mask:
+            self.assertIsNone(mask.getbbox())
+
+    def test_a_special_output_is_named_not_a_difference(self):
         if not os.path.exists("/dev/full"):
             self.skipTest("needs /dev/full, a file whose writes fail with ENOSPC")
         a, b = self.shot("a.png"), self.shot("b.png")
@@ -171,7 +252,8 @@ class CompareTest(unittest.TestCase):
         code, text = self.run_tool([a, b, "--out", out])
         self.assertEqual(code, 2, "a failed write must not read as 'the screenshots differ'")
         self.assertIn(f"cannot write {out}", text)
-        self.assertIn("No space left on device", text)
+        self.assertIn("not a regular file", text)
+        self.assertTrue(os.path.islink(out))
         self.assertNotIn("Traceback", text)
         self.assertNotIn("identical", text)
         self.assertNotIn("pixels differ", text)
@@ -216,6 +298,21 @@ class CompareTest(unittest.TestCase):
                 self.assertIn("Nothing was compared", err.getvalue())
                 self.assertNotIn("Traceback", err.getvalue())
                 self.assertEqual(out.getvalue(), "")
+
+    def test_an_out_name_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        a, b = self.shot("a.png"), self.shot("b.png")
+        out = Path(self.tmp.name) / ("sd_" + chr(0x5199) + ".png")
+        raw = io.BytesIO()
+        console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = console
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            code = screendiff.main([a, b, "--out", str(out)])
+        console.flush()
+        self.assertEqual(code, 0, err.getvalue())
+        self.assertTrue(out.is_file())
+        self.assertIn("sd_?.png: written", raw.getvalue().decode("cp1252"))
 
     def test_a_pair_that_reads_is_still_compared(self):
         """The decode is not allowed to swallow the comparison it guards."""
@@ -274,6 +371,38 @@ class OutputPathTest(unittest.TestCase):
         self.assertIn(f"--out {out} has no extension", stderr)
         self.assertIn(f"name it {out}.png", stderr)
 
+    def test_an_empty_out_is_refused_rather_than_read_as_no_pair(self):
+        """`--out "$OUT"` with OUT unset asked for a pair: it used to compare and write none, with 0."""
+        code, stdout, stderr = self.run_tool(["before.png", "after.png", "--out", ""])
+        self.assertEqual(code, 2, "an empty --out must not read as 'no pair was asked for'")
+        self.assertEqual(stdout, "")
+        self.assertIn("--out was given as '', an empty name", stderr)
+        self.assertIn("--out shots/before-after.png", stderr)
+        self.assertIn("that variable was empty", stderr)
+        self.assertIn("Nothing was read or written", stderr)
+        self.assertNotIn("identical", stderr)
+        self.assertNotIn("Traceback", stderr)
+
+    def test_an_empty_diff_is_refused_the_same_way(self):
+        code, stdout, stderr = self.run_tool(["before.png", "after.png", "--diff", ""])
+        self.assertEqual(code, 2)
+        self.assertEqual(stdout, "")
+        self.assertIn("--diff was given as '', an empty name", stderr)
+        self.assertIn("Nothing was read or written", stderr)
+
+    def test_a_blank_out_is_refused_too(self):
+        # `--out "$SPACE"` reads as no name at all once the shell has split it away.
+        code, _, stderr = self.run_tool(["before.png", "after.png", "--out", "   "])
+        self.assertEqual(code, 2)
+        self.assertIn("--out was given as '   ', an empty name", stderr)
+
+    def test_the_option_left_out_is_still_no_pair(self):
+        """Only an empty value is refused: leaving --out or --diff out is how a run writes neither."""
+        self.assertIsNone(screendiff.output_path("--out", None))
+        self.assertIsNone(screendiff.output_path("--diff", None))
+        self.assertEqual(screendiff.output_path("--out", str(self.dir / "pair.png")),
+                         self.dir / "pair.png")
+
     def test_the_paths_are_judged_before_the_screenshots_are_opened(self):
         # Neither argument exists, so anything that opened them would say so first.
         code, _, stderr = self.run_tool(["missing-before.png", "missing-after.png",
@@ -299,6 +428,138 @@ class OutputPathTest(unittest.TestCase):
         self.assertNotIn("requirements-perf.txt", run.stderr, "Pillow was reported first")
         self.assertNotIn("Traceback", run.stderr)
         self.assertEqual(run.stdout, "")
+
+
+class CollisionTest(unittest.TestCase):
+    """Unsafe destinations are refused without Pillow, and cannot change even one fixture byte."""
+
+    # Two generated 8x8 RGB PNGs. Keeping the bytes here lets preflight run without optional Pillow.
+    PNGS = tuple(base64.b64decode(data) for data in (
+        "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFElEQVR4nGPkEpFjwAaYsIoOWgkANVwATIkpP+sAAAAASUVORK5CYII=",
+        "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFElEQVR4nGM8ISLHgA0wYRUdtBIAyQ4BCkxcDfgAAAAASUVORK5CYII=",
+    ))
+
+    def files(self, different, existing):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        directory = Path(tmp.name)
+        (directory / "before.png").write_bytes(self.PNGS[0])
+        (directory / "after.png").write_bytes(self.PNGS[int(different)])
+        (directory / "sub").mkdir()
+        if existing:
+            (directory / "other.png").write_bytes(self.PNGS[0])
+        return directory
+
+    def assert_collision(self, directory, argv, *needles):
+        names = set(directory.rglob("*"))
+        originals = {p: p.read_bytes() for p in names if p.is_file()}
+        real_import = __import__
+
+        def no_pillow(name, *args, **kwargs):
+            if name == "PIL" or name.startswith("PIL."):
+                self.fail("Pillow was imported before refusing the collision")
+            return real_import(name, *args, **kwargs)
+
+        for mode in (("preflight", "images") if HAVE_PIL else ("preflight",)):
+            with self.subTest(mode=mode):
+                try:
+                    with contextlib.ExitStack() as stack:
+                        if mode == "preflight":
+                            stack.enter_context(mock.patch("builtins.__import__", side_effect=no_pillow))
+                            read = stack.enter_context(mock.patch.object(
+                                screendiff, "screenshot", side_effect=AssertionError("a screenshot was opened")))
+                        out = stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
+                        err = stack.enter_context(contextlib.redirect_stderr(io.StringIO()))
+                        code = screendiff.main(argv)
+                        if mode == "preflight":
+                            read.assert_not_called()
+                    self.assertEqual(code, 2, err.getvalue())
+                    for needle in needles:
+                        self.assertIn(needle, err.getvalue())
+                    self.assertIn("same file", err.getvalue())
+                    self.assertIn("Nothing was read or written", err.getvalue())
+                    self.assertNotIn("Traceback", err.getvalue())
+                    self.assertEqual(out.getvalue(), "")
+                finally:
+                    self.assertEqual(set(directory.rglob("*")), names, "the run created an output")
+                    self.assertEqual({p: p.read_bytes() for p in originals}, originals)
+
+    def input_collisions(self, alias):
+        for different in (False, True):
+            for existing in (False, True):
+                for option in ("--out", "--diff"):
+                    for which in ("before", "after"):
+                        with self.subTest(different=different, existing=existing, option=option, which=which):
+                            directory = self.files(different, existing)
+                            target = alias(directory, directory / (which + ".png"))
+                            other = "--diff" if option == "--out" else "--out"
+                            argv = [str(directory / "before.png"), str(directory / "after.png"),
+                                    option, str(target), other, str(directory / "other.png")]
+                            self.assert_collision(directory, argv, option, which)
+
+    def output_collisions(self, alias, existing_values=(False, True)):
+        for different in (False, True):
+            for existing in existing_values:
+                with self.subTest(different=different, existing=existing):
+                    directory = self.files(different, existing)
+                    target = directory / "other.png"
+                    argv = [str(directory / "before.png"), str(directory / "after.png"),
+                            "--out", str(target), "--diff", str(alias(directory, target))]
+                    self.assert_collision(directory, argv, "--out", "--diff")
+
+    def test_direct_collisions(self):
+        self.input_collisions(lambda directory, path: path)
+        self.output_collisions(lambda directory, path: path)
+
+    def test_relative_and_absolute_collisions(self):
+        previous = Path.cwd()
+        try:
+            os.chdir(tempfile.gettempdir())  # The checkout and temporary files may be on different drives.
+            self.input_collisions(lambda directory, path: os.path.relpath(path))
+            self.output_collisions(lambda directory, path: os.path.relpath(path))
+        finally:
+            os.chdir(previous)
+
+    def test_dot_collisions(self):
+        alias = lambda directory, path: str(directory) + os.sep + "." + os.sep + path.name
+        self.input_collisions(alias)
+        self.output_collisions(alias)
+
+    def test_dotdot_collisions(self):
+        alias = lambda directory, path: directory / "sub" / ".." / path.name
+        self.input_collisions(alias)
+        self.output_collisions(alias)
+
+    def test_symlink_collisions(self):
+        def alias(directory, path):
+            link = directory / "alias.png"
+            try:
+                link.symlink_to(path.name)
+            except (OSError, NotImplementedError) as e:
+                self.skipTest(f"this filesystem cannot create a symlink: {e}")
+            return link
+        self.input_collisions(alias)
+        self.output_collisions(alias)  # Includes two aliases for a destination not yet created.
+
+    def test_hardlink_collisions(self):
+        def alias(directory, path):
+            link = directory / "alias.png"
+            try:
+                os.link(path, link)
+            except (OSError, NotImplementedError) as e:
+                self.skipTest(f"this filesystem cannot create a hardlink: {e}")
+            return link
+        self.input_collisions(alias)
+        self.output_collisions(alias, existing_values=(True,))
+
+    @unittest.skipUnless(os.name == "nt", "Windows case-insensitive path spelling")
+    def test_windows_case_collisions(self):
+        directory = self.files(False, False)
+        if not (directory / "BEFORE.PNG").exists():
+            self.skipTest("this directory is case-sensitive")
+        alias = lambda directory, path: path.with_name(path.name.upper())
+        self.input_collisions(alias)
+        self.output_collisions(alias)
 
 
 class DecodeBeforeCompareTest(unittest.TestCase):

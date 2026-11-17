@@ -18,7 +18,10 @@
 # - Shares the twilight board with the Xiaomi TV Box S 3rd gen (MiTV-AFMU0), but the product is adastra and
 #   Xiaomi's local media apps (mimusic2, mediaexplorer, mitv.gallery) are not installed.
 # - setupwraith's RecoveryActivity (HOME priority 1, launcherx priority 2) takes Home once launcherx is off,
-#   so setupwraith has to go too, and it has to go FIRST. Re-enable setupwraith to re-pair the remote.
+#   so setupwraith has to go too, and it has to go FIRST. Re-enable setupwraith to re-pair the remote, with
+#   launcherx enabled first (`pm enable com.google.android.apps.tv.launcherx`) and both disabled again once
+#   the remote is paired, one package per call: with launcherx off RecoveryActivity is Home again, and a
+#   reboot in that state ended in a factory reset on a MiTV-MOEU0 (`V816.0.26.10.12.1`, #3578).
 # - Disabling setupwraith takes the stick off Wi-Fi if the network was saved during first setup: that network
 #   belongs to setupwraith, and Android deletes it with the app. Forget the network and join it again in
 #   Settings > Network & Internet first; the re-joined network belongs to android.uid.system and survives

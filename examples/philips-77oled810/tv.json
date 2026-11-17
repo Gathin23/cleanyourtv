@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 77OLED810/12 (TPV, PH1M_WW_9972, MediaTek), Germany",
+  "os": "Google TV 14",
+  "brand": "Philips",
+  "notes": "Google TV TA5 like `philips-55oled820/`, older build 3000428: DAC analytics, frameworklogger, Samba TV ACR, NFT Collection, Alexa, Play-Fi, IP control, Mimi, HD+/M7, Control4, Philips Matter, calendar sync, setupwraith and the Philips tab off, launcherx replaced; phone casting stops without setupwraith (native AirPlay kept); the gear key needs HomeKeyService with scancode 141 and then volume steps one press at a time; owner-only streaming apps and Assistant left as comments; reboot-checked"
+}

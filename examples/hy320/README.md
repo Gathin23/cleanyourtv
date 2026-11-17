@@ -43,7 +43,7 @@ TV_HOST=<tv ip> tools/venv/bin/python tools/tv.py 'cmd package set-home-activity
 Edit `launcher/app/src/main/res/values/config.xml`, the `dock_apps` array, then rebuild.
 Or push a theme: edit `examples/hy320/config.json` and run:
 ```sh
-TV_HOST=<tv ip> tools/theme.sh examples/hy320/config.json
+TV_HOST=<tv ip> tools/theme.sh examples/hy320
 ```
 
 ## Change wallpaper

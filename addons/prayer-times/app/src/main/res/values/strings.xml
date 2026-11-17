@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Prayer Times</string>
+    <string name="prayer_fajr">Fajr</string>
+    <string name="prayer_sunrise">Sunrise</string>
+    <string name="prayer_dhuhr">Dhuhr</string>
+    <string name="prayer_asr">Asr</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isha</string>
+    <string name="prayer_in">%1$s in %2$s</string>
+    <string name="prayer_tomorrow">%1$s tomorrow</string>
+    <string name="prayer_alert_badge">PRAYER TIME</string>
+    <string name="prayer_alert_title">Prayer time: %1$s</string>
+    <string name="prayer_alert_dismiss">%1$ds</string>
+    <string name="notification_title">Prayer time: %1$s</string>
+    <string name="notification_body">Time for %1$s prayer (%2$s) in %3$s</string>
+    <string name="reminders_active">Reminders active</string>
+    <string name="updated_at">updated %1$s</string>
+    <string name="loading">Loading…</string>
+    <string name="offline">Can’t reach Aladhan. Showing the last times, if any.</string>
+    <string name="unexpected_error">Unexpected answer from Aladhan.</string>
+</resources>

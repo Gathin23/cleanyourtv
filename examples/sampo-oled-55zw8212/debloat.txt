@@ -1,0 +1,80 @@
+# SAMPO OLED-55ZW8212 (Settings > About: SWTV-22TW-4K), Skyworth board "anaheim", MediaTek
+# Google TV / Android 11 (SDK 30), firmware RTMA.250416.068, about 2.8 GB RAM.
+# Stock launcher: com.google.android.apps.tv.launcherx
+# Live TV and inputs: com.mediatek.wwtv.tvcenter
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sampo-oled-55zw8212/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sampo-oled-55zw8212/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled.
+# Launcher: HOME_KEY_SERVICE=1 STOCK_LAUNCHER=com.google.android.apps.tv.launcherx launcher/build-and-install.sh
+# (setupwraith must be disabled first, see batch 4); dock and remote keys are in config.json beside this list.
+#
+# Already disabled by the firmware before this debloat (restore.sh leaves them disabled):
+# com.sky.market, com.security.SwaiotTV
+#
+# Tested 2026-11-08 (Taiwan unit), in batches with a screenshot after each and a reboot after the last: the same 25 packages were disabled
+# after the reboot (the firmware re-enables nothing), Home came up on com.gathin.tvhome straight from boot
+# (no Live TV at power-on), HDMI switching from the launcher's Inputs menu worked, Chromecast casting from
+# the YouTube phone app still worked with setupwraith disabled.
+# Remote (BLE, vendor 0x1d5a product 0xc580): gear = keycode 83 (KEYCODE_NOTIFICATION, HID 0x0c009f),
+# guide = 172 (KEYCODE_GUIDE), account = 288 (KEYCODE_PROFILE_SWITCH); only launcherx answered them.
+# Owner's choice: HOME_KEY_SERVICE=1 with settings_key_keycodes [83] (gear -> Settings) and app_keys
+# "172:com.mediatek.wwtv.tvcenter", "front:172:home" (guide toggles Home and the source Live TV last used,
+# which is the one last picked in the TV's own Input menu, not the launcher's Inputs pill) and
+# "288:screensaver" (account -> clock). Cost: a held volume key steps once per press (the helper never sees
+# the volume keys, so consume_volume_keys cannot bring the ramp back).
+# The shortcut key (KEY_EDIT, keycode 203) works through com.smartdevice.global.service.
+# Assistant: "play <song>" and "open <app>" work; searches whose results Google TV shows in launcherx fail
+# with "having trouble processing your request" (docs/TROUBLESHOOTING.md).
+# com.smartdevice.service queries two launcherx providers every second once launcherx is disabled
+# (logcat noise only; it shares the system UID, so it stays enabled).
+#
+# Kept: com.mediatek.* (Live TV, HDMI, tuner), com.smartdevice.global.service, .bleconnectservice,
+# .dailyshortcut (GLOBAL_BUTTON receiver), .myapp (MY_APP_KEY_EVENT), .dailymanage (remote keys),
+# com.smartdevice.service (Firebase push, by choice), Gboard, Play Store, Play Services,
+# com.google.android.katniss and com.google.android.apps.mediashell (by choice).
+
+# Batch 1: Skyworth telemetry
+com.smartdevice.recordactivation
+com.smartdevice.aftersale
+com.google.android.feedback
+
+# Batch 1: Skyworth content and ads
+com.smartdevice.recommendation                  # DailyPlay recommendations and mail notifications
+com.smartdevice.leanbacklauncher.customizer     # injects rows into the stock home screen
+
+# Batch 1: store demo and factory (never started, only disabled)
+com.coocaa.demonow.lightining
+fusion.android.tv.demo
+com.smartdevice.factory
+mediatek.factorymenu.ui
+
+# Batch 2: background services nobody asked for
+com.google.android.apps.nbu.smartconnect.tv     # Google Smart Connect (data-saver VPN for emerging markets)
+android.autoinstalls.config.google.gtvpai       # Play auto-install of promoted apps
+
+# Batch 2: preloads (owner opted out)
+com.Smartdevice.emanual
+# org.liskovsoft.androidtv.rukeyboard           # Russian keyboard, not the active IME (Gboard is); lists never disable a keyboard
+com.tianci.localmedia                           # Skyworth USB media player
+com.google.android.marvin.talkback
+com.google.android.play.games
+com.google.android.videos                       # Google TV / Play Movies store
+
+# Batch 3: streaming and casting the owner does not use (Chromecast and Assistant are kept)
+# com.amazon.amazonvideo.livingroom             # Prime Video, off on the tested set by the owner's choice
+com.smartdevice.dtv.icast                       # CastPlay: AirPlay / DLNA receiver, starts at boot
+com.mediatek.androidbox                         # Miracast sink (WFDSinkTest), starts at boot
+
+# Batch 4: Google TV setup wizard. Its .RecoveryActivity took Home from the new launcher
+# (set-home-activity said Success, Home still resolved to it). Wi-Fi checked first: owned by
+# android.uid.system, not by the wizard. Trade-off: casting may stop on some Google TV builds.
+com.google.android.tungsten.setupwraith
+# com.google.android.apps.tv.launcherx   # launcher/build-and-install.sh disables it once Home has moved
+
+# Batch 5: ambient mode screensaver (owner opted out). Point the screensaver at the launcher's clock first,
+# which drifts across the screen (OLED panel):
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#   settings put secure screensaver_default_component com.gathin.tvhome/.ClockDream
+# Before: both were com.google.android.apps.tv.dreamx/.service.Backdrop (put them back if you restore).
+com.google.android.apps.tv.dreamx

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Open on wake</string>
+    <string name="watching">Opening an app when the TV turns on</string>
+    <string name="hint">Opens the app you choose whenever the screen turns on.</string>
+    <string name="enabled_state">Open on wake: %1$s</string>
+    <string name="link_state">Link: %1$s (OK clears it)</string>
+    <string name="delay_state">Wait after waking: %1$d seconds</string>
+    <string name="test">Try it now</string>
+    <string name="on">on</string>
+    <string name="off">off</string>
+    <string name="none">none chosen</string>
+    <string name="choose">OK to choose an app</string>
+    <string name="change">OK to change the app</string>
+    <string name="missing">%1$s (not installed)</string>
+    <string name="pick_title">Choose the app</string>
+    <string name="pick_hint">OK picks the app. Back leaves it as it was.</string>
+</resources>

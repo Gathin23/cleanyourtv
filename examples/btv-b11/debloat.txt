@@ -1,0 +1,51 @@
+# BTV B11 (Amlogic, product franklin), streaming box, Android TV 9 (SDK 28), firmware PPR1.180610.011.20210527 test-keys
+# Brazil-market box. Network ADB listens on port 5188, not 5555 (service.adb.tcp.port=5188), so
+# every command here takes TV_HOST=<tv ip>:5188. See README.md in this folder.
+#
+# Apply:   TV_HOST=<tv ip>:5188 tools/disable.sh examples/btv-b11/debloat.txt
+# Undo:    TV_HOST=<tv ip>:5188 tools/restore.sh examples/btv-b11/debloat.txt com.bb.launcher2
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.bb.launcher2 (com.uv.droid.launcher.activity.LauncherActivity). It is not in the
+# install script's known list, so pass STOCK_LAUNCHER=com.bb.launcher2 to launcher/build-and-install.sh.
+# No tuner and no HDMI input: there is no Live TV package.
+#
+# The firmware updater stays on in this list. On this box the owner had it off: com.bb.ota and
+# com.bb.otaback run as the system uid (android.uid.system) from /data/app, so whatever the vendor
+# pushes runs with system rights, and the service kept a plain-HTTP connection to a Cloudflare-fronted
+# host on port 2095. The firmware is from
+# 2021. Uncomment both lines to turn the updater off as well. Amlogic's own com.droidlogic.otaupgrade is kept.
+#
+# Kept: Play Store and Play Services, LatinIME and the leanback keyboard, the Bluetooth remote
+# (com.droidlogic.BluetoothRemote), com.droidlogic.appinstall, FileBrowser and VideoPlayer, the BTV app
+# stores, and the preloaded streaming apps. Nothing came back on its own after a reboot.
+
+# Telemetry and silent installers
+com.android.icore                      # not an Android package: obfuscated, in /data/app, INSTALL/DELETE_PACKAGES, location, starts at boot
+com.factorytools.factorystability      # factory stress tool with INSTALL_PACKAGES (disabled only, never opened)
+com.google.android.feedback
+com.google.android.apps.pixelmigrate   # Pixel data migration, meaningless on a box
+
+# Vendor updater (see the header)
+# off on this box by the owner's choice; uncomment to disable
+# com.bb.ota
+# com.bb.otaback
+
+# Vendor live-TV app
+# off on this box by the owner's choice; uncomment to disable
+# com.droid.stbbtvapp                    # "VIVO TV": showed a "service under maintenance" screen
+
+# Casting (off by the owner's choice; keep them if you cast from a phone)
+com.droidlogic.miracast
+com.droidlogic.mediacenter             # "Chromecast+", a DLNA renderer
+
+# Services a box has no use for
+com.android.dreams.phototable
+com.android.camera2
+com.android.smspush
+
+# Preloaded apps (off by the owner's choice). WebView is com.android.webview, so Chrome can go.
+com.android.chrome
+com.android.gallery3d
+com.android.music
+com.android.deskclock

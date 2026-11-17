@@ -1,0 +1,49 @@
+# Lumio Arc 5 Projector (SDMC himalaya, MediaTek MT9630), Google TV on Android 14 (SDK 34)
+# Tested on: Lumio Arc 5 on Android 14 (firmware build UKNV.260904.001); all 16 disabled packages survived cold reboot with zero drift.
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/lumio-arc-5/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/lumio-arc-5/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Hardware & Projector Safeguards:
+# DO NOT DISABLE projector hardware packages, ToF autofocus, STR8 auto-keystone
+# correction, obstacle avoidance, screen fit, or optical/picture settings.
+# All official Lumio apps (including TLDR), system OTA update services, and
+# user-installed / sideloaded apps (pm list packages -3) are kept enabled.
+#
+# USB Storage & Media Playback:
+# Keep all USB storage, OTG, and media indexing packages enabled
+# (com.android.externalstorage, com.android.documentsui, com.android.providers.media,
+# com.android.providers.downloads, and MediaTek/OEM USB or file managers) so external
+# flash drives function for video playback.
+#
+# Stock launcher handover: com.google.android.apps.tv.launcherx and setup wizard
+# com.google.android.tungsten.setupwraith remain enabled; com.gathin.tvhome handles Home.
+
+# Google feedback and telemetry
+com.google.android.feedback
+com.google.android.partnersetup
+
+# Unused system services
+com.android.htmlviewer
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.android.hotspot2.osulogin
+com.android.printspooler
+
+# Privacy Sandbox / ad attribution
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Health Connect (not used on a projector)
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+
+# Google preloads
+com.google.android.videos
+# com.google.android.play.games
+
+# Demo and customization preloads
+fusion.android.tv.demo
+com.mstar.android.tv.disclaimercustomization

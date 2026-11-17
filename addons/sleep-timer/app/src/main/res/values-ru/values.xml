@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Таймер сна</string>
+    <string name="hint">Выберите время стрелками, нажмите ОК</string>
+    <string name="in_minutes">Через %d мин</string>
+    <string name="cancel">Отменить таймер</string>
+    <string name="state_off">Таймер выключен</string>
+    <string name="state_on">Сон в %s</string>
+    <string name="no_service">Включите службу специальных возможностей Sleep Timer</string>
+    <string name="warning_title">Телевизор скоро уснёт</string>
+    <string name="warning_seconds">Осталось секунд: %d</string>
+    <string name="more">Ещё 15 минут</string>
+    <string name="now">Сон сейчас</string>
+    <string name="service_label">Таймер сна</string>
+    <string name="quick_hint">Стрелки — время, ОК — закрыть</string>
+    <string name="service_description">Только переводит телевизор в режим ожидания по таймеру. Не читает экран.</string>
+</resources>

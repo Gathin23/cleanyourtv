@@ -42,9 +42,9 @@
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@drawable/pill_text_dim"
+        android:textColor="@drawable/pill_text_mid"
         android:duplicateParentState="true"
         android:textSize="11sp"
-        android:fontFamily="@string/font_body"
+        android:fontFamily="@string/font_regular"
         android:letterSpacing="0.04" />
 </LinearLayout>

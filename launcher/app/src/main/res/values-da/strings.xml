@@ -11,13 +11,14 @@
     <string name="live_tv">Live-TV</string>
     <string name="no_inputs">Ingen indgange fundet</string>
     <string name="more_inputs">Flere indgange</string>
-    <string name="good_morning">God morgen</string>
+    <string name="good_morning">Godmorgen</string>
     <string name="good_afternoon">God eftermiddag</string>
-    <string name="good_evening">God aften</string>
+    <string name="good_evening">Godaften</string>
     <string name="good_forenoon">God formiddag</string>
-    <string name="good_night">God nat</string>
+    <string name="good_night">Godnat</string>
     <string name="festival_dussehra_greeting">Glædelig Dussehra</string>
     <string name="festival_diwali_greeting">Glædelig Diwali</string>
+    <string name="festival_halloween_greeting">Glædelig halloween</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Ikke tilgængelig på dette TV</string>
@@ -97,4 +98,7 @@
     <string name="race_countdown_days">%1$dd %2$dt</string>
     <string name="last_opened">Sidst åbnet %1$s</string>
     <string name="game_live">Live nu</string>
+    <string name="clock_format_system">System</string>
+    <string name="clock_format_12">12 timer</string>
+    <string name="clock_format_24">24 timer</string>
 </resources>

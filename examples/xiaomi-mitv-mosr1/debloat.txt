@@ -1,0 +1,25 @@
+# Xiaomi MiTV-MOSR1 (codename hermano), Android TV 11, firmware RTT8.210119.001.1453
+# Stock launcher: com.google.android.tvlauncher, replaced as Home by the CleanYourTV launcher.
+# Not the same platform as examples/xiaomi-mitv-mosr4 (irobot, Google TV with launcherx).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mosr1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mosr1/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# From @khangnck97 (#2815): exported by TiviKit 1.18.0 (github.com/Circling5714/tivikit), which disables
+# with pm disable-user over wireless ADB. These are the packages it disabled on this TV on 2026-10-24,
+# still disabled on 2026-10-31 (seven days of use).
+# A short, generic list: the Xiaomi-specific packages (PatchWall, Mi analytics, TV Manager) were not
+# touched on this set. A one-session note from another MOSR1 (firmware .1239) disabled five of Xiaomi's,
+# kept PatchWall for the input popup, and found PatchWall on screen after a reboot:
+# docs/devices/xiaomi-mitv-mosr1.md.
+
+# Disabled on other CleanYourTV lists too
+com.android.cts.ctsshim                # Android test shim
+com.android.cts.priv.ctsshim           # Android test shim
+com.google.android.feedback            # already disabled on the test set
+com.google.android.marvin.talkback     # TalkBack screen reader: keep it if anyone uses it
+fusion.android.tv.demo                 # retail demo mode
+
+# Stock launcher, replaced by the CleanYourTV launcher
+com.google.android.tvlauncher

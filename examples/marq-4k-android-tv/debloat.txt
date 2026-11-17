@@ -1,0 +1,38 @@
+# MarQ 4K Android TV (device bangbae, manufacturer MTC / MediaTek)
+# Android 11 (Android TV, API 30), firmware RTO8.260427.001. 1 GB-class set.
+# MarQ is Flipkart's house brand (the vendor RROs are branded JVC on this build).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/marq-4k-android-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/marq-4k-android-tv/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (the restore.sh default is correct).
+# The only other HOME claimant is com.android.tv.settings/.system.FallbackHome, so even a
+# failed launcher takeover lands on a settings home rather than a black screen; setupwraith
+# does NOT claim HOME here. Reference launcher installed and verified on the real remote.
+# Live TV / tuner app: com.mediatek.wwtv.tvcenter (already the launcher config's live_tv_package).
+# Keep the MediaTek TV stack: com.mediatek.tvinput (HDMI/AV/tuner input driver,
+# TV_INPUT_HARDWARE), com.mediatek.tv.service, com.mediatek.wwtv.tvcenter and com.mediatek.network.
+# Keep com.google.android.tv.remote.service (phone/BT remote), com.airoha.btd (BT audio),
+# Play Store/Services, and the Google keyboard. Do NOT open or disable the factory menus
+# (com.mediatek.mtc.factory, com.mediatek.testpq, mediatek.factorymenu.ui): leave them be.
+#
+# Kept by choice (the owner uses them): Netflix, Prime Video, Disney+/JioHotstar, YouTube,
+# SonyLIV, ZEE5, JioCinema, YouTube Music, YouTube Kids, Google Assistant (katniss), Chromecast
+# (mediashell).
+# Disabled by choice here: com.google.android.videos (Play Movies) and com.google.android.backdrop
+# (the stock ambient screensaver, redundant with the launcher's own clock screensaver).
+# Already disabled at the factory: com.google.android.marvin.talkback.
+# reboot-checked: launcher stayed Home and every package below stayed disabled after a reboot.
+
+tv.anoki.acr.controller
+# com.cltv.fast  # TV middleware, kept on in the shared list; this set has it off
+# fusion.android.tv.demo  # on the EKO bangbae set this owns the Input button; disable only if Input still works without it
+com.google.android.tvrecommendations
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.play.games
+com.mstar.android.tv.disclaimercustomization
+android.autoinstalls.config.JVC
+com.google.android.videos
+com.google.android.backdrop

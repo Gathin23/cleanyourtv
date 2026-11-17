@@ -11,7 +11,10 @@ saying it had, and then exited 2 on a line that says nothing is written then.
 
 `load()` now takes `allow_missing` - the one shape `--adopt` is for, a folder with no `tv.json` yet - and
 `adopt()` reads the checkout through it, so every file that is there is judged by the rules the tables are
-built with, before the first write. A patch is applied whole or not at all.
+built with, before the first write. That is the whole of the guard: a row main has moved on stops the run
+after the files it could apply are written, so a patch is applied as far as it goes and the rest is named
+(tools/gen_tables.py's exit-2 paragraph says what that leaves in the checkout, and
+tests/test_gen_tables.py's test_a_row_main_has_changed_since_is_not_overwritten pins it).
 
 Every test runs the real script in a subprocess, since the exit status and the lines on stderr are what a
 maintainer sees; the trees come from tests/test_gen_tables.py, so a valid checkout is built the same way

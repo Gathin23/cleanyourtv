@@ -21,9 +21,11 @@ public class ClockActivity extends Activity {
     private ClockScene scene;
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dream_clock);
+        ClockFormat.apply(getWindow().getDecorView(), Config.load(this).clockFormat);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
         scene = new ClockScene(getWindow().getDecorView());
@@ -57,6 +59,7 @@ public class ClockActivity extends Activity {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void finish() {
         super.finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

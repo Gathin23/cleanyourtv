@@ -15,7 +15,8 @@ tools/venv/bin/python -I tools/tv.py --probe
 ```
 
 - **Options:** `--tv-port` if the TV's ADB port isn't 5555, or give it with the address (`192.168.1.50:5877`);
-  `--port` for another local port (run one relay per TV, each on its own port). The TV's address defaults to
+  `--port` for another local port (run one relay per TV, each on its own port), or `--port 0` to have a free
+  one picked - the port it got is in the line it prints. The TV's address defaults to
   `$TV_HOST` and its port to `$TV_PORT`, as for `tools/tv.py`.
 - **It prints the `TV_HOST`/`TV_PORT` to use**, and one line each time it can't reach the TV.
 - **Stop it with Ctrl-C** when you're done.
@@ -45,3 +46,10 @@ tools/venv/bin/python -I tools/tv.py --probe
   address, or give the TV's port with the address (`192.168.1.50:5555`).
 - **"that is the relay itself"**: the TV's address was given as `127.0.0.1` with the relay's own port, perhaps
   from a `TV_HOST=127.0.0.1:15555` exported for the tools in this terminal. Give the TV's IP address.
+- **"that is a URL, not the TV's address"** / **"that is a path, not the TV's address"**: the address came
+  off a browser or a page and carries a scheme or a path (`http://192.168.1.50:5555`, `192.168.1.50/6/system`).
+  Neither is part of an address, so the relay answers before it starts rather than forwarding to a host named
+  for the URL. Give the IP (or IP:port) alone.
+- **"--port: not a port number"** / **"--tv-port: not a port number"**: the value is outside 1-65535. `--port 0`
+  asks for a free local port instead; `--tv-port` has no such value, since the TV's port is the one its
+  debugging listens on.

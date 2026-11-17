@@ -1,0 +1,6 @@
+{
+  "tv": "Kodak 55CA0909 (SPPL-built, Skyworth SW3_ATV, MediaTek MT5886), India",
+  "os": "Android TV 9",
+  "brand": "Kodak",
+  "notes": "Alphonso and Skyworth ACR, Google feedback, retail demo, e-manual, Backdrop, recommendation rows and partner auto-install/Leanback hooks; Assistant, Chromecast, Play apps, TTS and USB player off by choice; no network debugging toggle, opened over a USB A-to-A cable; three persistent Skyworth/MediaTek services return at boot even when disabled; ~1.2 GB; reboot-checked same day"
+}

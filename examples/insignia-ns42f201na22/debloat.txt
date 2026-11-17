@@ -9,7 +9,10 @@
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/insignia-ns42f201na22/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/insignia-ns42f201na22/debloat.txt com.amazon.tv.launcher
-# (restore.sh re-enables the stock launcher as a matter of routine; on Fire OS it was never disabled, which is harmless.)
+# (restore.sh re-enables every package the record holds as on, the stock launcher included, since it is what owned
+# Home. On Fire OS it was never off, and Fire OS refuses the attempt with a `Cannot disable a protected package`
+# stack trace once per run (reported on Fire OS 8), which the batch carries on past:
+# docs/TROUBLESHOOTING.md, 'Fire TV (Fire OS)'.)
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 # ADB on Fire OS 6: Settings > My Fire TV > Developer options > ADB debugging. If Developer options is hidden,
 # Settings > My Fire TV > About > highlight the first entry and press select 7 times. Port 5555, no pairing.

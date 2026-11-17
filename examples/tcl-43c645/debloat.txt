@@ -8,6 +8,15 @@
 #   TCL 50C635 (product G03_4K_GB, device BeyondTV4), Realtek rtd288o, 2 GB, build RP1A.200622.001 (AR11),
 #   Spain, Ethernet. Groups 1, 1b, 2 except webview/keyhelp, 4, launcherx, AdGuard Private DNS,
 #   tested 2026-10-24.
+#   TCL 55C645 (product G03_4K_GB, device BeyondTV4), Realtek rtd288o / RTD2851M, security patch 2024-12-05,
+#   Ethernet. Groups 1, 1b, 2 except webview/keyhelp, 4, 5, plus launcherx, tested 2026-10-29. Remote
+#   buttons worked without the launcher's key helpers on this unit (README.md).
+#   TCL 43C645, second unit (product G03_4K_GB, device BeyondTV4), Realtek rtd288o / RTD2851M, 2 GB, security
+#   patch 2024-12-05, Italy, Wi-Fi, infrared remote. Group 1 except com.tcl.partnercustomizer, 1b, 2 except
+#   com.tcl.useragreement, com.tcl.android.webview and com.tcl.keyhelp, com.tcl.miracast from 3, 4 except
+#   com.tcl.ttvs, hearaid, smartconnect, talkback, gallery, browser and ui_mediaCenter, all of 5, plus
+#   launcherx and dreamx, tested 2026-11-13 and used for two days with nothing re-enabled. The four commented
+#   lines at the end of group 4 were off on this unit only (README.md).
 # List derived from examples/tcl-65c725 (same Android 11 TCL platform), checked against both units' packages.
 #
 # 43C645: applied in three batches with a screenshot after each: Ethernet stayed up, Home and the D-pad, the
@@ -17,6 +26,11 @@
 # 60C635: batch by batch with a screenshot after each: Home, the Input key (Quick panel), Live TV, HDMI and
 # YouTube kept working, also after a cold reboot with launcherx off. The remote's app buttons need the
 # launcher's key services: see README.md, config.json and build-and-install.sh.
+#
+# Left out: com.tcl.usercenter (TCL account). A TCL 43C641 (product G03_4K_GB, device BeyondTV4,
+# V8-R51MT05-LF1V652 AR11), reported in #3533, did a full reboot on every wake from standby with it disabled.
+# The units above were checked across a reboot, not a standby wake, so the line is commented out below. If you
+# applied the list before, turn it back on with: TV_HOST=<tv ip> tools/tv.py pm enable com.tcl.usercenter
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43c645/debloat.txt com.google.android.apps.tv.launcherx
@@ -65,7 +79,7 @@ com.tcl.miracast                            # screen mirroring (Cast receiver ke
 com.tcl.ttvs                                # TCL identifier/awareness services
 com.tcl.logkit                              # log collection, remote diagnosis
 com.tcl.waterfall.overseas                  # TCL content recommendations
-com.tcl.usercenter                          # TCL account
+# com.tcl.usercenter                        # TCL account: a 43C641 reboots on waking from standby with it off (#3533)
 com.tcl.channelplus                         # TCL Live: FAST IPTV channels with ads (its own TV input)
 com.tcl.smartalexa                          # Alexa integration
 com.tcl.ocean.instructions                  # on-screen manual
@@ -77,6 +91,10 @@ com.google.android.play.games
 com.tcl.gallery
 com.tcl.browser
 com.tcl.ui_mediaCenter                      # USB media player, re-enable for USB drives
+# com.tcl.gamebar                           # game mode / VRR overlay for consoles; off on the second 43C645 by choice
+# com.tcl.magiconnectfree                   # TCL phone sharing app; off on the second 43C645 by choice
+# org.chromium.webview_shell                # WebView test shell; off on the second 43C645
+# android.autoinstalls.config.google.gtvpai # silently installs partner apps; off on the second 43C645
 
 # 5. Voice assistant (off by choice on the 60C635; the 43C645 kept it, comment these out to keep voice)
 com.google.android.katniss

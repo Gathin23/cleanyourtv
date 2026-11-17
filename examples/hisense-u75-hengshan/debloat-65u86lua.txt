@@ -1,0 +1,80 @@
+# Hisense 65U86LUA (65", US; device hengshan, board his9618, platform merak, MediaTek mt5879), Google TV /
+# Android 12, build STT2.230310.002 (incremental 00.00.00.166), security patch 2026-02-05. 2.4 GB RAM.
+# Fifth unit of this folder: the same device and build as the U75 in debloat.txt. This is the list as applied on
+# the 65U86LUA on 2026-11-09. Two restarts that evening were normal: Home, Wi-Fi, ADB and the ARC soundbar came
+# back and YouTube played, and the owner pressed Home, Input, Netflix, an app button and held Volume on the remote
+# before them. Both restarts also had the two packages at the end of this file off. Not tried on this unit: an
+# antenna channel and an HDMI source (nothing was plugged in but the soundbar).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan/debloat-65u86lua.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan/debloat-65u86lua.txt
+# Check:   TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/hisense-u75-hengshan/debloat-65u86lua.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. On this unit it stays ENABLED and is Home: no other
+# launcher is installed, so setupwraith is left alone too.
+# Live TV and HDMI: com.vt.tv.tvcenter.
+#
+# Differences from debloat.txt: Google TV's own home screen is kept; com.vt.tv.customerlauncher (OEMConfig) is
+# disabled, which with launcherx's data cleared took the "Hisense" tab off that home screen (README.md, "65U86LUA");
+# the USB media player, Tubi and Play Games are off by choice; AirPlay, Chromecast, the OTA updater and Google
+# Assistant are kept.
+#
+# WARNING: do not add com.vt.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.ai_sense, com.vt.tv.aiot,
+# com.vt.tv.aiotprotocolapp or com.vt.tv.aiotsystemservice: debloat.txt has why (Android Recovery on a related board).
+#
+# Kept as in debloat.txt (tvcenter, input, source.*, mediatek.*, the remote and its pairing, the keyboard, Play
+# Store and Play Services), plus com.mstar.netflixobserver (the Netflix button) and com.vt.edv.drmp (DRM keys).
+# Already disabled at the factory on this unit (17): net.vidaatv.hisense.android.tv,
+# com.vidaa.oemtabcontentprovider, com.hisense.odinbrowser, com.google.android.partnersetup,
+# com.google.android.feedback, com.google.android.syncadapters.calendar, com.google.android.marvin.talkback,
+# com.google.android.onetimeinitializer, com.android.providers.calendar, com.android.providers.contacts,
+# com.android.dreams.basic, com.android.hotspot2.osulogin, com.android.cts.ctsshim, com.android.cts.priv.ctsshim,
+# com.mediatek.tis, com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.dtv.tvinput.dvbtuner
+
+# Telemetry and tracking
+com.vt.tv.evservice                          # Hisense ACR (codePath Vtp_ACR)
+android.autoinstalls.config.google.gtvpai    # PAI: Play Auto Installs
+
+# Retail demo, hotel/commercial mode, factory tools, first-run walkthrough (never opened, only disabled)
+com.vt.storemode
+com.vt.tv.b2b
+com.vt.factory
+com.vt.fte
+
+# Hisense preloads and background helpers
+com.vt.hishow                                # Vtp_FamilyMoment, photo app + its screensaver
+com.vt.tv.protector                          # "Device Assistant" cleaner with a boot receiver
+com.vt.tv.calmanconnector                    # Calman calibration connector
+com.vt.tv.customerlauncher                   # OEMConfig: the tvlauncher.config/apprecs/widget providers behind the "Hisense" tab
+
+# Broadcast interactivity. Ginga is ISDB-Tb (Brazil). com.vt.tv.interactive is the ATSC one, which a US antenna
+# could use: no antenna is connected to this unit, so what it costs there was not tested.
+# This set has these off; kept on in the shared list
+# tv.mopa.ginga
+# com.vt.tv.interactive
+
+# Off by choice (comment out any you use)
+com.vt.alexa                                 # HiAlexa
+com.vt.tv.dlna                               # DLNA renderer
+com.vt.tv.mobiledeviceconnectiontips         # Miracast ("Screen Casting")
+com.vt.tv.mediacenter                        # USB media player
+# com.tubitv                                 # Tubi; its remote button then does nothing
+com.google.android.play.games                # Google Play Games
+com.google.android.videos                    # Google Play Movies & TV stub
+
+# Unused on a television
+com.android.printspooler
+com.android.settings.intelligence
+com.android.wallpaperbackup
+com.android.managedprovisioning
+com.android.htmlviewer
+com.android.statementservice
+
+# Tried on this unit on 2026-11-09 and left out of the list. debloat.txt keeps the first two as load-bearing and
+# warns against the third; here all three were disabled one at a time and the restart after was normal (README.md,
+# "65U86LUA", has what was checked). One boot is not a few days: treat them as untested. com.vt.tv.ai_sense was
+# enabled again the same evening; the other two stayed off on this unit.
+# com.vt.tv.aipq                             # per-app AI scene detection; dormant on this unit
+# com.vt.tv.smartservice                     # Firebase log reporting for smartsense
+# com.vt.tv.ai_sense                         # USB-camera features; see the WARNING above

@@ -1,0 +1,14 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "in.startv.hotstar",
+    "com.graymatrix.did"
+  ],
+  "columns": 5,
+  "dock_glass": true,
+  "app_glow": true,
+  "advanced_effects": true,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+}

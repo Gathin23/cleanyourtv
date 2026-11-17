@@ -24,6 +24,22 @@
 # 26 October 2026: 43 disabled and checked after three reboots; katniss, tclhome_passive, onetimeinitializer and
 # UpdatePeripheral kept; dashboard, eva, gallery, mediashell, gamebar, youtube.tvmusic and the fifth-unit webview and
 # MediaTek groups off too. Port 5555 opened with USB + Network debugging. See README.
+# Seventh unit: TCL 65Q7C (Smart TV Pro), same build (AU02), on Wi-Fi, 2026-10-24: 21 packages disabled by hand,
+# twelve of them lower in this file (commented, since they are that unit's own apps) and the other nine already
+# active above. The new launcher was not installed, so launcherx and setupwraith were left alone. Reboot, Home and
+# casting checked; HDMI inputs, AirPlay and the tuner not tested. See README.
+# Eighth unit: TCL 65Q7CX1, Italy, same build (AU02), on Wi-Fi, 28-29 October 2026: no line was added to this
+# list. It settled casting with launcherx and setupwraith both off (the Cast receiver signs with
+# jni_client_auth_creds_mediadrm, so its key does not come from setupwraith), after the Wi-Fi network setupwraith
+# had saved was forgotten and rejoined, and that holding Home opens launcherx's notification panel, which the
+# README replaces with the launcher's quick panel. No recents screen on this build. See README.
+# Ninth unit: TCL 98Q6C (G08_4K_GB), Poland, newer build AU04, on Ethernet, eight days from 24 October 2026: 31 of
+# this list (Netflix, its token manager and Prime Video kept; launcherx and setupwraith stay ENABLED for Chromecast,
+# Home through stock_home_redirect), plus com.tcl.browser and com.google.android.youtube.tvmusic. A ttvs update
+# re-enabled com.tcl.channelplus once; nothing else came back. key_filter false kept the volume ramp. See README.
+# Tenth unit: TCL 55T8C (Smart TV Pro, G08_4K_GB), same build (AU02), on Wi-Fi, from 26 October 2026 to
+# 1 November 2026: this list minus Netflix (ninja, tokenmanager) and Prime Video (kept), plus mediashell and
+# com.google.android.youtube.tvmusic; launcherx and setupwraith off for the launcher. Reboot-checked. See README.
 #
 # Apply:   FORCE_SETUPWRAITH=1 TV_HOST=<tv ip> tools/disable.sh examples/tcl-q7c-google-tv/debloat.txt
 #          FORCE_SETUPWRAITH=1 only on Ethernet with no saved Wi-Fi: disable.sh otherwise skips setupwraith because
@@ -159,3 +175,40 @@ com.google.android.tungsten.setupwraith
 # tcl extras
 # com.tcl.factory.view
 # com.tpa.kb
+# ---------------------------------------------------------------------------
+# Second unit: zh-TW region, same board and same build (G08_4K_GB, UTT2.250416.001 AU02).
+# Set up 18 October 2026, lived with for five days. Applied by hand, then checked with
+# `pm list packages -d` (36 entries). The differences from the list above:
+#
+# KEPT on that unit - comment the matching line above if you apply this list to it:
+#   AirPlay            com.tcl.airplay2, com.mediatek.AirplayAPK, com.mediatek.airplaydaemon
+#   Google Assistant   com.google.android.katniss
+#   TCL account        com.tcl.usercenter
+#   TCL guard          com.tcl.guard
+#   Alexa              com.tcl.smartalexa
+#   soundbar updater   com.tcl.UpdatePeripheral
+#   hearing test       com.tcl.hearaid
+#   USB/DLNA player    com.tcl.ui_mediaCenter
+#   Play Movies        com.google.android.videos
+#   Play Games         com.google.android.play.games
+#
+# ALSO DISABLED on that unit (this set has them off; commented out for other Q7C owners):
+# com.tcl.dashboard                      # TCL dashboard rows. Verified with this disabled on that unit:
+                                       # the remote's Input key still opens TCL's own source panel
+                                       # (KEYCODE_TV_INPUT 178 -> Home / AirPlay / HDMI rows, then apps).
+                                       # The panel comes from com.tcl.suspension, which stays enabled,
+                                       # so the lists that keep dashboard do not need it for the Input key
+# com.tcl.partnercustomizer
+# com.tcl.interactive
+#                                      hosts the Source-key overlay on tcl-g08-eu-android12; check the Input key before disabling
+# com.tcl.hotelmenu                      # hotel mode menu
+# com.tcl.useragreement                  # EULA screen
+# com.tcl.eva                            # TCL voice assistant (no katniss on a zh-TW set either)
+# tv.mopa.ginga                          # Ginga middleware, not used outside Brazil
+# com.google.android.partnersetup
+# com.google.android.tv.remote.service   # Google TV phone-app virtual remote
+# com.android.healthconnect.controller
+# com.android.health.connect.backuprestore
+# com.android.uwb.resources              # no UWB radio
+# com.android.cameraextensions           # no camera
+# com.android.wallpaperbackup

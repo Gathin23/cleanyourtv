@@ -21,10 +21,20 @@ The checks read the lists rather than naming them:
 - a paragraph that says a package is not in KNOWN_STOCK_LAUNCHERS must not be about one the script
   lists. The packages are read out of the script by test_stock_launcher_docs.sh_known.
 
+Every list a folder ships is read, not only its debloat.txt: eight folders put a second list beside it
+(debloat-keep-cast.txt twice, debloat-75t8c-eu.txt, debloat-32-inch.txt, debloat-extra.txt,
+debloat-display-only.txt twice, debloat-65u7esg.txt) and each is a file an owner applies with the same
+tools/disable.sh and launcher/build-and-install.sh pair. The sweep globbed */debloat.txt, so an install
+command on one of those eight could have passed a stock launcher its own note keeps enabled and neither
+rule above would have seen it. None does today: the eight carry no STOCK_LAUNCHER=<package> and the two
+packages they say to keep (TalkBack on the OnePlus 32-inch, com.vewd.core.service on the Sony) are not
+sent by either list. tests/test_sweeps_read_second_lists.py holds this file to reading them.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -43,6 +53,9 @@ PASSED = re.compile(r"STOCK_LAUNCHER\s*=\s*(" + PACKAGE + r")")
 # stays out of the list, and for setupwraith.
 KEEP = re.compile(r"(?i)\bkeep\s+(?:it\s+|`?(" + PACKAGE + r")`?\s+)?enabled\b|\bmust\s+stay\s+enabled\b")
 NOT_KNOWN = re.compile(r"(?i)\bnot\s+in\s+(?:\S+\s+)?KNOWN_STOCK_LAUNCHERS\b")
+# Every list a folder ships: debloat.txt and the second list beside it (debloat-keep-cast.txt,
+# debloat-75t8c-eu.txt, ...). Both are applied with tools/disable.sh and the install script.
+LIST_GLOB = "*/debloat*.txt"
 
 
 def notes(text):
@@ -105,18 +118,36 @@ def unknown_claims(text, known):
     return problems
 
 
+def list_files(examples):
+    """Every list under examples/, debloat.txt and the second list a folder ships, in path order."""
+    return sorted(path for path in examples.glob(LIST_GLOB) if path.is_file())
+
+
+def sweep(examples):
+    """(lists read, second lists read, passes, keeps, failures) over every list under examples/.
+
+    The second-list count is what tests/test_sweeps_read_second_lists.py holds to more than zero: the
+    walk exists for the files beside debloat.txt as much as for debloat.txt itself.
+    """
+    lists = second = passes = keeps = 0
+    failures = []
+    for path in list_files(examples):
+        text = path.read_text(encoding="utf-8")
+        lists += 1
+        second += path.name != "debloat.txt"
+        passes += len(passed_packages(text))
+        keeps += len(kept_packages(text))
+        for problem in install_problems(text):
+            failures.append(f"{path.relative_to(examples.parent).as_posix()}: {problem}")
+    return lists, second, passes, keeps, failures
+
+
 class KeptStockLauncherInstallTest(unittest.TestCase):
     def test_no_list_passes_a_stock_launcher_it_keeps(self):
-        lists = passes = keeps = 0
-        failures = []
-        for path in sorted((ROOT / "examples").glob("*/debloat.txt")):
-            lists += 1
-            text = path.read_text(encoding="utf-8")
-            passes += len(passed_packages(text))
-            keeps += len(kept_packages(text))
-            for problem in install_problems(text):
-                failures.append(f"examples/{path.parent.name}/debloat.txt: {problem}")
+        lists, second, passes, keeps, failures = sweep(ROOT / "examples")
         self.assertGreaterEqual(lists, 200, "the sweep read too few lists to be meaningful")
+        self.assertGreaterEqual(second, 5, "the sweep read no second list: paths beside debloat.txt are "
+                                           "applied the same way and are held to the same rule")
         self.assertGreaterEqual(passes, 8, "the sweep found too few STOCK_LAUNCHER=<package> commands")
         self.assertGreaterEqual(keeps, 10, "the sweep found too few packages a list keeps enabled")
         self.assertEqual([], failures, "\n".join(failures))
@@ -124,10 +155,13 @@ class KeptStockLauncherInstallTest(unittest.TestCase):
     def test_no_list_calls_a_known_stock_launcher_unknown(self):
         known = set(sh_known())
         self.assertGreaterEqual(len(known), 2, "KNOWN_STOCK_LAUNCHERS did not read as a list")
+        read = 0
         failures = []
-        for path in sorted((ROOT / "examples").glob("*/debloat.txt")):
+        for path in list_files(ROOT / "examples"):
+            read += 1
             for problem in unknown_claims(path.read_text(encoding="utf-8"), known):
-                failures.append(f"examples/{path.parent.name}/debloat.txt: {problem}")
+                failures.append(f"{path.relative_to(ROOT).as_posix()}: {problem}")
+        self.assertGreaterEqual(read, 200, "the sweep read too few lists to be meaningful")
         self.assertEqual([], failures, "\n".join(failures))
 
 
@@ -207,6 +241,62 @@ class Readers(unittest.TestCase):
     def test_paragraphs_end_at_a_bare_hash_a_bullet_and_a_package_line(self):
         text = "# a\n#   b\n#\n# - c\n# - d\ncom.x\n# e\n"
         self.assertEqual([(1, "a b"), (4, "- c"), (5, "- d"), (7, "e")], notes(text))
+
+
+class TheWalk(unittest.TestCase):
+    """The sweep over a tree of lists written here, so a walk that goes back to debloat.txt alone fails."""
+
+    def tree(self, files):
+        """A temporary repository root holding `examples/<folder>/<file>` for every (folder, file, text)."""
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        root = Path(folder.name)
+        for name, text in files.items():
+            path = root / "examples" / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+        return root
+
+    def test_a_second_list_that_passes_a_launcher_it_keeps_is_reported(self):
+        # The header the two Xiaomi lists shipped, moved into the second list a folder can carry: the
+        # file an owner opens instead of debloat.txt, so the same rule has to reach it.
+        root = self.tree({
+            "x/debloat.txt": "# Stock launcher: com.mitv.tvhome\ncom.example.one\n",
+            "x/debloat-keep-cast.txt":
+                "# Stock launcher: com.mitv.tvhome - KEEP IT ENABLED with the stick's own Home, so the\n"
+                "# phone's cast receiver keeps a Home to answer from.\n"
+                "# Install with: STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh\n"
+                "com.example.one\n",
+        })
+        lists, second, _, _, failures = sweep(root / "examples")
+        self.assertEqual((2, 1), (lists, second))
+        self.assertEqual(1, len(failures), failures)
+        self.assertTrue(failures[0].startswith("examples/x/debloat-keep-cast.txt: "), failures[0])
+        self.assertIn("passes STOCK_LAUNCHER=com.mitv.tvhome", failures[0])
+        self.assertIn("note at line 1", failures[0])
+
+    def test_a_second_list_is_read_where_the_folder_ships_no_debloat_txt(self):
+        root = self.tree({
+            "y/debloat-32-inch.txt": "# Stock launcher: com.google.android.tvlauncher. It is not in\n"
+                                     "# KNOWN_STOCK_LAUNCHERS, so install with STOCK_LAUNCHER=none.\n"
+                                     "com.example.two\n",
+        })
+        lists, second, _, _, failures = sweep(root / "examples")
+        self.assertEqual((1, 1), (lists, second))
+        self.assertEqual([], failures)
+        problems = unknown_claims((root / "examples/y/debloat-32-inch.txt").read_text(encoding="utf-8"),
+                                  {"com.google.android.tvlauncher"})
+        self.assertEqual(1, len(problems), problems)
+
+    def test_a_file_that_is_not_a_list_is_not_read(self):
+        root = self.tree({
+            "z/debloat.txt": "com.example.one\n",
+            "z/debloat.txt.bak": "# KEEP IT ENABLED. STOCK_LAUNCHER=com.mitv.tvhome\ncom.mitv.tvhome\n",
+            "z/notes.md": "# KEEP IT ENABLED. STOCK_LAUNCHER=com.mitv.tvhome\n",
+        })
+        lists, second, _, _, failures = sweep(root / "examples")
+        self.assertEqual((1, 0), (lists, second))
+        self.assertEqual([], failures)
 
 
 if __name__ == "__main__":

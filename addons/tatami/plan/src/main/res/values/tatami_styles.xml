@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Explicitly opaque: on some firmware a DeviceDefault theme comes out translucent (cleanyourtv PROMPT.md). -->
+    <style name="Theme.Tatami" parent="android:Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@color/floor</item>
+        <item name="android:colorBackground">@color/floor</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSwipeToDismiss">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>

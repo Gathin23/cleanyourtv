@@ -27,7 +27,8 @@ import java.util.Set;
 
 /**
  * The clock screensaver's scene (layout dream_clock): the thin clock and date on black over a slow ambient
- * glow. Every minute the clock drifts to a new spot and the glow shifts colour, so nothing burns in.
+ * glow. Every minute the clock drifts to a new spot and the glow shifts colour, so nothing burns in; a
+ * ClockRefresh keeps its TextClocks current where Android would not.
  * Shared by ClockDream (the system screensaver) and ClockActivity (Home left idle).
  */
 final class ClockScene {
@@ -42,12 +43,15 @@ final class ClockScene {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private final View content;
+    private final ClockRefresh clockRefresh;
     private final ImageView ambient;
     private final GradientDrawable glow;
     private int colorIndex;
     private int glowColor;
-    /** clock_wallpaper or clock_glow false: something else (a picture, or plain black) replaced the coloured glow. */
+    /** clock_wallpaper: a picture replaced the coloured glow. */
     private boolean wallpaperShown;
+    /** clock_glow false: plain black behind the clock, whether or not a picture shows. */
+    private boolean glowOff;
     /** clock_wallpaper: the picture start() decodes, its darkening, and the resources to draw it with. */
     private File wallpaperFile;
     private int wallpaperShade;
@@ -75,6 +79,7 @@ final class ClockScene {
     /** root is the inflated dream_clock layout. */
     ClockScene(View root) {
         content = root.findViewById(R.id.dreamContent);
+        clockRefresh = new ClockRefresh(content);
         ambient = root.findViewById(R.id.dreamAmbient);
         glow = new GradientDrawable();
         glow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
@@ -93,11 +98,13 @@ final class ClockScene {
         });
         handler.removeCallbacks(tick);
         handler.postDelayed(tick, MOVE_MS);
+        clockRefresh.start();
         if (wallpaperFile != null && !wallpaperShown) loadWallpaper();
     }
 
     void stop() {
         handler.removeCallbacksAndMessages(null);   // the tick and any glow steps still queued
+        clockRefresh.stop();
         content.animate().cancel();
         wallpaperGeneration++;   // a decode still running must not attach its picture to a stopped scene
     }
@@ -106,7 +113,7 @@ final class ClockScene {
      * clock_wallpaper: put the picture Home is showing behind the clock, darkened by clock_wallpaper_dim, in
      * place of the glow, and carry a collection's rotation on while the screensaver is up. Decoded off the main
      * thread at screen size in RGB_565 (4 MB at 1080p), like Home's own; until then, or if it cannot be read,
-     * the glow stays.
+     * the glow stays, unless clock_glow is false.
      * Call before start(), which starts the decode (again after a stop() that dropped an unfinished one).
      */
     void useHomeWallpaper(Context ctx) {
@@ -116,14 +123,10 @@ final class ClockScene {
         } catch (RuntimeException e) {
             return;
         }
-        if (!cfg.clockWallpaper) {
-            // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
-            if (!cfg.clockGlow) {
-                wallpaperShown = true;   // also stops the glow's colour cycle
-                ambient.setBackground(null);
-            }
-            return;
-        }
+        // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
+        glowOff = !cfg.clockGlow;
+        if (glowOff) ambient.setBackground(null);
+        if (!cfg.clockWallpaper) return;
         // What Home plays, and Config puts the single wallpaper in it when a theme has no collection.
         // Reading cfg.wallpaper first held the screensaver on wallpaper.jpg while Home rotated.
         if (cfg.wallpapers.isEmpty()) {
@@ -245,7 +248,7 @@ final class ClockScene {
     }
 
     private void shiftGlow() {
-        if (wallpaperShown) return;
+        if (wallpaperShown || glowOff) return;
         int from = glowColor;
         colorIndex = (colorIndex + 1) % PALETTE.length;
         int to = PALETTE[colorIndex];

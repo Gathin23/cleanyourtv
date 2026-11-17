@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="weather_settings">날씨 설정</string>
+    <string name="settings_done">완료</string>
+    <string name="setting_units">온도 단위</string>
+    <string name="unit_c">섭씨 (°C)</string>
+    <string name="unit_f">화씨 (°F)</string>
+    <string name="setting_both_units">두 단위 모두 표시</string>
+    <string name="setting_days">예보 기간</string>
+    <plurals name="day_count">
+        <item quantity="other">%1$d일</item>
+    </plurals>
+    <string name="setting_humidity">습도 표시</string>
+    <string name="setting_wind">풍속 표시</string>
+    <string name="setting_reset">날씨 설정 초기화</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">켜짐</string>
+    <string name="option_off">꺼짐</string>
     <string name="app_name">날씨</string>
 
     <string name="feels_like">체감 %1$d°</string>

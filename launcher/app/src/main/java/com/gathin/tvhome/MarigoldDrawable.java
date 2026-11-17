@@ -280,6 +280,7 @@ public final class MarigoldDrawable extends Drawable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }

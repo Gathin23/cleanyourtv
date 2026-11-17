@@ -1,0 +1,6 @@
+{
+  "tv": "Chihi HX P30 projector (Allwinner H713, h713m_tuna_p3, 1 GB)",
+  "os": "Android 11",
+  "brand": "Chihi",
+  "notes": "First Chihi list: ads/cleaners, factory/burn-in, Chihi store, Assistant, cast/mirror, Chrome, MX Player, Aptoide and Softwinner theme/log extras off; stock `com.chihihx.launcher` kept (projector/Wi-Fi UI), Home via set-home-activity; HDMI (`com.softwinner.vis`), keystone (`com.softwinner.tcorrection`), USB media and OTA kept; YouTube and Uzbek streaming apps kept by choice; launcher Uzbek locale verified; reboot-checked; launcher upgrade, Netflix and Live TV commented out for shared use."
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "Essentiel b R3 (SCBC device R3, Realtek rtd2841a), France",
+  "os": "Android TV 11",
+  "brand": "Essentiel b",
+  "notes": "Boulanger house brand on the SCBC/Realtek platform of acer-ar3-r3 (Android 11 here); Google TV extras, voice search, Chromecast, FastCast, HbbTV and signage service off; the com.apps.* and com.realtek.* TV functions, the firmware updater, Netflix, Prime Video and YouTube kept; set-home-activity stuck directly; reboot-checked on two units"
+}

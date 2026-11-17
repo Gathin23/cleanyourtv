@@ -69,6 +69,11 @@ def connect():
     return Device()
 
 
+def connect_error(error):
+    # tools/tv.py words the failures it knows; the fake says the same for the one it raises.
+    return "192.168.1.50:5555 refused the connection: nothing listens for ADB there."
+
+
 def main():
     args = sys.argv[1:]
     if "--batch" in args:
@@ -184,7 +189,10 @@ class RecoveryRecordTest(unittest.TestCase):
     def test_failed_save_disables_nothing(self):
         self.tv(unreachable=True)
         result = self.run_script("disable.sh", str(self.list_path))
-        self.assertNotEqual(result.returncode, 0)
+        # 2, not 1: nothing was asked of the TV, so this is not a save that ran and failed (tools/
+        # recovery.py's reach(), and tests/test_recovery_unreached_tv.py).
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("Nothing was recorded and nothing was sent to the TV.", result.stderr)
         self.assertEqual(self.sent(), [], "a failed record must not be followed by a mutation")
         self.assertIsNone(self.record())
 
@@ -408,6 +416,9 @@ class RecoveryRecordTest(unittest.TestCase):
     def run_recovery(self, *args):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         return subprocess.run(
             [sys.executable, str(ROOT / "tools" / "recovery.py"), *args],
             cwd=self.repo, env=env, capture_output=True, text=True, timeout=120,
@@ -480,6 +491,21 @@ class RecoveryRecordTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("no package names in this list", result.stderr)
         self.assertNotIn("could not read", result.stderr)
+
+
+class RecordShapeTest(unittest.TestCase):
+    def test_a_record_that_is_json_but_not_an_object_is_named_not_a_traceback(self):
+        sys.path.insert(0, str(ROOT / "tools"))
+        self.addCleanup(sys.path.remove, str(ROOT / "tools"))
+        import recovery
+        for text in ("[]", "null", '"x"', "7"):
+            with self.subTest(record=text), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "recovery-192.168.1.50-cafab3f3.json"
+                path.write_text(text)
+                with self.assertRaises(SystemExit) as caught:
+                    recovery.load_record(str(path))
+                self.assertIn("unknown recovery record format", str(caught.exception))
+                self.assertEqual(path.read_text(), text, "the file is left for inspection")
 
 
 if __name__ == "__main__":

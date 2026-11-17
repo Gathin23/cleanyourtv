@@ -22,7 +22,7 @@ This directory contains the debloat configuration and documentation for the **TC
 - `com.tcl.waterfall.overseas` — TCL web-video feed / TCL Channel
 - `com.tcl.esticker` — Store demo sticker app
 - `com.tcl.copydatatotv` — Copy data promo utility
-- `com.tcl.t_solo` — TCL promotional service
+- `com.tcl.t_solo` — T-Solo "listen alone": TV sound to Bluetooth headphones
 - `com.internet.tvbrowser` — Preloaded browser
 - `com.tcl.browser` — TCL Browser
 - `com.google.android.feedback` — User feedback collector
@@ -44,7 +44,7 @@ This directory contains the debloat configuration and documentation for the **TC
 ### Re-enable a Single Package
 Over ADB or `tools/tv.py`:
 ```powershell
-python tools/tv.py "pm enable com.tcl.usercenter"
+tools\venv\Scripts\python.exe -I tools\tv.py "pm enable com.tcl.usercenter"
 ```
 
 ### Restore All Debloated Packages
@@ -120,7 +120,7 @@ To set a custom wallpaper background:
 
 If Private DNS was configured to AdGuard (`dns.adguard-dns.com`), you can revert it to default automatic mode at any time with:
 ```powershell
-python tools/tv.py "settings put global private_dns_mode opportunistic"
+tools\venv\Scripts\python.exe -I tools\tv.py "settings put global private_dns_mode opportunistic"
 ```
 
 ---

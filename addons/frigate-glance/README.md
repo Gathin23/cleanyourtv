@@ -35,8 +35,8 @@ further by camera and object.
 | Start at boot (`RECEIVE_BOOT_COMPLETED`) | To reconnect after a reboot. On TCL sets `install.sh` also allows the `APP_AUTO_START` app-op, without which TCL's firmware blocks it. |
 
 Two components only the ADB shell can use (they need `WRITE_SECURE_SETTINGS`, as the launcher's
-ThemeProvider): `ConfigProvider` takes `config.json` on firmware that locks the shell out of `Android/data`,
-and `TestCardReceiver` shows a test card over whatever is playing.
+ThemeProvider): `ConfigProvider` takes `install.sh`'s `config.json`, so the file belongs to the add-on rather
+than the shell, and `TestCardReceiver` shows a test card over whatever is playing.
 
 ## Setup
 
@@ -50,8 +50,8 @@ and `TestCardReceiver` shows a test card over whatever is playing.
    ```
 
    It builds the add-on, installs it, grants the overlay and auto-start, pushes the config, turns on the key
-   service next to any the launcher uses, and prints `MQTT: ok` and `Frigate: ok` (or what went wrong), then
-   shows a test card. The pushed file is deleted on the TV once the add-on has read it.
+   service next to any the launcher uses, and prints `Config: read by the app`, `MQTT: ok` and `Frigate: ok`
+   (or what went wrong), then shows a test card. The pushed file is deleted on the TV once the add-on has read it.
 3. Press Home and answer **Show card** when the launcher asks about the add-on's card. Open it for the
    settings, in five sections: **Overview** (snooze, connection status), **Cameras** (which cameras, and
    whether cameras added later count), **Alerts** (alerts only or detections too, which objects), **Card**

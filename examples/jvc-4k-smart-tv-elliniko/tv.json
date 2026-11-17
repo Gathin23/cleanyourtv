@@ -1,0 +1,6 @@
+{
+  "tv": "JVC 4K Smart TV (KTC, MediaTek merak / mt5896, elliniko, KTC_JVC_4K_24GV1)",
+  "os": "Google TV 14",
+  "brand": "JVC",
+  "notes": "Anoki ACR, Google feedback, partner setup, auto-installs, store demo, e-manual, Play Games, Ambient; Assistant off by choice; setupwraith off with the Wi-Fi owned by the system and YouTube casting still working; gear key is scancode 397 (`HOME_KEY_SERVICE=1`); Wireless debugging only; same board as [Síragon elliniko](siragon-4k-smart-tv-elliniko/); 1.8 GB"
+}

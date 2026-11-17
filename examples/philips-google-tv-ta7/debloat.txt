@@ -56,6 +56,28 @@
 # - The Settings key fix is the same: an accessibility service filtering KEYCODE_SETTINGS, checked with
 #   the real remote (`input keyevent` bypasses accessibility filters).
 #
+# Fourth unit: Philips 55PUG7908/78, Brazil, same device and build (software TPM237L_R.101.000.072.000,
+# security patch 2026-03-05), on Wi-Fi. Debloated on 2026-10-21/22 in two batches with batches 1-3 of this
+# list minus com.mediatek.opapp, org.droidtv.consentcmpapp, com.mstar.android.tv.disclaimercustomization
+# and com.android.printspooler (left on), and nothing from batches 4-5: the owner kept the stock Google TV
+# launcher for its full Continue watching row (Globoplay and YouTube feed it through Engage, which only
+# launcherx receives). Lived with for two weeks of daily use and several reboots; nothing re-enabled.
+# Checked there as well:
+# - com.google.android.marvin.talkback can be disabled, but the firmware re-enables it at every boot
+#   (enabled=1 after the reboot). It does not run unless turned on, so it is left alone.
+# - Volume: with launcherx kept and no HomeKeyService, the IR remote's volume key reaches the system
+#   at once (getevent and the policy log agree), the bar is requested about 200 ms later, and holding
+#   the key ramps in steps of 3. A slow volume bar the owner saw before the debloat was gone after it and a
+#   reboot (the set had about 40 h uptime and a full zram); it was not seen again.
+# - Picture: the HDR10 profile ("Usuário (HDR10)", settings global picture_mode=15) shipped with
+#   Colour tone "Padrão" at red gain -1, green gain -11, blue gain 0, which tints HDR video (YouTube HDR,
+#   live sport) towards red/magenta; the SDR profile ("Padrão", picture_mode=7) is neutral. Fix in the
+#   quick settings with an HDR video playing: Picture > Advanced > Colour tone > "Usuário" (gains 0/0/0).
+#   picture_color_temperature reads 2 in HDR before and 0 after; SDR is untouched.
+# - Turning "Video autoplay" off (Settings > Accounts & profiles > <profile>) stops trailers on the
+#   stock home; the Continue watching row stays.
+# - Private DNS works on this set.
+#
 # Kept on purpose: org.droidtv (TPVTvService, sees every key press), org.droidtv.icp (persistent
 # sign-on service, purpose unclear), org.droidtv.ambisvc (Ambilight/Lounge), org.droidtv.eum (user
 # manual; hidden in the launcher instead), com.mediatek.tv.service (hot keys, Netflix key, TV agent),

@@ -58,13 +58,13 @@ def size_limit_bytes():
 
 
 def width_limit_px():
-    """The width cap test_switches.py puts on a listed picture (1280x720 is plenty, 4K is not)."""
-    m = re.search(r"assertLessEqual\(\s*width\s*,\s*(\d+)", SWITCH_TEST.read_text(encoding="utf-8"))
+    """MAX_WIDTH in tests/test_switches.py, the width cap it puts on a listed picture (1280x720 is plenty, 4K is not)."""
+    m = re.search(r"^MAX_WIDTH\s*=\s*(\d+)", SWITCH_TEST.read_text(encoding="utf-8"), re.M)
     return int(m.group(1)) if m else None
 
 
 def aspect_checked():
-    return bool(re.search(r"assertEqual\(\s*width\s*\*\s*9\s*,\s*height\s*\*\s*16",
+    return bool(re.search(r"width\s*\*\s*9\s*!=\s*height\s*\*\s*16",
                           SWITCH_TEST.read_text(encoding="utf-8")))
 
 

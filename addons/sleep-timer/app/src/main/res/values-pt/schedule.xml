@@ -1,0 +1,33 @@
+<resources>
+    <string name="sched_0">"Horários da TV"</string>
+    <string name="sched_1">"Os horários pertencem ao dia selecionado. Os períodos de exclusão bloqueiam apenas o ligar automático. Voltar descarta alterações."</string>
+    <string name="sched_2">"Horários: ativados"</string>
+    <string name="sched_3">"Horários: desativados"</string>
+    <string name="sched_4">"+ Adicionar horário de ligar / desligar"</string>
+    <string name="sched_5">"Não ligar: "</string>
+    <string name="sched_6">"Período sem ligar automaticamente"</string>
+    <string name="sched_7">"Editar datas"</string>
+    <string name="sched_8">"Excluir"</string>
+    <string name="sched_9">"+ Adicionar período de exclusão"</string>
+    <string name="sched_10">"Salvar"</string>
+    <string name="sched_11">"Ligar  "</string>
+    <string name="sched_12">"Desligar  "</string>
+    <string name="sched_13">"Adicionar evento"</string>
+    <string name="sched_14">"Ligar"</string>
+    <string name="sched_15">"Desligar"</string>
+    <string name="sched_16">"Dias da semana"</string>
+    <string name="sched_17">"Cancelar"</string>
+    <string name="sched_18">"Hora"</string>
+    <string name="sched_19">"Selecione pelo menos um dia"</string>
+    <string name="sched_20">"O fim deve ser igual ou posterior ao início"</string>
+    <string name="sched_21">"Último dia incluído"</string>
+    <string name="sched_22">"Primeiro dia incluído"</string>
+    <string name="sched_23">"Segunda-feira"</string>
+    <string name="sched_24">"Terça-feira"</string>
+    <string name="sched_25">"Quarta-feira"</string>
+    <string name="sched_26">"Quinta-feira"</string>
+    <string name="sched_27">"Sexta-feira"</string>
+    <string name="sched_28">"Sábado"</string>
+    <string name="sched_29">"Domingo"</string>
+    <string name="schedule_row">"Horários"</string>
+</resources>

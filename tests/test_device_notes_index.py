@@ -233,6 +233,28 @@ def index_notes_with_their_own_list(root):
     return out
 
 
+def index_notes_named_after_a_list(root):
+    """Notes filed under "no tested list yet" whose own folder ships a list anyway.
+
+    own_list() above needs the note to link its list, which a report written before the list exists
+    does not: docs/devices/xiaomi-mi-box-4s-pro-frozen.md was written on 2026-10-30 with "No
+    `examples/` list is provided until the new changes have been used for several days", the folder
+    landed on 2026-11-06, and the note went on being filed as a model with no list while its row
+    linked it and its debloat.txt carried twelve packages read back after a reboot. The folder is
+    the second witness: a note named docs/devices/<x>.md beside examples/<x>/debloat.txt is that
+    model's note, whatever the note says about lists.
+    """
+    root = Path(root)
+    out = []
+    for note in index_notes(root):
+        stem = Path(note).stem
+        if (root / "examples" / stem / "debloat.txt").is_file():
+            out.append(f"{NOTES}/{note} is filed under \"{NOTE_INDEX_HEADING}\" but "
+                       f"examples/{stem}/debloat.txt is in the tree: link the note from that "
+                       f"folder's row and take the entry out of the index")
+    return out
+
+
 def table_rows(root):
     """examples/README.md's folder rows, as {folder: the row's text}; a folder's tv.json, where it has one,
     stands in for its row, since the row is generated from it."""
@@ -388,11 +410,23 @@ class NoteFiledWithItsListTest(unittest.TestCase):
     The index's own heading is the rule: a report filed there says its model has no list. When the
     list later lands, the report belongs to the row (the way tcl-50dp660, tcl-beyondtv2-v660 and
     xiaomi-mitv-mosr4 are filed), otherwise the page tells a reader the opposite of what it ships.
+
+    Two witnesses, because a report cannot be asked to predict its future: own_list() reads the list
+    the note links, and index_notes_named_after_a_list() reads the folder that took the note's name -
+    a report written on 2026-10-30 with "No `examples/` list is provided" cannot link a folder that
+    landed a week later, and examples/xiaomi-mi-box-4s-pro-frozen/ is what makes the entry wrong.
     """
 
     def test_a_note_with_its_own_list_is_not_in_the_no_list_index(self):
         self.assertGreaterEqual(len(index_notes(ROOT)), 20, "the notes index was not read")
         offenders = index_notes_with_their_own_list(ROOT)
+        self.assertEqual([], offenders, "\n".join(offenders))
+
+    def test_a_note_named_after_a_list_is_not_in_the_no_list_index(self):
+        # The second witness: the report written before the list existed does not link it, so the
+        # link above cannot see it, and the folder that now carries the model's name can.
+        self.assertGreaterEqual(len(index_notes(ROOT)), 20, "the notes index was not read")
+        offenders = index_notes_named_after_a_list(ROOT)
         self.assertEqual([], offenders, "\n".join(offenders))
 
     def test_every_row_links_the_note_of_its_own_folder(self):
@@ -478,6 +512,40 @@ class NoteFiledWithItsListTest(unittest.TestCase):
                 encoding="utf-8")
             self.assertEqual(["fpd-cg50-c3.md"], index_notes(root))
             self.assertEqual([], index_notes_with_their_own_list(root))
+
+    def test_a_note_named_after_a_list_is_reported(self):
+        # A report written before its list landed says so, and the folder that took the model's name
+        # is the witness the report's own links cannot be: it is filed under the heading that says
+        # the model has no list while examples/<the note's name>/debloat.txt sits in the tree.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._tree(tmp)
+            (root / NOTES / "sony-x9000h-cn.md").write_text(
+                "# Note\n\nNo `examples/` list is provided until this has been lived with.\n",
+                encoding="utf-8")
+            (root / "examples" / "README.md").write_text(
+                f"{NOTE_INDEX_HEADING} live in [`docs/devices/`](../docs/devices/):\n\n"
+                "- [Sony X9000H](../docs/devices/sony-x9000h-cn.md): a 33-package set, no list yet.\n",
+                encoding="utf-8")
+            offenders = index_notes_named_after_a_list(root)
+            self.assertEqual(1, len(offenders))
+            self.assertIn("examples/sony-x9000h-cn/debloat.txt", offenders[0])
+
+    def test_a_note_named_before_its_folder_is_quiet(self):
+        # The name is a witness, not the only one: a report filed under its board family
+        # (toshiba-shandao-android11.md) beside a folder named for the list
+        # (examples/toshiba-shandao-atv11/) says nothing here, and the reader of the index is served
+        # by the report saying where the list is instead.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._tree(tmp)
+            (root / "examples" / "toshiba-shandao-atv11").mkdir()
+            (root / "examples" / "toshiba-shandao-atv11" / "debloat.txt").write_text(
+                "# a list\n", encoding="utf-8")
+            (root / NOTES / "toshiba-shandao-android11.md").write_text("# Note\n", encoding="utf-8")
+            (root / "examples" / "README.md").write_text(
+                f"{NOTE_INDEX_HEADING} live in [`docs/devices/`](../docs/devices/):\n\n"
+                "- [Toshiba Android TV 11](../docs/devices/toshiba-shandao-android11.md): the board "
+                "family, no list yet.\n", encoding="utf-8")
+            self.assertEqual([], index_notes_named_after_a_list(root))
 
 
 class NoteIndexOneEntryTest(unittest.TestCase):

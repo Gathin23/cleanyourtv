@@ -25,6 +25,11 @@ final class OpenOnStart {
         return boot >= 0 && boot != handledBoot && pkg != null && !pkg.isEmpty() && !pkg.equals(self);
     }
 
+    /** open_on_start_on_wake needs the Open on start row, which is where the app is picked. */
+    static boolean onWake(boolean choice, boolean onWake) {
+        return choice && onWake;
+    }
+
     static int boot(Context ctx) {
         return Settings.Global.getInt(ctx.getContentResolver(), Settings.Global.BOOT_COUNT, -1);
     }
@@ -41,7 +46,8 @@ final class OpenOnStart {
 
     /** Android has reached the internet through the active network (ACCESS_NETWORK_STATE). */
     static boolean online(Context ctx) {
-        ConnectivityManager cm = ctx.getSystemService(ConnectivityManager.class);
+        // The application's: one made from an activity would keep that activity (see MainActivity.onCreate).
+        ConnectivityManager cm = ctx.getApplicationContext().getSystemService(ConnectivityManager.class);
         Network n = cm != null ? cm.getActiveNetwork() : null;
         NetworkCapabilities caps = n != null ? cm.getNetworkCapabilities(n) : null;
         return caps != null && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);

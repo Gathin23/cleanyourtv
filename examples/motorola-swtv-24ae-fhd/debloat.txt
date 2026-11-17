@@ -1,9 +1,12 @@
-# Motorola / Coocaa SWTV-24AE-FHD (Skyworth OEM, device beomil, product SW11_TG, MediaTek mt5867)
+# Motorola / Coocaa / Telefunken SWTV-24AE-FHD (Skyworth OEM, device beomil, product SW11_TG, MediaTek mt5867)
 # Unit 1 (Motorola, India): Android TV 14 (API 34), build UKN4.250714.138, security patch 2025-10-01.
 # Unit 2 (Coocaa 24LP6000G / SWTV-24AE-FHD, Vietnam / SEA): Google TV 14 (API 34), build UKN6.260116.048, ~1 GB RAM.
+# Unit 3 (Telefunken SWTV-24AE-FHD, Tunisia): Google TV 14 (API 34), build UKN4.250714.138 (as unit 1), security patch
+#   2025-10-01, ~930 MB RAM. Lived with from 26 October to 1 November 2026: nothing broke, nothing re-enabled.
 # Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
 # Setup wizard: com.google.android.tungsten.setupwraith (claims HOME with priority 1).
-# Live TV app: com.cltv.hybrid (Motorola, iWedia CanaliTV) or com.mediatek.wwtv.tvcenter (Coocaa).
+# Live TV app: com.cltv.hybrid (Motorola, iWedia CanaliTV) or com.mediatek.wwtv.tvcenter (Coocaa, Telefunken; on the
+#   Telefunken com.cltv.hybrid, fusion.android.tv.demo and YouTube Music ship disabled).
 # HDMI and tuner inputs: com.mediatek.tvinput.
 # Remote: Settings button emits keycode 83 (KEYCODE_NOTIFICATION) on scancode 240; needs HomeKeyService.
 #
@@ -15,6 +18,12 @@
 # and Android DELETES it the moment setupwraith is disabled; the TV drops off the network and ADB with it.
 # Check first: `dumpsys wifi | grep -o 'cname=[^ ]*'`. If it is not android.uid.system, forget the network
 # and re-join it in Settings > Network BEFORE disabling setupwraith.
+# On the Telefunken unit the network already belonged to android.uid.system, and the TV stayed online.
+#
+# Home hand-over (Telefunken unit): with launcherx enabled, `cmd package set-home-activity` to the new launcher
+# answered Success but Home kept resolving to launcherx (install with STOCK_LAUNCHER=none), so the last two lines
+# are what hands Home over. Install the new launcher first; disable.sh's Home guard keeps launcherx until then.
+# Free memory (MemAvailable) went from about 205 MB to about 290 MB after the lines above Home and a reboot.
 
 # Skyworth telemetry and activation
 com.smartdevice.recordactivation             # records first activation
@@ -39,6 +48,9 @@ com.smartdevice.dailymanage                  # TV Guard / cleaner
 com.smartdevice.myapp                        # Daily Key / app manager
 com.google.android.play.games                # Google Play Games
 fusion.android.tv.demo                       # store demo mode (Coocaa)
+
+# Assistant: disabled on the Telefunken unit; the remote's mic button stops working. Uncomment to drop it.
+# com.google.android.katniss                 # Google Assistant / voice search
 
 # Stock Google TV home and setup wizard
 # Disable only after installing and verifying the new launcher!

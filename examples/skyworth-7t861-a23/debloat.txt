@@ -8,31 +8,53 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # CRITICAL SAFETY NOTE:
-# Do NOT disable com.skyworth.officehomepage directly. On this firmware, disabling the stock home
-# causes the system to hang at the SKYWORTH boot logo (network stack does not start, ADB drops).
-# Recovery requires a factory reset via Recovery Mode.
+# Do NOT disable com.skyworth.officehomepage or com.tianci.movieplatform directly.
+# Coocaa OS boot chain hardcodes dependencies on these stock home launchers. Disabling
+# either package causes the system to hang indefinitely at the boot logo (network stack
+# does not initialize, ADB drops). Recovery requires a hardware factory reset.
+# Also keep com.loostone.tuning (audio HAL) and com.tianci.user (auth IPC) enabled.
+#
+# RECOMMENDED BEST PRACTICE:
+# On this model, switching the television to "Office Mode" (办公模式) in the native settings
+# shuts off all video streaming feeds, banner advertisements, and background cloud preloading.
+#
+# The debloat list disables 5 packages by default: background device telemetry, app installation
+# listeners, cloud ad push daemons, app/storage scanning, and the stock theme package.
+# The three optional lines stay commented out: the EPG guide/push daemons, the voice assistant and the
+# external mic companion.
+# Other non-essential content apps and stores are commented out by default.
 # For replacing the home screen safely, see docs/devices/skyworth-7t861-a23.md.
 
-# Telemetry and diagnostics
-com.skyworth.performance.monitors   # Performance monitors and telemetry
-com.skyworth.testtime               # Factory testing timer
-com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
-com.skyworth.device                 # Device information and location reporting
+# Telemetry, push services, and stock themes (disabled by default)
+# Verified safe across cold boots; disables device telemetry, package monitoring,
+# cloud ad pushes, app/storage scanning, and stock theme resources (the guide line below is optional):
+com.skyworth.device                 # Device information and location reporting (SensorsData analytics)
+com.tianci.de                       # Tianci Data Engine daemons listening for package changes
+com.tianci.ad                       # Tianci advertising cloud push receiver
+com.coocaa.tvmanager                # CooCaa content recommendation and app scanning manager; also scans USB/storage, so re-enable it if USB drives stop showing up
+# Optional: this set has the EPG guide off; it is TV middleware, so it stays on here
+# com.coocaa.guide                    # Boot guide & EPG program guide / push receiver
+com.coocaa.theme_package_ccos_nine  # Stock Coocaa OS theme package (GoldenFaith)
 
-# Ads and manufacturer content
-com.coocaa.tvmanager                # CooCaa content recommendation manager
-com.coocaa.guide                    # EPG program guide and content pushes
-com.tianci.de                       # Tianci DE advertising engine
-com.tianci.user                     # Tianci user account and notification service
-com.coocaa.theme_package_ccos_nine  # Default theme package
+# Voice assistant and karaoke microphone: off on the tested set, optional; uncomment to disable
+# Verified safe across cold boots; disables remote voice key / XiaoWei AI assistant
+# and external karaoke microphone companion; com.loostone.tuning keeps system audio working:
+# com.skyworth.angel.voice             # Skyworth XiaoWei AI voice assistant
+# com.skyworth.microphone              # Skyworth karaoke and external microphone manager
 
-# Preloaded content and stores
-com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming
-com.tianci.movieplatform            # Tianci video platform
-com.tianci.appstore                 # Tianci app store
-com.skyworth.skymarket              # Skyworth market
-com.coocaa.app_browser              # CooCaa built-in browser
+# Other optional telemetry and apps (commented out by default):
+# com.skyworth.performance.monitors   # Performance monitors and telemetry
+# com.skyworth.testtime               # Factory testing timer
+# com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
+
+# Firmware updater (kept enabled by default; uncomment to disable OTA updates)
+# com.coocaa.os.upgrade               # CooCaa OS system OTA updater
+
+# Preloaded content and stores (optional to disable)
+# com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming
+# com.tianci.appstore                 # Tianci app store
+# com.skyworth.skymarket              # Skyworth market
+# com.coocaa.app_browser              # CooCaa built-in browser
 
 # Factory and tuning tools
-com.loostone.tuning                 # Factory picture calibration utility
-com.coocaa.factory                  # Factory menu test package (do not launch)
+# com.coocaa.factory                  # Factory menu test package (do not launch)

@@ -1,0 +1,22 @@
+# Hisense VIDAA_TV (device AMLOGICT963, retail model unconfirmed), China, Android 9,
+# build PPR1.180610.011.07.02.70.02; TV software V0011.00.01L.P0926.
+# This is the tested list for one set, not for the MT9653 / Android 11 Hisense models.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/hisense-amlogict963-android9/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/hisense-amlogict963-android9/debloat.txt com.jamdeo.tv.vod
+# Everything is disabled for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# The stock Home com.jamdeo.tv.vod and Live TV com.jamdeo.tv.livetv stay enabled.
+# HDMI/input services, physical remote, voice, casting, Bluetooth and OTA stay enabled.
+# Applied in small batches; two reboots and the owner's physical feature checks passed.
+# On 2026-11-03 the owner reported a week of ordinary use with no issues; all five packages
+# remained disabled and a replacement launcher still resolved as Home.
+
+# Hisense advertising; the service had been disabled before the 2026-10-27 batch.
+com.hisense.service.ad
+com.hisense.business.ad              # shopping/Taobao advertising integration
+
+# Hisense telemetry and logging
+com.hisense.hitv.das                 # data reporting
+com.hisense.platformreport          # platform reports
+com.hisense.logupload               # log upload

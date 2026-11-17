@@ -1,0 +1,6 @@
+{
+  "tv": "TCL ES560, likely 32ES560 (TCL-built UnionTV, Realtek RT2841, TCL-EU-RT2841-S1)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "Same build as the TCL UnionTV and Thomson 32HE5800 lists, EU firmware line; TCL BI analytics, promo rows/partner customizer, TCL Channel, app store, cleaner, user center; Ambient Mode, TTS and TalkBack off; Assistant, Chromecast and firmware updater kept; user center comes back on by itself; size from the TV's config file, type plate not read"
+}

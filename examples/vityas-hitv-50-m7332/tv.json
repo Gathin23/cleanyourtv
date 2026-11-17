@@ -1,0 +1,6 @@
+{
+  "tv": "Vityas Hi TV 50 (KTC/KGZN build, board m7332)",
+  "os": "Android TV 11",
+  "brand": "Vityas",
+  "notes": "KGZN/KTC vendor stack on an MTK m7332 board, sold under the \"Hi TV\" name: vendor telemetry, Zeasn ad/store bridge, screen share with camera and microphone permissions, three factory menus, a setup wizard that does not own the saved Wi-Fi; debug firmware, so network ADB takes no authorisation prompt; one session, reboot-checked: [device notes](vityas-hitv-50-m7332/README.md)"
+}

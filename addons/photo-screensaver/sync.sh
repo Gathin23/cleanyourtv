@@ -11,6 +11,11 @@
 #        TV_HOST=192.168.1.50 START=1 addons/photo-screensaver/sync.sh             # and show it now
 #        TV_HOST=192.168.1.50 addons/photo-screensaver/sync.sh --off               # previous screensaver back, pictures removed
 set -euo pipefail
+# The picture-name check below matches with an ASCII range, `^[A-Za-z0-9_.-]+$`, and in a Turkish locale
+# bash leaves i and I out of [A-Za-z] (glibc's collation, the same reason tools/disable.sh pins it, #3286),
+# so a picture called `trip.2023.12.02.jpg` was refused as "use letters, digits, - _ and . only" - a rule
+# its name does not break - and the sync stopped before anything was sent. Match names by bytes.
+export LC_ALL=C
 HERE="$(cd "$(dirname "$0")" && (pwd -W 2>/dev/null || pwd))"
 FOLDER="${1:-$HERE/pictures}"
 case "$FOLDER" in --off|/*|?:*) ;; *) FOLDER="$(pwd -W 2>/dev/null || pwd)/$FOLDER" ;; esac

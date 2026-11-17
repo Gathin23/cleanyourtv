@@ -1,0 +1,72 @@
+# Philips 65PQT8169/56 (KTC-built, device hongkong, MediaTek m7632), UAE, Google TV on Android 11, build RTM7.230903.168
+# 2024 set. ro.product.brand=PHILIPS, ro.product.manufacturer=KTC, ro.product.model="4K SMART TV",
+# product KTC_PHILIPS_4K_DVB_22GV1 (ODM model "EcoTV Plus D"), security patch 2024-02-01, about 1.8 GB RAM.
+# The same KTC board name as examples/ktc-4k-smart-tv-hongkong (Google TV 14, Taiwan), on other firmware:
+# this list keeps ktc.factorymenu.ui, which that one disables (see below).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-65pqt8169/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-65pqt8169/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+# Then the launcher, with the remote's gear button: README.md in this folder.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Setup wizard: com.google.android.tungsten.setupwraith
+# (claims HOME with .RecoveryActivity). Live TV: com.mediatek.wwtv.tvcenter; HDMI, AV and tuner inputs:
+# com.mediatek.tvinput and com.mediatek.tv.service.
+#
+# Tested on one unit in a single session, not over several days: screenshots after each batch, one reboot (all
+# packages stayed disabled, Home stayed the new launcher, and the TV started on Home, not Live TV), the Inputs
+# menu (HDMI 1-3, Composite, Live TV; HDMI 1 opened in the Live TV app, its picture not checked) and the real
+# remote. Treat it as a starting point and report anything that broke.
+#
+# WARNING: setupwraith owned one of the two saved Wi-Fi networks (`dumpsys wifi | grep -o 'cname=[^ ]*'`),
+# and Android deletes that network the moment setupwraith is disabled, so tools/disable.sh skips it. This set
+# was on its built-in Ethernet with Wi-Fi off and that network not in use, so the list ran with
+# FORCE_SETUPWRAITH=1, with the owner's agreement. On Wi-Fi, forget the network and re-join it in Settings first.
+#
+# Casting still works with setupwraith off, checked by casting from a phone. The receiver
+# (com.google.android.apps.mediashell) logs `Failed to find provider info for ...CastInfoProvider` at boot, then
+# signs with `jni_client_auth_creds_mediadrm`, as the TCL 65Q7CX1 in docs/TROUBLESHOOTING.md does.
+#
+# Factory tools: com.ktc.serialport, com.ktc.tv.factory and mediatek.factorymenu.ui were only disabled, never
+# launched. ktc.factorymenu.ui stays enabled: on this firmware it carries the MediaTek HotKeyService, VolService
+# and two GLOBAL_BUTTON receivers. With the three off, the real remote's Input, held volume, Netflix, YouTube,
+# Prime Video and gear buttons behaved as before.
+#
+# Before this list, and left as they were: com.google.android.katniss (voice search),
+# com.google.android.play.games, com.google.android.videos and com.google.android.youtube.tvmusic were hidden for
+# user 0 (installed=true hidden=true; `pm unhide <package>` brings one back), and TalkBack was disabled.
+#
+# Kept on purpose: ktc.factorymenu.ui (above), com.mediatek.tv.service, com.mediatek.tvinput and
+# com.mediatek.wwtv.tvcenter (Live TV, HDMI and the remote's hotkey dispatcher), com.mediatek.autopair (remote
+# pairing), com.mediatek.network, com.mediatek.wwtv.mediaplayer (USB media), Dolby audio, Gboard, Play Store and
+# Play Services, com.google.android.tv.remote.service (phone remote); Netflix, Prime Video, YouTube and Chromecast
+# built-in, which the owner uses. No firmware-updater package was found, so updates are untouched.
+#
+# Screensaver: with com.google.android.apps.tv.dreamx (ambient mode) disabled, the owner set the launcher's clock:
+# settings put secure screensaver_components com.gathin.tvhome/.ClockDream. After the undo, put ambient mode back
+# with com.google.android.apps.tv.dreamx/.service.Backdrop in the same setting.
+#
+# ro.adb.secure=1. Port 5555 was open with USB debugging on and came back after a reboot (service.adb.tcp.port=5555).
+
+# --- Telemetry, partner auto-installs and rows ---
+com.google.android.feedback                              # feedback/crash reports
+android.autoinstalls.config.google.gtvpai                # silently installs partner apps
+com.google.android.partnersetup                          # partner-app attribution
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows for the stock launcher
+com.google.android.onetimeinitializer                    # one-time setup leftovers
+
+# --- Background services ---
+com.google.android.apps.nbu.smartconnect.tv              # data-saver VPN
+com.google.android.syncadapters.calendar                 # calendar sync
+com.android.printspooler                                 # printing
+
+# --- Factory and production-line tools: disabled only, never launched ---
+com.ktc.serialport                                       # KTCAutoTest serial console, runs from boot
+com.ktc.tv.factory                                       # KtcFactoryKeyService, runs from boot
+mediatek.factorymenu.ui                                  # MediaTek design/factory menu
+
+# --- Google ambient-mode screensaver ---
+com.google.android.apps.tv.dreamx                        # with its smarthome process, about 240 MB in memory
+
+# --- Google TV setup wizard: read the Wi-Fi warning above first; re-enable it before a factory reset ---
+com.google.android.tungsten.setupwraith                  # claims HOME with .RecoveryActivity

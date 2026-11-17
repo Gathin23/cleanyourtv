@@ -1,0 +1,73 @@
+# KUNFT K8415H40F (Changhong, Android model AI PONT, device redwood, product DVB92KT), Android TV 11 (API 30),
+# firmware RTM9.241015.127, MediaTek mt5867, about 1 GB RAM (MemTotal 934540 kB), 1280x720. Portugal.
+# The same redwood board as examples/rca-ai-pont and examples/tdsystems-ch17f40s-redwood, but on Android 11
+# firmware: no Anoki ACR (tv.anoki.acr.*) and no FAST channel app (com.cltv.fast) are installed on this build.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/kunft-k8415h40f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/kunft-k8415h40f/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher. Live TV, HDMI and AV: com.mediatek.wwtv.tvcenter.
+# Home claimants with everything enabled: tvlauncher and com.android.tv.settings/.system.FallbackHome only;
+# setupwraith does not claim Home on this firmware.
+#
+# Tested on one set on 2026-11-02, the same day: three batches with a screenshot after each, then three
+# reboots (one before the new launcher, two after). Every package below stayed disabled across all three;
+# nothing came back by itself. Not a multi-day soak.
+#
+# KEEP, even though some names look like bloat:
+# - com.google.android.leanbacklauncher.partnercustomizer: on this board family com.mediatek.tv.service
+#   crash-loops after a reboot without it (see examples/chiq-ai-pont).
+# - com.homwee.dmt.upgrade and com.homwee.upgrade (updaters), com.homwee.synckey, com.homwee.factory (never open it),
+#   com.homwee.dynamicbacklight, com.mediatek.* (Live TV, inputs, remote pairing).
+# - com.homwee.mmp.imageplayer: it takes part in the AirPlay / Multi-Screen Share broadcasts
+#   (com.changhong.mmp.check_need_exit_airplay) and runs a music service, so it stays while mirroring is used.
+# - com.google.android.tungsten.setupwraith: no Home claim here, and it owned one of the saved Wi-Fi networks
+#   (not the one in use). Disabling it would delete that network.
+#
+# Quirks on this firmware:
+# - USB debugging alone opens network ADB on port 5555; Wireless debugging was off throughout. With USB
+#   debugging off and the authorisations revoked, 5555 refused after a restart.
+# - Every power-on opens Live TV: FallbackHome, the Home app, then com.homwee.factory/com.gdch.hotel.ui.ProtocolActivity
+#   and com.mediatek.wwtv.tvcenter about 15 s later, as on the CHiQ and ERGO notes in examples/rca-ai-pont.
+#   With launcher/ as Home, power_on_home_always + key_filter false (config.json here) brings Home back once
+#   per power-on; see README.md.
+# - The remote's gear sends KEYCODE_SETTINGS (scancode 92). com.mediatek.wwtv.tvcenter catches it and opens
+#   com.android.tv.settings/.MainSettingsSecond (Device Preferences: Picture, Sound), with or without the
+#   stock launcher. The full Settings menu is the launcher's Settings pill.
+# - HDMI and Live TV screenshots are empty (protected video layer).
+
+# --- Vendor portal, ads, recommendations, telemetry
+com.homwee.aipont                       # AI PONT brand portal and its channel rows
+com.homwee.store                        # vendor store; declares the retail-demo receiver and service
+android.autoinstalls.config.homwee      # partner app auto-installs
+com.google.android.tvrecommendations    # recommendation rows
+com.google.android.feedback
+com.google.android.partnersetup
+
+# --- Vendor tools, app updater, ambient screensaver
+com.homwee.chinstallapk                 # silent APK installer
+com.homwee.chtvmanager                  # "TV Manager" cleaner / memory optimizer
+com.homwee.help                         # e-manual
+# com.homwee.upgrade                    # vendor updater: disabled on the test set, left on here because shared
+#                                       # lists keep updaters (examples/rca-ai-pont ties it to firmware checks)
+com.google.android.backdrop             # ambient screensaver; the launcher's ClockDream replaces it
+
+# --- Owner's choice: not used on the test set. Comment out what you use.
+com.google.android.katniss              # Google Assistant / microphone button
+com.homwee.mmp.fileexplorer             # USB file explorer, video and music player ("Media Player" tile)
+com.google.android.youtube.tvmusic
+com.google.android.videos               # Play Movies & TV
+com.google.android.play.games
+
+# Kept by the owner's choice; uncomment the ones you don't use.
+# com.google.android.apps.mediashell    # Chromecast built-in
+# com.homwee.multiscreenshare           # Multi-Screen Share (Miracast / AirPlay)
+# com.homwee.mmp.screenshare            # AirPlay
+# com.changhong.inface.net.wfd          # Miracast
+# com.homwee.alexacontrol               # Alexa integration
+# com.google.android.tv.remote.service  # Google TV phone remote
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
+# after the new home is installed and set as default; restore.sh re-enables it.
+# com.google.android.tvlauncher

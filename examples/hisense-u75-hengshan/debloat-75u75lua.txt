@@ -1,0 +1,71 @@
+# Hisense 75U75LUA (75", Latin America; device hengshan, MediaTek MT9689), Google TV / Android 12, build
+# STT2.230310.002 (incremental 00.00.00.132). 2.4 GB RAM. On Wi-Fi, IR remote only.
+# Sixth unit of this folder: the same device and build as the U75 in debloat.txt. This is the list as applied on
+# 2026-11-15, in four batches with a screenshot after each and a reboot after the last: every boot was normal, and
+# Home, Wi-Fi, the HDMI inputs in the Inputs menu, YouTube and the remote kept working. One evening of use so far.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan/debloat-75u75lua.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan/debloat-75u75lua.txt com.google.android.apps.tv.launcherx
+# Check:   TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/hisense-u75-hengshan/debloat-75u75lua.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx, disabled by launcher/build-and-install.sh, with this
+# launcher as Home. The remote's YouTube, Prime Video, Disney+, Input and gear buttons are answered by
+# HomeKeyService with "volume_pauses_filter", which keeps a held volume ramping after one tap: README.md, "75U75LUA".
+# Live TV and HDMI: com.vt.tv.tvcenter (live_tv_package).
+#
+# Differences from debloat.txt: HiAlexa (com.vt.alexa), Ginga and the interactive-broadcast service (antenna used),
+# Miracast, DLNA, Media Center, MyMusic, room calibration and Play Games are kept by choice, as are Google
+# Assistant, AirPlay and the OTA updater. Paramount+, Tubi and Mercado Play (partner apps, installed by PAI or the
+# vendor) and Google TV / Play Movies are off by choice.
+#
+# WARNING: do not add com.vt.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.ai_sense, com.vt.tv.aiot,
+# com.vt.tv.aiotprotocolapp or com.vt.tv.aiotsystemservice: debloat.txt has why (Android Recovery on a related board).
+#
+# Kept as in debloat.txt (tvcenter, input, source.*, mediatek.*, the remote and its pairing, the keyboard, Play
+# Store and Play Services), plus com.mstar.netflixobserver and com.netflix.tokenmanager (the Netflix button) and
+# com.vt.tv.customerlauncher.
+# Already disabled at the factory: com.mediatek.tis, com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.dtv.tvinput.dvbtuner
+
+# Hisense ACR and content/promo surfaces
+com.vt.tv.evservice                  # Vtp_ACR automatic content recognition
+com.vt.hishow                        # Family Moment photo app + screensaver
+net.vidaatv.hisense.android.tv       # VIDAA Channels Plus FAST preload
+com.vidaa.oemtabcontentprovider      # feeds the VIDAA content tab
+
+# Retail demo, hotel/commercial mode, factory tools, first-run walkthrough (never opened, only disabled)
+com.vt.storemode
+com.vt.tv.b2b
+com.vt.factory
+com.vt.fte
+
+# Background services that are not needed
+com.vt.tv.protector                  # DeviceAssistant cleaner
+com.vt.tv.calmanconnector            # Calman calibration connector
+
+# Google TV partner, tracking and feedback services
+android.autoinstalls.config.google.gtvpai   # PAI: silently auto-installs partner apps
+com.google.android.partnersetup             # partner referral tracking
+com.google.android.feedback                 # crash/feedback uploader
+
+# Unused on a television
+com.android.printspooler
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.providers.contacts
+
+# Owner's choices, all reversible: apps this unit's owner does not use
+com.hisense.odinbrowser                     # Hisense web browser
+# This set has these off; uncomment only the apps you do not use.
+# com.google.android.youtube.tvmusic          # YouTube Music
+# com.google.android.videos                   # Google TV / Play Movies
+# com.cbs.ca                                  # Paramount+
+# com.tubitv                                  # Tubi (the remote's Tubi button then does nothing; left unmapped)
+# com.mercadolibre.android.mplay_tv           # Mercado Play
+
+# Launcher phase only. Google TV's setup wizard claims HOME (RecoveryActivity, priority 1) and takes Home from a
+# third-party launcher once launcherx is disabled. Here it owned the Wi-Fi network the TV was on (dumpsys wifi |
+# grep -o 'cname=[^ ]*'): the owner forgot the network in Settings and joined it again, so it then belonged to
+# com.android.tv.settings, and disabling the wizard left Wi-Fi up. It also holds a CastInfoProvider; casting was
+# not tried after disabling it on this unit.
+com.google.android.tungsten.setupwraith

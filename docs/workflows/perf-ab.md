@@ -46,7 +46,8 @@ Some notes on the numbers:
 - **Noise:** two runs of the same build on a TCL C755 differed by 0 ms in key response, up to 45 ms in
   cold start and 1 MB in PSS, and the limits sit above that. Rerun both builds if a field lands near
   its limit.
-- **Run time:** a full run takes about 6 minutes.
+- **Run time:** a full run takes about 6 minutes, and the TV has to stay awake for it: a set that goes to
+  standby drops ADB, and the run stops there without writing `result.json`.
 - **TVs that don't log injected keys:** `return_to_home_ms` is `null`, and `response_ms` includes the ADB
   round trip. It still compares two builds on the same TV.
 

@@ -1,0 +1,11 @@
+01-meadow-day.png	Meadow · Day
+02-meadow-dusk.png	Meadow · Dusk
+03-meadow-night.png	Meadow · Night
+04-plains.png	Plains
+05-desert.png	Desert
+06-snowy-forest.png	Snowy forest
+07-jungle.png	Jungle
+08-ocean.png	Ocean
+09-blossom-grove.png	Blossom grove
+10-cave.png	Cave
+11-lava-cavern.png	Lava cavern

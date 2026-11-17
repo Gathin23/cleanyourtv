@@ -1,0 +1,6 @@
+{
+  "tv": "Indurama Google TV 4K (KTC hongkong, ISDB)",
+  "os": "Google TV 14",
+  "brand": "Indurama",
+  "notes": "Same `hongkong` MediaTek board as `ktc-4k-smart-tv-hongkong/`, sold in Ecuador with LatAm preloads: Anoki ACR, Google feedback/partner/consent telemetry, Privacy Sandbox and on-device personalisation off; four KTC/MediaTek factory-menu and production packages off (never launched, only dumpsys-inspected); e-manual, retail demo, MStar disclaimer, MediaTek setup wizard and VendorWebView, esaba.downloader disabled; `com.netflix.ninja`, `com.wbd.stream` and `com.eltelon.zapping` kept (owner-tested as disabled, commented out for each owner); `com.android.mgstv` (Xuper/Magis TV) and Mercado Play kept; `com.mediatek.wwtv.tvcenter` kept (ISDB tuner); owner added the CleanYourTV launcher with `com.android.mgstv` on the remote's Netflix key (keycode 265) and the Settings key on keycode 80; reboot-checked"
+}

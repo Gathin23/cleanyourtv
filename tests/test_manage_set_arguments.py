@@ -92,7 +92,8 @@ class SetArgumentsTest(unittest.TestCase):
         self.push.assert_not_called()
 
     def test_the_shape_the_pages_print_still_writes_and_pushes(self):
-        status, err = self.run_set("hidden_apps", '["a", "b"]', "--theme", str(self.theme))
+        with mock.patch.object(sys, "platform", "linux"):
+            status, err = self.run_set("hidden_apps", '["a", "b"]', "--theme", str(self.theme))
         self.assertEqual(status, 0, err)
         self.assertEqual(self.written(), {"hidden_apps": ["a", "b"]})
         self.push.assert_called_once_with(
@@ -105,15 +106,12 @@ class SetArgumentsTest(unittest.TestCase):
         self.assertEqual(self.written(), {"dock_band": True})
         self.push.assert_called_once()
 
-    def test_the_judgement_is_above_the_folder_and_the_push_in_the_source(self):
-        source = (ROOT / "tools" / "manage.py").read_text(encoding="utf-8")
-        branch = source[source.index('if c == "set":'):source.index("print(__doc__)", source.index('if c == "set":'))]
-        self.assertIn("set_args(args)", branch)
-        self.assertIn("except Usage", branch)
-        self.assertIn("return 2", branch)
-        self.assertNotIn("args[1]", branch, "set indexes its arguments without judging the count again")
-        self.assertLess(branch.index("except Usage"), branch.index("cmd_set("),
-                        "the refusal must come before cmd_set reads the folder")
+    def test_invalid_arguments_are_refused_before_the_theme_is_read(self):
+        with mock.patch.object(manage, "theme_config", side_effect=AssertionError("the theme was read")):
+            status, err = self.run_set("hidden_apps", "--theme", str(self.theme))
+        self.assertEqual(status, 2, err)
+        self.assertIsNone(self.written())
+        self.push.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,135 @@
+# Xiaomi F2 Fire TV (AFTMA2857F, codename shine), Fire OS 7.7.1.7 / Android 9 (SDK 28), build
+# PS7717.5741N.0036408028416 (incremental 0036408028548), UK set with a DVB tuner. The same platform and
+# build as examples/tcl-32sf560-fire-tv and examples/toshiba-fire-tv-aftha004; this list is what this set
+# ships, plus Xiaomi's own analytics.
+# Second unit: Xiaomi TV F Pro 32 (2026) (Xiaomi_L32MB-FPEU / AFTMA2857F, codename shine, Amlogic),
+# Fire OS 7.7.1.7 / Android 9 (SDK 28), Build ID PS7717.5741N.0036408028416 (incremental 0036408028548), Spain (ES).
+# On the L32MB-FPEU ES unit (tested across multiple reboots, 2026-11-07 to 2026-11-15), Live TV / TDT, HDMI1/2,
+# Composite, casting, Xiaomi TV+ and streaming apps stay working; that unit kept livedeviceservice, franktvinput
+# and Silk (cloud9) enabled (comment those lines out below if you want to keep them too). See README.md.
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher keeps HOME (protected; set-home-activity changes nothing).
+# A separate home screen can be brought up over it with an accessibility watcher - see SHOWCASE.md, Amazon
+# Fire TV ("Fire TV → Apple TV front end"). Live TV app: com.amazon.tv.livetv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-f2-fire-tv-aftma2857f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-f2-fire-tv-aftma2857f/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Applied on 2026-10-20 in batches with a screenshot after each, then rebooted: the home screen, the Inputs
+# page (HDMI1, HDMI2, Cable/Antenna, Satellite, Freely, Composite, Media Player), HDMI1 passthrough, Live TV
+# with its 182 channels and YouTube were checked after every batch and after the reboot. Lived with for eight
+# days; on 2026-10-28 every listed package was still disabled.
+#
+# Refused by Fire OS ("Cannot disable a protected package"), not listed: com.amazon.device.metrics,
+# com.amazon.device.logmanager, com.amazon.device.crashmanager, com.amazon.diode, com.fireos.usagestats.proxy,
+# com.amazon.ftvads.deeplinking.
+#
+# Kept on purpose: the stock launcher, Live TV and the whole tuner and input stack (com.droidlogic.tvinput,
+# inputpreference.service, the Vewd HbbTV engine), Settings and Quick Settings, the keyboard, remote and
+# Bluetooth pairing, account, sync and security services, the Appstore, Prime Video, Alexa voice, DIAL,
+# Miracast and AirPlay, firmware updates, Xiaomi TV+ and every sideloaded app.
+
+# Telemetry and analytics
+com.amazon.tv.acr                        # Automatic Content Recognition; also reads HDMI input
+com.miui.tv.analytics                    # Xiaomi analytics (Firebase), shipped on this Xiaomi-built set
+com.amazon.client.metrics.api
+com.amazon.tv.fw.metrics
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.perfc
+com.amazon.dp.logger
+com.amazon.ceviche
+com.amazon.tv.developer.dataservice
+com.amazon.wifilocker
+com.amazon.neo.minerva.logcat
+
+# Ads, promotions and content rows
+com.amazon.kso.blackbird                 # sponsored banner and row sync
+com.amazon.sneakpeek
+com.amazon.hybridadidservice             # advertising ID
+com.amazon.hedwig                        # Fire TV Channels
+com.amazon.franktvinput                  # Fire TV Channels' input; the HDMI and tuner inputs are com.droidlogic.tvinput
+com.amazon.tv.easyupgrade                # upgrade promotions
+com.amazon.shoptv.client                 # Shop on Fire TV
+com.amazon.livedeviceservice
+com.amazon.gamehub
+com.amazon.minitv.android.app
+com.amazon.privacypassservice
+com.amazon.providers.contentsupport
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.democontent.provider       # retail demo content
+
+# Preloaded extras
+com.amazon.tmm.tutorial
+com.amazon.storm.lightning.tutorial
+com.amazon.tahoe                         # Amazon Kids
+com.amazon.cloud9                        # Silk browser
+com.amazon.tv.website_launcher           # Silk shortcuts on the home screen
+com.amazon.ods.kindleconnect
+com.amazon.whisperjoin.middleware.np     # Wi-Fi provisioning for Amazon devices
+com.amazon.tv.ffsprovisioneeclient       # frustration-free setup
+com.amazon.wha.mediabrowserservice       # multi-room music group
+
+# Preloaded streaming apps: the owner's choice, not bloat. Uncomment the ones you don't watch.
+# uk.co.bbc.iplayer                      # BBC iPlayer (disabled here)
+# com.bskyb.nowtv.beta                   # NOW (disabled here)
+# com.onemainstream.skynews.android      # Sky News (disabled here)
+# com.redbull.rbtv                       # Red Bull TV (disabled here)
+# com.disney.disneyplus                  # Disney+ (disabled, later re-enabled to watch)
+# tv.pluto.android                       # Pluto TV (disabled, later re-enabled)
+
+# This set has these off; uncomment if you don't use them (verified disabled & reboot-checked on Xiaomi TV F Pro 32 (2026) L32MB-FPEU, Spain)
+# Extra telemetry, diagnostics and recommendation rows
+# com.amazon.neo.minerva                 # metrics pipeline
+# com.amazon.neodelegate
+# com.amazon.neopactservice
+# com.amazon.tcomm.jackson               # Amazon telemetry transport (tcomm itself stays protected)
+# com.amazon.csm.htmlruntime
+# com.amazon.communication.discovery
+# com.amazon.fireos.cirruscloud
+# com.amazon.rtcsessioncontroller
+# com.amazon.alta.h2clientservice
+# com.amazon.audiolatencymeasurer
+# com.amazon.dpcclient                   # device personalization, ad profiles
+# com.amazon.media.recommendations       # sponsored / recommendation rows
+# com.amazon.tv.releasenotes             # "What's new" notes
+# com.amazon.tv.notificationcenter
+# com.amazon.tv.localgallery             # local gallery (not the USB media player)
+# com.amazon.naatyam
+# com.amazon.sync.provider.ipc
+# com.amazon.device_remote_config_sync_service
+# com.amazon.ssm                         # System Status Monitor
+# Unused dummy placeholder packages (no launchable activity)
+# com.amazon.dummy.alarmclock
+# com.amazon.dummy.calendar
+# com.amazon.dummy.contacts
+# com.amazon.dummy.gallery
+# com.amazon.dummy.music
+# com.amazon.dummy.settings
+# Alexa voice assistant, consumer services, printing, NFC and firmware update promoter
+# com.amazon.vizzini.ftvcds              # Alexa voice CDS (com.amazon.vizzini re-enables at boot, omitted)
+# com.amazon.aria                        # Alexa surfaces
+# com.amazon.cardinal                    # Alexa calling / messaging
+# com.ivona.orchestrator                 # Alexa TTS
+# com.ivona.tts.oem                      # Alexa TTS
+# com.amazon.aca                         # Alexa hints and cues
+# com.amazon.aiondec                     # Alexa skill connections
+# com.amazon.alexa.datastore.app
+# com.amazon.alexadirectivebrokerservice
+# com.amazon.alexa.externalmediaplayer.fireos
+# com.amazon.alexamediaplayer.runtime.ftv
+# com.amazon.tv.alexaalerts              # alarms, timers, reminders
+# com.amazon.tv.alexanotifications
+# com.amazon.audiohome                   # Alexa Home Theater
+# com.amazon.firetv.androidskillconnectioncapability
+# com.amazon.bueller.photos              # Amazon Photos
+# com.amazon.spiderpork                  # Amazon Luna
+# com.amazon.spotify.mediabrowserservice # Spotify over Alexa
+# com.amazon.ftv.profilepicker           # Fire TV profile picker
+# com.amazon.ftv.screensaver             # ambient screensaver
+# com.android.bips                       # Built-in Print Service
+# com.android.printspooler               # Print Spooler
+# com.android.nfc                        # NFC service (unused on TV)
+# com.amazon.tv.forcedotaupdater.v2      # Firmware update promoter (leave commented to keep OTA updates; core OTA packages remain protected)

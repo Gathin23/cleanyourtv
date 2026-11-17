@@ -1,0 +1,6 @@
+{
+  "tv": "BTV B11 (franklin, Amlogic), streaming box",
+  "os": "Android TV 9",
+  "brand": "BTV",
+  "notes": "ADB on port 5188; fake system app `com.android.icore` disabled; vendor updater `com.bb.ota` off on this box (commented out) (system uid, plain HTTP); casting off by choice; [notes](btv-b11/README.md)"
+}

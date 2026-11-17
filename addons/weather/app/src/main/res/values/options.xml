@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Options, set before building. With the defaults the page is as it always was. -->
+<!-- Build defaults. Saved choices in Weather settings override them; Reset restores these defaults. -->
 <resources>
     <!-- Days in the forecast row after today, 3 to 7. Above 3 the day cards share the row and get more compact. -->
     <integer name="forecast_days">3</integer>

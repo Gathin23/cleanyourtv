@@ -12,13 +12,12 @@
 #   com.mi.bluetooth, com.mediatek.hotkey.dispatcher, com.google.android.tv.remote.service.
 # - Netflix and Prime Video come back at every reboot even when disabled. The cause is
 #   com.mstar.netflixobserver: it is a PERSISTENT app with the system uid, so Android starts it at boot even
-#   when it is disabled, and it re-enables both (it even re-installed them after pm uninstall --user 0).
-#   Disabling it is not enough. This list only disables it, like everything else in this repo.
-#   Beyond what this repo does, and your own call: removing it for user 0 worked here across a reboot
-#     pm uninstall --user 0 com.mstar.netflixobserver
-#   and is undone with
-#     cmd package install-existing com.mstar.netflixobserver   (the remote's Netflix button needs it)
+#   when it is disabled, and it re-enables both (it even re-installed them after a removal for user 0).
+#   Disabling it is not enough, and it is all this list does. A removal for user 0 is outside what this repo
+#   does: the Undo line above re-enables, and cannot put a removed package back, so no uninstall is given here.
 # - Device admin is not supported on this firmware (no android.software.device_admin).
+# - Remote's Input button: once the stock launcher is disabled it does nothing until handle_view_inputs is
+#   true in the launcher's config.xml; no INPUT_KEY_SERVICE needed. README.md in this folder has why (second unit).
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics

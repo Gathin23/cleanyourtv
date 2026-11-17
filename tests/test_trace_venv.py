@@ -44,6 +44,11 @@ MARKER = "CLEANYOURTV_TRACE_PY_VENV"
 
 # tools/venv/bin/python, as the tests make it: it records what it was started with and stops there. A
 # re-exec that never happened leaves no file, which is how "the venv was not started" is checked.
+# The line trace.py and tv.py print to make the venv: the PowerShell pair on Windows, the POSIX pair elsewhere.
+MAKE_VENV = (r"python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt"
+             if os.name == "nt" else
+             "python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt")
+
 STUB_VENV_PYTHON = """#!/bin/sh
 printf '%s\\n' "$@" > "$TRACE_STUB_LOG"
 exit 0
@@ -94,16 +99,17 @@ class TraceVenvTest(unittest.TestCase):
         self.assertNotIn("Traceback", result.stderr)
         self.assertIn("tools/trace.py needs the packages in tools/requirements.txt", result.stderr)
         self.assertIn("No module named 'adb_shell'", result.stderr)
-        self.assertIn("python3 -m venv tools/venv && tools/venv/bin/pip install -r "
-                      "tools/requirements.txt", result.stderr)
+        self.assertIn(MAKE_VENV, result.stderr)
         self.assertEqual("", result.stdout)
         self.assertEqual(None, self.started_with(), "no venv is there, and one was started anyway")
 
     def test_the_line_is_the_one_tv_py_prints(self):
         """The hint names the same command the client itself prints, read out of tv.py rather than copied."""
         client = (ROOT / "tools" / "tv.py").read_text(encoding="utf-8")
-        match = re.search(r'"(python3 -m venv tools/venv && tools/venv/bin/pip install -r '
-                          r'tools/requirements\.txt)"', client)
+        pattern = (r'r"(python -m venv tools\\venv; tools\\venv\\Scripts\\python\.exe -m pip install -r '
+                   r'tools\\requirements\.txt)"' if os.name == "nt" else
+                   r'"(python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements\.txt)"')
+        match = re.search(pattern, client)
         if match is None:
             self.fail("tools/tv.py no longer carries the venv command this check reads")
         command = match.group(1)
@@ -119,6 +125,7 @@ class TraceVenvTest(unittest.TestCase):
 
     # ---- what a checkout with a venv does ------------------------------------------------------------
 
+    @unittest.skipIf(os.name == "nt", "the stand-in venv Python is a POSIX shell script; CI's Ubuntu runner runs it")
     def test_the_venv_python_is_started_with_the_arguments_and_isolated(self):
         self.stub_venv()
         result = self.run_trace("home", "--runs", "1", "--out", "traces")

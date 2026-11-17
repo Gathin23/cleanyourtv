@@ -14,7 +14,7 @@ Documentation only. These tests pin the words a reader acts on, and the four thi
 that make the answer true, so the page cannot claim it after the code changes:
 `HomeKeyService` taking `KEYCODE_SETTINGS`, the two targets its settings branch opens,
 `SystemSettings` preferring the standard action over the vendor list, and the order in which
-`onKeyEvent()` asks the app-scancode map, the settings branch and the app-keycode map.
+`onKeyEvent()` asks the app-scancode map, the app-keycode map and the settings branch.
 """
 import re
 from pathlib import Path
@@ -89,7 +89,7 @@ class SonySettingsKeyNoteTest(unittest.TestCase):
         # reader is left with the am start and no way to put the ribbon back on the button.
         self.assertIn("app_keys", self.note)
         self.assertIn('"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"', self.note)
-        self.assertIn("getevent -lt", self.note)
+        self.assertIn("getevent -t", self.note)
         self.assertNotIn("cannot be put back on the", self.note)
 
     def test_bullet_keeps_the_settings_keys_ending_in_the_standard_action(self):
@@ -101,15 +101,21 @@ class SonySettingsKeyNoteTest(unittest.TestCase):
             self.assertIn(key, self.note)
 
     def test_a_scancode_app_key_is_answered_before_the_settings_branch(self):
-        # Why the quoted entry works: onKeyEvent() asks RemoteKeys for the app-scancode map first, then
-        # takes KEYCODE_SETTINGS itself, and only after that asks the app-keycode map - so a scan: entry
-        # is the one setting that reaches the activity it names, and "176=..." is not.
+        # Why the quoted entry works: onKeyEvent() asks RemoteKeys for the app-scancode map, then the
+        # app-keycode map, and only after that takes KEYCODE_SETTINGS itself - so an app_keys entry for
+        # the button, "scan:..." or "176:...", opens the activity it names, the one InputKeyService opens.
         on_key = self.home_keys.index("protected boolean onKeyEvent(KeyEvent event)")
         scancodes = self.home_keys.index("inFront(appScancodes, frontAppScancodes", on_key)
-        settings = self.home_keys.index("if (isSettingsKey(event)) {", on_key)
-        keycodes = self.home_keys.index("inFront(appKeys, frontAppKeys", on_key)
-        self.assertLess(scancodes, settings)
-        self.assertLess(settings, keycodes)
+        settings = self.home_keys.index("if (settingsKey) {", on_key)
+        keycodes = self.home_keys.index("RemoteKeys.handle(this, event, tap, hold)", on_key)
+        self.assertLess(scancodes, keycodes)
+        self.assertLess(keycodes, settings)
+
+    def test_the_keycode_app_key_needs_a_tap_target_and_yields_to_a_settings_scancode(self):
+        # A hold-only entry on a Settings key must not take the tap from Settings, and a button named in
+        # settings_key_scancodes stays Settings even when its keycode has an app_keys entry.
+        on_key = self.home_keys.index("protected boolean onKeyEvent(KeyEvent event)")
+        self.assertIn("(!settingsKey || (tap != null && !isSettingsScancode(event)))", self.home_keys[on_key:])
 
     def test_the_quoted_entry_is_one_remote_keys_reads_and_opens(self):
         # Both halves of "scan:<scancode>:package/.Activity", in RemoteKeys: parseAppScancodes() reads
@@ -143,7 +149,7 @@ class SonySettingsKeyNoteTest(unittest.TestCase):
         self.assertIn("if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;", self.home_keys)
         is_settings = self.home_keys.index("private boolean isSettingsKey(KeyEvent event)")
         on_key = self.home_keys.index("protected boolean onKeyEvent(KeyEvent event)")
-        self.assertLess(is_settings, self.home_keys.index("if (isSettingsKey(event)) {", on_key))
+        self.assertLess(is_settings, self.home_keys.index("if (settingsKey) {", on_key))
 
     def test_the_settings_branch_opens_the_settings_action_or_the_panel(self):
         # What the press can become: Settings.ACTION_SETTINGS through SystemSettings, or the launcher's

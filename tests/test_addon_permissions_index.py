@@ -18,6 +18,13 @@ The table is prose ("overlay" for SYSTEM_ALERT_WINDOW, "start at boot" for RECEI
 so WORDING below is the wording this page uses today. A permission it has no words for is skipped
 rather than failing, so a new add-on whose manifest asks for something nobody has written a row for
 yet is not blocked by this file; the constant is still required in that add-on's own README above.
+
+Two constants sat in exactly that skip: no row had words for `WAKE_LOCK` or `PACKAGE_USAGE_STATS`, so
+every add-on asking for either was judged by its own README and never by the table - and Prayer Times'
+row stopped at "`INTERNET`, start at boot, exact alarm, overlay" while its manifest asked for
+`WAKE_LOCK` too, the permission its README says "briefly wakes the screen to deliver the on-screen
+alert card". The two words are in WORDING now ("wake lock" for Sleep Timer, which wrote it, and
+`package_usage_stats` for Scoreboard, which names the constant), and the row above names it.
 """
 import re
 import unittest
@@ -41,6 +48,8 @@ WORDING = {
     "BLUETOOTH_CONNECT": ("bluetooth",),
     "ACCESS_COARSE_LOCATION": ("location",),
     "SCHEDULE_EXACT_ALARM": ("exact alarm",),
+    "WAKE_LOCK": ("wake lock",),
+    "PACKAGE_USAGE_STATS": ("package_usage_stats", "usage stats"),
     "WRITE_SECURE_SETTINGS": ("write_secure_settings", "secure settings"),
 }
 

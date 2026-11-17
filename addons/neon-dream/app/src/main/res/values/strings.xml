@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Neon Dream</string>
+    <string name="scene">Scene: %1$s</string>
+    <string name="scene_city">Rain city</string>
+    <string name="scene_grid">Neon grid</string>
+    <string name="palette">Colours: %1$s</string>
+    <string name="magenta">Magenta</string>
+    <string name="amber">Amber</string>
+    <string name="green">Green</string>
+    <string name="clock">Clock: %1$s</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="preview">Preview (Back to leave)</string>
+    <string name="choose">Choose screensaver…</string>
+    <string name="hint">Pick Neon Dream in the screensaver menu. Changes apply the next time it starts.</string>
+</resources>

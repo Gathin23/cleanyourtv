@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Files</string>
+    <string name="missing">No file manager is installed.\n\nInstall Amaze File Manager (free and open source, from F-Droid or github.com/TeamAmaze/AmazeFileManager), or X-plore, Solid Explorer, FX, CX File Explorer or Files by Google, then open this card again.</string>
+</resources>

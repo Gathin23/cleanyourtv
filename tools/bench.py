@@ -16,15 +16,30 @@ TCP with the adb_shell library, so no adb binary is needed. That matters on macO
 platform tools are not installed by default.
 
 Usage:
-    TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3
-    TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3 --out-dir my-results
+    TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/bench.py --keys 36 --series 3
+    TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/bench.py --keys 36 --series 3 --out-dir my-results
+    TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/bench.py --app org.videolan.vlc/.StartActivity
+
+The venv's Python is the one tools/requirements.txt installs adb_shell into, and the lines above name
+it rather than a bare `python`. Started with another Python this script runs again under the venv's
+one, which rescues the packages but not the name of the interpreter - `python` on its own is a command
+neither a stock Ubuntu 24.04 nor macOS has, so the line it used to print answered `command not found`
+(exit 127) before anything was read. docs/workflows/perf-ab.md and the other tools' headers already
+name the venv this way.
+
+--app names the app the cold start and the return to Home leave Home for. Without it, the TV's
+Settings, else the first leanback app that is not the launcher.
 
 The output is a summary plus the raw per-key numbers, so a run can be compared with another one or
 re-analysed later.
 
 Exit status: 0 the run is measured and written; 2 an --out-dir that cannot be written into, judged
-before the TV is opened, or a folder that cannot be created (nothing was measured); 1 anything else,
-including a result.json that could not be written after the run, whose numbers are then printed.
+before the TV is opened, a folder that cannot be created, a TV that cannot be reached (tools/tv.py's
+sentence says which failure it was), and a run that never got as far as the TV - no --host and no
+TV_HOST, a --port (or TV_PORT) tools/tv.py cannot read, a checkout tools/tv.py cannot be loaded from -
+nothing was measured, and nothing was written; 1 anything else, including a result.json that could not
+be written after the run, whose numbers are then printed and whose folder keeps the result.json that was
+already in it.
 
 Why the frame is matched by its completion time and not by its intended vsync: on a launcher
 that moves the focus in a single frame (no animation), the frame that reacts to a key is born
@@ -33,14 +48,18 @@ most of those keys and leaves a sample too small to say anything.
 """
 import argparse
 import atexit
+import errno
 import importlib.util
 import json
 import os
 from pathlib import Path
 import re
+import shlex
+import stat
 import statistics
 import sys
 import time
+import uuid
 
 # The sequence the key probe uses: moves inside a row and between rows, including the edges.
 DEFAULT_SEQUENCE = (22, 22, 22, 21, 21, 21, 20, 22, 22, 21, 21, 19)
@@ -49,6 +68,9 @@ DEFAULT_SEQUENCE = (22, 22, 22, 21, 21, 21, 20, 22, 22, 21, 21, 19)
 KEYCODE_NAMES = {19: "KEYCODE_DPAD_UP", 20: "KEYCODE_DPAD_DOWN", 21: "KEYCODE_DPAD_LEFT",
                  22: "KEYCODE_DPAD_RIGHT", 66: "KEYCODE_ENTER", 3: "KEYCODE_HOME",
                  4: "KEYCODE_BACK"}
+
+# An activity as package/activity, e.g. org.videolan.vlc/.StartActivity (the same pattern as tools/trace.py).
+COMPONENT = re.compile(r"^[A-Za-z][A-Za-z0-9_.]*/[A-Za-z0-9_.$]+$")
 
 
 class TV:
@@ -82,30 +104,76 @@ class TV:
             try:
                 import tv as tv_client  # noqa: E402
             except ModuleNotFoundError as e:
-                raise SystemExit(f"bench.py needs {e.name}: python3 -m venv tools/venv && "
-                                 "tools/venv/bin/pip install -r tools/requirements.txt") from e
+                # A checkout a reader has not built yet: no adb_shell, and no tools/venv beside this
+                # file for main() to start again under. Nothing has been measured, so this is the 2 the
+                # docstring gives a run that never reached the TV - it used to be a SystemExit carrying
+                # this text, which the interpreter answers with 1, the status of a run whose numbers
+                # exist and whose result.json could not be written.
+                print(f"bench.py needs {e.name}: python3 -m venv tools/venv && "
+                      "tools/venv/bin/pip install -r tools/requirements.txt. Nothing was measured, "
+                      "and nothing was written.", file=sys.stderr)
+                raise SystemExit(2) from e
+            except SystemExit as exit_request:
+                # tv.py refuses two shapes while it is imported, before it has a connection: a TV_PORT
+                # it cannot read ("not a port number: 'abc'", which is also what `--host <ip>:70000`
+                # and a TV_PORT of abc get) and, had main() not already stopped there, no TV_HOST.
+                # bench.py hands the client its own --host/--port just above, so the second is main()'s
+                # line and the first is a port typed wrong. Nothing was asked of the TV either time,
+                # and the interpreter answers such a text with 1 - the status a run that measured and
+                # could not write its result.json keeps - so a run that never started read as one that
+                # did. tv.py's own text is printed here; a module that exits 0 answered the call
+                # itself, and that status stands (the branch tools/theme_restart.py keeps).
+                if not exit_request.code:
+                    raise
+                if isinstance(exit_request.code, str):
+                    print(exit_request.code, file=sys.stderr)
+                print("Nothing was measured, and nothing was written.", file=sys.stderr)
+                raise SystemExit(2) from exit_request
             # Read back the target tv.py made of that environment: it splits `host:port` and refuses a
             # port outside 1..65535 there. Overriding these from the arguments (as this did) put the
             # `:port` back into the host, so `--host 192.0.2.20:5877` asked for a machine of that name.
             self.host, self.port = tv_client.HOST, tv_client.PORT
             self.serial = f"{self.host}:{self.port}"
-            self.client = tv_client.connect()
+            try:
+                self.client = tv_client.connect()
+            except Exception as error:
+                # tools/tv.py words the failures that mean the TV was not reached: a port that refuses,
+                # a Wireless debugging port that asks for TLS, an address nothing answers on, and the
+                # macOS Local Network denial that looks like one. The errors it has nothing to add to (a
+                # key file it cannot read, a connection reset in the handshake) keep their traceback.
+                # Left alone, a refused port here ended the run in a ConnectionRefusedError traceback
+                # with exit 1, naming neither the address nor what the run lost, and exit 1 is also what
+                # a finished run whose result.json could not be written returns - so a TV that was
+                # asleep read as a benchmark that ran. This is the one function both the first connect
+                # and the reopen after a dropped connection go through; a run that stops here has
+                # written nothing, because result.json comes at the end.
+                why = tv_client.connect_error(error)
+                if why is None:
+                    raise
+                print(f"{why}\nNothing was written: result.json is written at the end of a run.",
+                      file=sys.stderr)
+                raise SystemExit(2) from error
         return self.client
 
-    def shell(self, command):
+    def shell(self, command, *, retry=False):
         """Run one shell command on the TV and return its output; bytes that aren't UTF-8 become U+FFFD.
 
-        A dropped connection (the TV went to standby for a moment) is reopened once.
+        A connection failure before submission is retried once. After a command is attempted,
+        only queries explicitly marked retry=True may be replayed: a missing response does not
+        mean the TV did not execute the command.
         """
         for attempt in (1, 2):
+            command_started = False
             try:
-                out = self._connect().shell(command, read_timeout_s=120.0, decode=False)
+                client = self._connect()
+                command_started = True
+                out = client.shell(command, read_timeout_s=120.0, decode=False)
                 return out.decode("utf-8", "replace") if isinstance(out, bytes) else (out or "")
             except SystemExit:
                 raise
             except Exception:
                 self.close()
-                if attempt == 2:
+                if attempt == 2 or (command_started and not retry):
                     raise
 
     def close(self):
@@ -123,7 +191,7 @@ class TV:
         """The component that answers HOME, e.g. com.gathin.tvhome/.MainActivity."""
         out = self.shell(
             "cmd package resolve-activity --brief -a android.intent.action.MAIN "
-            "-c android.intent.category.HOME")
+            "-c android.intent.category.HOME", retry=True)
         lines = [line.strip() for line in out.splitlines() if "/" in line]
         return lines[-1] if lines else None
 
@@ -133,7 +201,7 @@ class TV:
         The dump has several "mCurrentFocus"/"mFocusedApp" lines; only the one that names a
         window counts, and a popup (a menu left open) is a window of its own.
         """
-        out = self.shell("dumpsys window")
+        out = self.shell("dumpsys window", retry=True)
         for line in out.splitlines():
             match = re.search(r"mCurrentFocus=Window\{[^}]*\s(\S+?)\}", line)
             if match:
@@ -154,7 +222,7 @@ class TV:
         return component.split("/", 1)[0]
 
     def version_of(self, package):
-        out = self.shell(f"dumpsys package {package}")
+        out = self.shell(f"dumpsys package {package}", retry=True)
         match = re.search(r"versionName=(\S+)", out)
         return match.group(1) if match else "?"
 
@@ -188,7 +256,7 @@ def key_event_time(tv, keycode, binary=None):
     state = vars(tv).setdefault("_key_log", {"seen": False, "misses": 0})
     if not state["seen"] and state["misses"] >= KEY_LOG_PROBES:
         return None
-    out = tv.shell("logcat -d -b main -t 2000 | grep injectKeyEvent")
+    out = tv.shell("logcat -d -b main -t 2000 | grep injectKeyEvent", retry=True)
     name = KEYCODE_NAMES.get(keycode, f"keyCode={keycode}")
     for line in reversed(out.splitlines()):
         if "injectKeyEvent" in line and "action=ACTION_DOWN" in line and name in line:
@@ -206,7 +274,7 @@ def android_uptime(tv, package=None, binary=None):
     clock: it counts the time the device spent suspended, so it runs hours ahead of the frames.
     """
     what = f"dumpsys gfxinfo {package}" if package else "dumpsys gfxinfo"
-    out = tv.shell(what)
+    out = tv.shell(what, retry=True)
     match = re.search(r"^Uptime:\s*(\d+)", out, re.M)
     return int(match.group(1)) if match else None
 
@@ -223,7 +291,7 @@ def measure_key(tv, keycode, binary=None, package=None):
         t_before = int(match.group(1))
     tv.shell(f"input keyevent {keycode}")
     time.sleep(1.0)
-    stats = tv.shell(f"dumpsys gfxinfo {package} framestats")
+    stats = tv.shell(f"dumpsys gfxinfo {package} framestats", retry=True)
     t_after = None
     match = re.search(r"^Uptime:\s*(\d+)", stats, re.M)
     if match:
@@ -237,7 +305,9 @@ def measure_key(tv, keycode, binary=None, package=None):
         t0 = t_before
     if t0 is None:
         return None
-    rows = frame_rows(stats)
+    # gfxinfo emits a PROFILEDATA block per window, not one global timeline.
+    # Pick the first completion and movement gap in time order across those blocks.
+    rows = sorted(frame_rows(stats), key=lambda row: row[2])
     threshold = t0 * 1_000_000
     first = last = prev = None
     for flags, intended, completed in rows:
@@ -248,7 +318,7 @@ def measure_key(tv, keycode, binary=None, package=None):
             continue
         if (intended - prev) / 1e6 > 50:      # a gap: the movement is over
             break
-        last, prev = completed, intended
+        last, prev = completed, max(prev, intended)
     if first is None:
         return None
     # A key that moves nothing (the end of a row, the focus on the top bar) leaves the next
@@ -300,25 +370,33 @@ def frame_rows(framestats):
 
 
 def other_app(tv):
-    """An app to send the TV to, so the launcher really starts cold.
+    """An app to send the TV to, so the launcher really starts cold: --app when given, else the TV's
+    Settings, else the first leanback app that isn't the launcher. tools/trace.py picks its own the same way.
 
-    The Settings app is found by the category it answers, not by a hardcoded activity: the
-    activity name differs between manufacturers (com.android.tv.settings/.MainSettings on
-    Google TV, others elsewhere), and a fixed name simply does not exist on some sets.
+    Settings is found by the action it answers, not by a hardcoded activity: the activity name differs
+    between manufacturers (com.android.tv.settings/.MainSettings on Google TV, others elsewhere).
+    Never the chooser: a plain LAUNCHER lookup resolves to android's ResolverActivity, a dialog, on a
+    TCL C755 and a HOTACK L018 projector, and the run then measured against that dialog.
     """
     if tv._other_app:
         return tv._other_app
-    out = tv.shell(
-        "cmd package resolve-activity --brief -a android.intent.action.MAIN "
-        "-c android.intent.category.LAUNCHER")
-    lines = [line.strip() for line in out.splitlines() if "/" in line]
-    tv._other_app = lines[-1] if lines else None
-    return tv._other_app
+    launcher = tv.package_of(tv.home_component() or "")
+    candidates = tv.shell(
+        "cmd package resolve-activity --brief -a android.settings.SETTINGS", retry=True).splitlines()
+    candidates += tv.shell("cmd package query-activities --brief -a android.intent.action.MAIN "
+                           "-c android.intent.category.LEANBACK_LAUNCHER", retry=True).splitlines()
+    for line in candidates:
+        line = line.strip()
+        if COMPONENT.match(line) and not line.startswith(("android/", launcher + "/")) \
+                and "Resolver" not in line:
+            tv._other_app = line
+            return line
+    return None
 
 
 def accessibility_services(tv, package):
     """The accessibility services enabled for a package, as the setting holds them."""
-    out = tv.shell("settings get secure enabled_accessibility_services")
+    out = tv.shell("settings get secure enabled_accessibility_services", retry=True)
     return [part.strip() for part in out.split(":") if part.strip().startswith(package + "/")]
 
 
@@ -347,7 +425,7 @@ def restore_accessibility(tv, package, services):
     """
     if not services:
         return
-    current = tv.shell("settings get secure enabled_accessibility_services").strip()
+    current = tv.shell("settings get secure enabled_accessibility_services", retry=True).strip()
     if current == "null":
         current = ""
     merged = [part for part in current.split(":") if part]
@@ -361,6 +439,67 @@ def restore_accessibility(tv, package, services):
     if added:
         tv.shell("settings put secure enabled_accessibility_services " + ":".join(merged))
         tv.shell("settings put secure accessibility_enabled 1")
+        time.sleep(2)  # the system binds a newly listed service within a second or so
+    # Listed is not the same as bound. On a TCL 43C645 (Smart TV Pro, G03_4K_GB, Android 11) the
+    # force-stop takes HomeKeyService off the list, the write above puts it back, and the system still
+    # does not bind it: the remote's app buttons stayed dead after a run until tools/theme.sh was
+    # pushed again. Where accessibility is switched off the helper is not meant to be bound, so that
+    # is left alone.
+    if tv.shell("settings get secure accessibility_enabled", retry=True).strip() != "1":
+        return
+    if unbound_helpers(tv, package, services):
+        rebind_accessibility(tv, merged)
+
+
+def unbound_helpers(tv, package, services):
+    """The services of `services` that the system has not bound, as Activity Manager reports them.
+
+    tools/theme_restart.py already reads a completed binding out of `dumpsys activity services`,
+    by component rather than by the localised label `dumpsys accessibility` prints, so this asks it.
+    """
+    here = str(Path(__file__).resolve().parent)
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import theme_restart
+    user = tv.shell("am get-current-user", retry=True).strip()
+    user = int(user) if user.isdecimal() else 0
+    bound = theme_restart.bound_services(
+        tv.shell(f"dumpsys activity services {package}", retry=True), user)
+    return [service for service in services
+            if not theme_restart.components(_norm_component(service)).keys() <= bound]
+
+
+REBIND_DONE = "__CYT_REBIND_DONE__"
+
+
+def rebind_accessibility(tv, merged):
+    """Make the system bind the listed services again: empty the list, wait, write it back.
+
+    Android binds an accessibility service when the list changes, so the same value written over
+    itself does nothing. tools/theme_restart.py does this after every theme push, with the
+    two-second gap a TCL G05 needs (#994). It is one command with a trap, so the TV puts the list
+    back on its own if the connection drops in the gap: a host-side sleep could leave every
+    accessibility service on the set switched off.
+
+    The two writes that put things back are chained with `&&`, the trap is only cleared once both
+    went through, and the command ends by printing REBIND_DONE: `tv.shell()` hands back the output
+    and not the TV shell's exit status, as theme_restart.py's own marker works around. Without the
+    marker the restore did not finish (the trap tries once more on its way out), so this raises
+    rather than letting a run end with the key helpers off the list.
+    """
+    put = "settings put secure"
+    restore = (f"{put} enabled_accessibility_services {shlex.quote(':'.join(merged))} && "
+               f"{put} accessibility_enabled 1")
+    out = tv.shell(f"cyt_restore() {{ {restore}; }}; trap cyt_restore EXIT; "
+                   "trap 'cyt_restore; exit 1' HUP INT TERM; "
+                   f"{put} enabled_accessibility_services ''; {put} accessibility_enabled 0; sleep 2; "
+                   f"cyt_restore && trap - EXIT HUP INT TERM && echo {REBIND_DONE}")
+    if REBIND_DONE not in out.split():
+        raise RuntimeError(
+            "The key helpers could not be put back on the accessibility list after the cold start "
+            "(the TV refused the write, or its answer was lost). The remote's app buttons may do "
+            "nothing until the theme is pushed again with tools/theme.sh, or the helpers are "
+            "switched on in Settings > Accessibility.")
 
 
 def cold_start(tv, component, repeats):
@@ -419,7 +558,7 @@ def return_to_home(tv, component, repeats):
         tv.shell("input keyevent 3")
         time.sleep(3)
         out = tv.shell("logcat -d -b main -b events -v epoch | grep -e injectKeyEvent "
-                       "-e am_on_resume_called -e wm_on_resume_called")
+                       "-e am_on_resume_called -e wm_on_resume_called", retry=True)
         key_at = resume_at = None
         for line in out.splitlines():
             # The log indents its lines, so the timestamp is not at the start of the line.
@@ -443,7 +582,7 @@ def return_to_home(tv, component, repeats):
 
 def launcher_pid(tv, package):
     """The pid of the launcher process, or None."""
-    out = tv.shell(f"pidof {package}").strip()
+    out = tv.shell(f"pidof {package}", retry=True).strip()
     if not out:
         return None
     return out.split()[0]
@@ -452,13 +591,14 @@ def launcher_pid(tv, package):
 def idle_cpu(tv, package, seconds):
     """The CPU of the whole device and of the launcher, over `seconds`, from /proc/stat."""
     def sample():
-        return tv.shell("head -1 /proc/stat; cat /proc/[0-9]*/stat 2>/dev/null").splitlines()
+        return tv.shell("head -1 /proc/stat; cat /proc/[0-9]*/stat 2>/dev/null", retry=True).splitlines()
 
     def parse(lines):
         for line in lines:
             if line.startswith("cpu "):
                 fields = [int(x) for x in line.split()[1:]]
-                return (sum(fields), fields[3] + fields[4])
+                # guest and guest_nice are already included in user and nice.
+                return (sum(fields[:8]), fields[3] + fields[4])
         return None
 
     def process_ticks(lines, pid):
@@ -493,7 +633,7 @@ def idle_cpu(tv, package, seconds):
 
 
 def pss_of(tv, package):
-    out = tv.shell(f"dumpsys meminfo {package}")
+    out = tv.shell(f"dumpsys meminfo {package}", retry=True)
     match = re.search(r"^\s*TOTAL(?: PSS)?:\s+(\d+)\b", out, re.M)
     return int(match.group(1)) // 1024 if match else None
 
@@ -509,14 +649,73 @@ def stats(values):
             "p99": pick(0.99), "max": ordered[-1], "n": len(ordered)}
 
 
+def staging_file(folder, name):
+    """A new file beside the result, named so no run can collide with another, opened for writing.
+
+    The name is random and created with O_EXCL, not a fixed `result.json.part`: `open()` on a name
+    that is already there follows an alias, so a hardlink to the earlier result truncated it before
+    the write and a symlink wrote through to whatever it pointed at. O_EXCL refuses a path that
+    exists, symlink or not, and the mode is the one `open()` on the result used to leave (0666,
+    masked by the umask), so a fresh result keeps the permissions it had.
+    """
+    for _ in range(8):
+        stage = os.path.join(folder, f".{name}.{uuid.uuid4().hex[:8]}.part")
+        try:
+            fd = os.open(stage, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
+        except FileExistsError:
+            continue
+        return stage, os.fdopen(fd, "w", encoding="utf-8")
+    raise OSError(errno.EEXIST, "no free staging name beside the result")
+
+
+def write_result(path, result):
+    """Write result.json, or return the OSError that stopped it and leave the earlier one alone.
+
+    `open(path, "w")` truncates before it writes, so a write that cannot be finished - a disk that
+    filled up during the minutes the run takes, which is the failure the caller's message is about -
+    took the result.json of the run before with it and left a half file under the name a reader
+    opens. The numbers of that earlier run cannot be measured again the same way, so the write goes
+    to a staging file this run owns and is renamed into place, the way tools/trace.py's --out and
+    tools/recovery.py's record already write theirs: either the new result.json is complete, or the
+    one that was there is untouched, with its mode as well as its bytes - a successful write used to
+    leave the earlier file's permissions where `open()` found them, and a fresh staging file does not.
+
+    A staging file a killed run left behind is not touched by the next run, which writes its own
+    name; it is the only thing an interrupted write can leave in the folder.
+    """
+    folder, name = os.path.split(path)
+    try:
+        mode = stat.S_IMODE(os.stat(path).st_mode)
+    except OSError:
+        mode = None   # no earlier result to match, so the new file takes the usual mode
+    stage = None
+    try:
+        stage, handle = staging_file(folder, name)
+        with handle:
+            json.dump(result, handle, indent=2)
+        if mode is not None:
+            os.chmod(stage, mode)
+        os.replace(stage, path)
+        stage = None
+    except OSError as e:
+        if stage is not None:
+            try:
+                os.unlink(stage)
+            except OSError:
+                pass   # the folder went away with it: nothing to clean
+        return e
+    return None
+
+
 def out_dir(value):
     """`--out-dir` as typed, or an argparse error before the TV is opened.
 
     The folder may not exist yet: bench.py creates it. What it cannot do is write into a file, run
     through a file, or nowhere - os.makedirs() answered those with a traceback after the TV had
     already been asked which component answers HOME and what version it runs, at the start of a run
-    that then measured nothing. The same rule as tools/trace.py's --out (tools/perf-ab.md's three
-    tools), and the same reason for judging it in argparse: it costs nothing and it happens first.
+    that then measured nothing. The same rule as tools/trace.py's --out (docs/workflows/perf-ab.md's
+    three tools), and the same reason for judging it in argparse: it costs nothing and it happens
+    first.
     """
     if not value:
         raise argparse.ArgumentTypeError("needs a folder to write the results into")
@@ -553,7 +752,11 @@ def main():
     parser.add_argument("--idle", type=int, default=60, help="idle seconds")
     parser.add_argument("--out-dir", type=out_dir, default="bench-results",
                         metavar="DIR", help="where to write the results (default bench-results)")
+    parser.add_argument("--app", metavar="COMPONENT",
+                        help="the app to leave Home for, as package/activity (default: found on the TV)")
     args = parser.parse_args()
+    if args.app and not COMPONENT.match(args.app):
+        parser.error(f"--app needs package/activity, not {args.app!r}")
     # Each of these five is a count of what the run measures, and zero of one measures nothing there
     # while the run still exits 0: --series 0 and --keys 0 wrote a result.json whose key numbers are
     # all null, and --cold 0 / --returns 0 the same for their fields, which in that file cannot be
@@ -569,8 +772,15 @@ def main():
             parser.error(f"--{option} is the number of {unit}: pass at least 1, not {getattr(args, option)}")
     if args.idle < 1:
         parser.error(f"--idle is the number of idle seconds: pass at least 1, not {args.idle}")
+    if args.idle > 86400:
+        parser.error(f"--idle is the number of idle seconds: pass at most 86400, not {args.idle}")
     if not args.host:
-        raise SystemExit("pass --host or set TV_HOST")
+        # Nothing has been measured: a run with no address is the 2 the docstring gives a run that never
+        # got as far as the TV, not the 1 a run keeps when its numbers exist and result.json could not be
+        # written. The line names both ways to pass the address, the two this run was given.
+        print("bench.py needs the TV's address: pass --host <ip> (or set TV_HOST). Nothing was "
+              "measured, and nothing was written.", file=sys.stderr)
+        raise SystemExit(2)
     venv = venv_python()
     if importlib.util.find_spec("adb_shell") is None and venv \
             and os.path.realpath(venv) != os.path.realpath(sys.executable):
@@ -579,6 +789,7 @@ def main():
 
     tv = TV(args.host, args.port)
     atexit.register(tv.close)
+    tv._other_app = args.app
     component = tv.home_component()
     if not component:
         raise SystemExit("no component answers HOME on this TV")
@@ -642,10 +853,10 @@ def main():
         "launcher": component, "version": version, "package": package,
         "host": args.host,
         "environment": {
-            "android_release": tv.shell("getprop ro.build.version.release").strip(),
-            "sdk": tv.shell("getprop ro.build.version.sdk").strip(),
-            "model": tv.shell("getprop ro.product.model").strip(),
-            "fingerprint": tv.shell("getprop ro.build.fingerprint").strip(),
+            "android_release": tv.shell("getprop ro.build.version.release", retry=True).strip(),
+            "sdk": tv.shell("getprop ro.build.version.sdk", retry=True).strip(),
+            "model": tv.shell("getprop ro.product.model", retry=True).strip(),
+            "fingerprint": tv.shell("getprop ro.build.fingerprint", retry=True).strip(),
         },
         "keys": {"series": args.series, "per_series": args.keys,
                  "measured": len(measured), "lost": len(samples) - len(measured)},
@@ -662,16 +873,16 @@ def main():
     }
     path = os.path.join(args.out_dir, "result.json")
     summary = {k: v for k, v in result.items() if k != "samples"}
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2)
-    except OSError as e:
+    failed = write_result(path, result)
+    if failed is not None:
         # The folder was writable when the run started - it can be removed, or fill up, during the
         # minutes it measures. The numbers were measured on the TV and cannot be measured again the
         # same way, so they are printed: this is the only copy, and exit 1 says the file is not it.
+        # The write goes through a part file, so the result.json of an earlier run is still there.
         print(json.dumps(summary, indent=2))
-        print(f"cannot write {path}: {e.strerror or e}. Nothing was written: the numbers above are "
-              "this run's only copy.", file=sys.stderr)
+        print(f"cannot write {path}: {failed.strerror or failed}. The result.json that was already "
+              "in that folder is left as it was: the numbers above are this run's only copy.",
+              file=sys.stderr)
         return 1
     print(json.dumps(summary, indent=2))
     print(f"Written: {path}")

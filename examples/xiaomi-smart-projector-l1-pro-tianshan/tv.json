@@ -1,0 +1,7 @@
+{
+  "tv": "Xiaomi Smart Projector L1 Pro (C045RGN, tianshan, FORMOVIE ODM, MediaTek T32)",
+  "os": "Google TV (Android 14)",
+  "brand": "Xiaomi",
+  "readme_os": "Google TV 14",
+  "notes": "Xiaomi-branded but a FORMOVIE build on the same tianshan board as [formovie-xming-page-one-tianshan](formovie-xming-page-one-tianshan/), on Android 14: no `com.xiaomi.*` or `com.mitv.*` package exists on it at all, so no PatchWall, MiChannel, TV Manager or `com.xiaomi.tvqs*` to disable; 14 Google telemetry, Privacy Sandbox (Topics API, ad attribution, on-device personalisation) and Health Connect packages off (the three UK Freeview services are commented out; this set has them off), kept through two reboots with none re-enabled; `com.mediatek.wwtv.tvcenter` and Prime Video ship disabled from the factory; `com.fengmi.*` (focus, keystone, BLE remote) and `com.mediatek.*` kept, streaming apps, Assistant, Chromecast, TalkBack and the Ambient screensaver kept by choice; Android 14 resolves HOME by intent priority (launcherx 2, setupwraith 1, sideloaded 0) so `set-home-activity` prints Success and changes nothing, and the saved Wi-Fi belongs to setupwraith on a Wi-Fi-only set, so both stay enabled and the launcher takes Home through the Home-key redirect (`HOME_KEY_SERVICE=1`, config.json; Volume Up repeat is lost, and `build-and-install.sh` exits on its Home check after installing the APK but before enabling the helper); sideloading a HOME package works; one-session test, not a several-day soak"
+}

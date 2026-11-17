@@ -44,9 +44,12 @@ Three packages on the set hold `INSTALL_PACKAGES`: `tv.fun.tvupgrade`, `tv.fun.a
 `com.tpv.xmic.ota`. `tv.fun.tvupgrade` is the `installerPackageName` of `com.bestv.ott` itself, so
 while it lives it can put the BestV launcher back and wipe the whole debloat list.
 
-The list disables all three. **The price is system OTA**: firmware updates have to be sideloaded by
-hand from then on. If you want OTA, drop `tv.fun.tvupgrade` from the list, but know that the set may
-then restore its own launcher over the CleanYourTV home.
+The shared list disables one of the three, `tv.fun.appstore`, and leaves both firmware upgraders
+commented out, because a list here keeps firmware updates on: as it ships, `tv.fun.tvupgrade` is
+still enabled, and while it lives the set can restore its own launcher over the CleanYourTV home.
+The tested set had both of them off — uncomment `tv.fun.tvupgrade` and `com.tpv.xmic.ota` in the
+list to do the same. **The price is system OTA**: firmware updates then have to be sideloaded by
+hand from then on, which is also what closes the automatic re-install of the BestV launcher.
 
 ## The screensaver had to be pointed somewhere
 
@@ -78,19 +81,24 @@ pm query-services --components -a android.media.tv.TvInputService
 which lists only `com.tpv.tvinput`'s six services (tuner, HDMI, VGA, composite, component, SCART)
 and not usagelogger. Disabling it needs `TVINPUT_ALLOW=1`. Same as `examples/cecotec-shandao`.
 
-On the 17 packages in the list, usagelogger is the only one the guard catches: the other packages
-that mention the permission hold it as an *installed* permission, not as a requested one.
+Of the packages the list applies — 15 as it ships, with both firmware upgraders commented out —
+usagelogger is the only one the guard catches: the other packages that mention the permission hold
+it as an *installed* permission, not as a requested one.
 
 ## What was disabled
 
 17 packages, in three groups — the four the owner picked off the home screen, the background
-services, and the upgraders:
+services, and the upgraders. The list applies 15 of them: `tv.fun.tvupgrade` and
+`com.tpv.xmic.ota` are commented out in it, so a reader who runs the file as it stands keeps system
+OTA, as [above](#do-not-disable-the-upgraders-without-reading-this) says.
 
 | Group | Packages |
 | :--- | :--- |
 | Casting, camera, video call, smart home | `com.tpv.asc.aiot` (智能连接), `com.hpplay.happyplay.aw` (乐播投屏), `org.droidtv.camera.cn` (相机), `com.tpv.asc.videocall.cn` (视频通话) |
 | Telemetry, ads, background services | `tv.fun.bugreporter`, `org.droidtv.usagelogger`, `com.tpv.asc.taadserver`, `com.tianci.ad`, `com.tpv.app.recommendation`, `com.funshion.publicity`, `tv.fun.master`, `tv.fun.ottsecurity`, `tv.newtv.loginservice` |
-| Store and upgraders | `tv.fun.tvupgrade`, `tv.fun.appstore`, `tv.fun.sdkmanager`, `com.tpv.xmic.ota` |
+| Store and upgraders | `tv.fun.tvupgrade`\*, `tv.fun.appstore`, `tv.fun.sdkmanager`, `com.tpv.xmic.ota`\* |
+
+\* Commented out in the shipped list. The tested set had both off as well, which is the 17 above.
 
 The preinstalled content apps (芒果TV, 银河奇异果, QQ音乐, 欢视直播, 百视通, 酷开, 云视听小电视,
 欢唱K歌, 云视听极光, NewTV音乐, NewTV体育, IPTV运营商点播), the voice assistant, WeChat casting and
@@ -100,8 +108,9 @@ Miracast are all kept: the owner uses them.
 
 Applied with `tools/disable.sh`, then the launcher handover, then a reboot:
 
-- `pm list packages -d` read back exactly the 17 packages listed above — nothing was re-enabled by
-  the firmware, and no other package was disabled by accident.
+- `pm list packages -d` read back exactly the 17 packages listed above — the 15 the list applies,
+  plus the two firmware upgraders uncommented for this session — nothing was re-enabled by the
+  firmware, and no other package was disabled by accident.
 - `cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME`
   answers `com.gathin.tvhome/.MainActivity`.
 - `pm query-services --components -a android.media.tv.TvInputService` still answers with
@@ -134,7 +143,9 @@ Applied with `tools/disable.sh`, then the launcher handover, then a reboot:
 TV_HOST=<tv ip> tools/restore.sh examples/philips-50puf7099-t3/debloat.txt com.bestv.ott
 ```
 
-Re-enables the 17 packages. Home then needs pointing back at the stock launcher:
+Re-enables the 15 packages the list applies. The two firmware upgraders are commented out in it, so
+it never disabled them: if you uncommented them as the tested set did, enable them by hand. Home then
+needs pointing back at the stock launcher:
 
 ```sh
 cmd package set-home-activity --user 0 com.bestv.ott/.home.HomeActivity

@@ -1,0 +1,57 @@
+# HOTACK L018 Smart Projector (Chengdu Hotack; Allwinner H713, sun50iw12p1), Android 11 (SDK 30)
+# Build Projector.20260530.1707 (fingerprint ADT-3/adt3/adt3:11/RP1A.201005.006/Projector.20260530.1707),
+# 1 GB RAM (ro.config.low_ram), 32-bit only (armeabi-v7a), 1920x1080 panel.
+# The firmware reports the generic Allwinner "ADT-3" / "adt3" identity, as the Portronics Beem 470 and
+# the Magcubic HY300 Pro do; persist.sys.wtv.brand is Hotack_001. The quickest way to tell whether this
+# list fits: the stock launcher is com.htc.luminaos ("LuminaOS"), not com.htc.htclauncher*.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/hotack-l018/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/hotack-l018/debloat.txt com.htc.luminaos
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Status: applied 2026-10-24 and used daily since. SmartTube, other streaming apps, the Bluetooth
+# remote, Wi-Fi and the launcher/ Home work. Not exercised: HDMI and AV inputs, keystone and focus.
+#
+# Kept on purpose:
+# - com.htc.luminaos, the stock launcher: the projector's own settings (network, Bluetooth, projection,
+#   keystone) live only inside it. Leave it enabled; launcher/ takes Home with set-home-activity.
+# - com.hysd.vafocus (auto focus and keystone), com.softwinner.vis (HDMI and AV inputs),
+#   com.hisilicon.explorer and com.softwinner.TvdVideo (USB media), com.htc.htcbluetoothremotecontrol.
+# - The firmware updaters (com.htc.htcotaupdate, com.softwinner.update).
+# - Factory and test packages (com.softwinner.tv.factorymenu, com.htc.hyk_test): not started, not disabled.
+#
+# Firmware quirks worth knowing before you start:
+# - This firmware answers no ACTION_SETTINGS intent, and com.android.tv.settings is not installed, so
+#   the Settings pill says "Not available on this TV". With launcher/, add
+#   com.htc.luminaos/com.htc.luminaos.activity.MainSettingActivity to settings_fallback_components in
+#   config.xml, and com.htc.luminaos to the <queries> in AndroidManifest.xml (a <package> line).
+# - com.google.android.katniss is enabled again by the firmware at every boot; it is listed anyway, as
+#   re-running the list is harmless.
+
+# Ads, analytics and cleaners
+com.hotack.screensaversdk              # ad screensaver: zeasn ad SDK and sensorsdata analytics
+com.htc.clearmemory                    # memory cleaner
+
+# Preloaded apps
+com.android.music
+com.mobisystems.office                 # Office suite
+com.htc.storeos                        # HTC app store
+com.android.egg
+com.android.htmlviewer
+
+# Printing
+com.android.printspooler
+com.android.bips
+com.android.printservice.recommendation
+
+# Casting and screen mirroring; re-enable the ones you cast with
+com.mphotool.airplay                   # AirPlay receiver
+com.mphotool.dlna                      # DLNA receiver
+com.mphotool.usbcastserver             # USB cast
+com.softwinner.miracastReceiver        # Miracast
+com.htc.samescreen                     # htc_cast mirroring
+com.toofifi.lineserver                 # USB cast daemon
+com.android.toofifi                    # FeituHtc cast receiver hub (welcome autostart, PIN)
+
+# Voice assistant
+com.google.android.katniss             # Google voice search; the firmware re-enables it at every boot

@@ -1,4 +1,5 @@
 # Amazon Fire TV Stick Lite, 1st gen 2020 (AFTSS, codename sheldon), Fire OS 7.7.1.7 (PS7717/5741, build PS7717.5741N), Android 9 (SDK 28), 1 GB RAM, India
+# Also verified on: Amazon Fire TV Stick HD, 1st gen (AFTSS, codename sheldon, mt8695), Fire OS 7.7.1.7 (build PS7717.5746N), Android 9 (SDK 28), Spain
 # Same Fire OS build as toshiba-fire-tv-aftha004/. Based on amazon-fire-tv-stick-4k-2018/ (same keep choices: voice search,
 # Prime Video, casting, OTA) with the telemetry additions from the Toshiba list.
 #
@@ -52,6 +53,11 @@ com.amazon.livedeviceservice
 com.amazon.privacypassservice              # privacy pass token service
 com.amazon.wifilocker                      # uploads Wi-Fi passwords to Amazon
 com.amazon.tv.acr                          # Automatic Content Recognition
+# HD / PS7717.5746N unit has these off; uncomment to opt in
+# com.amazon.neodelegate                     # Neo telemetry delegate (HD / PS7717.5746N, Spain)
+# com.amazon.neopactservice                  # Neo telemetry pact service (HD / PS7717.5746N, Spain)
+# com.amazon.device_remote_config_sync_service # remote config sync (HD / PS7717.5746N, Spain)
+# com.amazon.dpcclient                       # device policy/provisioning client (HD / PS7717.5746N, Spain)
 
 # Ads, sponsored rows, recommendations, promos, shopping
 com.amazon.kso.blackbird                   # launcher ad sync / bidding
@@ -69,6 +75,8 @@ com.amazon.gamehub                         # games hub / Luna cards
 com.amazon.systemnotices
 com.amazon.tv.releasenotes                 # "what's new" release notes
 com.amazon.uxnotification                  # UX notification popups
+# HD / PS7717.5746N unit has these off; uncomment to opt in
+# com.amazon.tv.notificationcenter           # notification center UI (HD / PS7717.5746N, Spain)
 
 # Preloaded Amazon apps and setup helpers (personal choice)
 com.amazon.tahoe                           # Amazon Kids (FreeTime)
@@ -83,6 +91,22 @@ com.amazon.whisperjoin.middleware.np       # frustration-free setup of other Ama
 com.amazon.tv.ffsprovisioneeclient
 com.amazon.ods.kindleconnect               # "show on Fire TV" from Echo / Fire tablet
 com.amazon.tv.mattercohost                 # Matter smart-home controller
+# HD / PS7717.5746N unit has these off; uncomment to opt in
+# com.amazon.fireos.cirruscloud              # Cirrus cloud sync (HD / PS7717.5746N, Spain)
+# com.amazon.sync.provider.ipc               # account sync IPC provider (HD / PS7717.5746N, Spain)
+# com.amazon.alta.h2clientservice            # Alta HTTP/2 client service (HD / PS7717.5746N, Spain)
+# com.amazon.communication.discovery       # device communication discovery (HD / PS7717.5746N, Spain)
+# com.amazon.csm.htmlruntime                 # CSM HTML runtime (HD / PS7717.5746N, Spain)
+# com.amazon.recess                          # idle/recess helper (HD / PS7717.5746N, Spain)
+# com.amazon.rtcsessioncontroller            # RTC session controller (HD / PS7717.5746N, Spain)
+# com.amazon.spiderpork                      # Amazon device helper (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.alarmclock                # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.calendar                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.contacts                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.gallery                   # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.music                     # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.settings                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.android.printspooler                   # Android print spooler, unused on a stick (HD / PS7717.5746N, Spain)
 
 # Alexa extras (voice search on the remote mic keeps working with all of these off)
 com.amazon.tv.alexaalerts                  # alarms, timers, reminders
@@ -95,3 +119,16 @@ com.amazon.whad                            # whole-home audio (multi-room music)
 com.amazon.whasettings
 com.amazon.wha.mediabrowserservice
 com.amazon.aca                             # Alexa hints/cues providers (HintsProvider, InstaHintsProvider), ~44 MB resident
+
+# This set has these off; uncomment if you don't use them
+# Voice search / remote mic & Spotify-for-Alexa (also disabled on HD / PS7717.5746N, Spain; breaks voice search if disabled)
+# com.amazon.alexa.datastore.app
+# com.amazon.alexadirectivebrokerservice
+# com.amazon.aria
+# com.amazon.cardinal
+# com.amazon.firetv.androidskillconnectioncapability
+# com.amazon.spotify.mediabrowserservice
+# com.amazon.tcomm.jackson
+# com.amazon.vizzini.ftvcds
+# com.ivona.orchestrator
+# com.ivona.tts.oem

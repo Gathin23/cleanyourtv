@@ -1,15 +1,27 @@
 """Renders the stat strip (docs/stats.png), the top part of the README card.
 
-Update STATS, then: python3 tools/readme_stats.py Fredoka.ttf docs/stats.png
-and rebuild the card with tools/readme_card.py. Fredoka is the variable TTF from Google Fonts, and its
-file is not in this repo: download it and pass the path of the copy you saved.
+Update STATS, then: tools/venv/bin/python -I tools/readme_stats.py Fredoka.ttf docs/stats.png
+and rebuild the card with tools/readme_card.py.
+tools/venv/bin/python -I tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png draws the
+October strip for tools/readme_card.py --halloween: the same STATS in pumpkin orange. Fredoka is the variable
+TTF from Google Fonts, and its file is not in this repo: download it and pass the path of the copy you saved.
 """
 import os
 import sys
 
-USAGE = ("usage: readme_stats.py <font.ttf> <out.png>\n"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import picture_file  # noqa: E402  the staged write the wallpaper scripts use
+
+USAGE = ("usage: readme_stats.py [--halloween] <font.ttf> <out.png>\n"
          "  Fredoka, the variable TTF from Google Fonts, is not in this repo: download it and pass the\n"
          "  path of the file you saved.")
+
+# A reader asking what the script does, answered the way the rest of tools/ answers it (tv.py, privacy.py,
+# blocky_wallpapers.py): this file's own note on stdout and 0. Without this branch the word was read as the
+# font - the usage line went to stderr and the run returned 1, the status this file gives a run that wrote
+# nothing - so `tools/readme_stats.py --help | less` showed nothing, and `--help && ...` looked like a
+# failed run.
+HELP = ("-h", "--help")
 
 
 def font_and_out(argv):
@@ -19,6 +31,10 @@ def font_and_out(argv):
     the first thing that fails here, and Pillow's `OSError: cannot open resource` names neither the file
     it wanted nor where to get it.
     """
+    argv = [a for a in argv if a != "--halloween"]
+    if any(word in HELP for word in argv[1:]):
+        print((__doc__ or USAGE).strip())
+        sys.exit(0)
     if len(argv) != 3:
         sys.exit(USAGE)
     font, out = argv[1], argv[2]
@@ -35,8 +51,17 @@ def out_problem(path):
     `img.save()` answers a folder with IsADirectoryError, a path through a file with NotADirectoryError,
     a folder that is not there with FileNotFoundError and a name with no extension with `unknown file
     extension` - each a traceback that names neither the argument nor whether a picture was written.
+    An empty name is its own case, because `$OUT` unset is how a reader reaches it: no path at all, and
+    a message that starts with a space.
     Judged here, before Pillow is imported, so a machine without Pillow gives the same answer.
     """
+    if not path.strip():
+        # The name came out empty, which is not a path at all: `$OUT` unset is how a reader meets it.
+        # Pillow's answer for it is `unknown file extension: ` - a message that starts with a space and
+        # names neither the argument nor the variable, so the shape has its own words here.
+        return (f"the picture was given as {path!r}, an empty name, so no picture would be written: "
+                f"name the file, e.g. docs/stats.png - and if the name came from a shell variable, "
+                f"that variable was empty")
     if os.path.isdir(path):
         return (f"{path} is a folder, and this writes one picture: pass a file name such as "
                 f"docs/stats.png")
@@ -50,12 +75,14 @@ def out_problem(path):
     return None
 
 
+HALLOWEEN = "--halloween" in sys.argv
 FONT, OUT = font_and_out(sys.argv)
 
 # The picture is the other argument the reader types, and Pillow only refuses it after the whole thing
 # has been drawn: a folder, a folder that is not there, a path through a file and a suffixless name were
 # each a 12-line traceback with exit 1, the code a run that wrote nothing returns, saying nothing about
-# what was written. Judged before the Pillow import, so a machine without it answers the same way.
+# what was written. A name that came out empty is judged here too: Pillow answers it the same way, in
+# words that start with a space. Judged before the Pillow import, so a machine without it answers the same way.
 OUT_PROBLEM = out_problem(OUT)
 if OUT_PROBLEM:
     sys.exit(f"{OUT_PROBLEM}. Nothing was written.")
@@ -67,7 +94,7 @@ try:
 except ImportError:
     sys.exit("readme_stats.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt")
 
-STATS = [("345", "TV MODELS"), ("93", "BRANDS"), ("29", "LANGUAGES"), ("532 KB", "LAUNCHER")]
+STATS = [("488", "TV MODELS"), ("132", "BRANDS"), ("31", "LANGUAGES"), ("572 KB", "LAUNCHER")]
 W, H = 1600, 240
 img = Image.new("RGB", (W, H), "#15181e"); d = ImageDraw.Draw(img)
 def f(size, wt):
@@ -85,17 +112,21 @@ def f(size, wt):
     return x
 f(12, 400)  # the font is the argument the reader brings, so a wrong one is named before any drawing
 num, lab = f(92, 600), f(30, 500)
+NUM_FILL = "#ff9a3c" if HALLOWEEN else "#cfffcf"
+
 PAD = 70
 col = (W - 2 * PAD) / len(STATS)
 for i, (n, l) in enumerate(STATS):
     cx = PAD + col * i + col / 2
-    w = d.textlength(n, font=num); d.text((cx - w / 2, 40), n, font=num, fill="#cfffcf")
+    w = d.textlength(n, font=num); d.text((cx - w / 2, 40), n, font=num, fill=NUM_FILL)
     sp = 5; w = sum(d.textlength(c, font=lab) for c in l) + sp * (len(l) - 1); x = cx - w / 2
     for c in l: d.text((x, 160), c, font=lab, fill="#aab3bd"); x += d.textlength(c, font=lab) + sp
     if i: d.line([(PAD + col * i, 56), (PAD + col * i, H - 56)], fill="#2c313a", width=3)
 try:
-    img.save(OUT, optimize=True)
+    picture_file.save(img, OUT, optimize=True)
 except (OSError, ValueError) as error:
-    # The read-only folder or the full disk, or an extension Pillow does not know (`.txt`): found at the
-    # write, after the drawing. Name the file and say that no picture came of the run.
+    # The read-only file, the full disk or an extension Pillow does not know (`.txt`) is found at the
+    # write, after the drawing: the picture is encoded beside the file and renamed into place first, so
+    # an old docs/stats.png is still there for tools/readme_card.py to stack, and this line is true -
+    # the old img.save() opened the destination before encoding and left it cut short.
     sys.exit(f"cannot write {OUT}: {error}. Nothing was written.")

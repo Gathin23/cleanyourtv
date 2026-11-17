@@ -1,0 +1,72 @@
+# TCL Smart TV Pro (G08, G08_4K_GB, MediaTek), Australian firmware, Android 14 (Google TV)
+# Model "Smart TV Pro", device G08, platform merak, fingerprint TCL/G08_4K_GB/G08:14/UTT2.250416.001/AU02:user/release-keys,
+# 32-bit userspace (armeabi-v7a).
+# The same model as examples/tcl-g08-au-android12, after TCL's Android 14 update. New on this firmware: Android's ad
+# and personalisation services, TCL's Alexa client, a TCL account, the Home push service tclhome_passive and the
+# message box. The voice assistant (katniss) and Google Cast (mediashell) are present here and were kept.
+#
+# Tested on one set from 30 October 2026, lived with for two weeks with nothing broken or re-enabled. Applied with
+# tools/disable.sh in four batches with a screenshot after each, then the launcher with launcher/build-and-install.sh
+# (no key helper). Checked afterwards: the remote's Input key panel, HDMI 1 and HDMI 2, the app and Settings
+# buttons on the real remote, the streaming apps, Private DNS on AdGuard. Not checked: Live TV (no aerial),
+# Chromecast, AirPlay and Miracast sessions.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g08-au-android14/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g08-au-android14/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Left enabled on purpose: com.tcl.tv, com.tcl.tvinput, com.tcl.systemserver, com.tcl.ui_mediaCenter (USB media
+# player), com.tcl.partnercustomizer (its "TCL Channel" tile appears in the app grid once launcherx is off; hide it
+# with hidden_apps), the firmware updater, the keyboards, Play Store and Play Services, plus the DO NOT DISABLE
+# lines below.
+# Kept by the owner's choice: every streaming app, the voice assistant (com.google.android.katniss), Google Cast
+# (com.google.android.apps.mediashell), AirPlay (com.tcl.airplay2, com.mediatek.AirplayAPK,
+# com.mediatek.airplaydaemon), screen mirroring (com.tcl.miracast), TCL Live free channels (com.tcl.channelplus)
+# and TCL Channel (com.tcl.waterfall.overseas): with no aerial they are the only live channels.
+
+# TCL promo, demo and pushed content
+com.tcl.dashboard
+com.tcl.messagebox
+com.tcl.tv.tclhome_passive           # pushes TCL content to Home at boot
+com.tcl.exhibit                      # store demo
+com.tcl.esticker                     # retail sticker
+com.tcl.hotelmenu                    # hotel portal
+com.tcl.ocean.instructions           # manual
+com.tcl.repairguide
+
+# Telemetry, account nags, Android ad services
+com.tcl.logkit                       # log upload
+com.tcl.usercenter                   # TCL account
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.tcl.guard                        # TCL Guard
+
+# Extras and duplicates
+com.tcl.hearaid                      # hearing test
+com.tcl.t_solo                       # "listen alone" headphones feature
+com.tcl.smartalexa                   # Alexa
+# com.tcl.magiconnectfree            # MagiConnect phone remote: this set has it off; uncomment if you don't use it
+# com.tcl.gamebar                    # game bar: disabled, then re-enabled for a console on HDMI 2. Disable it if you have none.
+com.google.android.play.games
+com.android.printspooler
+com.tcl.android.webview              # spare webview
+com.mediatek.support.webview         # spare webview
+com.mediatek.backgrounddetection
+
+# Home takeover for launcher/. On the tested set the saved Wi-Fi belonged to setupwraith at first, so it was
+# forgotten and joined again from Settings before this ran; disable.sh skips setupwraith by itself when it owns
+# the network.
+com.google.android.apps.tv.launcherx     # stock Google TV home
+# Disabling setupwraith gives Home back but costs casting (Cast to this TV may stop working).
+com.google.android.tungsten.setupwraith  # setup wizard; claims Home once launcherx is off
+
+# DO NOT DISABLE - same as examples/tcl-g08-au-android12:
+# com.tcl.autopair    - Bluetooth remote pairing.
+# com.tcl.suspension  - the Source key's QuickPanel.
+# com.tcl.interactive - TIAS service com.tcl.tv binds for the source overlay.
+# com.tcl.ttvs        - same TIAS chain.
+# com.tcl.factory.view and other factory packages - never start them.

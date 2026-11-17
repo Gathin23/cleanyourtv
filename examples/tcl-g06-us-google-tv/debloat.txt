@@ -1,0 +1,74 @@
+# TCL Smart TV (device G06, product G06_2K_US, model "Smart TV"), US firmware: Google TV 11 (Android TV 11, SDK 30),
+# build AR2101 / AR38, TCL software V8-T221T04-LF1V122, security patch 2026-03-05, kernel 4.19.116+.
+# MediaTek MT9221 (ro.board.platform mt5867), 1.4 GB RAM (low_ram=true), 1280x720 UI, ro.adb.secure=1.
+# Fingerprint: TCL/G06_2K_US/G06:11/AR2101/AR38:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g06-us-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g06-us-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same G06 board as examples/tcl-g06-google-tv-indonesia, on the US (T04) firmware line, with the launcher
+# half done too. Stock launcher: com.google.android.apps.tv.launcherx. HOME claimants on stock: launcherx,
+# com.google.android.tungsten.setupwraith/.RecoveryActivity and com.android.tv.settings/.system.FallbackHome.
+# Live TV / HDMI: com.tcl.tv + com.tcl.tvinput (four HDMI ports registered, AV, tuner).
+#
+# KEEP (left enabled and working on this unit):
+# - com.tcl.tv com.tcl.tvinput: Live TV, HDMI and the source picker; com.tcl.tv also answers the guide button.
+# - com.tcl.suspension (Input key / Quick Panel), com.tcl.system.server, com.tcl.keyhelp (remote keys),
+#   com.tcl.tcl_bt_rcu_service, com.tcl.autopair (Bluetooth remote), com.tcl.settings, com.tcl.providers.config,
+#   com.tcl.initsetup, com.tcl.factory.view (never launch it), com.tcl.common.shortcutmenu (not tried).
+# - com.tcl.ttvs: firmware updater on AR2101 (it also logs remote key presses); kept by the owner.
+# - Kept by the owner's choice: Chromecast (com.google.android.apps.mediashell), the voice assistant
+#   (com.google.android.katniss, com.google.android.tv.assistant, com.tcl.micmanager and
+#   com.google.android.tv.remote.service), Prime Video, YouTube, YouTube Music, the USB media player.
+# - No com.mediatek.tv.service on this build, so the #2138 reason for keeping com.tcl.partnercustomizer
+#   does not apply here; it is disabled below, as on the Indonesia unit.
+#
+# Notes from this unit (one session on 2026-10-31, verified with screenshots; one day, shorter than
+# CONTRIBUTING.md asks):
+# - No Wireless debugging on this firmware: USB debugging alone opens port 5555 over Wi-Fi. The TV asks to
+#   allow the computer's key once.
+# - The saved Wi-Fi belonged to setupwraith (dumpsys wifi showed four entries with
+#   cname=com.google.android.tungsten.setupwraith). The owner forgot the network and joined it again in Settings
+#   (owner became com.android.tv.settings); setupwraith was then disabled with Wi-Fi and ADB staying up.
+# - Casting from a phone still worked after a reboot with setupwraith disabled.
+# - Wait about a minute after the last batch before rebooting, as on the other AR2101 lists.
+# - com.tcl.smartalexa and com.tcl.usercenter are switched back on at every boot (as on the 40S5400A and
+#   32ES570F); both stay idle, so they are commented out below rather than disabled again at each boot.
+# - Launcher: launcher/ became Home (mFocusedApp = com.gathin.tvhome after Home and after a reboot). The
+#   YouTube and Prime Video buttons are broadcasts only launcherx answers (as on examples/tcl-g03-google-tv), so
+#   launcherx is enabled again behind "stock_home_redirect" with "key_filter": false; see README.md.
+# - Reboot-checked twice: everything listed stays disabled, Home and the helper survive, Wi-Fi stays connected.
+
+# Batch 1: TCL promos, popups and telemetry; Google partner plumbing
+com.tcl.esticker                        # store-demo sticker
+com.tcl.partnercustomizer               # promo rows (see KEEP note on #2138)
+com.tcl.messagebox                      # TCL messages/popups
+com.tcl.dashboard                       # TCL Home panel; the remote's dashboard button goes dead with it
+com.tcl.useragreement
+com.tcl.guard                           # TGuard cleaner
+com.tcl.copydatatotv                    # copy-data utility
+# com.tcl.usercenter                    # TCL account, switched back on at every boot (idle)
+# com.tcl.smartalexa                    # Alexa bridge, switched back on at every boot (idle)
+com.google.android.partnersetup         # partner attribution
+com.google.android.feedback
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.apps.nbu.smartconnect.tv   # data-saver VPN
+android.autoinstalls.config.google.gtvpai     # partner auto-installs
+
+# Batch 2: preloads, off by the owner's choice
+com.tcl.channelplus                     # TCL Live FAST channels (a Live TV input)
+com.tcl.tv.tclchannel                   # TCL Channel; the remote's TCL Channel button goes dead with it
+com.tcl.tv.plus                         # TCL TV+ free channels
+# com.netflix.ninja                       # Netflix; the remote's Netflix button goes dead with it; an owner's app, kept on in the shared list; this set has it off
+com.google.android.videos               # Play Movies
+com.google.android.play.games
+com.google.android.marvin.talkback      # TalkBack
+com.tcl.t_solo                          # Bluetooth "listen alone"
+
+# Disabling setupwraith gives Home to a new launcher but can break casting (Chromecast built-in) on some
+# sets; casting kept working on this one. Comment out its line if you want to keep the stock setup.
+# Batch 3: launcher handover. It owned the Wi-Fi saved at setup on this unit: forget the network and join it
+# again in Settings first, or disabling it deletes the network.
+com.google.android.tungsten.setupwraith

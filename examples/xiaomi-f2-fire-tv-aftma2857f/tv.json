@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi F2 Fire TV / Xiaomi TV F Pro 32 2026 (AFTMA2857F, L32MB-FPEU, shine)",
+  "os": "Fire OS 7.7.1.7 / Android 9",
+  "brand": "Xiaomi",
+  "notes": "Same build as `tcl-32sf560-fire-tv/`: Amazon ACR, metrics and log uploads, Xiaomi analytics, ad ID and sponsored rows, Fire TV Channels, Shopping, demo content, tutorials, Kids, Silk and Amazon device-setup helpers; preloaded UK streaming apps as optional comments; Live TV, tuner and input stack, Alexa, casting, OTA and the stock launcher kept; debloat only, reboot-checked, eight days; second unit: Xiaomi TV F Pro 32 2026 (L32MB-FPEU, ES) keeps Live TV helpers and Silk on the TV with extra telemetry, Alexa, screensaver, profiles, printing, NFC and dummy stubs commented"
+}

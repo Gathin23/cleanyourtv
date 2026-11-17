@@ -18,6 +18,12 @@ public class VpnPillTest {
     }
 
     @Test
+    public void iconOnlyShowsTheClosedLockOnlyWhileUp() {
+        assertEquals(R.drawable.ic_lock, VpnBadge.iconOnlyLock(true));
+        assertEquals(R.drawable.ic_lock_open, VpnBadge.iconOnlyLock(false));
+    }
+
+    @Test
     public void hiddenWithNoVpnAndNoInstalledVpnApp() {
         assertEquals(VpnBadge.PILL_HIDDEN, VpnBadge.pillState(false, false));
     }

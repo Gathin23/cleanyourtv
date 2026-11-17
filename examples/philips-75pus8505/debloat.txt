@@ -12,6 +12,18 @@
 # it. Every entry was checked on this TV with dumpsys package and dumpsys activity services. The
 # org.droidtv layer is also shared with examples/philips-50pus8517 (PH1M_EA_9970A, Android 11).
 #
+# Second unit: Philips 58PUS8555/12, Italy, same device PH9M_EA_5599, same fingerprint and firmware
+# STT2.230526.001 (security patch 2025-11-01), wired Ethernet, nothing on USB. Every package of this
+# list was present and the list went on unchanged, in four batches with a screenshot after each
+# (disable.ps1 on Windows): Assistant, Alexa, Apple TV and YouTube Music off, Chromecast, DLNA and
+# the firmware updater kept. 36 packages were disabled in all, counting the 16 uk.co.freeview.* and
+# org.droidtv.freeviewplayers entries that this Italian unit also had off out of the box. After one
+# reboot the disabled list was identical, Home resolved to com.gathin.tvhome and the Home and SOURCES
+# keys were pressed on the real remote. Applied on 2026-10-31; not yet lived with for days. The stock
+# launcher was disabled by launcher/build-and-install.ps1, and the TV still boots to Live TV
+# (org.droidtv.playtv) by itself. Netflix, Prime Video, YouTube, Disney+, Kodi and RaiPlay were
+# installed; the dock was set to YouTube, Kodi, Prime Video and RaiPlay.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-75pus8505/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-75pus8505/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

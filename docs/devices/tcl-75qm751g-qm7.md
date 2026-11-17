@@ -4,7 +4,10 @@ One owner's report ([#453](https://github.com/Gathin23/cleanyourtv/issues/453)),
 checked on the same day and **not** lived with for several days, so this is not a list of its own.
 Run [`examples/tcl-qm6k-google-tv/debloat.txt`](../../examples/tcl-qm6k-google-tv/debloat.txt) —
 same `G08` board, same `AU14` build — and read the deltas and the two traps below. A second owner
-confirmed the cast-receiver symptom on a TCL BeyondTV2 in the same thread.
+confirmed the cast-receiver symptom on a TCL BeyondTV2 in the same thread. A second unit, a
+55QM751G on the same build, is [further down](#a-second-unit-55qm751g-same-build): reboot
+persistence, the remote's keycodes, the mic, and the volume trade with a key helper. A third, a
+[65QM7K (2025)](#a-third-unit-65qm7k-2025-same-build), adds which buttons still work with no helper.
 
 ## Identify the firmware, not the retail name
 
@@ -92,6 +95,125 @@ A receiver that is advertising logs `MdnsAppFilter: Done announcing.`,
 reproduce the hang — their list leaves the Cast stack alone — and did not stream video, so the log
 evidence covers discovery, not playback.
 
+## A second unit: 55QM751G, same build
+
+A 55QM751G reported the same `ro.product.device` `G08`, `ro.product.model` `Smart TV Pro` and
+`tcl9618-user 14 UTT2.250416.001 AU14 release-keys`, SDK 34, `ro.adb.secure=1`. Also checked on the
+same day and not lived with, by one owner in one session.
+
+**Connection.** Network ADB answered on 5555 over Wi-Fi with no pairing step. Wireless debugging was
+on as well (`adb_wifi_enabled=1`), on a port of its own. `wm size` showed a 1920x1080 override on the
+3840x2160 panel, with no density override; it was left alone and the launcher laid out normally.
+
+**The list.** The QM6K list was applied in three batches with a screenshot of Home after each, and
+`com.tcl.repairguide` was again not installed. Kept by the owner's choice: Netflix, Chromecast
+(`com.google.android.apps.mediashell`), Assistant (`com.google.android.katniss`), the phone remote
+(`com.google.android.tv.remote.service`), AirPlay, YouTube Music, the USB media player
+(`com.tcl.ui_mediaCenter`) and ambient mode (`com.google.android.apps.tv.dreamx`). From the optional
+block, `com.tcl.gamebar`, `com.tcl.UpdatePeripheral` and `com.google.android.marvin.talkback` were
+disabled. Prime Video ships preinstalled as `com.amazon.amazonvideo.livingroom`, which the list does
+not name. With launcherx, 25 packages were disabled; after `sync`, a 15-second wait and a reboot,
+`pm list packages -d` was the same 25, and the TV started straight into the new Home
+(`wm_set_resumed_activity` showed `FallbackHome`, then `com.gathin.tvhome`), not into Live TV.
+
+**setupwraith without losing Wi-Fi.** setupwraith owned one saved network, but not the one the TV
+was on: `dumpsys wifi` gave `cname=com.google.android.tungsten.setupwraith` for a network saved
+during setup and no longer used, and `cname=android.uid.system:1000` for the connected one. The
+owner could not find it in Settings, so it was removed from the shell instead:
+`cmd wifi list-networks` for its id, then `cmd wifi forget-network <id>`. `dumpsys wifi` then showed
+`android.uid.system` only, `tools/disable.sh` disabled setupwraith without `FORCE_SETUPWRAITH=1`,
+Wi-Fi stayed connected, and `launcher/build-and-install.sh` made `com.gathin.tvhome` Home on its
+first run.
+
+**The remote's keys.** The Bluetooth remote names itself `BT_RC923_M2` (key layout
+`Vendor_0417_Product_0304.kl`). Its app and gear buttons are `KEY_UNKNOWN` (scancode 240) in
+`getevent -lt`, with no entry in that layout; the firmware gives them keycodes of its own, which
+`logcat` prints as `InputReader: TIDD: keyCode=...` with the HID usage beside it:
+
+| Button | HID usage | Keycode |
+|---|---|---|
+| Netflix | `0x000c0051` | 4062 |
+| Prime Video | `0x000c005f` | 4099 |
+| YouTube | `0x000c0057` | 190 (`KEYCODE_BUTTON_3`) |
+| Gear | `0x000c0055` | 83 (`KEYCODE_NOTIFICATION`) |
+
+With launcherx disabled and no key helper, the Netflix, Prime Video and YouTube buttons did nothing,
+and Input still worked. The gear sends 83 to SystemUI, which logs `TvNotificationPanel: Not launching
+notification handler activity: Could not resolve activityInfo for intent
+android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL`. Without a helper, Home itself answers
+`settings_key_keycodes` 83 and the `app_keys` with keycodes from 1000 up, so with `83` and
+`4062:com.netflix.ninja`, `4099:com.amazon.amazonvideo.livingroom` in `config.xml` the gear, Netflix
+and Prime Video buttons worked from Home. YouTube (190) needs the helper. With `INPUT_KEY_SERVICE=1`
+all three app buttons worked and held volume up moved one step per press, as on the 75Q7CXB in
+[the key-repeat note](tcl-55p71b-g09-key-repeat.md); clearing `enabled_accessibility_services`
+brought the ramp back. The owner kept the ramp and no helper.
+
+**The mic.** With launcherx disabled the mic did nothing: each press logged
+`AtvRemote.AppOpsDisclosureService: com.google.android.katniss doesn't have access to the on-remote
+mic`, the case in [TROUBLESHOOTING](../TROUBLESHOOTING.md). Switching on Microphone access under
+Settings > Privacy brought it back, and the Assistant answered a spoken question. The
+"not available in this profile" refusal seen on the AU02 build did not appear on this one.
+
+**Private DNS and Prime Video.** With Private DNS set to `dns.adguard-dns.com` (`private_dns_mode`
+`hostname`), another streaming app played, but Prime Video (`com.amazon.amazonvideo.livingroom`) did not.
+With `private_dns_mode` back to `opportunistic` it played. Which domain AdGuard's list blocks was not
+looked into. This build has no Private DNS entry under Settings > Network & Internet, so turning it off
+again takes ADB: `settings put global private_dns_mode opportunistic`.
+
+**Closing ADB.** Wireless debugging off closed its port (`tools/adb-closed.py` refused). The owner
+then revoked the authorisations, switched USB debugging off and restarted the TV, and 5555 still
+answered: USB debugging was on again in Developer options. Switched off a second time, it stayed off
+through a restart, and `tools/adb-closed.py` reported 5555 closed. Whether the first switch did not
+take or the restart put it back was not told apart.
+
+## A third unit: 65QM7K (2025), same build
+
+A 65QM7K, sold as a 2025 model in the US, reported the same `ro.product.device` `G08`, `ro.product.model`
+`Smart TV Pro` and `tcl9618-user 14 UTT2.250416.001 AU14 release-keys`, SDK 34, `ro.adb.secure=1`, with
+product `G08_4K_US`. `ro.odm.tcl.model.year` reads `2024` on it, so the retail year is no guide either. One
+owner, cleaned on 4 November 2026 and checked again on the next day, so two days of use, not a week.
+
+**Connection.** Network ADB answered on 5555 over Wi-Fi with no pairing step, with Wireless debugging off
+(`adb_wifi_enabled=0`). `wm size` showed the same 1920x1080 override on the 3840x2160 panel, left alone.
+
+**The list.** The QM6K list was applied from Windows with `tools/disable.ps1` in four batches, with a
+screenshot of Home after each. Not installed on this preload: `com.tcl.repairguide`, `com.tcl.smartalexa` and
+`com.google.android.youtube.tvmusic`. Installed but not in the QM6K list, and kept: `com.tcl.hearaid` (TCL's
+wireless-speaker and sound-field settings) and `com.tvos` (a framework resource package). Kept by the owner's
+choice: Chromecast (`com.google.android.apps.mediashell`), AirPlay (`com.tcl.airplay2` and the two MediaTek
+packages), Assistant (`com.google.android.katniss`) and the USB media player (`com.tcl.ui_mediaCenter`). From
+the optional block, `com.google.android.tv.remote.service`, `com.tcl.gamebar`, `com.tcl.UpdatePeripheral` and
+`com.google.android.marvin.talkback` were disabled. With setupwraith, ambient mode
+(`com.google.android.apps.tv.dreamx`, after the launcher's clock screensaver was set) and launcherx, 26
+packages were disabled. After `sync`, a 15-second wait and a reboot, `pm list packages -d` was the same, and
+again a day later. The TV started into the new Home (`FallbackHome`, then `com.gathin.tvhome`), and after
+power off and on with the remote it came back to Home too.
+
+**setupwraith.** As on the 55QM751G, it owned one saved network that the TV was not using.
+`cmd wifi forget-network <id>` removed it, `tools/disable.ps1` then disabled setupwraith without
+`FORCE_SETUPWRAITH=1` while launcherx was still Home, Wi-Fi stayed connected, and the new launcher became
+Home on the first run of `launcher/build-and-install.ps1`.
+
+**The remote's keys.**
+
+| Setup | Gear (83) | YouTube (190) | Prime Video (4099) | Held volume |
+|---|---|---|---|---|
+| Both helpers, `app_keys` for all three | works everywhere | works everywhere | works everywhere | one step per press |
+| Both helpers, `"consume_volume_keys": true` | works everywhere | works everywhere | works everywhere | one step per press |
+| No helper, `settings_key_keycodes` `[83]` and `app_keys` `4099:com.amazon.amazonvideo.livingroom` | from Home only | nothing | from Home only | ramps |
+
+`consume_volume_keys` did not bring the ramp back on this Android 14 build, as on the G08 Android 12 set in
+[the key-repeat note](tcl-55p71b-g09-key-repeat.md), unlike the G09. The owner kept the ramp, with no helper
+bound. The remote's Disney+ button opened Disney+ from any screen with launcherx disabled and no helper, so the
+firmware answers that button itself. Its keycode was not read. Input kept working in every setup.
+
+**The mic.** With `com.google.android.tv.remote.service` and launcherx both disabled, the owner pressed the
+remote's mic button and the Assistant answered. Whether Microphone access under Settings > Privacy had already
+been switched on was not checked.
+
+**Closing ADB.** After Network debugging and USB debugging were switched off, the authorisations revoked and
+the TV restarted, `tools/adb-closed.py` reported 5555 closed.
+
 ## Test limits
 
 - One set, one firmware, one session, same day. Nothing here has been lived with for days.
@@ -100,3 +222,12 @@ evidence covers discovery, not playback.
   through Netflix, Assistant or AirPlay after those packages were turned off are all untested.
 - Casting was verified from a PC only, for discovery and one stream; casting from a phone and after
   a reboot was not re-checked.
+- The 55QM751G is also one set, one firmware, one session. It covers what the first left open on
+  reboot persistence, Wi-Fi after setupwraith was disabled, and the app buttons, for that unit only.
+  It kept Netflix, Assistant, AirPlay and Chromecast enabled, so it says nothing about turning them
+  off. Casting, AirPlay and the Cast receiver hang above were not checked on it. The mic was tested
+  before the reboot, not after. Playback was checked once per case: one app with AdGuard DNS on,
+  and Prime Video with it on (failed) and off (played).
+- The 65QM7K is one set and one firmware too, with two days of use. It kept Chromecast, AirPlay and the
+  Assistant enabled; casting, AirPlay and the Cast receiver hang above were not checked on it, and Private DNS
+  was not set. The key table was pressed on the real remote, once per setup.

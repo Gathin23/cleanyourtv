@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wetter</string>
+
+    <string name="feels_like">Gefühlt %1$d°</string>
+    <string name="humidity">Luftfeuchte %1$d%%</string>
+    <string name="wind">Wind %1$d km/h</string>
+    <string name="wind_mph">Wind %1$d mph</string>
+    <string name="aqi_line">Luftqualität %1$d · %2$s</string>
+    <string name="updated">Aktualisiert %1$s · Open-Meteo</string>
+    <string name="change_city">Stadt ändern</string>
+    <string name="weather_settings">Wetter-Einstellungen</string>
+    <string name="settings_done">Fertig</string>
+    <string name="setting_units">Temperatureinheit</string>
+    <string name="setting_both_units">Beide Einheiten zeigen</string>
+    <string name="setting_days">Vorhersage</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d Tag</item>
+        <item quantity="other">%1$d Tage</item>
+    </plurals>
+    <string name="setting_humidity">Luftfeuchte zeigen</string>
+    <string name="setting_wind">Wind zeigen</string>
+    <string name="setting_reset">Wetter-Einstellungen zurücksetzen</string>
+    <string name="option_on">An</string>
+    <string name="option_off">Aus</string>
+    <string name="loading">Wetter wird geladen…</string>
+    <string name="offline">Open-Meteo ist nicht erreichbar. Prüfe die Internetverbindung des Fernsehers; in 5 Minuten geht es von selbst weiter.</string>
+
+    <string name="pick_title">Welche Stadt?</string>
+    <string name="pick_hint">Name der Stadt, z. B. Hamburg</string>
+    <string name="pick_search">Suchen</string>
+    <string name="pick_none">Kein Ort namens \"%1$s\"</string>
+    <string name="pick_first">Wähle eine Stadt, um ihr Wetter zu sehen.</string>
+
+    <string name="aqi_good">Gut</string>
+    <string name="aqi_moderate">Mäßig</string>
+    <string name="aqi_sensitive">Ungesund für Empfindliche</string>
+    <string name="aqi_unhealthy">Ungesund</string>
+    <string name="aqi_very_unhealthy">Sehr ungesund</string>
+    <string name="aqi_hazardous">Gefährlich</string>
+
+    <string name="sky_clear">Klar</string>
+    <string name="sky_sunny">Sonnig</string>
+    <string name="sky_mostly_clear">Überwiegend klar</string>
+    <string name="sky_mostly_sunny">Überwiegend sonnig</string>
+    <string name="sky_partly_cloudy">Teils bewölkt</string>
+    <string name="sky_cloudy">Bewölkt</string>
+    <string name="sky_fog">Nebel</string>
+    <string name="sky_drizzle">Nieselregen</string>
+    <string name="sky_freezing_drizzle">Gefrierender Niesel</string>
+    <string name="sky_light_rain">Leichter Regen</string>
+    <string name="sky_rain">Regen</string>
+    <string name="sky_heavy_rain">Starker Regen</string>
+    <string name="sky_freezing_rain">Gefrierender Regen</string>
+    <string name="sky_light_snow">Leichter Schnee</string>
+    <string name="sky_snow">Schnee</string>
+    <string name="sky_heavy_snow">Starker Schnee</string>
+    <string name="sky_snow_grains">Schneegriesel</string>
+    <string name="sky_showers">Schauer</string>
+    <string name="sky_snow_showers">Schneeschauer</string>
+    <string name="sky_thunderstorm">Gewitter</string>
+</resources>

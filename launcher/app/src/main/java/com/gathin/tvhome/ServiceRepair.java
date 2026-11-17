@@ -66,7 +66,10 @@ final class ServiceRepair {
                 if (updated.length() > 0) updated.append(':');
                 updated.append(name.flattenToShortString());
             }
-            if (!missing) return;
+            // Hisense songshan's standby kill leaves the list naming the helper and only drops the switch to 0, with
+            // the helper marked crashed (#3404): a confirmed 0 needs the same cycle. Default -1, so an absent or
+            // unreadable switch with a complete list is left alone.
+            if (!missing && Settings.Secure.getInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, -1) != 0) return;
             // A killed helper also lands on Android's "Crashed services" list (dumpsys accessibility), and a
             // crashed service is never bound again, so putting it back on the list alone binds nothing and the
             // switch falls back to 0 (Hisense songshan, Android 11, whose standby kills third-party apps). Android

@@ -20,6 +20,13 @@ writes as the example, and 'Nothing was written.'; the save at the end belongs t
 `except (OSError, ValueError)`, so a folder that went read-only, a full disk or an extension Pillow does
 not know (`.txt`) is named too instead of arriving as a traceback. A real picture still writes.
 
+A fifth shape was answered by the extension branch: a name that came out empty, as
+`tools/readme_stats.py Fredoka.ttf "$OUT"` gives it with OUT unset. Pillow's answer for it is
+`unknown file extension: `, which starts with a space and names nothing at all, and `assert_refused()`
+could not have caught it - it looks for the path in the message, and `str("")` is in every string. The
+empty and blank names are their own test, which asks for the argument in repr, and `out_problem()` names
+them before anything is read.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import importlib.util
@@ -111,6 +118,27 @@ class PicturePathTest(unittest.TestCase):
                     self.assertNotIn("Traceback", done.stderr, f"{name} still dies on a Pillow traceback")
                     self.assertFalse(out.exists(), f"{name} wrote {out}")
 
+    def test_a_name_that_came_out_empty_is_named(self):
+        # `readme_stats.py Fredoka.ttf "$OUT"` with OUT unset: the name is "", so `assert_refused()` above
+        # could not catch it (it looks for the path in the message, and "" is in every string). Before this
+        # the extension branch answered " has no extension, ...", starting with a space and naming no
+        # argument at all; the empty and blank names are named in repr before anything is read.
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in CARD_SCRIPTS:
+                for blank in ("", "   "):
+                    with self.subTest(script=name, out=blank):
+                        done = run([str(TOOLS / name), str(LAUNCHER_FONT), blank], tmp)
+                        self.assertEqual(done.returncode, 1, f"{name} took an empty picture name")
+                        self.assertIn(repr(blank), done.stderr,
+                                      f"{name} does not name the picture argument it was given")
+                        self.assertIn("empty name", done.stderr, f"{name} does not say the name was empty")
+                        self.assertIn("Nothing was written", done.stderr,
+                                      f"{name} does not say whether a picture was written")
+                        self.assertNotIn("Traceback", done.stderr, f"{name} still dies on a Pillow traceback")
+                        self.assertNotIn("has no extension", done.stderr,
+                                         f"{name} reads an empty name as a suffixless one")
+                        self.assertEqual(done.stdout, "", f"{name} printed a picture path it did not write")
+
     def test_the_folder_message_names_the_picture_the_script_writes(self):
         # The example is the file the page, or the docstring, tells the reader to write: gen_tables.py
         # redraws the same two paths, so a reader who follows the message lands on the tracked file.
@@ -133,15 +161,18 @@ class PicturePathTest(unittest.TestCase):
                 self.assertLess(guard, pillow, f"{name} judges the picture after importing Pillow")
 
     def test_the_write_at_the_end_is_guarded(self):
-        # A folder that went read-only, a full disk or an unknown extension is found at the write, after
-        # the drawing: that one belongs to its own handler rather than to a traceback.
+        # A read-only file, a full disk or an unknown extension is found at the write, after the drawing:
+        # that one belongs to its own handler rather than to a traceback, and it goes through
+        # tools/picture_file.py, which encodes beside the file so a failed redraw cannot cut the picture
+        # the repository ships (see tests/test_card_picture_staging.py).
         for name in CARD_SCRIPTS:
             with self.subTest(script=name):
                 text = (TOOLS / name).read_text(encoding="utf-8")
                 handler = text.find("except (OSError, ValueError) as error:")
                 self.assertGreater(handler, 0, f"{name} leaves the save to a bare traceback")
-                last_save = text.rfind(".save(OUT")
-                self.assertGreater(last_save, 0, f"{name} no longer saves to OUT, so this check would prove nothing")
+                last_save = text.rfind("picture_file.save(")
+                self.assertGreater(last_save, 0, f"{name} no longer publishes its picture by rename, "
+                                                f"so this check would prove nothing")
                 self.assertLess(handler, last_save, f"{name} does not guard the write that ends it")
 
 

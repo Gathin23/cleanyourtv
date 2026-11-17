@@ -4,6 +4,9 @@
 # Same G08 board as examples/tcl-g08-us-google-tv, one Android version older (that list is AU16, Android 14);
 # it was the starting point, and every entry below is one of its lines. Its Android 14 ad and privacy
 # services, com.tcl.browser and com.tcl.repairguide are not on this firmware.
+# Second unit: TCL 65" A300W NXTFRAME, 2024, US, same product G08_4K_US_NF, Android 12, firmware
+# STT2.230203.001 AS24 (fingerprint TCL/G08_4K_US_NF/G08:12/STT2.230203.001/AS24), 2.46 GB RAM. Its notes are
+# in "65A300W (AS24)" below; it keeps com.tcl.exhibit, which this list now leaves enabled.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55a300w/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55a300w/debloat.txt com.google.android.apps.tv.launcherx
@@ -13,8 +16,9 @@
 # from the factory.
 # Left enabled on purpose: com.tcl.tv, com.tcl.tvinput, com.tcl.suspension (the input menu), com.tcl.initsetup,
 # com.tcl.useragreement, com.tcl.factory.view, com.tcl.gamebar, com.tcl.tcl_bt_rcu_service (the remote),
-# com.tcl.UpdatePeripheral, com.google.android.katniss (voice), Chromecast, AirPlay (com.tcl.airplay2), Play
-# Store and Play Services, all com.mediatek.*, and the owner's streaming apps (Prime Video kept by choice).
+# com.tcl.UpdatePeripheral, com.tcl.exhibit (art mode, below), com.google.android.katniss (voice), Chromecast,
+# AirPlay (com.tcl.airplay2), Play Store and Play Services, all com.mediatek.*, and the owner's streaming apps
+# (Prime Video kept by choice).
 #
 # Wi-Fi: the network the TV was using had been saved by setupwraith during first setup. It was forgotten and
 # joined again in Settings > Network & Internet before batch 3; `dumpsys wifi | grep -o 'cname=[^ ]*'` then
@@ -29,17 +33,44 @@
 # program guide again (com.tcl.tv/.epg.EpgProActivity), as before; "4001:input:com.tcl.tvinput/.TunerInputService/HW2"
 # switches to the antenna without the guide. All checked on the real remote. A held volume button now steps once
 # per press (the key-helper trade in that README); the owner accepted it.
+# config.json also has "settings_key_keycodes": [83, 4077]: 83 for this set's Settings button, 4077 for the
+# 65A300W's (below). Push the file with no rebuild: TV_HOST=<tv ip> tools/theme.sh examples/tcl-55a300w
 #
-# Applied 26 October 2026 in three batches with a screenshot and crash-log check after each, then launcherx by
-# build-and-install.sh, then reboot-checked: all 22 stayed disabled and Home stayed on the launcher. Home, Input,
-# the mic button and a power cycle checked on the real remote. One day of use so far.
+# 55A300W: applied 26 October 2026 in three batches with a screenshot and crash-log check after each, then
+# launcherx by build-and-install.sh, then reboot-checked: all 22 stayed disabled (com.tcl.exhibit among them)
+# and Home stayed on the launcher. Home, Input, the mic button and a power cycle checked on the real remote. One
+# day of use so far. This list now leaves com.tcl.exhibit enabled, so applying it fresh disables 21.
+#
+# com.tcl.exhibit is now left enabled (commented out in batch 1). It was disabled here as "store demo", but on the
+# 65A300W it is the art gallery behind art mode (below). Whether that holds on AS15 was not checked on this set.
+# If you applied the earlier list and want art mode back:
+#   adb shell pm enable --user 0 com.tcl.exhibit
+#
+# 65A300W (AS24), applied 26-27 October 2026 in the same three batches, each confirmed with
+# `pm list packages -d` after a reboot, then the launcher with launcher/build-and-install.sh; 18 packages
+# disabled, Home held through a reboot. Checked: art mode (library, switching artwork), Live TV and HDMI,
+# streaming, Settings, the panel buttons, Home from inside an app, the Assistant.
+# - com.tcl.exhibit: .portal.view.activity.InteractionActivity was the resumed activity while art mode was
+#   showing and in the art settings, so it is kept there.
+# - Kept by that owner's choice: com.google.android.syncadapters.calendar, com.tcl.hearaid, com.tcl.t_solo.
+# - setupwraith owned the saved Wi-Fi network there too; it was forgotten and re-joined in Settings first.
+# - Remote, captured with getevent and logcat: Netflix 4062 and YouTube 4065 as here, but Settings sends 4077
+#   (scancode 233), not 83. With this folder's config.json pushed by tools/theme.sh, no rebuild and no key helper
+#   bound (enabled_accessibility_services null), checked on the real remote: Settings, Netflix and YouTube open
+#   from Home, 4001 reaches the launcher, a held volume button still ramps, and hidden_apps hides the Live TV tile
+#   (present without the config, gone with it). The launcher answers these keys only while Home is in front.
+#   WindowManager logs "handleKeyBeforeDispatching keyCode=<n> disable" for these buttons even when the key is
+#   delivered, so that line does not mean a button is dead.
+# - Only the 36 "tcl" packages and the named Google ones of its 153 were reviewed. It has 13 packages this list
+#   does not name; they are at the end, commented out, none disabled.
+# - Not changed by the list: an audio stutter in art mode that was there before any change.
 
 # Batch 1: TCL promo, push messages, retail / hotel demo, telemetry
 com.tcl.tv.plus                        # TCL TV+ free channels
 com.tcl.messagebox                     # TCL pushed messages and promos
 com.tcl.esticker                       # retail-demo sticker
 com.tcl.hotelmenu                      # hotel-mode portal
-com.tcl.exhibit                        # store demo
+# com.tcl.exhibit                      # art mode on the 65A300W, kept (header); was disabled here as store demo
 com.tcl.tv.tclhome_passive             # TCL content pushed to the home screen at boot
 com.tcl.dashboard                      # TCL Home panel and its promos
 com.tcl.logkit                         # log capture
@@ -63,3 +94,18 @@ com.google.android.tungsten.setupwraith
 
 # Stock launcher, off once the new launcher is Home (build-and-install.sh does this)
 com.google.android.apps.tv.launcherx
+
+# Installed on the 65A300W (AS24), not named above. None disabled; descriptions are from other TCL lists, not checked.
+# com.tcl.android.webview              # TCL WebView
+# com.tcl.autopair                     # Bluetooth remote pairing; keep
+# com.tcl.browser                      # TCL Browser
+# com.tcl.globalkeyoverlay             # remote keys; keep
+# com.tcl.onlinesupport                # TCL online support; no other list describes it
+# com.tcl.partnercustomizer            # TCL tweaks to Google TV home rows
+# com.tcl.providers.config             # TCL config provider; keep
+# com.tcl.smartlink.core               # silent partner-app installer
+# com.tcl.systemserver                 # TCL system service; keep
+# com.tcl.ttvs                         # Samba TV ACR / TCL analytics, and on some TCL sets the firmware updater
+# com.tcl.tv.tclchannel                # TCL Channel, bundles Google Mobile Ads
+# com.tcl.ui_mediaCenter               # USB media player
+# com.tvos                             # tvos framework resources; keep

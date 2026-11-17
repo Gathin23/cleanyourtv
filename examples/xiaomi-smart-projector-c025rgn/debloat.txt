@@ -1,0 +1,98 @@
+# Xiaomi Smart Projector (model C025RGN, codename/product "tianshanrm", board tianshan, FORMOVIE ODM,
+# MediaTek T32 / MT9630), Google TV on Android 14 (SDK 34), firmware build UKNV.260130.001,
+# security patch 2026-01-01, ro.vendor.mtk.system.marketregion=us, 1920x1080, Wi-Fi only,
+# Bluetooth remote, ro.adb.secure=1.
+# Stock launcher: com.google.android.apps.tv.launcherx (left enabled; see the handover note below).
+# The reference launcher takes Home through the Home-key redirect instead, see config.json here.
+# Factory-disabled on this unit BEFORE anything was changed, so leave both disabled when restoring:
+#   com.mediatek.wwtv.tvcenter        (no tuner on a projector; also the stock LauncherX Live TV entry)
+#   com.google.android.youtube.tvmusic
+# Prime Video (com.amazon.amazonvideo.livingroom) is ENABLED on this unit, unlike the L1 Pro
+# (examples/xiaomi-smart-projector-l1-pro-tianshan) where it ships disabled. It is kept here because the
+# owner uses it, so this list does not disable it.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-smart-projector-c025rgn/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-smart-projector-c025rgn/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# How far this was tested: applied in two batches in one session and checked after one reboot. All 19
+# were still disabled afterwards and the firmware re-enabled none. Netflix, YouTube, AIS Play, Viu,
+# Apple Music, the Play Store, Google Assistant, Chromecast, Wi-Fi, Bluetooth remote, focus and keystone
+# were confirmed working, and the real remote's Home button was pressed. That is one session, not the
+# several days CONTRIBUTING asks for, so treat this as a starting point rather than a long soak.
+#
+# Despite the Xiaomi branding (ro.product.brand=Xiaomi) this is a FORMOVIE international Google TV build
+# on the same tianshan board as the L1 Pro above: there is NO com.xiaomi.*, com.mitv.* or com.miui.*
+# package on it at all, so no PatchWall, MiChannel, TV Manager or com.xiaomi.tvqs* to disable. Its only
+# vendor packages are com.fengmi.projector.imaging, com.fengmi.Autopair, com.fengmi.testsuite,
+# com.fengmi.platform and com.fengmi.fmsettings.
+#
+# Kept because the projector needs them: com.fengmi.projector.imaging (focus and keystone),
+# com.fengmi.Autopair (BLE remote pairing), com.fengmi.fmsettings, com.fengmi.platform,
+# com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.wwtv.*, com.google.android.tv.inputplayer
+# (HDMI), com.google.android.tv.remote.service, com.android.bluetooth, com.android.tv.settings.
+# Kept by choice: com.dolby.android.audio.service, Play Store and Play Services, Gboard, the Google
+# Assistant (katniss, tv.assistant), Chromecast (com.google.android.apps.mediashell), TalkBack, the
+# Ambient screensaver (com.google.android.apps.tv.dreamx, the active screensaver_components here),
+# com.google.android.syncadapters.calendar (the L1 Pro list disables it; this set keeps it),
+# the three uk.co.freeview.* services, and Netflix, YouTube, Prime Video, Apple Music, AIS Play and Viu.
+# Never launch com.fengmi.testsuite or mediatek.factorymenu.ui (factory tools; both are present here).
+# No firmware updater package of its own was found on this build.
+#
+# One package behaved oddly and is worth knowing about: after `pm disable-user --user 0
+# com.google.android.videos` reported "new state: disabled-user", `dumpsys package` showed user 0 with
+# installed=false (the package had been removed for that user, not just switched off). It was put back
+# with `pm install-existing --user 0 com.google.android.videos` and disabled again, which gave
+# installed=true and enabled=3 (DISABLED_USER), and `pm list packages -d --user 0` then lists it.
+# If a restore ever skips it, `pm install-existing --user 0` is the way back.
+#
+# Launcher handover on Android 14. HOME is resolved by intent priority and the saved default home is
+# ignored, so `cmd package set-home-activity` prints Success and changes nothing. Measured on this unit
+# with `cmd package query-activities`:
+#   launcherx/.home.HomeActivity                    priority 2
+#   setupwraith/.RecoveryActivity                   priority 1
+#   a sideloaded launcher                           priority 0
+#   com.android.tv.settings/.system.FallbackHome    priority -1000
+# The saved Wi-Fi network belongs to com.google.android.tungsten.setupwraith
+# (dumpsys wifi | grep -o 'cname=[^ ]*') and this projector is Wi-Fi only with no wired fallback, so
+# disabling setupwraith would take it off the network and off ADB with no way back. setupwraith and
+# launcherx therefore both stay enabled, and the reference launcher gets Home through the Home-key
+# redirect: HOME_KEY_SERVICE=1 plus "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+# (config.json in this folder).
+# Because of that, launcher/build-and-install.sh (and .ps1) stops with "Home resolves to
+# ...launcherx/.home.HomeActivity, not to the new launcher" and exits before it enables the Home-key
+# service. The APK is installed and working at that point; only the accessibility service still has to be
+# switched on. Trade-off, the same one the L1 Pro reports: with the helper on, holding Volume Up gives
+# one step per press instead of a ramp.
+# Sideloading works here, including a package that declares HOME: no INSTALL_FAILED_VERIFICATION_FAILURE.
+# Optional extra, not part of this list: Private DNS with an ad-blocking resolver (see README.md at the
+# repository root).
+
+# Google telemetry and partner auto-installs
+com.google.android.feedback
+com.google.android.partnersetup               # Google RLZ attribution pings
+android.autoinstalls.config.fomovie           # Play auto-install of partner apps (sic, "fomovie")
+
+# Unused system services
+com.android.htmlviewer
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.android.hotspot2.osulogin
+
+# Android 14 Privacy Sandbox: Topics API, ad attribution measurement, on-device personalisation
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Health Connect: a phone health-data platform with nothing to do on a projector
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+
+# Preloaded apps the owner does not use (all shipped enabled on this unit)
+com.gmm.onehd                                # GMM One HD, Thai VOD
+com.apkpure.aegon                            # APKPure store
+com.tcl.browser                              # TCL browser, no remote-friendly UI
+com.google.android.videos                    # Google TV Movies, see the note above
+com.google.android.play.games
+fusion.android.tv.demo                       # Kaltura demo player

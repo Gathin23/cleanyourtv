@@ -26,6 +26,12 @@
 # - Chromecast (mediashell) verified NOT using setupwraith's CastInfoProvider on this build;
 #   disabling setupwraith does not break casting.
 # - All disables survived a full reboot (firmware does not auto-re-enable on this build).
+# - A second Google TV profile is a second Android user, and this board's key service
+#   (com.smartdevice.global.service, kept) then takes a provider client for launcherx's LiveTvContentProvider
+#   on every gear/Input hotkey: with launcherx disabled it throws, and RescueParty climbs to the level that
+#   switches the launcher's accessibility helpers off. Seen on a Coocaa Y74 Pro 65" (SW10_TG, Google TV 14,
+#   UKN4.250714.140). Run `pm list users` first, and see
+#   docs/TROUBLESHOOTING.md#app-buttons-crash-the-tvs-own-key-service-on-a-set-with-a-second-user-skyworthcoocaa
 # - Display: 3840x2160 physical, 1920x1080 override (normal for this SoC), density 320, no forced override.
 #
 # Stock launcher:   com.google.android.apps.tv.launcherx

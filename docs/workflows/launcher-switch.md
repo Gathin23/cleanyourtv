@@ -19,7 +19,11 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
 6. Add a JVM unit test under `launcher/app/src/test/java/com/gathin/tvhome/` for any logic that can be tested
    without a TV.
 7. Keep it small: a switch should cost a few hundred bytes to about 1 KB of APK. Build and check the size
-   gate; the gate is hard.
+   gate; the gate is hard. The size is also printed on the front pages, so a switch that moves it updates
+   `STATS` in `tools/readme_stats.py` - the number `docs/card.jpg` is drawn from, and what each page's alt
+   text describes - and the `about N KB` in every `README*.md` that shows that card: its alt text, the
+   `launcher/build-and-install.sh` Tools row and the Launcher section's first sentence, in each page's own
+   words.
 8. Verify on a real TV with the switch on and off, D-pad from every edge, and attach screenshots.
 9. If you can, run the regression check in [`perf-ab.md`](perf-ab.md) with the
    switch on: a baseline before you start, your build after, and the numbers in the PR. It's optional, but welcome.
@@ -27,4 +31,8 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
 Anything TV-specific goes in `config.xml` or a theme, not in code. A bug fix that corrects wrong behaviour needs
 no switch. No new dependencies in `launcher/app/build.gradle` without an issue first.
 
-Then run the tests: `python3 -m unittest discover -s tests -v`.
+Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
+[`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
+`adb_shell` the suite imports - under the system `python3` those checks skip and the run still says OK. The
+picture, card and wallpaper checks need Pillow as well: `tools/requirements-perf.txt` adds it, and without it
+they are reported as skips, not failures.

@@ -2,8 +2,8 @@
 # Build: Dcolor/GD2/YHT:14/URO4.260304.027/15200246:user/release-keys
 # Home it shipped with: Google TV (com.google.android.apps.tv.launcherx). 128 system apps, 39 disabled here.
 #
-# Apply:    tools/disable.sh examples/dcolor-gd2/debloat.txt
-# Restore:  tools/restore.sh examples/dcolor-gd2/debloat.txt com.google.android.apps.tv.launcherx
+# Apply:    TV_HOST=<tv ip> tools/disable.sh examples/dcolor-gd2/debloat.txt
+# Restore:  TV_HOST=<tv ip> tools/restore.sh examples/dcolor-gd2/debloat.txt com.google.android.apps.tv.launcherx
 # Launcher: INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. Disable it only after the new launcher is Home;

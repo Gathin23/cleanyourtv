@@ -1,0 +1,91 @@
+# Hisense 65U75K (device hengshan, MediaTek), Google TV / Android 14, build UKN4.250714.107
+# (incremental 00.00.00.193). Android model string is "SmartTV 4K FFM". ~2.4 GB RAM.
+# Same board family as examples/hisense-u75-hengshan/ (Google TV 12 / STT2.230310.002); this
+# list is the Android 14 firmware path. US unit.
+# Status: applied in batches from 2026-11-12, lived with through 2026-11-14 (reboot-checked;
+# Photos Ambient albums need mediashell re-enabled — left off this list on purpose).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan-android14/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan-android14/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# WARNING: do not add com.vt.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.ai_sense,
+# com.vt.tv.aiot, com.vt.tv.aiotprotocolapp or com.vt.tv.aiotsystemservice. On related
+# huangshan firmware that family sent the TV to Android Recovery ("Can't load Android system").
+#
+# Keep (verified / chosen on this unit):
+#   com.vt.tv.ota, com.vt.eula          firmware updates
+#   com.google.android.katniss          Google Assistant
+#   com.google.android.apps.tv.dreamx   Photos Ambient / Backdrop screensaver
+#   com.google.android.apps.mediashell  needed for Photos Ambient albums (and Chromecast)
+#   com.google.android.apps.tv.launcherx  left ENABLED for volume ramp; HomeKeyService redirects Home
+#   com.vt.tv.tvcenter                  Live TV + HDMI inputs
+#   com.android.vending, gms, gsf, tv settings, keyboard, remote service, Dolby audio
+# Stock streaming kept by choice on this unit: Prime, Disney+, Hulu, Max, Peacock, Spotify, PBS Kids.
+# Stock YouTube was replaced with SmartTube (org.smarttube.stable) — optional disable below.
+#
+# setupwraith: forget and rejoin Wi-Fi in Settings first so cname is android.uid.system (not
+# setupwraith), or ADB dies when the wizard is disabled. On Google TV, casting can also depend on it.
+
+# Hisense ACR / content / promo
+com.vt.tv.evservice                      # Vtp_ACR automatic content recognition
+com.vt.hishow                            # Family Moment / photo surfaces
+net.vidaatv.hisense.android.tv           # VIDAA Channels Plus
+com.vidaa.oemtabcontentprovider          # VIDAA content tab feed
+com.hisense.odinbrowser                  # built-in browser
+com.windowsight.windowsighttv.hisense.artstudio
+
+# Retail / hotel / factory
+com.vt.storemode
+com.vt.tv.b2b
+com.vt.factory
+com.vt.fte                               # first-time experience
+
+# Voice (Google Assistant kept)
+com.vt.alexa                             # HiAlexa
+
+# Broadcast interactive (unused without tuner use)
+# TV middleware: kept on in this list; uncomment to disable
+# tv.mopa.ginga
+# com.vt.tv.interactive
+
+# Cleaners / calibration extras
+com.vt.tv.protector                      # DeviceAssistant cleaner
+com.vt.tv.calmanconnector
+com.vt.roomcalibration
+com.vt.tv.mediacenter                    # USB / DLNA media center
+com.vt.tv.singlelisten                   # MyMusic
+
+# Google partner / feedback
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Unused on a television
+com.android.printspooler
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.providers.contacts
+
+# Casting extras (Chromecast / mediashell kept for Photos Ambient — do not disable mediashell)
+com.vt.tv.mobiledeviceconnectiontips     # Miracast tips
+com.vt.tv.airplaykeycheck
+com.vt.tv.dlna
+com.mediatek.AirplayAPK
+com.mediatek.airplaydaemon
+com.mediatek.partner.airplay_sys         # sticky system_ext priv-app; may partially respawn after reboot
+
+# Unused preloaded streaming (owner choice)
+# This set has these off; uncomment what you do not use.
+# com.netflix.ninja
+# com.google.android.youtube.tvunplugged
+# com.google.android.youtube.tvmusic
+# com.tubitv
+# tv.pluto.android
+# com.instagram.airwave
+# com.haystack.android
+com.google.android.play.games
+# com.google.android.youtube.tv            # off here for SmartTube; comment out to keep stock YouTube
+
+# Launcher phase: after Wi-Fi rejoin. Leaves HOME claim; keep launcherx enabled for volume ramp.
+com.google.android.tungsten.setupwraith

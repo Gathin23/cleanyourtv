@@ -4,6 +4,11 @@
     recovery.py --save <debloat list>                read the TV and write the record
     recovery.py --commands <list> [stock launcher]   print a batch for tools/tv.py --batch that puts
                                                      the recorded states back
+    recovery.py --help                               this text; needs no TV
+
+Both read the record for this TV and list, and the record is one file per TV and list named after
+the address the TV was reached at, so both need TV_HOST. `--commands` asks the TV nothing: it needs
+no TV and no ADB client, only the address that names the record.
 
 `tools/restore.sh` used to enable every package in the list, including ones the owner had already
 disabled, and reset Home and the animation scales to fixed values instead of to what was there
@@ -13,9 +18,17 @@ reaches the TV, and `restore.sh` replays it.
 Records live in ~/.cleanyourtv/, one per TV and list. The first one wins: a retry after a
 half-applied list must not record the broken state as the original. The TV is the address it was
 reached at, so a set that takes a new address gets a new record: save() warns when a record under
-another address still holds, as enabled, a package it just found disabled (#2139). A later run, and check.py --fix,
+another address still holds, as enabled, a package it just found disabled (#2139), and --commands,
+finding none at this address, names the records for the same list under the others before it prints
+the batch that enables every listed package. A later run, and check.py --fix,
 only add the names the list gained since then, with their state before this list disabled them, and
 record a package that was absent then and is installed and enabled now as enabled.
+
+Exit codes: 2 is a run that never asked the TV anything - no TV_HOST, a checkout without tools/venv,
+or a TV that was not reached - and it prints tv.py's own sentence before it stops; 0 the record was
+written, or kept as it was, or --help printed this text; 1 anything else that stopped the run, such
+as a save that read the TV and then failed, or a list or stock launcher name --commands refuses.
+disable.sh stops on any non-zero: no record, nothing disabled.
 """
 import hashlib
 import ipaddress
@@ -32,6 +45,9 @@ PACKAGE_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")
 HOME_RE = re.compile(r"[A-Za-z_][\w.]*/[\w.$]+")
 SCALE_RE = re.compile(r"-?\d+(\.\d+)?")
 SETTINGS = ("window_animation_scale", "transition_animation_scale", "animator_duration_scale")
+# What a save that never asked the TV anything adds after tv.py's sentence: exit 2 is that shape, 1 is
+# a save that read the TV and then failed (see reach()).
+NOTHING_RECORDED = "Nothing was recorded and nothing was sent to the TV."
 # This project's own launcher. When it already owned Home before debloating while the stock launcher
 # was on, restoring Home to it would leave the stock launcher's Home unused, so restore goes back to the
 # stock one instead. When the stock launcher was already off then, this launcher keeps Home (#1714).
@@ -59,7 +75,9 @@ VERSION = 1
 # Ultra, a CVTE SMART_TV and a MIBOX4 list them that way). disable.sh and disable.ps1
 # carry the same two patterns (tests/test_core_packages.py keeps the three in step).
 # The TV middleware too: com.cltv.mal (a Haier H50H5F looped with it off, #1578), com.mediatek.tis, tv.service, tv.agent.
-CORE_RE = re.compile(r"^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$")
+# Protect the exact SDK sandbox package (#2557); the reported boot-failure cause is unconfirmed.
+# And com.android.location.fused: a TCL 43S5400A (V325) boot-looped into recovery with only it off (#2803).
+CORE_RE = re.compile(r"^(android|android\.ext\.(services|shared)|com\.(google\.)?android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$")
 CORE_OK = re.compile(r"^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$")
 
 
@@ -251,7 +269,8 @@ def load_record(path):
         raise SystemExit(f"{path}: not a usable recovery record ({e}).\n"
                          "It is left where it is: move it aside deliberately, a retry must not "
                          "replace the state recorded before the first change.")
-    if record.get("version") != VERSION or not isinstance(record.get("packages"), dict):
+    if (not isinstance(record, dict) or record.get("version") != VERSION
+            or not isinstance(record.get("packages"), dict)):
         raise SystemExit(f"{path}: unknown recovery record format; move it aside deliberately.")
     # Records written before save() left the chooser out hold it as Home, and "android" among the
     # packages with it. Everything else in them is the TV before cleanup, and moving the file aside
@@ -354,16 +373,56 @@ def query_home(dev):
     return candidate if HOME_RE.fullmatch(candidate) else None
 
 
-def connect():
-    # Imported here so --commands works on a machine where adb_shell is not installed: printing the
-    # restore batch needs no TV. tv.py itself exits with a readable message when TV_HOST is unset.
+def client():
+    """tools/tv.py as a module.
+
+    Imported where it is used so --commands works on a machine where adb_shell is not installed:
+    printing the restore batch needs no TV. tv.py itself exits with a readable message when TV_HOST
+    is unset.
+    """
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     try:
         import tv
     except ImportError as e:
         raise SystemExit(f"cannot load tools/tv.py ({e}).\nrun: python3 -m venv tools/venv && "
                          "tools/venv/bin/pip install -r tools/requirements.txt")
-    return tv.connect()
+    return tv
+
+
+def connect():
+    return client().connect()
+
+
+def reach():
+    """The TV, or the answer 2 for a run the TV was never asked anything by.
+
+    Exit 1 is what this script returns for a save that read the TV and then failed - a record that
+    cannot be read or updated, a TV that answered no packages - and disable.sh reports that as a
+    failed save, with the TV untouched. A TV that was never reached, a checkout without the ADB
+    client and a run with no TV_HOST are not that: nothing was asked of the TV, so they print
+    tv.py's own words (or the line that builds the venv) and exit 2, as check.py, privacy.py,
+    manage.py, bench.py, trace.py and theme_restart.py already do for the same shapes.
+    """
+    try:
+        return client().connect()
+    except SystemExit as e:
+        # tv.py stops with its own words at import time when TV_HOST is unset, and client() stops
+        # with the line that builds the venv: both are a process exit, not an exception this can
+        # answer with a line of its own.
+        if not isinstance(e.code, str):
+            raise
+        sys.stderr.write(f"{e.code}\n{NOTHING_RECORDED}\n")
+        raise SystemExit(2)
+    except Exception as e:
+        # adb_shell raises its own errors, not OSError: a refused port, a Wireless debugging port
+        # that asks for TLS, a handshake nobody accepted. tv.py words each of them, with the port to
+        # use instead and the page for a set with no ADB at all; an error it has nothing to add to
+        # (an ADB key file this account cannot read) keeps its traceback, which names the file.
+        sentence = client().connect_error(e)
+        if sentence is None:
+            raise
+        sys.stderr.write(f"{sentence}\n{NOTHING_RECORDED}\n")
+        raise SystemExit(2)
 
 
 def package_state(name, installed, disabled):
@@ -418,7 +477,7 @@ def save(list_path, host):
         if all(record["packages"].get(name, "absent") != "absent" for name in packages):
             print("nothing was recorded again: it holds the state from before the first run.")
             return 0
-        dev = connect()
+        dev = reach()
         try:
             installed, disabled = query_packages(dev)
         finally:
@@ -429,7 +488,7 @@ def save(list_path, host):
         return 0
 
     packages = read_list(list_path)
-    dev = connect()
+    dev = reach()
     try:
         installed, disabled = query_packages(dev)
         home = query_home(dev)
@@ -516,6 +575,26 @@ def restore_commands(list_path, stock, host):
             "Enabling every listed package and resetting Home and the animation scales to their\n"
             "defaults. Packages that were already disabled before cleanup will be enabled too:\n"
             "check the list before running this.\n")
+        # The record for this list can be on this machine under another address: the setupwraith step
+        # asks the owner to forget and re-join the TV's Wi-Fi network, and the router hands out a new
+        # lease. undo at the new address then finds nothing, which is save()'s warning read from the
+        # other side (#2139) - and this is the run that enables the packages the owner had disabled
+        # before cleanup, while the record that says which of them were on is filed under the old
+        # address. Nothing here reaches the TV, so the records cannot be compared with what is
+        # disabled now: name them, and the two readings, instead of choosing one.
+        under_other_addresses = records_under_other_addresses(list_path, path)
+        for tag, other in under_other_addresses:
+            sys.stderr.write(f"a recovery record for this same list is under {tag}: {other}\n")
+        if under_other_addresses:
+            sys.stderr.write(
+                "If this is that TV on a new address (a new DHCP lease, or the Wi-Fi forget and\n"
+                "re-join the setupwraith step asks for), run tools/restore.sh at that address\n"
+                "instead of here, or move that record to\n"
+                f"  {path}\n"
+                "once you are sure it is this set: this run otherwise enables packages that were off\n"
+                "before cleanup.\n"
+                "If this is a second set cleaned with the same list, nothing is wrong: that record\n"
+                "is the other set's, and this address has none.\n")
         for name in packages:
             commands.append(f"pm enable {name}")
         if stock:
@@ -588,14 +667,40 @@ def restore_commands(list_path, stock, host):
     return commands
 
 
+# Why a --commands run without TV_HOST stops instead of printing a plan: the record is one file per TV
+# and list, named after the address the TV was reached at (record_path), so there is no name to look
+# under, and the one it fell back to - "no-host", from record_name's tag - is a name save() cannot
+# write. The run then found no record and printed the no-record fallback, the batch that enables every
+# listed package, for a TV whose record may well be there (#239 is what that record exists to prevent).
+# Nothing reaches a TV without an address either, so this is a run that never asked the TV anything:
+# tv.py's own line, then exit 2.
+NO_ADDRESS = ("The record is one file per TV and list, named after the address the TV was reached at, "
+              "so a run without TV_HOST cannot say which one to read.")
+
+
 def main():
     args = sys.argv[1:]
+    # -h/--help is a reader asking what the tool does, not a command line it cannot use: the other
+    # tools in tools/ answer it at 0 with the note on stdout (adb-closed.py is the exception, and
+    # tests/test_adb_closed_address_words.py pins why). This one printed the two usage lines on
+    # stderr and returned 2 - the status above is "a run that never asked the TV anything" - so
+    # `tools/recovery.py --help | less` showed nothing, and the paragraph on why the record is one
+    # file per address, which is what makes a restore put back what was there, was never printed by
+    # the command a reader asks.
+    if args[:1] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        return 0
     host = os.environ.get("TV_HOST", "")
     if len(args) == 2 and args[0] == "--save":
         return save(args[1], host)
     if len(args) in (2, 3) and args[0] == "--commands":
         if not host:
-            sys.stderr.write("Set TV_HOST to your TV's IP address, e.g. TV_HOST=192.168.1.50\n")
+            # tv.py's own words, then why this run cannot go on, then exit 2. The address is not
+            # reachable from here and nothing is sent to a TV; it is only what names the record.
+            sys.stderr.write("Set TV_HOST to your TV's IP address, e.g. TV_HOST=192.168.1.50\n"
+                             f"{NO_ADDRESS}\n"
+                             "Nothing was sent to the TV.\n")
+            return 2
         stock = args[2] if len(args) == 3 else "com.google.android.tvlauncher"
         for command in restore_commands(args[1], stock, host):
             print(command)

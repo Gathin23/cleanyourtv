@@ -1,0 +1,11 @@
+{
+  "dock_apps": [
+    "com.mediatek.wwtv.tvcenter",
+    "com.google.android.youtube.tv"
+  ],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "power_on_home": false,
+  "power_on_home_always": true,
+  "key_filter": false,
+  "consume_volume_keys": false
+}

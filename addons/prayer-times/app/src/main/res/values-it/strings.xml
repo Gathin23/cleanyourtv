@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Orari di preghiera</string>
+    <string name="prayer_fajr">Fajr</string>
+    <string name="prayer_sunrise">Sorgere del sole</string>
+    <string name="prayer_dhuhr">Dhuhr</string>
+    <string name="prayer_asr">Asr</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isha</string>
+    <string name="prayer_in">%1$s tra %2$s</string>
+    <string name="prayer_tomorrow">%1$s domani</string>
+    <string name="prayer_alert_badge">ORA DI PREGHIERA</string>
+    <string name="prayer_alert_title">Ora di preghiera: %1$s</string>
+    <string name="prayer_alert_dismiss">%1$d s</string>
+    <string name="notification_title">Ora di preghiera: %1$s</string>
+    <string name="notification_body">È l’ora della preghiera di %1$s (%2$s) a %3$s</string>
+    <string name="reminders_active">Promemoria attivi</string>
+    <string name="updated_at">aggiornato %1$s</string>
+    <string name="loading">Caricamento…</string>
+    <string name="offline">Impossibile raggiungere Aladhan. Mostro gli ultimi orari, se ci sono.</string>
+    <string name="unexpected_error">Risposta inattesa da Aladhan.</string>
+</resources>

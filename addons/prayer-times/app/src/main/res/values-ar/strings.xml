@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">أوقات الصلاة</string>
+    <string name="prayer_fajr">الفجر</string>
+    <string name="prayer_sunrise">الشروق</string>
+    <string name="prayer_dhuhr">الظهر</string>
+    <string name="prayer_asr">العصر</string>
+    <string name="prayer_maghrib">المغرب</string>
+    <string name="prayer_isha">العشاء</string>
+    <string name="prayer_in">%1$s بعد %2$s</string>
+    <string name="prayer_tomorrow">%1$s غداً</string>
+    <string name="prayer_alert_badge">وقت الصلاة</string>
+    <string name="prayer_alert_title">وقت صلاة %1$s</string>
+    <string name="prayer_alert_dismiss">%1$d ث</string>
+    <string name="notification_title">حان وقت صلاة %1$s</string>
+    <string name="notification_body">حان الآن موعد صلاة %1$s (%2$s) في %3$s</string>
+    <string name="reminders_active">التنبيهات مفعلة</string>
+    <string name="updated_at">تم التحديث %1$s</string>
+    <string name="loading">جارٍ التحميل…</string>
+    <string name="offline">تعذر الاتصال بـ Aladhan. جارٍ عرض آخر أوقات محفوظة إن وجدت.</string>
+    <string name="unexpected_error">استجابة غير متوقعة من Aladhan.</string>
+</resources>

@@ -1,0 +1,5 @@
+{
+  "dock_apps": ["com.google.android.youtube.tv", "com.netflix.ninja", "ru.kinopoisk.tv", "ru.ivi.client"],
+  "hidden_apps": ["com.smartdevice.livetv"],
+  "live_tv_package": "com.smartdevice.livetv"
+}

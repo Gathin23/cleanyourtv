@@ -5,8 +5,9 @@
 # ad services. The US list (examples/tcl-g08-us-google-tv) applies only partially here; this list is the
 # subset that exists on this build, applied by hand with `pm disable-user --user 0`.
 #
-# Tested 21 October 2026 on one set. All 24 packages below are disabled on that set and it boots, plays
-# HDMI/Live TV and opens the source menu normally.
+# Tested 21 October 2026 on one set: the 24 packages it took from the four groups at the top of this list are
+# disabled there, and it boots, plays HDMI/Live TV and opens the source menu normally. The two blocks the later
+# units added - the AS36/AS34 preloads and the third unit's Google extras, eight lines - bring this file to 32.
 #
 # Second unit: TCL 75Q7C (G08_4K_GB, same model "Smart TV Pro"), firmware STT2.221228.001 AS36, Spain, on
 # Ethernet, 25 October 2026, with the Clean Your TV launcher as Home (README). The list below applied unchanged
@@ -18,6 +19,15 @@
 # packages still disabled after two reboots. This AS34 set ships AirplayAPK and the five "AS36" packages too, so
 # those preloads are not tied to the build. Four of them are now in the list; com.tcl.guard stays commented.
 # com.tcl.browser is not on this set either. Kept by the owner: tts, airplaydaemon, magiconnectfree.
+#
+# Fifth unit: TCL 50Q6C (G08_4K_GB, same model "Smart TV Pro", board tcl9618), firmware STT2.221228.001 AS35,
+# Czechia, on Ethernet, 9 to 10 November 2026, stock launcher kept as Home. 29 of the 32 lines below disabled
+# there in three batches with reboots between; still disabled after a second reboot. Verified after each batch
+# and after reboot: Home, Source/Inputs menu, HDMI switching, DVB tuner, remote incl. volume, on-screen
+# keyboard, Google Cast (Chrome tab + phone), Miracast. Kept enabled on this set: com.tcl.UpdatePeripheral,
+# com.mediatek.airplaydaemon, com.google.android.tts (TV is offline at the router, update behaviour and
+# AirPlay untested - no Apple device). com.tcl.browser is not on AS35 either. The AS35 build ships the five
+# "AS36" preloads like the French AS34 set.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g08-eu-android12/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g08-eu-android12/debloat.txt

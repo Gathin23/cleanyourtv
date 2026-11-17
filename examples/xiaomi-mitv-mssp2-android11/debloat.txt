@@ -1,0 +1,60 @@
+# Xiaomi MiTV-MSSP2 (codename volver), Android TV 11 (SDK 30), firmware RTT2.211214.001.933, MediaTek, low-RAM build.
+# ro.build.fingerprint Xiaomi/volver/volver:11/RTT2.211214.001/933:user/release-keys, security patch 2023-12-05.
+# Live TV app: com.mediatek.wwtv.tvcenter (already the live_tv_package in launcher config.xml).
+# Stock launcher: com.google.android.tvlauncher (the default, disabled by build-and-install.sh).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mssp2-android11/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mssp2-android11/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - The same set after its Android 11 update; the Android 9 list is examples/xiaomi-mitv-mssp2. Four of its
+#   packages are not on this build (tv.bugreportsender, leanbacklauncher, leanbacklauncher.recommendations,
+#   music), and nothing was disabled before this list.
+# - The Xiaomi updater (com.xiaomi.mitv.updateservice, kept) installed new versions of PatchWall
+#   (com.mitv.tvhome.atv) and Mi TV+ (com.mitv.tvhome.mitvplus) in the first hour, and an update puts a
+#   package back to enabled. dumpsys package names the updater as lastDisabledCaller. Re-disable with
+#     tools/venv/bin/python -I tools/check.py --fix examples/xiaomi-mitv-mssp2-android11/debloat.txt com.gathin.tvhome
+# - Applied in three batches (telemetry, content rows, preloads) with a screenshot after each; one
+#   screenshot of the stock home came back all black while it reloaded after the content providers went,
+#   and was normal five seconds later.
+# - Wireless debugging is off by default; network ADB on 5555 opens with USB debugging alone, and closed
+#   again (connection refused) after switching it off and rebooting.
+# - Left alone on purpose: com.mediatek.wwtv.tvcenter / com.mediatek.tvinput (HDMI + tuner), mitv.service,
+#   com.mediatek.tv.agent, com.mi.bluetooth, com.mediatek.hotkey.dispatcher, com.mstar.netflixobserver and
+#   com.xiaomi.android.tvsetup.partnercustomizer (remote hotkeys, Netflix button),
+#   com.google.android.tv.remote.service (phone remote), com.xiaomi.mitv.mediaexplorer (USB Media Player),
+#   com.xiaomi.mitv.updateservice (firmware updates), Play Store, Play Services, Google Assistant (katniss),
+#   Chromecast (mediashell), the Mi screensaver (com.mitv.dream), Ambient mode (backdrop) and the keyboard.
+#   Never start com.mediatek.tv.factory or mediatek.factorymenu.ui.
+
+# Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.google.android.partnersetup                     # Google partner setup / RLZ pings
+
+# PatchWall, content rows, sponsored rows
+com.mitv.tvhome.atv                                 # PatchWall; an updater install re-enables it
+com.mitv.tvhome.michannel                           # Mi Channel rows
+com.mitv.tvhome.mitvplus                            # Mi TV+ ad-funded channels; an updater install re-enables it
+com.xm.webcontent
+android.autoinstalls.config.xiaomi.amelie           # Play auto-install of partner apps
+com.google.android.tvrecommendations
+com.xiaomi.floatingframe                            # floating promo overlay
+fusion.android.tv.demo                              # retail demo mode
+com.xiaomo.tv.milegal                               # Xiaomi legal / privacy screens
+
+# Preloads
+com.xiaomi.mitv.tvmanager                           # TV Manager cleaner
+com.android.printspooler
+com.google.android.play.games
+com.google.android.videos                           # Google TV / Play Movies
+com.xiaomi.mimusic2                                 # Mi Music
+com.mitv.gallery                                    # Mi Gallery
+com.mitv.videoplayer                                # Mi video player; VLC opens video files instead
+com.epic.docubay                                    # DocuBay, partner preinstall
+
+# Streaming apps: kept by this owner; disable the ones you don't use
+# com.amazon.amazonvideo.livingroom                 # Prime Video
+# com.google.android.youtube.tvmusic                # YouTube Music

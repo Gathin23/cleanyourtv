@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Apri all’accensione</string>
+    <string name="watching">Apertura di un’app quando la TV si accende</string>
+    <string name="hint">Apre l’app che scegli ogni volta che lo schermo si accende.</string>
+    <string name="enabled_state">Apri all’accensione: %1$s</string>
+    <string name="link_state">Link: %1$s (OK lo cancella)</string>
+    <string name="delay_state">Attesa dopo l’accensione: %1$d secondi</string>
+    <string name="test">Provalo ora</string>
+    <string name="on">sì</string>
+    <string name="off">no</string>
+    <string name="none">nessuna scelta</string>
+    <string name="choose">OK per scegliere un’app</string>
+    <string name="change">OK per cambiare l’app</string>
+    <string name="missing">%1$s (non installata)</string>
+    <string name="pick_title">Scegli l’app</string>
+    <string name="pick_hint">OK sceglie l’app. Indietro la lascia com’era.</string>
+</resources>

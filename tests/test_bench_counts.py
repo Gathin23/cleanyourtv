@@ -71,7 +71,7 @@ class FakeTV:
     def focused_window(self):
         return "u0 com.gathin.tvhome/.MainActivity"
 
-    def shell(self, command):
+    def shell(self, command, *, retry=False):
         self.commands.append(command)
         if command.startswith("pidof"):
             return "1234\n"
@@ -96,6 +96,8 @@ def run(argv):
     # An empty TV_PORT reads as 5555 (tools/tv.py does the same), so the port this run keeps does not
     # depend on what the machine running the suite exported.
     environment = {"TV_HOST": "", "TV_PORT": ""}
+    # Python 3.14 argparse also reads __main__.__spec__ for its program name. Model a
+    # direct bench.py invocation, rather than inheriting `python -m unittest`'s spec.
     out, err = io.StringIO(), io.StringIO()
     status = 0
     with mock.patch.object(bench, "TV", FakeTV), \
@@ -103,6 +105,7 @@ def run(argv):
             mock.patch.object(bench.time, "sleep", lambda seconds: None), \
             mock.patch.dict(os.environ, environment), \
             mock.patch.object(sys, "argv", ["bench.py"] + argv), \
+            mock.patch.object(sys.modules["__main__"], "__spec__", None, create=True), \
             contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
         try:
             bench.main()
@@ -133,6 +136,12 @@ class RefusedBeforeTheTVTest(unittest.TestCase):
     def test_a_negative_idle_is_refused(self):
         # time.sleep() answers a negative length with ValueError, after the same full run.
         for value in ("-1", "-60"):
+            with self.subTest(idle=value):
+                self.refused(["--idle", value], "--idle", value)
+
+    def test_an_idle_above_a_day_is_refused(self):
+        # time.sleep() answers 10**10 with OverflowError, after the same full run.
+        for value in ("86401", "10000000000"):
             with self.subTest(idle=value):
                 self.refused(["--idle", value], "--idle", value)
 

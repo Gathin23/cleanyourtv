@@ -11,6 +11,15 @@
 #      Same board, same Android version, newer firmware. Lines marked "20250610" were only
 #      verified on that unit. It ran this list for three days, with the Home handover, the
 #      accessibility guard and the boot behaviour re-checked after several reboots.
+#   3) TCL ak30a5, build date 20250401, fingerprint TCL/ak30a5/ak30a5:9/PPR1.180610.011/20250401,
+#      zh-CN. Status: one evening (2026-10-27) with two reboots — NOT the several days this list
+#      asks for, so treat the 20250401 notes below as unverified for daily use. Nothing in the
+#      package list itself was changed for this unit.
+#      Differences measured on that unit:
+#      - Disabling com.tcl.cyberui has a quirk: its old task can still be brought to the front
+#        once in a while within the same boot (logcat shows am_on_start_called for the disabled
+#        package). It stays dead across a reboot; pressing Home after a re-assert of
+#        set-home-activity fixes the session.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-ak30a5/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-ak30a5/debloat.txt com.tcl.cyberui

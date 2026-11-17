@@ -1,0 +1,30 @@
+# Master-G 2K Smart TV (KTC "mountbaker", KTC_MASTER_G_2K_SA_22GV1), Chile, Google TV on Android 14
+# Contributed by JordanFarias
+# Board/SoC: Realtek rtd2841a
+# Build UKR9.250818.041 (fingerprint MASTER-G/KTC_MASTER_G_2K_SA_22GV1/mountbaker:14/UKR9.250818.041/14285169:user/release-keys).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/master-g-2k-smart-tv-jordanfarias/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/master-g-2k-smart-tv-jordanfarias/debloat.txt com.google.android.apps.tv.launcherx
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\master-g-2k-smart-tv-jordanfarias\debloat.txt
+# Undo Win: tools\restore.ps1 -TvHost <tv ip> examples\master-g-2k-smart-tv-jordanfarias\debloat.txt -Stock com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Note on setupwraith & Wi-Fi: disabling com.google.android.tungsten.setupwraith gives Home back
+# but costs casting; it can also drop a Wi-Fi network originally added during initial setup, so
+# forget and re-join Wi-Fi in Settings if needed.
+# Note on screensaver: set screensaver_components to com.gathin.tvhome/.ClockDream and
+# sleep_timeout=0 to prevent premature standby when idle.
+
+# ---- Stock launcher & setup handover ----
+com.google.android.apps.tv.launcherx             # Stock Google TV launcher
+com.google.android.tungsten.setupwraith          # Initial setup recovery activity
+
+# ---- Android 14 ad, personalisation and federated-learning services ----
+com.android.adservices.api                       # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services     # On-device ad personalisation
+com.android.federatedcompute.services            # Federated learning for the above
+
+# ---- Preloaded apps ----
+com.electronic.manual                            # On-TV electronic manual
+com.google.android.play.games                    # Play Games
+com.google.android.youtube.tvmusic               # YouTube Music

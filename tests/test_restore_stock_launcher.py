@@ -168,6 +168,9 @@ class RestoreStockLauncherTest(unittest.TestCase):
         self.clear_sent()
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         result = subprocess.run([PWSH, "-NoProfile", "-File", str(tools / "restore.ps1"),
                                  str(self.list_path)], cwd=self.repo, env=env, capture_output=True,
                                 text=True, timeout=120)

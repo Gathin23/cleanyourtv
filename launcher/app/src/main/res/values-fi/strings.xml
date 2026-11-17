@@ -112,4 +112,7 @@
     <string name="race_finished">Ruutulippu</string>
     <string name="last_opened">Viimeksi avattu %1$s</string>
     <string name="game_live">Käynnissä nyt</string>
+    <string name="clock_format_system">Järjestelmä</string>
+    <string name="clock_format_12">12 tuntia</string>
+    <string name="clock_format_24">24 tuntia</string>
 </resources>

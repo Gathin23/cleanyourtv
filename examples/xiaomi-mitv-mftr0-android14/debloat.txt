@@ -1,0 +1,60 @@
+# Xiaomi MiTV-MFTR0 (freeguy, MediaTek mt9653), China firmware OS3.0.101.0.UFTMATV
+# (HyperOS TV 3), Android 14 (SDK 34). Third unit of this model here, and the OS3 sibling of
+# examples/xiaomi-mitv-mftr0/ (that one is OS2.0.23.0.RFTMATV, Android 11): the list is that
+# folder's, re-checked against this unit's own `pm list packages -f` and then living with it.
+# Home, the Inputs rows and the screensaver are the same mechanisms as ASTR0/MFFU0 (see
+# README.md here). Disabled on 2026-11-10 and left disabled; nothing was re-enabled afterwards.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mftr0-android14/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mftr0-android14/debloat.txt com.mitv.tvhome
+# After a firmware update: TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py --fix examples/xiaomi-mitv-mftr0-android14/debloat.txt com.ts.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - The standby/screensaver ads come from com.xiaomi.mitv.hyper.screensaver, a plain Activity with
+#   its own downloaded carousel; screensaver_enabled=0 does not touch it. com.mitv.screensaver and
+#   com.xiaomi.mitv.advertise do not exist here, and boot_ad is 0 out of the box.
+# - Keep com.xiaomi.mitv.smartpanel enabled (it is the Menu-button panel: source switcher and
+#   wireless tiles). Do NOT add it here.
+# - Keep com.xiaomi.mitv.tvmanager if the owner uses XiaoAI's "open <app>": app-opening runs
+#   through its provider (MFFU0 note). It is absent from this list for that reason.
+# - com.mitv.tvhome (PatchWall) is NOT here on purpose: on this build Home only moves to a launcher
+#   installed under the applicationId com.ts.launcher, and PatchWall is disabled after that
+#   launcher is confirmed as Home, not by a batch (README.md here, and disable.sh's Home guard
+#   would skip it anyway).
+# - ADB over TCP closes on every reboot; Settings -> 账号与安全 -> ADB 调试 re-opens it.
+
+# Xiaomi telemetry / ads / push
+com.miui.tv.analytics                    # TV usage statistics
+com.miui.analytics                       # usage analytics
+com.xiaomi.tvqs                          # quality/performance reporting
+com.xiaomi.mitv.tvpush.tvpushservice     # push ads/notifications
+com.mitv.overseaservice                  # overseas ad-service partner helper (OS3)
+com.miui.hybrid.tv                       # hybrid runtime container
+com.xm.webcontent                        # webview container for promotions
+com.mitv.shoplugin                       # TV Taobao shopping plugin
+com.xiaomi.mitv.shop                     # Xiaomi store
+com.duokan.videodaily                    # short-video promos, bundles the Mi ad SDK
+com.xiaomi.gamecenter.sdk.service.mibox  # game center SDK
+com.android.adservices.api               # AOSP ad-services module (OS3/Android 14)
+com.android.ext.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Preloaded apps
+com.emotn.browser                        # Emotn browser preload
+com.xiaomi.mitv.calendar
+com.xiaomi.mitv.health
+com.xiaomi.mitv.healthdiagnosis
+com.xiaomi.mitv.karaoke.service
+com.xiaomi.screenrecorder
+com.xiaomi.tweather                      # weather provider; also feeds the Hyper screensaver
+com.mitv.gallery
+com.xiaomi.tv.gallery                    # "Pictorial" wallpaper app
+
+# Mi Home + cleaner
+com.xiaomi.smarthome.tv
+com.mitv.toolhouse
+
+# Screensaver ads (same carrier as ASTR0/MFFU0, verified by package state on this build)
+com.xiaomi.mitv.hyper.screensaver        # HyperOS screensaver Activity; see README.md here

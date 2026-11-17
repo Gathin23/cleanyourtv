@@ -78,6 +78,26 @@
 # - The stock launcher keeps a "Google Play Movies & TV" tile in Favourite apps after com.google.android.videos is
 #   disabled, also after a reboot; hold OK on it to remove it.
 # - Free memory at idle (dumpsys meminfo, the two readings straddle a reboot): 674 MB before, 867 MB after.
+#
+# Third unit: Philips 55OLED706/12 (55"), Germany, on Wi-Fi. Same board PH1M_EA_9970A, same build 21029, security
+# patch 2025-10-01. Applied in small batches with a screenshot and a 30 s idle-log check after each, plus the
+# replacement launcher (com.gathin.tvhome, HOME_KEY_SERVICE=1, RESTORE_KEY_SERVICES=1, power_on_home_always=true,
+# reduced_motion=true).
+# - Already disabled at the factory, as on the other units: the UK Freeview apps and org.droidtv.aurora.
+# - As on the Polish unit, org.droidtv.usagelogger and org.droidtv.demome request TV_INPUT_HARDWARE (#321) and
+#   were left enabled.
+# - Disabled on top of this list (none used by the owner): org.droidtv.tv.frameworklogger, com.phorus.playfi.softap,
+#   org.droidtv.dlna, org.droidtv.ipcontrol (the JointSpace / Home Assistant integration lives in xtv and keeps
+#   working), com.google.android.youtube.tvmusic, com.apple.atve.androidtv.appletv, and
+#   com.google.android.tungsten.setupwraith (dumpsys wifi confirmed the saved Wi-Fi network belonged to
+#   android.uid.system, not setupwraith); com.google.android.tvlauncher was disabled after Home moved to
+#   com.gathin.tvhome.
+# - com.phorus.playfi.tv re-enabled itself on reboot on this firmware (as on the 55OLED707), while
+#   com.phorus.playfi.softap stayed disabled; left com.phorus.playfi.tv enabled rather than re-disabling it after
+#   each boot, and hid it in the launcher via hidden_apps and library_excluded_apps.
+# - com.mediatek.tis registers four analog inputs (HW1 Composite, HW2 Component, HW3 SCART, HW4 VGA) in
+#   TvInputManager that the 55OLED706/12 hardware does not have; setting "input_sources": ["HW1=-", "HW2=-",
+#   "HW3=-", "HW4=-"] in the launcher theme hides them so the Inputs menu lists only HDMI 1-4 and Live TV.
 
 # TP Vision + Google telemetry. Disable candeebug and gel together (gel runs in candeebug's process).
 org.droidtv.candeebug                     # "DAC" analytics uploader

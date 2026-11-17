@@ -1,0 +1,13 @@
+<resources>
+    <string name="remote_hours">"Ore"</string>
+    <string name="remote_minutes">"Minuti"</string>
+    <string name="remote_day">"Giorno"</string>
+    <string name="remote_month">"Mese"</string>
+    <string name="remote_year">"Anno"</string>
+    <string name="remote_hint">"Sinistra / Destra: campo · Su / Giù: valore · OK: avanti · Indietro: annulla"</string>
+    <string name="remote_page_hint">"Scegli una riga con le frecce e premi OK. Salva per applicare le modifiche."</string>
+    <string name="remote_events">"EVENTI SETTIMANALI"</string>
+    <string name="remote_exclusions">"PERIODI SENZA RISVEGLIO AUTOMATICO"</string>
+    <string name="remote_wake_time">"Ora di risveglio"</string>
+    <string name="remote_sleep_time">"Ora di standby"</string>
+</resources>

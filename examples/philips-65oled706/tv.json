@@ -1,6 +1,6 @@
 {
-  "tv": "Philips 65OLED706/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), France; 55OLED706/12, Poland",
+  "tv": "Philips 65OLED706/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), France; 55OLED706/12, Poland and Germany",
   "os": "Android TV 11",
   "brand": "Philips",
-  "notes": "Same board and firmware build as `philips-50pus8517/` and `philips-55oled707/`: DAC analytics, Top Picks, app gallery and auto-installs, HD+/M7 operator promos, Alexa, Mimi, Dropbox; aurora was already off from the factory with no xtv retry loop; the OLED logo screensaver takes over after ~5 min, so `home_idle_clock_minutes` must be 4 or less; Assistant, Play-Fi, DLNA, IP control kept; remote fully tested, reboot-checked"
+  "notes": "Same board and firmware build as `philips-50pus8517/` and `philips-55oled707/`: DAC analytics, Top Picks, app gallery and auto-installs, HD+/M7 operator promos, Alexa, Mimi, Dropbox; aurora was already off from the factory with no xtv retry loop; the OLED logo screensaver takes over after ~5 min, so `home_idle_clock_minutes` must be 4 or less; Assistant, Play-Fi, DLNA, IP control kept; `com.phorus.playfi.tv` re-enables at boot on a 55OLED706/12 (hide in launcher); hide non-existent analog inputs (`HW1`–`HW4`) via `input_sources`; remote fully tested, reboot-checked"
 }

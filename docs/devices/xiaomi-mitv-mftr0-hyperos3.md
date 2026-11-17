@@ -63,6 +63,10 @@ two recovery lines above at hand.
 - **Locked verified boot.** `/proc/cmdline` has `androidboot.vbmeta.device_state=locked` and
   `androidboot.veritymode=enforcing`; there are A/B boot slots but no `bootctl` and no fastboot, so going back to
   OS2.0 is not possible from the shell.
+- **关机 in the power menu is standby, not a power-off.** On `OS3.0.106.0.UFTMATV` the vendor middleware logs
+  `Set enter_standby:1`, `uptime` does not reset and ADB still answers afterwards, so a symptom that clears only
+  on a real cold boot needs a reboot or the plug, not 关机. Noted while chasing the standby-LED report in
+  [#2948](https://github.com/Gathin23/cleanyourtv/issues/2948), whose cause is still open.
 
 ## A second set on the same build
 

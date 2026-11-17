@@ -46,7 +46,8 @@ class ThemeNamesFirstTest(unittest.TestCase):
         (self.device / "wallpapers" / "old.jpg").write_bytes(b"old collection")
 
     def assertTvUnchanged(self, result, name):
-        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        # 2, not 1: a refused name sends nothing, and the header keeps 1 for a push that ran and failed.
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertIn(f"unsupported wallpaper filename: {name}", result.stderr)
         self.assertEqual((self.device / "config.json").read_bytes(), b'{"background": "#000000"}',
                          "the refused theme's config.json must not replace the one on the TV")

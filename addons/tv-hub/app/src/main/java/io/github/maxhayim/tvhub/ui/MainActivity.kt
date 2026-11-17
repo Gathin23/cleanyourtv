@@ -15,6 +15,7 @@ import io.github.maxhayim.tvhub.model.Channel
 import io.github.maxhayim.tvhub.player.PlayerActivity
 import io.github.maxhayim.tvhub.ui.Ui.dp
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -38,6 +39,8 @@ class MainActivity : Activity() {
      * item (when the view that had it was rebuilt meanwhile). That must not switch the page.
      */
     private var restoring = false
+    /** "Play a channel when the app opens" has already fired for this launch. */
+    private var autoPlayed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +89,15 @@ class MainActivity : Activity() {
         show(start)
 
         if (!repo.prefs.onboarded) startActivity(Intent(this, OnboardingActivity::class.java))
-        else repo.refreshIfStale()
+        else {
+            repo.refreshIfStale()
+            // savedInstanceState == null: a fresh launch, not Android rebuilding the window, so
+            // coming back from the player with Back leaves you on the hub instead of looping.
+            // An explicit page (EXTRA_PAGE) means the caller asked for that screen, so opening the
+            // player over it would throw the request away.
+            val askedForPage = intent.hasExtra(EXTRA_PAGE)
+            if (savedInstanceState == null && !askedForPage && repo.prefs.autoPlay) autoPlayWhenReady()
+        }
     }
 
     override fun onResume() {
@@ -149,6 +160,22 @@ class MainActivity : Activity() {
     fun focusContent(): Boolean = current?.let { screens[it]?.focusFirst() } ?: false
 
     fun go(p: Page) { navItems.getValue(p).requestFocus(); show(p); content.post { focusContent() } }
+
+    /**
+     * Start the player once the channels are in: the last channel watched, or the first of the list,
+     * which ChannelMerger has already ordered by channel number. Waits rather than giving up, because
+     * on a cold start the channels are still being read from the database.
+     */
+    private fun autoPlayWhenReady() {
+        scope.launch {
+            val all = repo.channels.first { it.isNotEmpty() }
+            if (autoPlayed || isFinishing || isDestroyed) return@launch
+            autoPlayed = true
+            val last = repo.recents().firstOrNull()
+            val index = last?.let { l -> all.indexOfFirst { it.key == l.key } }?.takeIf { it >= 0 } ?: 0
+            play(all, index)
+        }
+    }
 
     fun play(list: List<Channel>, index: Int) {
         if (list.isEmpty()) return

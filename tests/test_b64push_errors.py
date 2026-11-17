@@ -32,10 +32,24 @@ import test_tv_connect_errors as connect_errors  # noqa: E402  (a module, so its
 ROOT = Path(__file__).resolve().parents[1]
 
 # A tools/tv.py whose shell is /bin/sh. adb_shell's shell() hands back what the TV's shell wrote to stderr
-# mixed into its output, so this one does too.
+# mixed into its output, so this one does too. The TV's own folder (/data/local/tmp) is mapped onto a
+# folder in the test's temp dir: tools/b64push.py refuses a remote path outside `[A-Za-z0-9._/-]`, since
+# that path is pasted into the TV's shell, and TMPDIR may name a folder with a space or a character
+# outside that set - so the temp path cannot be the target the tool is given.
+TV_DIR = "/data/local/tmp"
 FAKE_SHELL_TV = r'''
 import os
 import subprocess
+
+
+def here(command):
+    """The TV's folder is a folder on this machine: /data/local/tmp/x -> <FAKE_TV_ROOT>/x."""
+    return command.replace(os.environ["FAKE_TV_DIR"], os.environ["FAKE_TV_ROOT"])
+
+
+def there(text):
+    """And the TV's shell only knows the TV's paths, so its own words name those."""
+    return text.replace(os.environ["FAKE_TV_ROOT"], os.environ["FAKE_TV_DIR"])
 
 
 class Device:
@@ -45,8 +59,8 @@ class Device:
         # Every chunk becomes "ABC", so the copy that arrives has another md5.
         if os.environ.get("FAKE_CORRUPT") and command.startswith("echo '"):
             command = "echo 'QUJD' >>" + command.split(">>", 1)[1]
-        return subprocess.run(["/bin/sh", "-c", command], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                              text=True).stdout
+        return there(subprocess.run(["/bin/sh", "-c", here(command)], stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT, text=True).stdout)
 
     def close(self):
         pass
@@ -74,21 +88,25 @@ class TransferErrorsTest(unittest.TestCase):
         self.local = self.base / "app.apk"
         self.local.write_bytes(self.data)
 
+    def on_the_tv(self, *parts):
+        """The path the TV is given, and the file the stand-in writes for it."""
+        return "/".join((TV_DIR, *parts))
+
     def push(self, remote, **env):
         full = {k: v for k, v in os.environ.items() if k != "TV_HOST"}
-        full.update(env)
+        full.update(FAKE_TV_DIR=TV_DIR, FAKE_TV_ROOT=str(self.remote_dir), **env)
         return subprocess.run([sys.executable, str(self.script), str(self.local), str(remote)], env=full,
                               capture_output=True, text=True, timeout=120)
 
     def test_a_chunk_the_tv_refuses_is_explained_on_stderr(self):
-        missing = self.remote_dir / "no-such-folder" / "app.apk"
-        read_only = self.remote_dir / "read-only" / "app.apk"
-        read_only.parent.mkdir()
-        read_only.write_bytes(b"old contents")
-        read_only.parent.chmod(0o555)
-        self.addCleanup(read_only.parent.chmod, 0o755)
-        for target in (missing, read_only):
-            with self.subTest(target=target.parent.name):
+        missing = self.on_the_tv("no-such-folder", "app.apk")
+        read_only = self.on_the_tv("read-only", "app.apk")
+        (self.remote_dir / "read-only").mkdir()
+        (self.remote_dir / "read-only" / "app.apk").write_bytes(b"old contents")
+        (self.remote_dir / "read-only").chmod(0o555)
+        self.addCleanup((self.remote_dir / "read-only").chmod, 0o755)
+        for folder, target in (("no-such-folder", missing), ("read-only", read_only)):
+            with self.subTest(target=folder):
                 if target == read_only and os.geteuid() == 0:
                     self.skipTest("root writes into a read-only folder")
                 result = self.push(target)
@@ -99,24 +117,24 @@ class TransferErrorsTest(unittest.TestCase):
                 self.assertIn(f"{target} was left as it was.", result.stderr)
                 self.assertNotIn("failed", result.stdout)
                 self.assertNotIn("Traceback", result.stderr)
-        self.assertEqual(read_only.read_bytes(), b"old contents")
+        self.assertEqual((self.remote_dir / "read-only" / "app.apk").read_bytes(), b"old contents")
 
     def test_a_checksum_that_does_not_match_is_explained_on_stderr(self):
-        target = self.remote_dir / "app.apk"
-        target.write_bytes(b"old contents")
+        target = self.on_the_tv("app.apk")
+        (self.remote_dir / "app.apk").write_bytes(b"old contents")
         result = self.push(target, FAKE_CORRUPT="1")
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn(f"local: {hashlib.md5(self.data).hexdigest()} MISMATCH", result.stderr)
         self.assertIn(f"{target} was left as it was.", result.stderr)
         self.assertNotIn("md5", result.stdout)
-        self.assertEqual(target.read_bytes(), b"old contents")
+        self.assertEqual((self.remote_dir / "app.apk").read_bytes(), b"old contents")
 
     def test_a_reason_starts_its_own_line_when_both_streams_go_to_one_log(self):
         # 2>&1 into a log, or an agent reading both streams: the progress line is ended before the
         # reason, so the MISMATCH line is not glued to "chunk 3/3".
-        target = self.remote_dir / "app.apk"
+        target = self.on_the_tv("app.apk")
         full = {k: v for k, v in os.environ.items() if k != "TV_HOST"}
-        full["FAKE_CORRUPT"] = "1"
+        full.update(FAKE_CORRUPT="1", FAKE_TV_DIR=TV_DIR, FAKE_TV_ROOT=str(self.remote_dir))
         result = subprocess.run([sys.executable, str(self.script), str(self.local), str(target)], env=full,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=120)
         lines = result.stdout.replace("\r", "\n").splitlines()
@@ -125,12 +143,12 @@ class TransferErrorsTest(unittest.TestCase):
 
     def test_a_copy_that_matches_keeps_its_md5_line_on_stdout(self):
         # addons/photo-screensaver/sync.sh and addons/news-screensaver/setup.sh grep stdout for "md5".
-        target = self.remote_dir / "app.apk"
+        target = self.on_the_tv("app.apk")
         result = self.push(target)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(f"local: {hashlib.md5(self.data).hexdigest()} MATCH", result.stdout)
         self.assertEqual(result.stderr, "")
-        self.assertEqual(target.read_bytes(), self.data)
+        self.assertEqual((self.remote_dir / "app.apk").read_bytes(), self.data)
 
 
 class ConnectErrorsTest(unittest.TestCase):

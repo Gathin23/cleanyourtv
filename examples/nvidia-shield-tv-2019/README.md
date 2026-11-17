@@ -15,8 +15,12 @@
 TV_HOST=<tv ip> tools/theme.sh examples/nvidia-shield-tv-2019
 ```
 
-`debloat.txt` in this folder disables `com.google.android.tv` (Live Channels). Comment that line out
-if you use this dock, since `config.json` sets it as the Live TV entry.
+`debloat.txt` in this folder lists `com.google.android.tv` (Live Channels), but `tools/disable.sh` keeps
+it enabled: it answers the channel `VIEW` intent, so the handler guard skips the line, and a list entry is
+not always what a run applies. Nothing has to be commented out for this dock — `config.json` sets it as the
+Live TV entry, and applying the list leaves it on. To give Live Channels up after all, run
+`pm disable-user --user 0 com.google.android.tv` once the rest of the list is in, which is what the list's
+own header says.
 
 ## Replacing the Home key is one step here
 
@@ -42,8 +46,13 @@ so `pm disable-user` is the mechanism that actually works.
   active connection type, not always a network name.
 - **The Inputs menu is nearly empty** — the SHIELD has no HDMI inputs, so only Live Channels
   (`com.google.android.tv`, set as `live_tv_package`) appears.
-- The `com.nvidia.*` packages are hardware features (controller pairing, remote locator, OTA, audio, CEC,
-  SMB). Leave them alone.
+- The `com.nvidia.*` packages the list leaves alone are the ones behind the hardware — controller
+  pairing, remote locator, audio, CEC. Leave them alone, and do not disable them by hand. It does disable
+  17 `com.nvidia.*` packages in `debloat.txt`: telemetry and `diagtools`, product registration, the
+  factory tests, the welcome and beta programmes, `com.nvidia.tegrazone3` (the NVIDIA Games row) and the
+  network-share trio (`com.nvidia.shield.nas`, `...smbserver`, `...smbauth`), so "Transfer files over
+  local network" goes with them; comment those three out if you use it. The firmware-update trio is
+  commented out, so updates stay on.
 
 ## Tweaks applied
 

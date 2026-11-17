@@ -1,0 +1,6 @@
+{
+  "tv": "Haier MatrixTV BE",
+  "os": "Google TV 14",
+  "brand": "Haier",
+  "notes": "Haier content and IoT, partner rows and demo off; HaiCast off on the owner's set (commented out), Chromecast kept; gear keycode 83 and three-line keycode 206 share scan 240, TV key is Linux scan 225; InputKeyService restores gear/TV shortcuts but held volume moves one step; short trial"
+}

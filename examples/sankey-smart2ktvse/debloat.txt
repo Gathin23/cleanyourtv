@@ -7,6 +7,8 @@
 # Firmware: (not captured - TV went to sleep)
 #
 # Bloatware/Telemetry packages disabled with pm disable-user
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sankey-smart2ktvse/debloat.txt
+#          The undo is in the notes at the end of this file: `tools/restore.sh` with `com.whaletv.launcher`.
 # Tested and working for several days. Nothing broken.
 #
 # IMPORTANT: How to enable ADB on Whale OS (SMART2KTVSE)

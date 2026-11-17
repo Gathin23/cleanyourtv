@@ -1,0 +1,6 @@
+{
+  "tv": "Toshiba 43V35KP (hayward, huashan_emT; Hisense/CVTE board, MediaTek mt5867), EU",
+  "os": "Android TV 11",
+  "brand": "Toshiba",
+  "notes": "Hisense board (hayward, mt5867), EU-market firmware RTMA.250416.097: silent auto-installs, MediaTek partnercustomizer, Google recommendations, telemetry and partner setup, store demo, setup leftovers, factory packages, TCL browser, JioTV; TTS commented out (stopped working when disabled); setupwraith safe to disable on this unit (no HOME claim, no active Wi-Fi); com.at.factory.factorymanager disabled (did not re-enable katniss/recommendations across a cold boot here, unlike motorola-mt4310); HDMI input menu works, live signal unconfirmed; Live TV is `com.mediatek.wwtv.tvcenter`"
+}

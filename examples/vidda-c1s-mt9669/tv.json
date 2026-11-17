@@ -1,6 +1,6 @@
 {
-  "tv": "Vidda C1S 4K laser projector (VIDAA_TV, device MT9669, board m7642), China JuUI",
+  "tv": "Vidda C1S and C1 4K laser projectors (VIDAA_TV, device MT9669, board m7642), China JuUI",
   "os": "Android 9",
   "brand": "Vidda",
-  "notes": "Telemetry, push channel/poller, ad sidecars (聚好看 itself keeps rendering), operator weather card, retail/hotel/factory leftovers, food/calendar apps, the 拍信 ad screensaver, print spooler; stock launcher 聚好看 stays enabled — the firmware pins HOME to it and shields it from accessibility events, so the launcher is aerial with the one-line usage-stats patch (pengchujin/aerial-tv#545); voice, casting, NAS, OTA, IMEs, HDMI (tiletransition), laser engine kept; ADB needs on-screen authorization (ro.adb.secure=1); reboot-checked"
+  "notes": "Telemetry, push channel/poller, ad sidecars (聚好看 itself keeps rendering), operator weather card, retail/hotel/factory leftovers, food/calendar apps, the 拍信 ad screensaver, print spooler; stock launcher 聚好看 stays enabled. C1S: HOME stayed pinned to 聚好看 and shielded from accessibility events, so its launcher is aerial with the one-line usage-stats patch (pengchujin/aerial-tv#545). C1 on the same build: the reference launcher took the Home key with `set-home-activity`, and `power_on_home_always` brings it up after the hard-coded 聚好看 boot ([notes](vidda-c1s-mt9669/README.md)); voice, casting, NAS, OTA, IMEs, HDMI (tiletransition), laser engine kept; ADB needs on-screen authorization (ro.adb.secure=1); reboot-checked"
 }

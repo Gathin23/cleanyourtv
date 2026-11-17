@@ -14,14 +14,18 @@ tools/venv/bin/python tools/flamechart.py traces/before traces/after \
 ```
 
 `--out` is the PNG to write; a folder, a name with no extension and a folder that is not there are refused
-before the traces are opened, so a typo cannot read as a chart that failed.
+before the traces are opened, so a typo cannot read as a chart that failed. A `TRACE` path is checked the
+same way, before the trace engine is started: a path that is not there is `not a file: <path>`, the words
+`tools/trace_report.py` uses, and a folder with no `.pftrace` in it names the folder.
+An output that is the same file as any input trace (including symbolic and hard links) is refused
+with exit 2 before the engine starts, so drawing the chart cannot overwrite a recording.
 
 | Option | Default | Notes |
 |---|---|---|
 | `TRACE ...` | | Before, then after (up to 4). A folder draws its median run, by the first of time to first frame, median frame time and median RenderThread draw that every run has; the panel names the run and the measure. A folder with none of them in every run is refused. |
 | `--highlight REGEX` | `^(activityResume\|RV OnBindView)$` | Slice names to draw magenta and total. Children of a match count once. |
 | `--window` | `first-frame` | `first-frame`: launcher start to first frame drawn. `start:MS`: a fixed span from the start. `all`: the whole recording (always for `nav`). |
-| `--threads` | `main,RenderThread` | Lanes, by thread name in the launcher's process. |
+| `--threads` | `main,RenderThread` | Lanes, by thread name in the launcher's process. Repeated names or aliases of the same thread keep only the first lane, so its highlighted work is counted once. |
 | `--package` | `com.gathin.tvhome` | The launcher's package. A fork built under another one - [SHOWCASE.md](../SHOWCASE.md) lists several - draws nothing without it: the lanes are that package's threads, so the run stops at `no <package> process in the trace`. |
 | `--out` | | The PNG to write; required. |
 | `--labels` | `Before,After` | The panels' labels, comma-separated and in the order of the traces; a panel past the last one is named `Run 3`, `Run 4`. |
@@ -41,5 +45,7 @@ A Home change usually needs two charts:
 - **Pass folders, not single runs.** The tool picks the median run. If you pass single traces, say why.
 - **Magenta is main and render thread time only.** Work moved to another thread or to the GPU isn't gone:
   add that thread as a lane, or use the `nav` GPU numbers.
+- **Unfinished slices have no measured end.** The `all` and `nav` axis covers completed slices with a
+  positive duration, as the lanes do. A process with none is refused instead of drawing an empty chart.
 
 The whole before/after method for a pull request is in [`docs/workflows/perf-ab.md`](../docs/workflows/perf-ab.md).

@@ -1,0 +1,6 @@
+{
+  "tv": "Jio STB C200A (Jio, 4KOTTSTB, MSTB, Amlogic)",
+  "os": "Android 11 (AOSP, no Google services)",
+  "brand": "Jio",
+  "notes": "Jio's OTT set-top box: ad, telemetry and tracking services, the two task killers (com.jio.appoptimizer is persistent and keeps running) and Jio Store off; JioTV+ (com.jio.media.jiotvplus), the Live TV app (com.jio.stb.catv), the Jio SSO, the remote, its mic and IR setup kept. Firmware updaters and the TR-069 client are in the list commented out."
+}

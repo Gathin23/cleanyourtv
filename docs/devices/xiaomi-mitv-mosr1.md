@@ -1,8 +1,12 @@
 # Xiaomi MiTV-MOSR1: Android TV 11
 
 Firmware `RTT8.210119.001.1239`, Android 11 / SDK 30. One unit, initial setup on
-26 October 2026 and an owner follow-up on 27 October. These are short-session observations,
-not a several-day debloat list or a recommendation to apply another model's list.
+26 October 2026 and an owner follow-up on 27 October. These are short-session observations
+from that unit, not a several-day debloat list or a recommendation to apply another model's
+list: the list for this model is
+[`examples/xiaomi-mitv-mosr1/debloat.txt`](../../examples/xiaomi-mitv-mosr1/debloat.txt), six
+packages that a different unit on build `.1453` still had off after seven days. This page records
+the Xiaomi packages, the PatchWall behaviour and the key-helper trade-off that list leaves out.
 
 ## Home handover
 
@@ -91,5 +95,8 @@ and used Home, then Down from the dock, to reach the app grid.
 
 This is one short setup session and a next-day owner report, with one package-persistence reboot
 check. It does not establish long-term stability, every HDMI/tuner path, a successful auto-Home
-boot, or behavior on another firmware or remote. A tested list under `examples/` should wait for
-several days of ordinary use, as required by [CONTRIBUTING.md](../../CONTRIBUTING.md).
+boot, or behavior on another firmware or remote. The list in
+[`examples/xiaomi-mitv-mosr1/`](../../examples/xiaomi-mitv-mosr1/debloat.txt) is a later build's
+seven-day set of six packages, so it says nothing about the Xiaomi packages, PatchWall or the key
+helper this page describes; as [CONTRIBUTING.md](../../CONTRIBUTING.md) asks, a list for this
+build's packages still waits on several days of ordinary use.

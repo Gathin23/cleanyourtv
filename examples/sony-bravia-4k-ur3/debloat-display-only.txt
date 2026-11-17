@@ -1,0 +1,132 @@
+# Sony XBR-55A8H (A8H OLED 2020, US), device BRAVIA_UR3, MediaTek; fourth unit of this folder
+# Android 10 (Android TV, API 29), firmware BRAVIA_UR3_UC-user 10 QTG3.200305.006.S97 662301, 2.3 GB RAM
+#
+# A "display-only" variant: this set is a screen for an Apple TV on HDMI, with no Google account, no streaming
+# apps, no casting and no voice, so it goes further than debloat.txt, which stays the list to start from if you
+# keep apps. It carries all of debloat.txt plus the same intent as the 2015 Sony display-only list
+# (examples/sony-xbr-55x850c/debloat-display-only.txt), carried over to this platform and checked with
+# `dumpsys package` on this TV.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur3/debloat-display-only.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur3/debloat-display-only.txt
+# Check:   TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/sony-bravia-4k-ur3/debloat-display-only.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (restore.sh's default). Other HOME handler: FallbackHome only;
+# com.google.android.tungsten.setupwraith is installed but claims no HOME and owned no saved network (Ethernet).
+# Live TV / HDMI app: com.sony.dtv.tvx (live_tv_package, hidden). Inputs menu: Apple TV · HDMI 1 (Connected),
+# HDMI 2, HDMI 3 (eARC/ARC), HDMI 4, Video, Live TV.
+# Keep: tvinput.* and tvinput.hardwaremanager, braviasync*, tvapi, sonysystemservice, sonyvendorservice,
+# settingsprovider, imeproxy, update/systemupdate/otaurlprovisioning/upgradesetup, broadcastclock.* (the clock),
+# acousticautocalibration, panelsettings, btservices, all com.mediatek.* (mediatek.wfd included), Play Store
+# and Play Services.
+# Left alone on purpose (no INTERNET, or purpose unclear): devicecontrolservice (smart-home "trait" provider,
+# running), serviceinformation, frame, sonyloglevelsettingsys (uid 1000), the b2b.* and webapp runtimes.
+# Already disabled at the factory on this unit, so not listed: com.sony.dtv.b2b.vendorprotocol,
+# com.sony.dtv.b2b.softap, screnmirroring.com.
+#
+# WARNING, AirPlay and the Vewd core: com.sony.dtv.airplayapp and com.sony.dtv.homekit are PERSISTENT system
+# apps. Android starts them at every boot and after every crash even when they are disabled-user, and AirPlay
+# binds to com.vewd.core.service in onCreate ("Unable to bind to com.vewd.core.service/.BrowserServiceImpl").
+# With the Vewd core disabled as well, AirPlay crash-looped about ten times a second until the Vewd core was
+# enabled again, so it stays enabled below. With both AirPlay and HomeKit disabled their processes still run
+# after a reboot, but the TV advertised no _airplay, _raop or _hap service over mDNS, and its only listening
+# ports were 80 (Sony's REST server), 5045 (com.sony.dtv.webapi.core, IP control) and 5555 (ADB).
+#
+# New compared with debloat.txt, each checked with `dumpsys package` on this firmware:
+# - com.sony.dtv.videoframeserver (in no other list) requests tv.samba.ssm's READ_SAMBA_DATA and
+#   MODIFY_SAMBA_SETTINGS, the TV program guide (ACCESS_ALL_EPG_DATA), SET_ACTIVITY_WATCHER, input-change events
+#   and INTERNET, with a boot receiver: viewing-data plumbing next to Samba TV's ACR. Disabled last, on its own;
+#   HDMI and the Inputs menu kept working.
+# - com.sony.dtv.seeds.auth / seeds.iot / seeds.iot.remotestart (Alexa and Google Home control, Firebase push,
+#   INTERNET) and com.sony.dtv.smarthomesettings ("Works with Alexa" setup). smarthomesettings was found enabled
+#   again after the batch that disabled it; disabled once more it stayed off across a reboot.
+#
+# Screensaver: the stock one is com.google.android.backdrop, which this list disables. On this OLED the
+# launcher's Clock took its place: `settings put secure screensaver_components com.gathin.tvhome/.ClockDream`.
+# It moves the clock to a new spot every minute (ClockScene.MOVE_MS), and `clock_glow` false leaves plain black
+# behind it.
+#
+# Two groups are commented out below so the list stays useful beyond this set: the streaming apps (off on this
+# unit; uncomment the ones you do not use) and the Android TV phone-remote service (off on this unit with the IR
+# remote unaffected; left enabled here for the Android TV Remote phone app).
+#
+# Applied 31 Oct 2026 in nine batches with a screenshot and Home check after each; the reference launcher took
+# Home through launcher/build-and-install.sh with no key helper. Reboot-checked once: Home came back on the
+# launcher, every listed package stayed disabled, no crashes. Not yet lived with for weeks; if something breaks,
+# re-enable it with `pm enable <package>` and please report it.
+
+# ACR viewing tracker, telemetry, bug reports
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.sonyericsson.idd.agent                     # Sony IDD usage-data agent
+com.sony.dtv.sonybugreportsys                  # Sony bug-report/log uploader
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+
+# Viewing context and log collectors
+com.sony.dtv.interactivetvutil                 # ActionLogCollector / ApplicationLogCollector
+com.sony.dtv.interactivetvutil.output
+com.sony.dtv.usercontext                       # viewing context for recommendations
+
+# Content rows, promos, ads
+com.sony.dtv.promos
+com.sony.dtv.sonyselect
+com.sony.dtv.bivlinfo
+com.sony.dtv.tvlaunchercustomizer
+com.google.android.tvrecommendations           # only the stock launcher uses it
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+com.google.android.backdrop                    # Backdrop screensaver; point screensaver_components elsewhere
+com.sony.dtv.notificationcenter                # "BRAVIA notifications" inbox
+
+# Retail demo, help, preloads
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.helpguidecontents
+com.google.android.videos
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.sony.dtv.osat.music                        # USB music player, off by owner's choice
+com.sony.dtv.smartmediaapp                     # Media Player (USB), off by owner's choice
+com.sony.dtv.livingfit                         # Living Decor, off by owner's choice
+
+# Voice assistant, off by owner's choice (removes the remote's mic search)
+com.google.android.katniss
+com.google.android.tv.assistant
+com.sony.dtv.assistantadapter
+com.sony.dtv.voicerecognitionconfirmation
+
+# Streaming apps: off on this unit, commented out here so you choose. Uncomment the ones you do not use.
+#com.netflix.ninja
+#com.netflix.partner.ncm                       # Netflix adapter service; only with Netflix off
+#com.google.android.youtube.tv
+#com.amazon.amazonvideo.livingroom             # Prime Video
+#com.apple.atve.sony.appletv                   # Apple TV app
+
+# Casting, AirPlay, DLNA (network listeners), off by owner's choice
+com.google.android.apps.mediashell             # Chromecast built-in
+com.sony.dtv.airplayapp                        # AirPlay receiver (persistent: see the warning above)
+com.sony.dtv.homekit                           # HomeKit (persistent)
+com.sony.dtv.networkapp.wifidirect             # Screen mirroring app
+com.sony.huey.dlna.module
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna
+# Keep com.vewd.core.service enabled: AirPlay binds to it and crash-loops without it (see the warning above).
+# Off on this unit with the IR remote unaffected; kept enabled in the list for the Android TV Remote phone app.
+#com.google.android.tv.remote.service          # Android TV Remote phone-app service
+
+# Smart-home links and Google account plumbing, unused with no account signed in
+com.sony.dtv.seeds.auth                        # Sony "seeds" account link, INTERNET
+com.sony.dtv.seeds.iot                         # Alexa / Google Home control, Firebase push, INTERNET
+com.sony.dtv.seeds.iot.remotestart
+com.sony.dtv.smarthomesettings                 # "Works with Alexa" setup
+com.google.android.partnersetup                # RLZ install attribution
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+
+# Viewing-data frame server (in no other list), disabled last
+com.sony.dtv.videoframeserver                  # reads Samba TV data/settings and the EPG; INTERNET

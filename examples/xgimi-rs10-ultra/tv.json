@@ -1,0 +1,6 @@
+{
+  "tv": "XGIMI RS10 Ultra projector (device pig_chivalrous, MediaTek m7642), China",
+  "os": "Android 9",
+  "brand": "XGIMI",
+  "notes": "GMUI 6 China; no working ADB toggle (local setprop helper); stock home com.xgimi.home re-enabled by xrmservice, held with stock_home_redirect; XGIMI Settings is a service window; HomeKeyService dropped on boot; 21 packages disabled by default (OTA kept)"
+}

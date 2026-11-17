@@ -1,0 +1,71 @@
+# Sony BRAVIA KDL-43W800D (2015 "BRAVIA 2015" platform, device SVP-DTV15, MediaTek), India/Pan-Asia firmware
+# Android TV 8.0 (API 26), build SVPDTV15_PA 8.0.0 OPR2.170623.027.S16 6.827, ~1.6 GB RAM, Wi-Fi
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kdl-43w800d/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kdl-43w800d/debloat.txt
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\sony-kdl-43w800d\debloat.txt
+# Everything is DISABLED (pm disable-user --user 0), never uninstalled. Comment out a line to keep it.
+#
+# Stock launcher: com.google.android.tvlauncher. NOT in this list. The launcher half works on this set:
+# API 26 is exactly minSdk 26, and com.gathin.tvhome installed and took Home without trouble.
+# Live TV / input app: com.sony.dtv.tvx, which also plays every HDMI input. Kept, and set as
+# live_tv_package; hidden as a tile since the Inputs menu covers it.
+#
+# *** DO NOT DISABLE THE com.sony.dtv.b2b.* HOTEL PACKAGES ON THIS PLATFORM. ***
+# They were in an earlier version of this list and broke Sony's Settings app: Settings opened and
+# closed again within a second, its window never taking focus. logcat showed the Settings activity
+# logging "onPause view Null" straight after "Setting dim to 0.7", while com.sony.dtv.configsettings
+# repeated "Failed to find provider info for com.sony.dtv.b2b.hotelsettings" and
+# "HotelSettings: Can't get key: hotel_mode". Sony's Settings reads that hotel_mode content provider
+# while building its UI, and the provider ships inside the b2b packages. Re-enabling
+# b2b.hotelmode, b2b.prosettings, b2b.importexport, b2b.rs232csupport and the two b2b.noderuntime
+# packages fixed it immediately; the hotel_mode errors went to zero. They are commented out below.
+# The Inputs and Wi-Fi buttons were unaffected throughout, so the symptom looks like a dead
+# Settings button rather than a broken launcher.
+#
+# Note for other Sony sets: the settings activity here is
+# com.android.tv.settings/com.sony.dtv.settings.MainSettings - the AOSP package with a Sony class.
+# The launcher's AOSP fallback (com.android.tv.settings.MainSettings) does not exist on this TV.
+#
+# Owner keeps ALL apps: Netflix, YouTube, Prime Video, Crunchyroll, ZEE5, Hotstar, JioCinema,
+# SonyLIV, Spotify, MX Player, VLC, Play Store/Services/Games/Music, voice search (katniss +
+# pumpkin), Chromecast, screen mirroring, DLNA. None of them are in this list.
+# Also kept: com.sony.dtv.tvinput.*, tvplayer*, braviasync* (HDMI-CEC), remotepairing,
+# remotecontrolsettings, uinputservice, imeproxy, ime.chww (the active keyboard), systemupdate,
+# settingsprovider, netflixmanager, mtktvapi.agent, com.mediatek.*.
+# Already disabled at the factory: amazon.aiv.us, crackle, kenhchonloc, notifybravia - not in this
+# list, so restore.sh leaves them off.
+# Reboot-checked: all 17 held after a cold boot (pm list packages -d unchanged).
+#
+# Applied 2026-11-15.
+# Telemetry, remote support, bug reports
+com.qterics.da.product                  # Qterics device agent
+com.sony.dtv.da.service                 # Sony device agent / remote support
+com.google.android.feedback             # Feedback / crash reporter
+com.google.android.tv.bugreportsender   # Bug report sender
+com.sony.dtv.b2b.vendorprotocol         # SDDP model/MAC/IP broadcast for Control4-style home
+                                        # automation; re-enable if you ever use one
+
+# Sony content, ads and recommendation rows
+com.sony.dtv.discovery                  # Discover bar
+com.sony.dtv.bivlinfo                   # feeds Discover
+com.sony.dtv.sonyselect                 # Sony Select promo tile / app store
+com.sony.dtv.sonyselect.overlay         # its launcher overlay
+com.sony.dtv.indiametarecommendation    # India content-recommendation feed
+android.autoinstalls.config.sony.bravia # Play auto-install of partner apps
+
+# Retail demo, tutorials and preloaded help
+com.sony.dtv.shopsettings               # in-store demo settings
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                    # i-Manual electronic guide
+com.sony.dtv.touchpad.tutorial          # touchpad remote tutorial, posts a recommendation card
+com.google.android.tvtutorials
+
+# Hotel / commercial B2B plumbing (unused in a home)
+# KEPT (Settings needs the hotel_mode provider): com.sony.dtv.b2b.hotelmode
+# KEPT (Settings needs the hotel_mode provider): com.sony.dtv.b2b.prosettings
+# KEPT (Settings needs the hotel_mode provider): com.sony.dtv.b2b.importexport
+# KEPT (Settings needs the hotel_mode provider): com.sony.dtv.b2b.rs232csupport
+# KEPT (Settings needs the hotel_mode provider): com.sony.dtv.b2b.noderuntime.normal
+# KEPT (Settings needs the hotel_mode provider): com.sony.dtv.b2b.noderuntime.privilege

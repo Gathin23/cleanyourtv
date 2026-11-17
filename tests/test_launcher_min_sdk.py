@@ -32,6 +32,7 @@ PROMPT = ROOT / "PROMPT.md"
 FAKE_TV = r'''
 import json
 import os
+import subprocess
 import sys
 
 
@@ -63,7 +64,65 @@ def run(command):
         return ""
     if "resolve-activity" in command:
         return state["home"] + "\n"
+    if "WRITE_SECURE_SETTINGS" in command:
+        return secure_step(command)
     return ""
+
+
+# The WRITE_SECURE_SETTINGS step decides its own marker on the TV, so it runs here as written,
+# in sh, against a pm and a dumpsys that keep the grant in the state file.
+# A refused grant prints pm's exception and exits non-zero; a revoke the TV ignores says nothing.
+PM = """#!/bin/sh
+case "$1" in
+  grant)
+    if [ "$(cat "$FAKE_SECURE.grant")" != 1 ]; then
+      echo "Exception occurred while executing 'grant':" >&2; exit 255
+    fi
+    echo granted > "$FAKE_SECURE" ;;
+  revoke) [ "$(cat "$FAKE_SECURE.revoke")" = 1 ] && echo denied > "$FAKE_SECURE" ;;
+esac
+exit 0
+"""
+# Laid out as Android 8 to 11 print it: the requested list always names the permission, and the
+# install-permissions line is there only while it is granted. A failed readback stops after the requested
+# list with a non-zero exit; a timed-out one stops there too, says so, and exits 0 as dumpsys does.
+DUMPSYS = """#!/bin/sh
+echo "  Package [com.gathin.tvhome] (1a2b3c):"
+echo "    requested permissions:"
+echo "      android.permission.WRITE_SECURE_SETTINGS"
+case "$(cat "$FAKE_SECURE.readback")" in
+  fail) exit 1 ;;
+  timeout) echo "*** SERVICE 'package' DUMP TIMEOUT (10000ms) EXPIRED ***"; exit 0 ;;
+esac
+if [ "$(cat "$FAKE_SECURE")" = granted ]; then
+  echo "    install permissions:"
+  echo "      android.permission.WRITE_SECURE_SETTINGS: granted=true"
+fi
+echo "    User 0: ceDataInode=4242 installed=true hidden=false suspended=false stopped=false"
+"""
+
+
+def secure_step(command):
+    shims = os.path.join(os.path.dirname(STATE_PATH), "tv-bin")
+    os.makedirs(shims, exist_ok=True)
+    for name, body in (("pm", PM), ("dumpsys", DUMPSYS)):
+        path = os.path.join(shims, name)
+        with open(path, "w") as f:
+            f.write(body)
+        os.chmod(path, 0o755)
+    secure = shims + "/secure"
+    with open(secure, "w") as f:
+        f.write(state["secure"] + "\n")
+    for suffix, value in ((".grant", "1" if state["grant_works"] else "0"),
+                          (".revoke", "1" if state["revoke_works"] else "0"),
+                          (".readback", state["readback"])):
+        with open(secure + suffix, "w") as f:
+            f.write(value + "\n")
+    env = dict(os.environ, PATH=shims + ":" + os.environ["PATH"], FAKE_SECURE=secure)
+    out = subprocess.run(["sh", "-c", command], env=env, capture_output=True, text=True).stdout
+    with open(secure) as f:
+        state["secure"] = f.read().strip()
+    return out
 
 
 def main():
@@ -80,6 +139,13 @@ def main():
         commands = []
     for command in commands:
         state["commands"].append(command)
+        if state["link_fails"] and "WRITE_SECURE_SETTINGS" in command:
+            save()
+            sys.stderr.write("Error: could not reach the TV\n")
+            return 2
+        if "--batch" in args:
+            # As tools/tv.py does: a batch echoes each command before its output.
+            sys.stdout.write(f"$ {command}\n")
         sys.stdout.write(run(command))
         sys.stdout.flush()
     save()
@@ -119,11 +185,16 @@ class MinSdkGuardTest(unittest.TestCase):
         self.home = self.base / "home"
         self.home.mkdir()
 
-    def install(self, **overrides):
+    def install(self, restore=False, **overrides):
         state = {
             "sdk": "34",
             "home": STOCK_HOME,
             "install_output": "Success\n",
+            "secure": "denied",
+            "revoke_works": True,
+            "grant_works": True,
+            "readback": "ok",
+            "link_fails": False,
             "commands": [],
         }
         state.update(overrides)
@@ -133,6 +204,9 @@ class MinSdkGuardTest(unittest.TestCase):
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))
+        env.pop("RESTORE_KEY_SERVICES", None)
+        if restore:
+            env["RESTORE_KEY_SERVICES"] = "1"
         if os.name != "posix" or not shutil.which("bash"):
             raise unittest.SkipTest("build-and-install.sh is a POSIX script; it needs bash")
         result = subprocess.run(
@@ -160,6 +234,50 @@ class MinSdkGuardTest(unittest.TestCase):
         self.assertIn("Installed.", result.stdout)
         self.assertTrue(self.marker.exists())
         self.assertTrue(any("pm install" in c for c in state["commands"]))
+
+    def test_a_grant_the_tv_keeps_stops_the_install(self):
+        result, state = self.install(secure="granted", revoke_works=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("secure-settings-revoked missing", result.stderr)
+        self.assertEqual(state["secure"], "granted")
+
+    def test_a_failed_or_timed_out_readback_stops_the_revoke(self):
+        for readback in ("fail", "timeout"):
+            with self.subTest(readback=readback):
+                result, state = self.install(secure="granted", revoke_works=False, readback=readback)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("secure-settings-revoked missing", result.stderr)
+                self.assertEqual(state["secure"], "granted")
+
+    def test_a_refused_grant_stops_the_install(self):
+        result, state = self.install(restore=True, grant_works=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("restore-granted missing", result.stderr)
+        self.assertEqual(state["secure"], "denied")
+
+    def test_a_grant_whose_readback_fails_or_times_out_stops_the_install(self):
+        for readback in ("fail", "timeout"):
+            with self.subTest(readback=readback):
+                result, _ = self.install(restore=True, readback=readback)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("restore-granted missing", result.stderr)
+
+    def test_a_tv_that_cannot_be_reached_gets_the_message(self):
+        # tv.py exits non-zero for this step only; set -e must not stop the script before the error.
+        result, _ = self.install(link_fails=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("secure-settings-revoked missing", result.stderr)
+
+    def test_a_granted_tv_is_revoked(self):
+        result, state = self.install(secure="granted")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(state["secure"], "denied")
+
+    def test_restore_key_services_grants(self):
+        result, state = self.install(restore=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("restore-granted", result.stdout)
+        self.assertEqual(state["secure"], "granted")
 
     def test_the_number_comes_from_the_build_file(self):
         # What #608 (minSdk 24) changes: the guard has to follow the build file, not a copy of it.

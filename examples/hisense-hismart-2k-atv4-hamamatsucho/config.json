@@ -1,0 +1,19 @@
+{
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "hidden_apps": [],
+  "dock_apps": [
+    "com.mediatek.wwtv.tvcenter",
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "launch_actions": [
+    "com.mediatek.wwtv.tvcenter=input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW6"
+  ],
+  "app_labels": [
+    "com.mediatek.wwtv.tvcenter=Set-top box"
+  ],
+  "app_banners": [
+    "com.mediatek.wwtv.tvcenter=banner_tv"
+  ]
+}

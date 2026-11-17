@@ -250,9 +250,24 @@ class PrivacyAuditTest(unittest.TestCase):
     def test_unreachable_tv_names_the_setting_to_check(self):
         self.tv(unreachable=True)
         result = self.run_script()
-        self.assertNotEqual(result.returncode, 0)
+        # 2, the status every tool answers for a run that never read the TV: 1 is a run that
+        # reached it and then failed, and a wrapper around this script reads the split.
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("cannot reach the TV", result.stderr)
         self.assertIn("tools/tv.py --probe", result.stderr)
+        self.assertIn("Nothing was asked of the TV.", result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_a_run_without_the_adb_client_is_2(self):
+        # A client that is not there at all: `import tv` fails, and nothing was sent.
+        (self.repo / "tools" / "tv.py").unlink()
+        result = self.run_script()
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("cannot load tools/tv.py", result.stderr)
+        self.assertIn("python3 -m venv tools/venv", result.stderr)
+        self.assertIn("Nothing was asked of the TV.", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(result.stdout, "")
 
     def test_an_empty_package_list_is_an_error_not_an_empty_report(self):
         self.tv(installed=[], disabled=[])

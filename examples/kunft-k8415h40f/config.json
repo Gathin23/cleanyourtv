@@ -1,0 +1,12 @@
+{
+  "columns": 4,
+  "dock_apps": [
+    "com.stremio.one",
+    "com.google.android.youtube.tv",
+    "com.spotify.tv.android",
+    "pt.sporttv.app.androidtv"
+  ],
+  "power_on_home": false,
+  "power_on_home_always": true,
+  "key_filter": false
+}

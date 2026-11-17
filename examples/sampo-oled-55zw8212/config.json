@@ -1,0 +1,15 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.google.android.youtube.tvmusic",
+    "com.xiaodianshi.tv.yst"
+  ],
+  "show_greeting": false,
+  "settings_key_keycodes": [83],
+  "app_keys": [
+    "172:com.mediatek.wwtv.tvcenter",
+    "front:172:home",
+    "288:screensaver"
+  ]
+}

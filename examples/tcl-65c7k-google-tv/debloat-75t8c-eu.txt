@@ -1,0 +1,81 @@
+# TCL 75T8C, Sweden — the EU unit of this folder
+#
+# Model "Smart TV Pro", device G08, product G08_4K_GB, MediaTek mt5896.
+# Android TV 14, firmware UTT2.250416.001 AU02, locale sv-SE.
+# Fingerprint: TCL/G08_4K_GB/G08:14/UTT2.250416.001/AU02:user/release-keys
+#
+# Same board and build as the Brazilian 65C7K in examples/tcl-65c7k-google-tv, and this file is a
+# second unit for that folder, not a replacement: debloat.txt there is the Brazilian list, this one
+# is what the EU set needed. Read against each other — five active lines of the Brazilian list were
+# reproduced broken here (marked DO NOT DISABLE below), and eight more packages are off here than there.
+#
+# Tested 2026-10-22 to 2026-11-01: every package below disabled, five days and one reboot with no
+# drift (tools/check.py), Home on Free My TV, the remote's Netflix/YouTube/Prime buttons mapped,
+# Chromecast and Miracast both working, Source key opening the input panel.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65c7k-google-tv/debloat-75t8c-eu.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c7k-google-tv/debloat-75t8c-eu.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Disable setupwraith only AFTER the stock launcher and AFTER the saved Wi-Fi network has been
+# forgotten and re-joined in Settings, or Android erases the network with the package that owns it.
+
+# TCL tracking, accounts and logs
+com.tcl.logkit                         # log capture and upload
+com.tcl.usercenter                     # TCL account sign-in nags
+
+# TCL promos, push messages and retail demo
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.exhibit                        # store demo mode switcher
+com.tcl.esticker                       # retail demo sticker
+com.tcl.repairguide                    # repair guide
+com.tcl.ocean.instructions             # e-manual overlay
+com.tcl.smartalexa                     # Alexa bridge
+
+# TCL apps off by choice on this unit
+com.tcl.gallery                        # TCL gallery
+# com.tcl.magiconnectfree                # MagicConnect phone-remote pairing; off on this set, kept on in the shared list
+com.mediatek.support.webview           # duplicate webview; com.google.android.webview is active
+com.mediatek.backgrounddetection       # MediaTek telemetry
+
+# Google extras
+com.google.android.feedback
+com.google.android.syncadapters.calendar
+com.google.android.videos              # Play Movies storefront
+com.google.android.katniss             # Google Assistant; comment out to keep the mic button
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+
+# Needed for the custom launcher: with launcherx gone, setupwraith's RecoveryActivity claims HOME.
+com.google.android.apps.tv.launcherx
+com.google.android.apps.tv.dreamx      # Google photo screensaver, replaced by the launcher's own
+com.google.android.tungsten.setupwraith
+
+# DO NOT DISABLE on this EU set — each was reproduced here (2026-10-22), none is in the Brazilian list
+# as an active line except the first four and com.tcl.guard, which broke as follows:
+# com.tcl.ttvs         - TIAS chain. Off, com.tcl.tv's embedded tbrowser client logs
+#                        "vendor.tcl.tvinput.extend-service: Passing null binder object as
+#                        non-@nullable AIDL IBinder" plus a Tbrowser NullPointerException at
+#                        Tbrowser.java:600, about ten times a second, indefinitely. Cheap (~1% CPU)
+#                        but endless. Re-enabled, the log went to zero.
+# com.tcl.interactive  - the TIAS service itself; same signature when it alone is off.
+# com.tcl.channelplus  - TCL's Live TV source loses its channel list.
+# com.tcl.waterfall.overseas - same Live TV source dependency here.
+# com.tcl.suspension   - hosts the source-menu QuickPanel. Off, the remote's Source key
+#                        (KEYCODE_TV_INPUT, 178) is silently dead. Verified working on this set.
+# com.tcl.autopair     - Bluetooth remote pairing. Off, an unpaired remote can never pair again.
+# com.tcl.miracast     - the only "cast screen" route on this set. Chromecast is a different
+#                        package (com.google.android.apps.mediashell) and is untouched.
+# com.tcl.t_solo       - Bluetooth speaker output ("listen alone"), kept by the owner.
+# com.tcl.eva          - TCL's own voice layer; com.google.android.katniss is the other one.
+# com.tcl.guard        - system retried .memorymanager.TGuardService every 5 s while it was off.
+# com.tcl.hearaid      - hearing aids, wireless speakers, sound field.
+# com.tcl.UpdatePeripheral - remote / soundbar firmware updates.
+# com.tcl.gamebar      - runs under android.uid.system; holds a SourceReceiver on the input path.
+# com.tpa.kb           - runs under android.uid.system; purpose unknown.
+# com.tcl.dashboard    - kept for parity with Free My TV's PROTECTED list (it pushes tcl:// rows on
+#                        other TCL boards). Off on this set for five days with nothing missed.
+# com.tcl.android.webview - kept for parity with Free My TV's PROTECTED list even though
+#                        com.google.android.webview is the active one here.
+# com.mediatek.network - kept: it may carry cast/DLNA on this board and nobody has shown otherwise.

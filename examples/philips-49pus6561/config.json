@@ -1,0 +1,4 @@
+{
+  "live_tv_package": "org.droidtv.zapster",
+  "hidden_apps": ["org.droidtv.zapster", "org.droidtv.eum", "org.droidtv.nettvbrowser"]
+}

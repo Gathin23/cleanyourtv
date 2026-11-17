@@ -1,5 +1,6 @@
 # Xiaomi MiTV-AXSO2 (codename dangalUHD, Amlogic/droidlogic, 2 GB RAM), Android TV 9 (SDK 28), firmware PI.6432.
 # Same "dangal" board family as examples/xiaomi-mitv-axso0. India unit.
+# Android 11 (RTT0.211201.001.1150, SDK 30) was also tested: same list, see README.md for the differences.
 # Live TV app: com.android.tv (set it as live_tv_package and hide it in launcher config.xml).
 # Stock launcher: com.google.android.tvlauncher (the default, disabled by build-and-install.sh).
 #

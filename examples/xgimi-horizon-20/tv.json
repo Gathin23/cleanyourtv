@@ -1,0 +1,6 @@
+{
+  "tv": "XGIMI Horizon 20 projector (XR13A, kasol)",
+  "os": "Google TV 14",
+  "brand": "XGIMI",
+  "notes": "Telemetry, retail demo and setupwraith after the saved Wi-Fi is forgotten and rejoined; leave `launcherx` enabled or Netflix and Disney+ will not start an episode, and hold Home with `stock_home_redirect`. Keystone and focus stay. Not the MoGo lists (`altai`). [Notes](../docs/devices/xgimi-xr13a.md)"
+}

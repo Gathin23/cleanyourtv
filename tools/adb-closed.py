@@ -6,7 +6,9 @@
 Exits 0 when the TV refuses the connection, 1 when the port is still open, and 2 when the check
 could not tell: nothing answered (the TV off, asleep or rebooting, at another address, or out of reach
 from here), nothing listened on 127.0.0.1, or the check itself could not run (a name that does not
-resolve or is not a hostname, no route to the TV). Only the TV's own refusal shows the port closed.
+resolve or is not a hostname, no route to the TV, an address that is a URL or a path rather than an
+IP, or a word starting with a dash, which is a flag this check does not have). Only the TV's own
+refusal shows the port closed.
 
 On macOS a "No route to host" (`EHOSTUNREACH`) is also what Local Network privacy looks like: the
 permission belongs to the app that runs this check, not to python or adb, so a terminal that was never
@@ -16,6 +18,14 @@ says so and gives the way to grant it (tools/tv.py names the same permission at 
 A TV_PORT exported with TV_HOST=127.0.0.1, or set to relay.py's 15555, is a relay's (tools/relay.md), so
 it is not used for a TV's own IP. 127.0.0.1 is this computer: a relay answers there for itself, not for
 the TV, so a refusal there is not the TV's.
+
+An open port other than 5555 is reported as the port it is, not as ADB. Port 5555 is the ADB port, and
+another port may be the Wireless debugging port (`adb mdns services` lists it as
+`_adb-tls-connect._tcp`) or one this firmware runs adbd on (5877 on the Wanbo T6R Max) - but a TV also
+keeps services of its own open whatever the debugging toggles say, the JointSpace API on a Philips
+(1926, or 1925 on older sets), casting and a web page among them. For those an open port says nothing
+about ADB, so the message names the port it checked and, to finish the step, the command that checks
+5555 itself.
 """
 import errno
 import ipaddress
@@ -25,6 +35,7 @@ import sys
 
 TIMEOUT_S = 3.0
 RELAY_PORT = 15555   # relay.py's default --port, the TV_PORT it tells the tools to use
+ADB_PORT = 5555      # where adbd listens by default: an open one of these is network ADB
 
 
 def this_computer(host):
@@ -68,6 +79,53 @@ def split_host_port(endpoint):
     return endpoint, None
 
 
+def address_problem(word):
+    """Why this first word cannot be the TV's address, or None.
+
+    A URL pasted from a browser was read as an address: `http://<tv ip>` split into the host "http" and
+    the port "//<tv ip>", which answered "not a port number: '//<tv ip>'" - a sentence about a port
+    fragment for a word that is an address of another kind - and `http://<tv ip>:5555` became a host
+    literally named "http://<tv ip>:5555", whose lookup failed into the OSError branch's question about
+    whether the TV is on, for a word this check cannot use. A page at the address (`<tv ip>:5555/`,
+    `<tv ip>/6/system`) read the same way, and so did a flag from another tool (`--port 5555`, `-p 5555`),
+    which named no host at all. All of them exit 2 already; naming the word is what tells the owner which
+    of them to fix.
+    """
+    word = word.strip()
+    # A flag copied over from another tool (tools/restore.sh and tools/theme.sh refuse a dash-led word for
+    # the same reason): `--port 5555` and `-p 5555` went into getaddrinfo as a host named "--port", whose
+    # lookup failed into the OSError branch's question about whether the TV is on and on this network - a
+    # question about the TV's power for a word that names no host at all, at the step whose only answer
+    # counts. No hostname starts with a dash, so the word is the mistake, and naming it costs one sentence.
+    if word.startswith("-"):
+        return ("that is a flag, not the TV's address: this check takes the IP (or IP:port) as its first "
+                "word and the port as a second one, e.g.  tools/adb-closed.py <tv ip> 5555  (-h or --help "
+                "on its own prints this text)")
+    if "://" in word:
+        return ("that is a URL, not the TV's address: this check asks the TV's own ADB port, so give the "
+                "IP (or IP:port) alone, e.g.  tools/adb-closed.py <tv ip>")
+    if "/" in word:
+        return ("that is a path, not the TV's address: give the IP (or IP:port) alone, without a / or the "
+                "page it opens, e.g.  tools/adb-closed.py <tv ip>")
+    return None
+
+
+def open_port_message(host, port, relay):
+    """What an open port means: ADB for 5555 (and a relay's for a relay), the port itself for any other."""
+    if port == ADB_PORT:
+        return (f"{host}:{port} is still open: network ADB is on. On the TV, turn USB debugging,\n"
+                "Network/ADB debugging and Wireless debugging off and check again, then reboot it\n"
+                "and check once more.\n" + relay)
+    return (f"{host}:{port} is still open: something answers there. 5555 is the ADB port, so an open one\n"
+            "of those is network ADB. The port you gave may be the Wireless debugging port, which\n"
+            "`adb mdns services` lists as `_adb-tls-connect._tcp`, or one this firmware runs adbd on.\n"
+            "For those, turn USB debugging, Network/ADB debugging and Wireless debugging off, check\n"
+            "again, then check 5555 after the reboot. A TV also keeps services of its own open whatever\n"
+            "those toggles say - the JointSpace API on a Philips (1926, or 1925 on older sets),\n"
+            "casting, a web page - and an open port like that says nothing about ADB. Check the ADB\n"
+            "port with  tools/adb-closed.py " + host + " 5555\n" + relay)
+
+
 def main():
     args = sys.argv[1:]
     if len(args) > 2 or args[:1] in (["-h"], ["--help"]):
@@ -76,6 +134,10 @@ def main():
     raw_host = args[0] if args else os.environ.get("TV_HOST", "")
     if not raw_host:
         sys.stderr.write("usage: adb-closed.py <tv ip> [port]\n")
+        return 2
+    problem = address_problem(raw_host)
+    if problem:
+        sys.stderr.write(problem + "\n")
         return 2
     host, endpoint_port = split_host_port(raw_host)
     port_from_env = False
@@ -110,8 +172,14 @@ def main():
     relay = (f"{host} is this computer: a relay answers for itself, not for the TV. Check the TV's own IP\n"
              "from an ordinary terminal:  tools/adb-closed.py <tv ip>\n" if local else "")
 
+    connect_host = host
     try:
-        with socket.create_connection((host, port), timeout=TIMEOUT_S):
+        connect_host = socket.inet_ntoa(socket.inet_aton(host))
+    except (OSError, ValueError):
+        pass
+
+    try:
+        with socket.create_connection((connect_host, port), timeout=TIMEOUT_S):
             pass
     except ConnectionRefusedError:
         if local:
@@ -156,13 +224,14 @@ def main():
                     "learned about the port.\n")
         sys.stderr.write(f"could not check {host}:{port} ({e}). Is the TV on and on this network?\n" + note)
         return 2
-    # Wireless debugging has a port of its own and stays open when USB debugging goes off, so the advice
-    # names it too. The second check comes before the reboot: if this is the Wireless debugging port, a
-    # reboot leaves Wireless debugging off or starts it on a new port, and this number reads closed
-    # afterwards either way. Port 5555 is the one worth checking again after the reboot.
-    sys.stderr.write(f"{host}:{port} is still open: network ADB is on. On the TV, turn USB debugging,\n"
-                     "Network/ADB debugging and Wireless debugging off and check again, then reboot it\n"
-                     "and check once more.\n" + relay)
+    # An open port is judged by which port it is. 5555 is where adbd listens by default, so an open one of
+    # those is network ADB; a port handed in is the owner's choice - Wireless debugging's own (which stays
+    # open when USB debugging goes off, so the advice names it too, and the check comes before the reboot
+    # because a reboot leaves it off or on a new port), or one this firmware runs adbd on. Any other port
+    # belongs to a service the toggles do not touch: a Philips keeps its JointSpace API open on 1926 and
+    # 1925 whatever they say (tools/philips-api.py reads it there), so saying "network ADB is on" for it
+    # sent the owner of a 58PUS7304 hunting a setting that was already off (#3890).
+    sys.stderr.write(open_port_message(host, port, relay))
     return 1
 
 

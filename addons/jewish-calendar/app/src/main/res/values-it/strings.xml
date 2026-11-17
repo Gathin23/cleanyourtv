@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Calendario ebraico</string>
+    <string name="settings">Impostazioni del calendario</string>
+    <string name="latitude">Latitudine (da −90 a 90)</string>
+    <string name="longitude">Longitudine (da −180 a 180)</string>
+    <string name="location_note">Inserisci le coordinate della tua città. Il tramonto viene calcolato offline con il fuso orario della TV. La posizione non viene rilevata automaticamente.</string>
+    <string name="missing_location">Imposta la posizione per avere date ebraiche che cambiano al tramonto.</string>
+    <string name="no_sunset">Oggi in questo luogo non c’è il tramonto; la data ebraica non è disponibile.</string>
+    <string name="invalid_location">Inserisci latitudine e longitudine valide, oppure lascia vuoti entrambi i campi.</string>
+    <string name="greetings">Auguri per le feste e lo Shabbat</string>
+    <string name="region">Calendario delle feste</string>
+    <string name="auto_region">Automatico (lingua e paese)</string>
+    <string name="israel">Israele</string>
+    <string name="diaspora">Diaspora</string>
+    <string name="save">Salva</string>
+    <string name="cancel">Annulla</string>
+    <string name="screensaver">Impostazioni del salvaschermo di sistema</string>
+    <string name="screensaver_missing">Le impostazioni del salvaschermo non sono disponibili su questa TV.</string>
+    <string name="timing_note">Orario del tramonto approssimativo; non indica l’accensione dei lumi né l’orario della Havdalah.</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MFTR0 (freeguy, MediaTek mt9653), China firmware OS3.0.101.0.UFTMATV (HyperOS TV 3)",
+  "os": "Android 14 (HyperOS TV 3, CN build)",
+  "brand": "Xiaomi",
+  "notes": "OS3 sibling of the Android 11 [MiTV-MFTR0 list](xiaomi-mitv-mftr0/), one build between ASTR0's OS3.0.106 and MFFU0's OS3.0.115: the `com.ts.launcher` allowlist trampoline takes Home here too, and the Inputs rows stay inert until `input_action` and the port numbers are set (README.md here); same Hyper screensaver and AOSP ad-services modules as the other OS3 sets; no WPS, no `com.mitv.overseaservice` on the OS2 list but present here"
+}

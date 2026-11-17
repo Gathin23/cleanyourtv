@@ -1,6 +1,9 @@
 # Karbonn SWTV-20AE (Skyworth OEM, SW4H, MediaTek), Android TV 10, firmware QTG3.200617.002
 # Unit 2: Motorola SWTV-20AE (India), product SW4_TG, device SW4H, MediaTek m7332, the same build
 #   QTG3.200617.002 (security patch 2022-04-05). Its notes are under "Unit 2" below.
+# Unit 3: Thomson 43OATHPRO2000 (India), made by Super Plastronics (SPPL): ro.sky.config.brand THOMSON, board 43Q20,
+#   product SW4_TG, device SW4H, the same build QTG3.200617.002 (security patch 2023-02-05). Its notes are under
+#   "Unit 3" below.
 # ro.product.manufacturer=skyworth, device SW4H, API 29, armeabi-v7a, ~1.68 GB RAM.
 # Stock launcher: com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx).
 # Live TV: com.smartdevice.livetv / com.mediatek.tvinput.
@@ -37,6 +40,18 @@
 #   `cmd appops write-settings` straight after.
 # - A saved Wi-Fi network joined in the first-run wizard belongs to setupwraith and is forgotten when it is
 #   disabled (`dumpsys wifi | grep -o 'cname=[^ ]*'`). The home network there was android.uid.system.
+#
+# Unit 3 (Thomson, SPPL), applied 2026-11-08 in four batches with a screenshot after each, then the CleanYourTV
+# launcher; every disable, Home and the ClockDream screensaver held over a reboot. Seen on that unit:
+# - com.sky.market and com.smartdevice.tvworkwithalexa were already disabled when it arrived; with the latter
+#   off, HDMI inputs and Live TV still switched from the launcher's Inputs menu on this unit.
+# - setupwraith does not claim HOME here and the saved Wi-Fi network was android.uid.system, so it stays on.
+# - The remote is "TV BLE Remote". Input (keycode 178) opens Skyworth's own input menu and the mic (219) opens
+#   the Assistant with no key helper, and a held volume key ramps. One app button sends keycode 188
+#   (KEYCODE_BUTTON_1, scancode 397) and does nothing once the stock launcher is off; `app_keys` with
+#   INPUT_KEY_SERVICE=1 maps it, at the cost of hold-to-ramp volume (see Unit 2).
+# - A reboot sent over ADB leaves the set in standby with Wi-Fi off; press Power once and it is back in ~1 min.
+# - Lived with from 2026-11-08 to 2026-11-12 (4 days of daily use), including the "Also disabled on Unit 3" group.
 
 # Skyworth content, ads and preloads
 com.smartdevice.leanbacklauncher.customizer  # partner config that injects ad rows into home screen
@@ -69,18 +84,31 @@ com.google.android.tvrecommendations         # on Unit 2 it also caused 2 s free
 # Also disabled on Unit 2 (Motorola)
 com.google.android.play.games                # Google Play Games
 
+# Also disabled on Unit 3 (Thomson)
+com.google.android.leanbacklauncher.partnercustomizer  # sponsored partner channels on the stock home
+com.mstar.netflixobserver                    # Netflix measurement service; the Netflix app is untouched
+com.google.android.partnersetup              # partner-app attribution
+android.autoinstalls.config.SW               # Play auto-install config for partner apps
+com.android.printspooler                     # printing
+com.android.dreams.basic                     # stock "colours" screensaver; ClockDream replaces it
+
 # Ask the owner first: streaming apps disabled on Unit 2 by its owner's choice. Uncomment only what is not used.
 # com.netflix.ninja                          # Netflix (stays disabled across reboots on this firmware)
 # com.amazon.amazonvideo.livingroom          # Prime Video
 # com.google.android.youtube.tvmusic         # YouTube Music
 # com.google.android.videos                  # Google Play Movies
+# Also off on Unit 3 by its owner's choice, with Prime Video, YouTube Music and Play Movies above (Netflix kept):
+# com.google.android.apps.mediashell         # Chromecast built-in
+# com.smartdevice.dtv.icast                  # Miracast + DLNA
+# com.google.android.tv.remote.service       # Android TV phone-app remote
 
 # Stock home and setup wizard: Unit 2 disabled these only after the new launcher was confirmed as Home,
 # and both reboots came back to it. Check the Wi-Fi owner (header) before setupwraith.
 # com.google.android.tungsten.setupwraith    # setup wizard; re-enable before a factory reset
 # com.google.android.tvlauncher              # stock Android TV home
 
-# Kept on purpose: com.mediatek.tvinput / com.mediatek.wwtv.setupwizard (HDMI/AV inputs),
+# Kept on purpose on Units 1-2 (Unit 3's owner disabled mediashell and icast, see above):
+# com.mediatek.tvinput / com.mediatek.wwtv.setupwizard (HDMI/AV inputs),
 # com.smartdevice.livetv (Live TV), com.smartdevice.firewall (privacy screen, effect unclear),
 # com.tianci.localmedia (USB media), com.google.android.katniss (Assistant),
 # com.google.android.apps.mediashell (Chromecast built-in), com.smartdevice.dtv.icast (casting),

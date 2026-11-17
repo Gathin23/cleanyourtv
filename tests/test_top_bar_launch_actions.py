@@ -26,3 +26,9 @@ class TopBarLaunchActionsTest(unittest.TestCase):
                         self.method.index('LaunchActions.select'))
         self.assertIn('getLeanbackLaunchIntentForPackage(pkg)', self.method)
         self.assertIn('getLaunchIntentForPackage(pkg)', self.method)
+
+    def test_an_input_action_switches_the_input_as_the_tile_does(self):
+        self.assertIn('LaunchActions.inputId(launchActions.get(pkg))', self.method)
+        self.assertIn('button.setOnClickListener(v -> openInput(inputId))', self.method)
+        adapter = (JAVA / 'AppAdapter.java').read_text()
+        self.assertIn('LaunchActions.inputId(action)', adapter)

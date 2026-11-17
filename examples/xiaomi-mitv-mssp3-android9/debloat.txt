@@ -19,19 +19,32 @@
 # - The voice assistant (katniss) does not stay disabled: at every boot the package manager rescans it
 #   as an updated system app ("Expecting better updated system app for com.google.android.katniss"
 #   in logcat -b events) and it comes back enabled, bound as voice_interaction_service. Disabling it is
-#   all this list does. Beyond what this repo does, and your own call: removing it for user 0 and
-#   clearing the voice services held across reboots here
+#   all this list does, and all its Undo line can put back: a removal for user 0 is outside what this repo
+#   does, so this list hands out no uninstall for it. The bindings it holds are cleared with
 #     settings put secure voice_interaction_service ''
 #     settings put secure voice_recognition_service ''
-#     pm uninstall --user 0 com.google.android.katniss
-#   and is undone with
-#     cmd package install-existing com.google.android.katniss
+#   and undone with
 #     settings put secure voice_interaction_service com.google.android.katniss/.search.serviceapi.KatnissVoiceInteractionService
 #     settings put secure voice_recognition_service com.google.android.katniss/com.google.android.apps.tvsearch.voice.recognition.KatnissRecognitionService
 # - Left alone on purpose: com.mediatek.wwtv.tvcenter / tvinput* (HDMI + tuner), mitv.service,
 #   com.xiaomi.mitv.mediaexplorer (Media Player), com.google.android.tv.remote.service.
 # - Netflix, Prime Video, Pluto TV, YouTube Music and Chromecast kept by choice; com.mstar.netflixobserver
 #   starts Netflix at boot (about 130 MB) and needs the same treatment as in examples/xiaomi-mitv-mssp3.
+#
+# ---- Physical Input/Source button (related to #1368; different model from MOOQ0) ----
+# Checked on MiTV-MSSP3 / machuca, Android TV 9, builds PI.7524 and PI.4663.
+# On PI.7524 the physical button sends KEYCODE_TV_INPUT (178). Xiaomi's
+# com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver explicitly starts
+# com.google.android.tvlauncher/.inputs.InputsPanelActivity, which is unavailable after
+# the stock launcher is disabled. The Inputs pill still works, but the remote button does not.
+# Setting "handle_view_inputs": true alone did not fix the physical button on PI.7524.
+# Set "handle_view_inputs": true in config.xml or the theme's config.json and install
+# with INPUT_KEY_SERVICE=1. InputKeyService handles 178 already; no extra keycode is needed.
+# The owner confirmed the physical button works with that configuration on both builds;
+# pressing it from inside Spotify was checked on PI.7524. Injected keys do not test the helper.
+# Tradeoff observed on PI.7524: holding Volume Up advances just one step while the helper
+# is bound. The owner accepted this tradeoff in exchange for the Input shortcut.
+# These observations concern the remote-button setup only, not every package in this list.
 #
 # Older Android 9 firmware PI.4663 (ro.build.display.id "PI.4663 release-keys", same 1.8 GB set), Italy:
 # - com.mitv.tvhome.michannel and com.mitv.dream are not installed. The screensaver there is
@@ -43,11 +56,23 @@
 #   after boot), unlike PI.7524 above.
 # - After 7 days of uptime MemAvailable was about 740 MB and adbd stalled; a minute after a cold boot with
 #   this list and the launcher it was about 850 MB.
+# - Second PI.4663 unit, the EU retail Mi TV 4S 55" (L55M5-5ASP), Wi-Fi. Status: applied 2026-10-28 in four
+#   batches with a screenshot after each, two reboots, HDMI, Live TV and the real remote checked the same day;
+#   updated 2026-11-02 after five days of daily use with no problems and nothing re-enabled. What it disables
+#   and keeps, where it differs from this list, and the remote-button results are in README.md in this folder.
+# - Older Android 9 firmware PI.3591 (ro.build.display.id "PI.3591 release-keys", security patch 2020-01-05,
+#   1.8 GB set), India, Wi-Fi. Status: applied 2026-11-05, no reboot or multi-day follow-up reported yet, so treat its notes
+#   as provisional until the owner reports back. Like PI.4663, com.mitv.tvhome.michannel and com.mitv.dream
+#   are absent and com.google.android.leanbacklauncher(.recommendations) are present; adds Indian retail
+#   Sensara EPG packages (co.sensara.tv.mitv, co.sensara.tv.mitv.res), com.mitv.tvhome.mitvplus,
+#   com.google.android.tv.bugreportsender and factory-enabled com.google.android.music. Full list and
+#   regional partner preloads are in README.md in this folder.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
 com.xiaomi.statistic
 com.google.android.feedback
+com.google.android.tv.bugreportsender
 
 # PatchWall, content rows, sponsored rows
 com.mitv.tvhome.atv                         # PatchWall
@@ -59,7 +84,7 @@ android.autoinstalls.config.xiaomi.amelie   # Play auto-install of partner apps
 
 # Xiaomi background services
 com.xiaomi.mitv.tvmanager                   # "TV Manager" cleaner
-com.xiaomi.mitv.updateservice               # firmware updates: re-enable to check for one
+# com.xiaomi.mitv.updateservice             # firmware updates: better left enabled (docs/DOS-AND-DONTS.md); uncomment to switch it off
 
 # Personal choice: voice assistant
 com.google.android.katniss                  # comes back at boot, see header

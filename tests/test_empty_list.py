@@ -25,6 +25,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import venv
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -117,11 +118,15 @@ class EmptyListTest(unittest.TestCase):
         (self.tools / "tv.py").write_text(FAKE_TV)
         # The scripts call the tools venv's Python: run the real interpreter, which imports the fake
         # tv.py for the transport and the real recovery.py for the record.
-        for client in (self.tools / "venv" / "bin" / "python",
-                       self.tools / "venv" / "Scripts" / "python.exe"):
-            client.parent.mkdir(parents=True, exist_ok=True)
-            client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
-            client.chmod(0o755)
+        # Windows cannot start a #!/bin/sh file, so there the client is a real venv of this interpreter.
+        if os.name == "nt":
+            venv.create(self.tools / "venv", with_pip=False)
+        else:
+            for client in (self.tools / "venv" / "bin" / "python",
+                           self.tools / "venv" / "Scripts" / "python.exe"):
+                client.parent.mkdir(parents=True, exist_ok=True)
+                client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+                client.chmod(0o755)
 
         self.home = self.base / "home"
         self.home.mkdir()
@@ -149,6 +154,9 @@ class EmptyListTest(unittest.TestCase):
     def disable(self, entry):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         if entry == "sh":
             if os.name != "posix" or not shutil.which("bash"):
                 raise unittest.SkipTest("disable.sh is a POSIX script; it needs bash")

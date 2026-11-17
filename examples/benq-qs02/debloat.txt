@@ -1,0 +1,56 @@
+# BenQ QS02 Android TV stick for BenQ projectors (SDMC-built, device YUL, Amlogic S905Y4, 2 GB)
+# Android TV 14 (SDK 34), build UKG3.250826.001.20260310, UI at 1920x1080 on a 3840x2160 panel (firmware default)
+# Fingerprint: BenQ/QS02/YUL:14/UKG/20260310:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-qs02/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-qs02/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (Android TV with the Shop and Discover tabs, not Google TV's
+# launcherx); build-and-install.sh disables it on top of this list. HOME claimants on stock: tvlauncher and
+# com.android.tv.settings/.system.FallbackHome. setupwraith is installed but does not claim HOME, and the saved
+# Wi-Fi belonged to android.uid.system, so it stays. No HDMI or tuner inputs on the stick: the Inputs pill hides
+# itself and live_tv_package stays empty.
+#
+# KEEP, even though some names look like bloat:
+# - com.sdmc.GlobalKey: GLOBAL_BUTTON (the remote's special keys). com.sdmc.bluetoothconnect: remote pairing
+#   during setup. com.sdmc.standbyserver: standby and power-on.
+# - com.sdmc.sdmcplatform, com.sdmc.sdmcservicehelper, com.sdmc.cleardataservice, com.ref.restriction: SDMC
+#   platform services on the system uid; left alone.
+# - com.droidlogic.* (Amlogic platform), including com.droidlogic.updater, the firmware updater.
+# - com.google.android.tv.axel (remote and IR setup), com.google.android.tv.setup.customizationsample (setup hooks).
+# - com.benq.benqnewrc: BenQ's remote companion app; hidden from Home with the launcher instead of disabled.
+# - com.benqatv3.airplay: AirPlay mirroring (eShare); kept by choice, it also carries Firebase.
+# - Factory/test packages: com.sdmc.facTest, com.sdmc.hwinfo (FactoryReceiver). Never launch them, not even to look.
+#
+# Notes from this unit (verified with screenshots, 29 October 2026):
+# - Network debugging answered on port 5555 directly once USB debugging was on; no Wireless debugging pairing needed.
+# - Launcher: HOME takeover works with plain build-and-install.sh (mFocusedApp = com.gathin.tvhome after Home and
+#   after a reboot, and the first resumed activity after boot). Ambient screensaver (backdrop) left as it was.
+# - Remote: Home, Back, volume and the other buttons keep working without tvlauncher; no key helper needed.
+# - Volume goes over HDMI-CEC to the AV receiver (absolute volume), so holding a volume key moves one step;
+#   that is the CEC path, not the launcher, and no accessibility helper is enabled.
+# - The stock launcher kept a cached "Apps Manager" tile after com.benq.appsmanager was disabled; it goes with tvlauncher.
+# - Reboot-checked: everything listed stays disabled and Home stays on the new launcher.
+
+# Content, ads and promos
+android.autoinstalls.config.sdmc                 # silently installs partner apps (PLAY_AUTO_INSTALL)
+com.benq.notification                            # BenQ push messages and promos; a notification listener
+com.sdmc.leakbackcustomer                        # tvlauncher partner configuration and a partner widget
+
+# Tracking
+com.android.adservices.api                       # Android ad services (Topics, attribution)
+
+# Preloaded apps
+# com.jio.media.stb.ondemand                     # JioCinema; this set has it off, uncomment if you don't use it
+com.benq.appsmanager                             # BenQ Apps Manager (app store)
+com.benq.dashboard                               # BenQ Dashboard (notification sender with a tile)
+
+# Optional, not tested on this unit: uncomment what you don't use
+# com.google.android.tvrecommendations           # recommendation rows for the stock home screen
+# com.google.android.partnersetup                # Google partner attribution pings
+# com.google.android.feedback
+# com.android.tv.feedbackconsent
+# com.google.android.play.games
+# com.google.android.katniss                     # Google Assistant voice
+# com.google.android.apps.mediashell             # Chromecast
