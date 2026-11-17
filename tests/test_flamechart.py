@@ -9,6 +9,7 @@ neither Perfetto's query engine nor a TV. Drawing needs Pillow, so that test ski
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import contextlib
+import errno
 import importlib.util
 import io
 import os
@@ -224,6 +225,27 @@ class ArgumentTest(unittest.TestCase):
             through.write_text("not a folder")
             self.assertIn("is a file, not a folder", self.parse_error(["a", "--out", str(through / "chart.png")]))
             self.assertIn("--out is empty", self.parse_error(["a", "--out", ""]))
+
+    def test_a_folder_the_filesystem_will_not_look_at_is_named_with_its_reason(self):
+        # os.path.exists() and os.path.isdir() answer every OSError with False, so a folder under one this
+        # user may not traverse (EACCES) and a name longer than NAME_MAX both read as "not there yet", and
+        # the reader was told to create a folder that is either already there or that nothing can create.
+        with tempfile.TemporaryDirectory() as tmp:
+            long_folder = Path(tmp) / ("a" * 300)
+            try:
+                os.stat(long_folder)
+            except OSError:
+                message = self.parse_error(["a", "--out", str(long_folder / "chart.png")])
+                self.assertIn("cannot be looked at", message)
+                self.assertNotIn("create it first", message)
+            else:
+                self.skipTest("this filesystem stats a 300-character name")
+        for number in (errno.ENAMETOOLONG, errno.EACCES, errno.EIO):
+            with self.subTest(errno=number), \
+                    mock.patch("os.stat", side_effect=OSError(number, os.strerror(number))):
+                message = self.parse_error(["a", "--out", "/tmp/charts/chart.png"])
+                self.assertIn("cannot be looked at", message)
+                self.assertIn(os.strerror(number), message)
 
     def test_a_png_in_a_folder_that_is_there_is_still_accepted(self):
         with tempfile.TemporaryDirectory() as tmp:
