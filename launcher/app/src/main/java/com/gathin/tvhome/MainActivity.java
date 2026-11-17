@@ -828,16 +828,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
         });
-        launcherSettingsButton = cfg.launcherSettingsButton;
-        if (launcherSettingsButton) {
-            ((TextView) btnSettings).setText(R.string.launcher_settings);
-            ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_home_settings_pill, 0, 0, 0);
+        View btnConfig = findViewById(R.id.btnConfig);
+        if (btnConfig != null) {
+            btnConfig.setOnClickListener(v -> startActivityForResult(
+                    new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
         }
-        btnSettings.setOnClickListener(v -> {
-            if (launcherSettingsButton) startActivityForResult(
-                    new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
-            else open(systemIntent(Settings.ACTION_SETTINGS));
-        });
+        btnSettings.setOnClickListener(v -> open(systemIntent(Settings.ACTION_SETTINGS)));
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
         btnReorder.setVisibility(cfg.reorderButton ? View.VISIBLE : View.GONE);
@@ -920,14 +916,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
+        if (btnConfig != null) btnConfig.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnConfig, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
-                button.setOnFocusChangeListener((view, focused) -> view.animate()
-                        .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
-                        .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
+                if (button != null) {
+                    button.setOnFocusChangeListener((view, focused) -> view.animate()
+                            .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
+                            .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
+                }
             }
         }
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
@@ -1163,13 +1162,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LAUNCHER_SETTINGS_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getBooleanExtra(LauncherSettingsActivity.EXTRA_REORDER, false)) {
-            getIntent().putExtra(LauncherSettingsActivity.EXTRA_REORDER, true);
-            // The old activity must not consume the pending action, or rebuild a second time in onResume.
-            settingsRecreationPending = true;
-            settingsRevision = settingsRevision();
-            recreate();
+        if (requestCode == LAUNCHER_SETTINGS_REQUEST && resultCode == RESULT_OK && data != null) {
+            if (data.getBooleanExtra(LauncherSettingsActivity.EXTRA_REORDER, false)) {
+                getIntent().putExtra(LauncherSettingsActivity.EXTRA_REORDER, true);
+                // The old activity must not consume the pending action, or rebuild a second time in onResume.
+                settingsRecreationPending = true;
+                settingsRevision = settingsRevision();
+                recreate();
+            } else if (data.getBooleanExtra(LauncherSettingsActivity.EXTRA_LIBRARY, false)) {
+                grid.post(() -> onLibraryRequested());
+            }
         }
     }
 
@@ -1409,19 +1411,63 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * or switched off by a force-stop) the stock launcher that used to handle the key is gone, and the button did
      * nothing even on Home.
      */
-    private boolean handleSettingsKey(KeyEvent event) {
-        for (int code : settingsKeycodes) {
-            if (event.getKeyCode() != code) continue;
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                Intent settings = settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : systemIntent(Settings.ACTION_SETTINGS);
-                // settings_key_clear_task, as in HomeKeyService: Back from Settings goes Home, not to a vendor page.
-                if (settingsKeyClearTask && !settingsKeyPanel) settings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                open(settings);
+    private long lastNineDotClick = 0;
+    private boolean nineDotLongPressed = false;
+    private final Runnable nineDotLongPressRunnable = () -> {
+        nineDotLongPressed = true;
+        RamBooster.clean(this, true);
+    };
+    private final Runnable nineDotSingleClickRunnable = () -> {
+        lastNineDotClick = 0;
+        startActivity(new Intent(this, LauncherSettingsActivity.class));
+    };
+
+    private boolean isNineDotKey(KeyEvent event) {
+        int code = event.getKeyCode();
+        if (code == KeyEvent.KEYCODE_SETTINGS
+                || code == KeyEvent.KEYCODE_ALL_APPS
+                || code == KeyEvent.KEYCODE_APP_SWITCH
+                || code == KeyEvent.KEYCODE_MENU
+                || code == KeyEvent.KEYCODE_F1
+                || code == KeyEvent.KEYCODE_F12
+                || code == KeyEvent.KEYCODE_GUIDE) {
+            return true;
+        }
+        for (int c : settingsKeycodes) {
+            if (code == c) return true;
+        }
+        return false;
+    }
+
+    private boolean handleNineDotKey(KeyEvent event) {
+        if (!isNineDotKey(event)) return false;
+        int action = event.getAction();
+        if (action == KeyEvent.ACTION_DOWN) {
+            if (event.getRepeatCount() == 0) {
+                nineDotLongPressed = false;
+                handler.postDelayed(nineDotLongPressRunnable, 500);
+            }
+            return true;
+        } else if (action == KeyEvent.ACTION_UP) {
+            handler.removeCallbacks(nineDotLongPressRunnable);
+            if (nineDotLongPressed) {
+                nineDotLongPressed = false;
+                return true;
+            }
+            if (!event.isCanceled()) {
+                long now = SystemClock.uptimeMillis();
+                if (now - lastNineDotClick < 400) {
+                    lastNineDotClick = 0;
+                    handler.removeCallbacks(nineDotSingleClickRunnable);
+                    RamBooster.clean(this, true);
+                } else {
+                    lastNineDotClick = now;
+                    handler.postDelayed(nineDotSingleClickRunnable, 400);
+                }
             }
             return true;
         }
-        return false;
+        return true;
     }
 
     // ---- reorder ---------------------------------------------------------------------------------
@@ -1438,13 +1484,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        android.util.Log.i("CleanYourTV", "MainActivity.dispatchKeyEvent: action=" + event.getAction() + " code=" + event.getKeyCode() + " scan=" + event.getScanCode() + " dev=" + event.getDeviceId());
         if (homeIgnoreChannelKeys && RemoteKeys.isChannelKey(event.getKeyCode())) return true;
         // Vendor keys (TCL Netflix button, 4062) never reach the key services, only the focused window, so their
         // "hold:" entries run here too or nowhere. Only while resumed: onPause releases Home's holds, and a DOWN
         // taken after that would arm one nothing releases.
         if (resumed && event.getKeyCode() >= 1000 && RemoteKeys.handle(this, event, homeAppKeys.get(event.getKeyCode()),
                 homeHoldAppKeys.get(event.getKeyCode()))) return true;
-        if (handleSettingsKey(event)) return true;
+        if (resumed && event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_ALL_APPS || event.getKeyCode() == KeyEvent.KEYCODE_APP_SWITCH) {
+                RamBooster.clean(this, true);
+                return true;
+            }
+        }
+        if (handleNineDotKey(event)) return true;
         if (holdOk(event)) return true;
         if (tileMenuEnabled && !reordering && openPopup == null && cardPrompt == null
                 && event.getKeyCode() == KeyEvent.KEYCODE_MENU) {

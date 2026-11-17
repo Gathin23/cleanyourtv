@@ -98,6 +98,17 @@ public class HomeKeyService extends AccessibilityService {
         super.onServiceConnected();
         running = this;
         settingsScancodes = getResources().getIntArray(R.array.settings_key_scancodes);
+
+        AccessibilityServiceInfo info = getServiceInfo();
+        if (info == null) {
+            info = new AccessibilityServiceInfo();
+        }
+        info.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+        info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
+        setServiceInfo(info);
+        android.util.Log.i("CleanYourTV", "HomeKeyService.onServiceConnected! setServiceInfo called");
+
         // The service is directBootAware: Android 11 skips a service that is not while the user is still
         // locked at boot, writes accessibility_enabled=0 and, on TCL G03 firmware, never binds it after the
         // unlock. Config.load reads credential-protected storage, so wait for the unlock before reading it.
@@ -225,20 +236,63 @@ public class HomeKeyService extends AccessibilityService {
         }
         // home_key_service.xml subscribes to no events, so the redirects ask for window changes only when one is on.
         AccessibilityServiceInfo info = getServiceInfo();
-        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront)) {
-            info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-            // setServiceInfo() rewrites flags and drops the XML's flagRequestFilterKeyEvents, so a
-            // key_filter build that also uses a window-watching redirect loses key filtering (gear/app
-            // keys stop reaching the helper). Re-assert the filter flag here when key_filter is on.
-            if (config.keyFilter) info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
-            setServiceInfo(info);
+        if (info == null) {
+            info = new AccessibilityServiceInfo();
         }
+        info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+        if (config.keyFilter) {
+            info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+        }
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
+        setServiceInfo(info);
         if (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty()) probeAtBoot();
         armStandbyExit();
         holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
         holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
         // gamepad_passthrough and volume_pauses_filter, off by default.
         if (gamepads == null) gamepads = GamepadPassthrough.start(this, config);
+    }
+
+    private long lastClickTime = 0;
+    private boolean isLongPressed = false;
+    private final Runnable longPressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            isLongPressed = true;
+            RamBooster.clean(HomeKeyService.this, true);
+        }
+    };
+    private final Runnable singleClickRunnable = new Runnable() {
+        @Override
+        public void run() {
+            lastClickTime = 0;
+            openLauncherSettings();
+        }
+    };
+
+    private void openLauncherSettings() {
+        Intent open = new Intent(this, LauncherSettingsActivity.class);
+        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try {
+            startActivity(open);
+        } catch (Exception e) {
+            RamBooster.clean(this, true);
+        }
+    }
+
+    private boolean isNineDotKey(KeyEvent event) {
+        int code = event.getKeyCode();
+        if (code == KeyEvent.KEYCODE_SETTINGS
+                || code == KeyEvent.KEYCODE_ALL_APPS
+                || code == KeyEvent.KEYCODE_APP_SWITCH
+                || code == KeyEvent.KEYCODE_MENU
+                || code == KeyEvent.KEYCODE_F1
+                || code == KeyEvent.KEYCODE_F12
+                || code == KeyEvent.KEYCODE_GUIDE
+                || isSettingsKey(event)) {
+            return true;
+        }
+        return false;
     }
 
     /** A tap's target: the "front:" entry while the button's own app is already in front, else the usual one. */
@@ -260,12 +314,43 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        android.util.Log.i("CleanYourTV", "HomeKeyService.onKeyEvent: action=" + event.getAction() + " code=" + event.getKeyCode() + " scan=" + event.getScanCode() + " dev=" + event.getDeviceId());
         // power_on_home: the first key after power-on hands the TV to the user (power and wake keys don't count).
         if (powerOnUntil != 0 && event.getAction() == KeyEvent.ACTION_DOWN
                 && event.getKeyCode() != KeyEvent.KEYCODE_POWER && event.getKeyCode() != KeyEvent.KEYCODE_WAKEUP) {
             powerOnUntil = 0;
         }
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
+
+        if (isNineDotKey(event)) {
+            int action = event.getAction();
+            if (action == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() == 0) {
+                    isLongPressed = false;
+                    handler.postDelayed(longPressRunnable, 500);
+                }
+                return true;
+            } else if (action == KeyEvent.ACTION_UP) {
+                handler.removeCallbacks(longPressRunnable);
+                if (isLongPressed) {
+                    isLongPressed = false;
+                    return true;
+                }
+                if (!event.isCanceled()) {
+                    long now = SystemClock.uptimeMillis();
+                    if (now - lastClickTime < 400) {
+                        lastClickTime = 0;
+                        handler.removeCallbacks(singleClickRunnable);
+                        RamBooster.clean(this, true);
+                    } else {
+                        lastClickTime = now;
+                        handler.postDelayed(singleClickRunnable, 400);
+                    }
+                }
+                return true;
+            }
+            return true;
+        }
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, inFront(appScancodes, frontAppScancodes, event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
@@ -282,16 +367,17 @@ public class HomeKeyService extends AccessibilityService {
         if (settingsKey) {
             RemoteKeys.handle(this, event, null, hold);
             boolean held = hold != null && event.getEventTime() - event.getDownTime() >= RemoteKeys.HOLD_MS;
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled() && !held) {
-                Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
-                // settings_key_clear_task: on MediaTek boards KEYCODE_SETTINGS is also a global key that opens Display &
-                // Sound in the Settings task before this helper sees it; cleared, Back from Settings goes Home, not there.
-                if (settingsClearTask && !settingsPanel) open.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                try {
-                    startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException | SecurityException unavailable) {
-                    Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                if (held) {
+                    RamBooster.clean(this, true);
+                } else {
+                    Intent open = new Intent(this, LauncherSettingsActivity.class);
+                    open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    try {
+                        startActivity(open);
+                    } catch (Exception e) {
+                        RamBooster.clean(this, true);
+                    }
                 }
             }
             return true;
@@ -305,9 +391,14 @@ public class HomeKeyService extends AccessibilityService {
             redirectHomeKey(event);
             return false;
         }
-        if (event.getKeyCode() != KeyEvent.KEYCODE_ALL_APPS) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome();
-        return true;
+        if (event.getKeyCode() == KeyEvent.KEYCODE_ALL_APPS || event.getKeyCode() == KeyEvent.KEYCODE_APP_SWITCH) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                RamBooster.clean(this, true);
+                openHome();
+            }
+            return true;
+        }
+        return false;
     }
 
     /** Unbound by Android: the user turned the helper off, so Home doesn't put it back (ServiceRepair). */

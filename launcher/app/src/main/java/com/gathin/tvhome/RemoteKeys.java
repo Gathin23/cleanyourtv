@@ -119,10 +119,16 @@ final class RemoteKeys {
      * runs, since the flag is also declared in the manifest metadata.
      */
     static void applyKeyFilter(AccessibilityService service, boolean keyFilter) {
-        if (keyFilter) return;
         AccessibilityServiceInfo info = service.getServiceInfo();
-        if (info == null) return;
-        info.flags &= ~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+        if (info == null) {
+            info = new AccessibilityServiceInfo();
+        }
+        if (keyFilter) {
+            info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+        } else {
+            info.flags &= ~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+        }
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
         service.setServiceInfo(info);
     }
 
@@ -358,6 +364,7 @@ final class RemoteKeys {
         switch (target) {
             case "back": case "home": case "recents": case "mute": case "sleep":
             case "screensaver": case "settings": case "wifi": case "library": case "ignore":
+            case "clean_ram": case "kill_apps":
                 return true;
             default:
                 return false;
@@ -400,6 +407,10 @@ final class RemoteKeys {
             case "library":
                 // Home with the App library open on top; Home does nothing when app_library is off.
                 start(ctx, new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_APP_LIBRARY));
+                break;
+            case "clean_ram":
+            case "kill_apps":
+                RamBooster.clean(ctx, true);
                 break;
             default:
                 break;   // "ignore", or "sleep" below Android 9: consumed, nothing to do

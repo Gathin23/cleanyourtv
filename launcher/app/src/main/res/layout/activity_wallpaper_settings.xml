@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF0B132B"
+    android:orientation="horizontal"
+    android:paddingStart="40dp"
+    android:paddingEnd="40dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <!-- Left Anchor: Live 16:9 TV Preview Frame -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.38"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- 16:9 TV Frame with rounded corners and border -->
+        <FrameLayout
+            android:layout_width="260dp"
+            android:layout_height="146dp"
+            android:background="@drawable/bg_wallpaper_card"
+            android:clipToOutline="true"
+            android:elevation="6dp">
+
+            <ImageView
+                android:id="@+id/previewBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <!-- Miniature translucent TV dock silhouette -->
+            <View
+                android:id="@+id/previewDockBand"
+                android:layout_width="210dp"
+                android:layout_height="26dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_chillhub_pill" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Background"
+            android:textColor="#FFFFFFFF"
+            android:textSize="24sp"
+            android:fontFamily="@string/font_medium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Clean TV Wallpapers"
+            android:textColor="#80FFFFFF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtCurrentWpName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="In use: Blue Horizons"
+            android:textColor="#FF2DD4BF"
+            android:textSize="12sp"
+            android:fontFamily="@string/font_medium" />
+    </LinearLayout>
+
+    <!-- Right Deck: Scrollable Categories and Thumbnails -->
+    <ScrollView
+        android:id="@+id/wpScroll"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.62"
+        android:fillViewport="true"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- Section 1: Your Backgrounds -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="YOUR BACKGROUNDS"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="@string/font_medium"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/btnCustomPicker"
+                style="@style/ChillHubRow"
+                android:layout_height="56dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:duplicateParentState="true"
+                    android:src="@drawable/ic_input"
+                    android:tint="@color/color_chillhub_icon" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:duplicateParentState="true"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:text="Choose from Gallery / File Manager…"
+                        android:textColor="@color/color_chillhub_text"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:text="Select any saved or downloaded photo on your TV"
+                        android:textColor="@color/color_chillhub_subtext"
+                        android:textSize="11sp" />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:duplicateParentState="true"
+                    android:text="+"
+                    android:textColor="#FF2DD4BF"
+                    android:textSize="20sp"
+                    android:fontFamily="@string/font_medium" />
+            </LinearLayout>
+
+            <!-- Section 2: Dock Opacity & Style -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OVERLAY &amp; DOCK STYLE"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="@string/font_medium"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/rowDockOpacity"
+                style="@style/ChillHubRow">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:duplicateParentState="true"
+                    android:src="@drawable/ic_settings"
+                    android:tint="@color/color_chillhub_icon" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:duplicateParentState="true"
+                    android:text="Dock Band Opacity"
+                    android:textColor="@color/color_chillhub_text"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtDockOpacityVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:duplicateParentState="true"
+                    android:text="100%"
+                    android:textColor="@color/color_chillhub_subtext"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Section 3: Waves & Coasts -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WAVES &amp; COASTS"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="@string/font_medium"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <FrameLayout
+                    android:id="@+id/card_waves_1"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_waves_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_waves_2"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_waves_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_waves_3"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_waves_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Section 4: Peaks & Mountains -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PEAKS &amp; MOUNTAINS"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="@string/font_medium"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <FrameLayout
+                    android:id="@+id/card_peaks_1"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_peaks_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_peaks_2"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_peaks_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_peaks_3"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_peaks_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Section 5: Aurora & Dunes -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AURORA &amp; DUNES"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="@string/font_medium"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <FrameLayout
+                    android:id="@+id/card_aurora_1"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_aurora_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_dunes_1"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_dunes_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_dunes_2"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_dunes_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Section 6: Dark & Night -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DARK &amp; NIGHT"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="@string/font_medium"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <FrameLayout
+                    android:id="@+id/card_dark_1"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_dark_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_dark_2"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_dark_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/card_dark_3"
+                    android:layout_width="0dp"
+                    android:layout_height="78dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_wallpaper_card"
+                    android:clipToOutline="true"
+                    android:focusable="true"
+                    android:clickable="true">
+                    <ImageView
+                        android:id="@+id/img_dark_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
