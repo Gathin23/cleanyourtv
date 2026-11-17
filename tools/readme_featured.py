@@ -39,6 +39,14 @@ def font_and_out(argv):
     if not os.path.isfile(font):
         sys.exit(f"cannot open the font at {font}: Fredoka, the variable TTF from Google Fonts, is not in\n"
                  "this repo, so pass the path of the copy you downloaded")
+    # A picture suffix can still name the supplied font through a symbolic or hard link.
+    try:
+        if os.path.samefile(out, font):
+            sys.exit(f"cannot write {out}: it is the same file as input font {font}. Nothing was written.")
+    except FileNotFoundError:
+        pass  # A distinct output that does not exist yet is fine.
+    except OSError as error:
+        sys.exit(f"cannot compare output {out} with input font {font}: {error}. Nothing was written.")
     return font, out
 
 
