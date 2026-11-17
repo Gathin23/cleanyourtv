@@ -2,6 +2,9 @@
 # firmware UKNV.260428.001. Fingerprint Toshiba/BODRUM_Toshiba/finch:14/UKNV.260428.001/15307670, security patch
 # 2026-05-01. ro.product.manufacturer = vestel, ro.product.model = "Android TV", ro.config.low_ram = true (1.4 GB).
 # France. Based on examples/cecotec-shandao (same Vestel platform, firmware UKNV.260304.001).
+# Second unit: the same product, device and firmware, Bulgaria (retail model not noted), in daily use for four
+# weeks from 2026-10-22. Its differences (setupwraith owning the saved Wi-Fi network, the packages its owner
+# also turned off) are in README.md.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-65ua2363dg/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-65ua2363dg/debloat.txt com.google.android.tvlauncher
@@ -9,7 +12,7 @@
 #
 # Stock launcher: com.google.android.tvlauncher (classic Android TV, not Google TV). Only
 # com.android.tv.settings/.system.FallbackHome also claims HOME; setupwraith does not, and the saved Wi-Fi
-# network belonged to android.uid.system, not to setupwraith.
+# network belonged to android.uid.system, not to setupwraith. On the second unit it belonged to setupwraith.
 # Live TV app:    com.mediatek.wwtv.tvcenter.
 # Updates:        no separate firmware-update package on this firmware; updates live in Settings.
 #
@@ -64,6 +67,8 @@ com.android.dynsystem                            # Dynamic System Updates
 com.android.cts.ctsshim                          # Android test shim
 com.android.cts.priv.ctsshim                     # Android test shim
 com.google.android.syncadapters.calendar         # calendar sync
+com.android.providers.calendar                   # calendar provider (second unit, four weeks: nothing missed)
+com.mstar.android.tv.disclaimercustomization     # vendor disclaimer pop-ups (second unit, four weeks)
 com.android.settings.intelligence                # the search box inside Settings; the menus keep working
 com.android.se                                   # Secure Element (eSIM, NFC payments); no such radio here
 
@@ -75,3 +80,11 @@ com.google.android.backdrop                      # ambient screensaver. Point th
 
 # Stock launcher, replaced by launcher/
 # com.google.android.tvlauncher   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved
+
+# Off on the second unit by its owner's choice, four weeks; kept on the header unit. Uncomment what you do not use.
+# com.amazon.amazonvideo.livingroom              # Prime Video
+# com.google.android.youtube.tvmusic             # YouTube Music
+# com.google.android.play.games                  # Play Games
+# com.google.android.katniss                     # Google Assistant and voice search
+# com.google.android.tts                         # Google Speech Services; the Assistant speaks with it
+# com.google.android.tv.remote.service           # the phone-app remote
