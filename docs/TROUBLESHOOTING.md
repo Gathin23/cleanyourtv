@@ -2049,6 +2049,27 @@ With these in place, a device that starts while another is on screen takes over 
 first device `<Standby>` itself. Not checked: other TCL boards, and whether the Shield turns the TV off when it
 sleeps.
 
+## Bluetooth headphones connect, but the sound stays on the soundbar or the speakers (TCL)
+
+Headphones pair and connect, and the sound keeps playing through the soundbar or the TV's speakers. Seen on a TCL
+55C805 (G08, `G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU04`) with a soundbar on eARC. TCL's own Sound output
+choice decides where the sound goes, ahead of Android's routing, and on **Auto**, the default, it picks eARC when a
+soundbar answers and the TV's speakers otherwise, never Bluetooth. The choice is a global setting, which
+`system_server` applies at once:
+
+```sh
+tools/tv.py 'settings get global tcl_device_out_type'
+#   1 Auto, 4 Bluetooth, 16 eARC: the values the TV's Sound output menu writes
+```
+
+Choosing Bluetooth in that menu, or `tools/tv.py 'settings put global tcl_device_out_type 4'`, sends the sound to
+the headphones. It does not come back by itself: with the headphones switched off and the output still on
+Bluetooth, the TV says "this type of device is not connected. Please choose another device to output sound" until
+Auto (`1`) is chosen again. An app can switch it as headphones connect and disconnect, but writing the setting needs
+`WRITE_SECURE_SETTINGS`, which only ADB can grant (`pm grant <package> android.permission.WRITE_SECURE_SETTINGS`).
+Standby drops the headphones' Bluetooth link, so with such an app the sound is back on Auto when the TV comes back
+on. Not checked: what standby leaves the output on without one, the menu's other choices, and other TCL boards.
+
 ## Moonlight: two controllers both drive player 1, or a DualSense button opens the exit prompt
 
 With `HomeKeyService` bound (`HOME_KEY_SERVICE=1`) and filtering keys, Moonlight streaming from Sunshine on a
