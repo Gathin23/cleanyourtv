@@ -208,9 +208,30 @@ def record_path(list_path, host):
     return record_name(list_path, lan_address(host) or host)
 
 
+def same_list_record(name, list_path):
+    """The record filed for the TV in `name` under another spelling of this list's path, or None.
+
+    A record's name hashes the list's path as typed, and a case-insensitive disk (macOS) or a link
+    reaches one file by several paths. From the other spelling, undo found no record and fell back to
+    defaults, and a second disable.sh run recorded the cleaned TV as its original state. A record whose
+    list is the same file (os.path.samefile) is this list's; a copy is another file and keeps its own.
+    """
+    prefix = name.name[:-len(f"-{list_digest(list_path)}.json")]
+    for other in sorted(name.parent.glob(prefix + "-" + "[0-9a-f]" * 8 + ".json")):
+        try:
+            with open(other) as handle:
+                listed = json.load(handle).get("list")
+            if isinstance(listed, str) and os.path.samefile(listed, list_path):
+                return other
+        except (OSError, ValueError, AttributeError):
+            continue
+    return None
+
+
 def find_record(list_path, host):
     """The record file for this TV and list: record_path's name, or the name older versions gave a
     record on the network, TV_HOST exactly as typed with its port (recovery-192.168.1.50_5555-...).
+    With neither, a record taken for the same file under another spelling of its path (same_list_record).
 
     Records under both names cannot be told apart from here: they may be this TV before and after
     cleanup, or two TVs that had this address in turn. So nothing is chosen for the owner, and the
@@ -219,11 +240,18 @@ def find_record(list_path, host):
     path = record_path(list_path, host)
     address = lan_address(host)
     if not address:
-        return path
-    port = split_host_port(host)[1] or os.environ.get("TV_PORT") or "5555"
-    typed = f"[{address}]:{port}" if ":" in address else f"{address}:{port}"
-    names = dict.fromkeys((path, record_name(list_path, typed), record_name(list_path, host)))
+        names = (path,)
+    else:
+        port = split_host_port(host)[1] or os.environ.get("TV_PORT") or "5555"
+        typed = f"[{address}]:{port}" if ":" in address else f"{address}:{port}"
+        names = dict.fromkeys((path, record_name(list_path, typed), record_name(list_path, host)))
     found = [name for name in names if name.exists()]
+    if not found:
+        found = [other for other in dict.fromkeys(same_list_record(name, list_path) for name in names) if other]
+        if len(found) == 1:
+            sys.stderr.write(f"using {found[0]}, the record taken for this list under another spelling "
+                             "of its path.\n")
+            return found[0]
     if not found:
         return path
     if len(found) > 1:
