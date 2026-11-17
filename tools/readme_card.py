@@ -11,8 +11,8 @@ The Halloween variant keeps the layout and the generated numbers: it shows docs/
 numbers in pumpkin orange), recolours the headings to orange, adds a thin dripping stripe and a few bats, and
 shows docs/new-home-halloween.jpg as AFTER. docs/card.jpg is not touched, so the README goes back with one line.
 Fredoka is the variable TTF from Google Fonts, and its file is not in this repo: pass the path of the
-copy you downloaded. The four pictures it stacks are this checkout's own - docs/stock-home.jpg,
-docs/new-home.jpg and the two its siblings draw - so run it from the repository root.
+copy you downloaded. Each variant stacks four of this checkout's own pictures, so run it from the
+repository root. The Halloween variant needs its own AFTER screenshot and stats strip, not the normal ones.
 """
 import os
 import sys
@@ -107,13 +107,17 @@ INPUTS = (
     ("docs/stats.png", "tools/readme_stats.py draws it"),
     ("docs/featured.png", "tools/readme_featured.py draws it"),
 )
-HALLOWEEN_INPUTS = (("docs/new-home-halloween.jpg", None),
-                    ("docs/stats-halloween.png", "tools/readme_stats.py --halloween draws it"))
+HALLOWEEN_INPUTS = (
+    ("docs/stock-home.jpg", None),
+    ("docs/new-home-halloween.jpg", None),
+    ("docs/stats-halloween.png", "tools/readme_stats.py --halloween draws it"),
+    ("docs/featured.png", "tools/readme_featured.py draws it"),
+)
 
 
 def inputs_problem():
     """Why a picture the card stacks cannot be read, or None."""
-    for path, drawn_by in INPUTS + (HALLOWEEN_INPUTS if HALLOWEEN else ()):
+    for path, drawn_by in (HALLOWEEN_INPUTS if HALLOWEEN else INPUTS):
         if os.path.isdir(path):
             return (f"{path} is a folder, and the card reads one picture from it: pass this checkout's "
                     f"file, run from the repository root")
@@ -123,6 +127,8 @@ def inputs_problem():
                         f"from the repository root, so run that first")
             return (f"cannot read {path}: there is no such file. The card stacks this checkout's own "
                     f"pictures, so run this from the repository root")
+    # Keep protecting existing normal pictures from an October output, even though it does not read them.
+    for path, _ in INPUTS + (HALLOWEEN_INPUTS if HALLOWEEN else ()):
         try:
             if os.path.samefile(OUT, path):
                 return f"cannot write {OUT}: it is the same file as input picture {path}"
