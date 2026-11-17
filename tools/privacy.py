@@ -30,9 +30,11 @@ the connection failed in one of the ways tv.py explains (a refused port, a Wirel
 handshake that timed out, a TV that cannot be reached). Why it stopped goes to stderr, which a wrapper
 that throws the report on stdout away still shows.
 """
+import errno
 import os
 import re
 import shlex
+import stat
 import sys
 import tempfile
 
@@ -413,20 +415,61 @@ def list_lines(result, include_low, name):
     return lines
 
 
+def looked_at(path):
+    """What a path is to the filesystem, or why it will not look at it.
+
+    ('folder'|'file'|'missing'|'runs-through', reason) - reason is None unless it is a refusal, where
+    ('refused'|'runs-through', reason) carries the operating system's own words.
+
+    os.path.isdir() and os.path.exists() answer every OSError with False, so the shapes a filesystem
+    refuses rather than answers came out of target_problem() as "there is no folder ... create it" - an
+    instruction the owner cannot carry out - and a *target* name the filesystem cannot hold got through
+    the check altogether: the whole audit ran (two shell calls for each package it probes) and the write
+    then failed as "could not be written", exit 1, which this file keeps for an audit that ran.
+
+    Only ENOENT is "not there yet". A folder the owner may not open (EACCES), a symlink loop and a name
+    longer than the filesystem holds come back with the reason the operating system gives, the way
+    tools/gen_tables.py's --root ("cannot be looked at (...)") and tools/trace.py's --out answer the same
+    question. ENOTDIR has its own state because the caller answers it one level up: a path that runs
+    *through* a file has that file to name, which is the shape tools/flamechart.py and
+    tools/screendiff.py answer with "is a file, not a folder".
+    """
+    try:
+        entry = os.stat(path)
+    except OSError as error:
+        if error.errno == errno.ENOENT:
+            return "missing", None
+        reason = error.strerror or str(error)
+        return ("runs-through" if error.errno == errno.ENOTDIR else "refused"), reason
+    return ("folder" if stat.S_ISDIR(entry.st_mode) else "file"), None
+
+
 def target_problem(path):
     """Why --write cannot write the file `path`, or None."""
-    if os.path.isdir(path):
+    state, reason = looked_at(path)
+    if state == "refused":
+        return (f"{path} cannot be looked at ({reason}), so no list could be written at that name: it "
+                f"may be a folder you may not open, or a name this filesystem cannot hold.")
+    if state == "folder":
         # The argument is a folder: `--write lists/`, or `--write` with a name that happens to be a
         # directory. Saying it "already exists" answers a question the owner did not ask, and letting
         # it through is an IsADirectoryError after the whole audit.
         return (f"{path} is a folder, and --write takes a file name to create, "
                 f"e.g. {os.path.join(path, 'privacy.txt')}.")
-    if os.path.lexists(path):
-        # A second audit of the same TV may legitimately differ, but silently replacing a list the
-        # owner is about to apply is how a hand edit disappears.
+    if state == "file" or os.path.lexists(path):
+        # lexists also answers a dangling symlink, which open("x") refuses as an existing entry. A
+        # second audit of the same TV may legitimately differ, but silently replacing a list the owner
+        # is about to apply is how a hand edit disappears.
         return f"{path} already exists; move it aside or choose another name."
     folder = os.path.dirname(path) or "."
-    if not os.path.isdir(folder):
+    state, reason = looked_at(folder)
+    if state in ("refused", "runs-through"):
+        return (f"{folder} cannot be looked at ({reason}), so {path} could not be written there: it "
+                f"may be a name this filesystem cannot hold, or a folder you may not open.")
+    if state == "file":
+        return (f"{folder} is a file, not a folder, so {path} could not be written inside it; "
+                f"choose another name.")
+    if state == "missing":
         return f"there is no folder {folder} for {path}; create it or choose another name."
     return None
 
