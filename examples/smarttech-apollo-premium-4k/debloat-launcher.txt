@@ -9,7 +9,8 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/smarttech-apollo-premium-4k/debloat-launcher.txt com.google.android.apps.tv.launcherx
 #
 # Applied on 2026-11-17: Home resolves to com.gathin.tvhome after a reboot, no recovery screen, and the
-# remote's app buttons still work. Tested for one day so far.
+# remote's app buttons still work. Casting from a phone (YouTube) still finds the TV, plays and stops with
+# setupwraith disabled. Tested for one day so far.
 
 # Google TV setup wizard: its RecoveryActivity takes Home once launcherx is disabled
 com.google.android.tungsten.setupwraith
