@@ -230,7 +230,9 @@ class PrivacyWriteTargetTest(unittest.TestCase):
         result = self.write("lists/privacy.txt")
         self.assertEqual(result.returncode, 2, result.stderr)
         self.assertNotIn("Traceback", result.stderr)
-        self.assertIn("there is no folder lists", result.stderr)
+        # The sentence names the file it runs through: "there is no folder lists" was the answer while
+        # os.path.isdir() read the refusal as an absence, and lists is right there, as a file.
+        self.assertIn("lists is a file, not a folder", result.stderr)
         self.assertNotIn("cannot reach the TV", result.stderr)
         self.assertEqual((self.repo / "lists").read_text(), "not a folder\n")
 
