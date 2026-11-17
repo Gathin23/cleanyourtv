@@ -24,3 +24,21 @@ apps, casting and voice - are commented out for a reader to choose.
 Undo:
 
     TV_HOST=<tv ip> tools/restore.sh examples/hikeen-smart-rtd285o/debloat.txt com.zeasn.oriontv.open.launcher
+
+## JVC LT-58N785 (second list)
+
+The same firmware (`PTT1.190222.001`, Realtek `rtd285o`) sold as a JVC LT-58N785 (`SmartTV-D58A212`).
+Its list is `examples/hikeen-smart-rtd285o/debloat-jvc-lt-58n785.txt`: the first list's lines that apply,
+plus ten Android leftovers, with the photo screensaver kept. It was tested in one session (two reboots
+and a cold power cycle), not over several days.
+
+- **Screenshots work** on this unit in apps and the new launcher; only the stock Zeasn Home came back empty.
+- **Developer options was hidden** while ADB was on from the factory. `tools/tv.py 'settings put global
+  development_settings_enabled 1'` shows it under Device Preferences in Android TV Settings (the launcher's
+  Settings pill); the Hikeen SettingCenter app has no such entry. USB debugging off there plus a cold power
+  cycle closed port 5555.
+- **A cold power cycle starts on the last TV input** (AV1 on the tested unit), not on Home.
+
+Undo:
+
+    TV_HOST=<tv ip> tools/restore.sh examples/hikeen-smart-rtd285o/debloat-jvc-lt-58n785.txt com.zeasn.oriontv.open.launcher
