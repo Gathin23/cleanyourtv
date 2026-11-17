@@ -1,0 +1,6 @@
+{
+  "tv": "Vidda VL7R-PRO 4K Laser Projector (MediaTek MT9655, board mt5877), China JuUI",
+  "os": "Android 14 (VIDAA)",
+  "brand": "Vidda",
+  "notes": "Vidda 4K laser projector on MT9655 / Android 14. Projector optical subsystem com.hisense.screen (autofocus, keystone, zoom) MUST NOT be disabled; Home handover via persist.vt.use_home_pkg; voice key remapping on Mode U; ro.adb.secure=0; 3.7 GB RAM; [handover and firmware notes](../docs/devices/vidda-vl7r-pro.md)"
+}

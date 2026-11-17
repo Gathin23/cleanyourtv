@@ -1,0 +1,119 @@
+# Vidda VL7R-PRO 4K laser projector (Hisense sub-brand; device MT9655, board mt5877), China. Android 14 (SDK 34),
+# build UQ1A.240105.004.A1 / 07.02.70.202512281739, security patch 2024-08-05, 3.7 GB RAM, arm64-v8a.
+# Android reports the retail name only in ro.build.description ("LASER_MICRO_3DTOF-user ..."), so identify
+# this unit by ro.build.fingerprint or by the build id above: ro.product.model, ro.product.name and
+# ro.product.device are "VIDAA_TV", "VIDAA_TV" and "MT9655", which every Hisense China set on this board answers.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/vidda-vl7r-pro/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/vidda-vl7r-pro/debloat.txt com.jamdeo.tv.vod
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ⚠ CRITICAL FOR PROJECTORS:
+# Do NOT disable com.hisense.screen! Unlike TVs, on Vidda laser projectors com.hisense.screen hosts the
+# optical motor driver, electric focus, autofocus calibration, keystone correction, and lens shift/zoom.
+# Disabling it breaks all focus buttons and autofocus mechanisms. See "Kept on purpose" at the bottom.
+#
+# Note on com.android.camera2 vs ToF autofocus:
+# The ToF distance sensor and autofocus calibration loop rely on the Android framework API
+# android.hardware.camera2 (inside framework.jar), cameraserver, and com.hisense.screen. The package
+# com.android.camera2 is merely the vanilla AOSP camera app UI (/product/app/Camera2) and was already
+# disabled at the factory by the vendor service (enabled=2); it is not in this list.
+#
+# Already disabled at factory and not in this list:
+# com.android.camera2, com.android.contacts, com.android.calendar, com.android.music,
+# com.android.providers.userdictionary, com.android.quicksearchbox, com.android.inputmethod.latin,
+# com.android.deskclock, com.android.settings.
+#
+# ADB: ro.adb.secure=0 and service.adb.tcp.port=5555, so the USB debugging switch alone opens 5555 to
+# every device on the LAN with no "Allow USB debugging?" prompt. Turn that switch off when the work is
+# done and confirm the port refuses connections (tools/adb-closed.py <projector ip>).
+#
+# Status: verified 2026-11-17 on Vidda VL7R-PRO running Aerial TV as primary launcher. Working after debloat:
+# Aerial launcher, cold boot, remote Home key, physical remote focus button, autofocus calibration,
+# keystone correction, virtual keyboard, ADB sideloading, and HDMI input switching.
+
+# Advertising
+com.hisense.business.ad                # ad SDK
+com.hisense.service.ad                 # ad service
+
+# Telemetry and reporting
+com.hisense.platformreport             # platform data reporter
+com.hisense.logupload                  # log uploader
+com.hisense.hitv.das                   # DasApp reporter (JuUI)
+
+# Vendor push channel
+com.hisense.service.message
+
+# Retail, hotel, meeting-room and first-run modes
+com.hisense.demonstrate                # shop demo loop
+com.hisense.hotelmenu                  # hotel mode menu
+com.meetingroom                        # meeting-room mode, answers HOME at -100
+com.jamdeo.tv.fte                      # first-run wizard (already past)
+
+# Preloaded content and gimmicks
+com.hisense.electronictutorial         # electronic manual
+com.vision.aibook                      # AI picture book
+com.hisense.tv.weather                 # stock weather tile
+com.jamdeo.calendar                    # calendar
+com.ju.miguvideoTV.cmcc                # Migu Video carrier preload
+com.kookong.tvplus                     # TV plus / remote live content
+com.vt.ambiencelife                    # ambience / wallpaper gimmick
+com.speech.enchatroom                  # English chat room gimmick
+
+# Accounts, payment and store locks (optional)
+com.hisense.hitv.hicloud.account       # HiCloud vendor account
+com.hisense.hitv.payment               # payment service
+com.hisense.locking                    # lock service
+
+# Screen casting and multi-screen gimmicks (if not using vendor cast)
+com.ms.ucast.ucastapp                  # ucast casting
+com.ms.weshare                         # weshare casting
+com.hisense.multiscreen.screenhelper   # multi-screen helper
+com.hisense.pcm.share                  # PC screen share
+com.hisense.nas.pt                     # vendor NAS client
+com.hisense.nasservice                 # vendor NAS background service
+
+# Voice assistant chain
+# Disabling these 6 packages stops the voice popup when pressing the remote voice button (scancode 166 /
+# keycode 4381), allowing Key Mapper to intercept and remap the voice key cleanly in Mode U.
+com.keylab.speech.core.vidaa           # speech core service
+com.keylab.speech.view.vidaa           # speech assistant UI and second-screen launcher
+com.hispeech.ai.area                   # HiSpeech AI service
+com.intelligent.speech                 # intelligent speech engine
+com.hisense.msvoicetome                # voice service
+com.vt.mic.service                     # microphone background service
+com.aispeech.dui.dds.tvassistant       # TV assistant voice stub
+com.hisense.tv.aivirtualassistant      # AI virtual assistant character
+
+# Background bloat and unneeded services
+com.android.nearby.halfsheet           # nearby halfsheet
+com.android.wallpaperpicker            # AOSP wallpaper picker
+com.android.wechathci                  # voice handwriting input engine
+com.jamdeo.screensaver                 # stock screensaver
+com.jamdeo.tv.jurestartapp             # restart helper
+com.jamdeo.tv.mediacenter              # stock media center
+com.hisense.childlock                  # child lock
+com.hisense.aiot                       # smart home IoT service
+
+# Stock launcher (JuUI 聚好看). Declares priority 50. Disabling it allows replacement launchers (Aerial,
+# priority 0) to receive Home events directly without delay or popup chooser.
+com.jamdeo.tv.vod
+
+# ============================================================================
+# Kept on purpose
+# ============================================================================
+# - com.hisense.screen: ⚠ PROJECTOR OPTICAL MOTOR & FOCUS ENGINE. NEVER DISABLE!
+#   Houses /system_ext/app/Screen/Screen.apk. Controls ElectricFocusingActivity (electric focus),
+#   CalibrationFocusActivity (autofocus calibration), KeystoneActivity (keystone correction),
+#   AutomaticEntryActivity (auto screen fit), LenPositionActivity/LenZoomActivity (lens shift/zoom),
+#   and ProjectorSensorService (ToF distance & motion sensors). Disabling it breaks all focus keys.
+# - com.hisense.vidaaassistant: Package installer and permissions manager. Sideloaded APK installs fail
+#   without it. Do NOT disable.
+# - com.sohu.inputmethod.sogou.tv: Virtual keyboard for remote control text input (Wi-Fi password, search).
+# - com.hisense.tv.tiletransition: Signal source switcher (TileAnimationService). With it off, HDMI
+#   switching fails.
+# - com.hisense.tv.inputs: Vendor signal source panel.
+# - com.jamdeo.updateservice, com.hisense.usbupgrade: OTA firmware update services (active in Mode U).
+# - com.vt.permission.manager, com.hisense.tv.globalui, com.hisense.tv.baseservice, com.hisense.hiservice:
+#   System settings and permission framework UI.
+# - com.hisense.bluetoothpair, com.hisense.raycodereceiver: Bluetooth remote pairing and IR receiver.
