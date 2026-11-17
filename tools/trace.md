@@ -29,7 +29,9 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/trace.py home --runs 5 --out trac
 ```
 
 `--out` is the folder the traces are written into, and it is created if it is not there. A file where the
-folder goes, a path through a file and an empty `--out` are refused before the TV is asked anything.
+folder goes, a path through a file, an empty `--out` and a name the filesystem will not look at (one longer
+than the filesystem allows for a name, or one under a folder this user may not open) are refused before the
+TV is asked anything.
 
 A TV that cannot be reached stops the run with `tools/tv.py`'s sentence - a port that refuses, a Wireless
 debugging port that asks for TLS, an address nothing answers on, or, before the TV is asked anything at
