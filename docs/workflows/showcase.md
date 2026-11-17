@@ -11,7 +11,12 @@
    the links only one of the two lines carries, which is a fork nobody scrolling the first line sees. It
    reads the index back the other way too: a link whose address no table row carries is reported, so a
    project renamed or repinned in the tables is dropped from the line rather than left there at the commit
-   it used to point at.
+   it used to point at. The row itself is a table row, inside the table of the section it belongs to, not a
+   line at the end of that section or below the brand index: GitHub renders a "|" line outside a table as
+   plain text, so the project is unreadable there, and `tests/test_showcase_tables.py` fails on it by line
+   number ("these lines start with '|' but are not in a table, so GitHub renders them as text"). The same
+   check holds every row to the four cells the header names - the project link first, then what it is, the
+   TV or platform, and the author link last - so a row pasted in with three cells stops the suite as well.
 2. Bump the count by one everywhere it is stated: `SHOWCASE.md` opens with an `N projects so far.` line,
    and the "Built something on top?" row carries the same number on seven translated front pages -
    `README.md` ("... projects already live") and `README.pt-BR.md` ("que já reúne ... projetos") spell it
