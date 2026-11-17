@@ -1,6 +1,6 @@
 {
   "tv": "Xiaomi TV Stick 4K (MiTV-AYFR0, soul, Amlogic), streaming stick",
-  "os": "Android TV 14",
+  "os": "Android TV 11 / 14",
   "brand": "Xiaomi",
-  "notes": "Mi analytics, PatchWall, auto-installs (`mibox3` + `soc.amlogic`), update service; `setupwraith` does not claim HOME (kept enabled, Wi-Fi stays intact); remote Home key and CEC One Touch Play verified"
+  "notes": "Mi analytics, PatchWall and promos; Android TV 14 list also has auto-installs (`mibox3` + `soc.amlogic`) and update service; [Android TV 11 variant](xiaomi-mitv-ayfr0/debloat-android11.txt) keeps OTA and setupwraith (Wi-Fi); remote Home key and CEC One Touch Play verified on Android TV 14"
 }
