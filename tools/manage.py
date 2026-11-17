@@ -49,8 +49,10 @@ A --theme folder that is not there is refused by name, not made: set starts a co
 of your own that exists, and the push it ends with replaces the theme on the TV and empties that theme's
 wallpapers, so a mistyped path would leave a one-key theme behind.
 
-On Windows, theme install and set use PowerShell (pwsh, or powershell when pwsh is not on PATH), without loading
-profiles or changing execution policy. Add-ons with their own shell installer still need Bash; an install whose bash
+On Windows, theme install and set use PowerShell (pwsh, or powershell when pwsh is not on PATH) with
+-ExecutionPolicy Bypass - the flag every .ps1 command these pages hand out carries - so the script still loads
+under the Restricted policy Windows 10 and 11 ship; the flag applies to that one process and changes nothing on
+the machine. No profile is loaded. Add-ons with their own shell installer still need Bash; an install whose bash
 or Gradle wrapper cannot start says which and what to install, and exits 1 before anything is built or pushed. A theme install
 takes only its name; script arguments belong to add-ons. If set saves the local file but the push fails, it
 reports that separately: exit 2 means nothing was sent to the TV, any other code means the TV may have
@@ -922,7 +924,10 @@ def theme_command(folder):
         shell = shutil.which("pwsh") or shutil.which("powershell")
         if not shell:
             sys.exit("PowerShell was not found: put pwsh or powershell on PATH. Nothing was written or pushed.")
-        return [shell, "-NoProfile", "-NonInteractive", "-File", str(TOOLS / "theme.ps1"), "-Theme", str(folder)]
+        # -ExecutionPolicy Bypass is the flag every .ps1 command these pages hand out carries: Windows 10 and 11
+        # ship Restricted, which refuses to load a script, and the flag covers that one process only (#3894).
+        return [shell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                "-File", str(TOOLS / "theme.ps1"), "-Theme", str(folder)]
     return ["bash", str(TOOLS / "theme.sh"), str(folder)]
 
 

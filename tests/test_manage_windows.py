@@ -27,13 +27,29 @@ class ThemeDispatchTest(unittest.TestCase):
             code = manage.main(["install", "aurora", *extra])
         return code, runner, out.getvalue(), err.getvalue()
 
-    def test_windows_installs_with_powershell_without_a_profile_or_policy_bypass(self):
+    def test_windows_installs_with_powershell_the_way_the_pages_hand_it_out(self):
+        """`-ExecutionPolicy Bypass`, as README.md and the other pages write every .ps1 command.
+
+        Windows 10 and 11 ship `Restricted`, which refuses to load a script at all, so a push without the flag
+        saved the local edit and then said the push had failed (#3894). The flag covers that one process: it is
+        not `Set-ExecutionPolicy`, and the machine's own setting is left alone.
+        """
         code, runner, _, _ = self.install("win32", {"pwsh": r"C:\PowerShell\pwsh.exe"})
         self.assertEqual(code, 0)
         runner.assert_called_once_with(
-            [r"C:\PowerShell\pwsh.exe", "-NoProfile", "-NonInteractive", "-File",
-             str(manage.TOOLS / "theme.ps1"), "-Theme", str(ROOT / "themes" / "aurora")],
+            [r"C:\PowerShell\pwsh.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+             "-File", str(manage.TOOLS / "theme.ps1"), "-Theme", str(ROOT / "themes" / "aurora")],
             cwd=ROOT)
+
+    def test_the_policy_flag_reaches_the_command_that_loads_the_script(self):
+        for programs in ({"pwsh": r"C:\PowerShell\pwsh.exe"}, {"powershell": r"C:\Windows\powershell.exe"}):
+            with self.subTest(programs=programs):
+                _, runner, _, _ = self.install("win32", programs)
+                command = runner.call_args.args[0]
+                self.assertIn("-ExecutionPolicy", command, f"no execution policy flag: {command}")
+                self.assertLess(command.index("-ExecutionPolicy"), command.index("-File"),
+                                f"PowerShell has to see the flag on the command that loads the script: {command}")
+                self.assertEqual(command[command.index("-ExecutionPolicy") + 1], "Bypass")
 
     def test_windows_can_use_the_bundled_windows_powershell(self):
         code, runner, _, _ = self.install("win32", {"powershell": r"C:\Windows\powershell.exe"})
@@ -68,6 +84,15 @@ class ThemeDispatchTest(unittest.TestCase):
         self.assertIn("cannot start", err.getvalue())
         self.assertIn("gone", err.getvalue())
 
+    def test_a_pwsh_on_this_machine_takes_the_flag(self):
+        """Off Windows the flag is accepted and has no effect, so passing it cannot break a pwsh 7 user."""
+        pwsh = shutil.which("pwsh")
+        if not pwsh:
+            self.skipTest("pwsh is not on PATH here")
+        run = subprocess.run([pwsh, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                              "-Command", "exit 7"], capture_output=True, text=True)
+        self.assertEqual(run.returncode, 7, run.stdout + run.stderr)
+
     def test_missing_powershell_does_not_rewrite_a_personal_theme(self):
         with tempfile.TemporaryDirectory() as tmp:
             config = Path(tmp) / "config.json"
@@ -97,8 +122,8 @@ class ThemeDispatchTest(unittest.TestCase):
             self.assertEqual(json.loads(config.read_text(encoding="utf-8")),
                              {"dock_band": True, "columns": 6})
             runner.assert_called_once_with(
-                ["pwsh", "-NoProfile", "-NonInteractive", "-File",
-                 str(manage.TOOLS / "theme.ps1"), "-Theme", str(folder)], cwd=ROOT)
+                ["pwsh", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                 "-File", str(manage.TOOLS / "theme.ps1"), "-Theme", str(folder)], cwd=ROOT)
             self.assertIn(str(config), err.getvalue())
             self.assertIn("locally", err.getvalue())
             self.assertIn("failed", err.getvalue())
