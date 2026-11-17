@@ -11,6 +11,16 @@
 # Disabled on 2026-10-31 and used every day since: HDMI inputs with HDMI-CEC names, YouTube,
 # Netflix and Spotify work as before; nothing has been re-enabled.
 # Not in this list, kept on purpose: Chromecast built-in, Google Assistant, Play Store, system updates.
+#
+# Second unit: Onvo-branded set (the bezel says "onvo", the software is the same Apollo Premium4K TV),
+# Turkey, same firmware UKNV.260528.001. This list applied on 2026-11-16: nothing came back after a reboot.
+# The launcher works here too. The recovery screen above is setupwraith's RecoveryActivity, which takes
+# Home once launcherx is off; with setupwraith disabled as well (debloat-launcher.txt in this folder, after
+# checking that the Wi-Fi network does not belong to it) the new launcher is Home after a reboot, with no
+# recovery screen, and the remote's app buttons still work.
+# With launcherx left enabled, `set-home-activity` answers Success and changes nothing; the
+# stock_home_redirect route (HOME_KEY_SERVICE=1, key_filter false) worked as a stopgap, with the Google TV home
+# flashing for a moment before each redirect.
 
 # ACR: reports what is on screen, HDMI inputs included, for ad targeting
 tv.anoki.acr.anokiacroptin
