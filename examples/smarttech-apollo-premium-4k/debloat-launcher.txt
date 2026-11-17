@@ -1,0 +1,16 @@
+# Smarttech Apollo Premium 4K, Onvo-branded unit (Expressluck "Apollo Premium4K TV", codename marina),
+# Google TV 14, firmware UKNV.260528.001, Turkey. For the launcher takeover: apply debloat.txt first.
+# Stock launcher: com.google.android.apps.tv.launcherx (disabled by launcher/build-and-install.sh, not here).
+#
+# Check first: `tools/tv.py "dumpsys wifi | grep -o 'cname=[^ ]*'"`. This unit read android.uid.system:1000,
+# so the Wi-Fi network survived; tools/disable.sh skips setupwraith when the network belongs to it.
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/smarttech-apollo-premium-4k/debloat-launcher.txt
+#          TV_HOST=<tv ip> STOCK_LAUNCHER=com.google.android.apps.tv.launcherx launcher/build-and-install.sh
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/smarttech-apollo-premium-4k/debloat-launcher.txt com.google.android.apps.tv.launcherx
+#
+# Applied on 2026-11-17: Home resolves to com.gathin.tvhome after a reboot, no recovery screen, and the
+# remote's app buttons still work. Casting from a phone (YouTube) still finds the TV, plays and stops with
+# setupwraith disabled. Tested for one day so far.
+
+# Google TV setup wizard: its RecoveryActivity takes Home once launcherx is disabled
+com.google.android.tungsten.setupwraith

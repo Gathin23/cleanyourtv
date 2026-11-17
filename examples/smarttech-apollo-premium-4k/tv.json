@@ -2,5 +2,5 @@
   "tv": "Smarttech Apollo Premium 4K (Expressluck marina, MediaTek m7332, 2 GB)",
   "os": "Google TV 14",
   "brand": "Smarttech",
-  "notes": "Anoki ACR, Android ad services and personalisation, feedback, store demo, factory test; Chromecast, voice, Play Store and OTA kept; debloat only"
+  "notes": "Anoki ACR, Android ad services and personalisation, feedback, store demo, factory test; Chromecast, voice, Play Store and OTA kept; debloat-launcher.txt (second unit, Onvo-branded) disables setupwraith so the launcher can take Home, and phone casting still works"
 }
