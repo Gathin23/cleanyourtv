@@ -6,7 +6,7 @@ shell-only (no root, nothing uninstalled).
 - `debloat.txt` is the 55-inch Redmi Smart TV A Pro 55" 2025 Energy-saving on
   OS3.0.106.0.USTAATV.
 - `debloat-50-2025.txt` is the 50-inch Redmi Smart TV A Pro 50" 2025 Energy-saving on
-  OS3.0.119.0.USTAATV. `debloat-50-2025.txt` disables 19 packages.
+  OS3.0.119.0.USTAATV. `debloat-50-2025.txt` disables 18 packages.
 
 The 50-inch unit's preload set differs from the 55-inch one: it has no WPS, calendar, health,
 weather, Xiaomi store or Pictorial, and it ships CIBN, Tencent, Bilibili, Xunlei, NetEase,
@@ -77,7 +77,8 @@ The config is the 50-inch unit's; the 55-inch list does not need it.
 
 Tencent, Bilibili, CIBN, Filmly, Yamby, the three app markets (Xiaomi, Dangbei, Shafa), XiaoAI
 voice, casting and Mi Home, TV Manager, the Sogou IME, Bluetooth and the TV input stack. The
-firmware updater is off at the owner's request; run
+firmware updater is off on this unit at the owner's request, and its line is commented out of
+the list so applying it leaves OTA on elsewhere; run
 `pm enable --user 0 com.xiaomi.mitv.upgrade` before checking for updates.
 
 If this unit is later updated to OS4.0.1.0, PatchWall has to stay enabled: with it disabled
@@ -91,7 +92,8 @@ This unit also keeps `ro.adb.secure=1`, so a new computer has to accept the RSA 
 
 ## What was tested
 
-One 50-inch unit on 2026-11-17, over network ADB: the 19 packages disabled, one reboot,
+One 50-inch unit on 2026-11-17, over network ADB: the 18 packages disabled, plus the firmware
+updater turned off by hand at the owner's request, one reboot,
 `tools/venv/bin/python -I tools/check.py` reported no drift, Home and the clock and date drew,
 the Home key returned from Settings, volume keys raised no SystemUI crash, D-pad moved through
 the top bar, dock and grid, and the Inputs menu switched to HDMI 1 and AV 1.

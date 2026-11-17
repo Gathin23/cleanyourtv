@@ -4,8 +4,10 @@
 # beside this list. The 50-inch unit ships a different preload set (no WPS, calendar,
 # health, weather, Xiaomi store or Pictorial; it has CIBN, Tencent, Bilibili, Xunlei,
 # NetEase, Dangbei Market, Shafa Market and Filmly/Yamby), so its list is separate.
-# Applied and verified on 2026-11-17: 19 packages, one reboot
+# Applied and verified on 2026-11-17: 18 packages, one reboot
 # (tools/check.py reports no drift), with the com.ts.launcher Home handover in README.md.
+# The firmware updater is the one change made by hand on this unit, not by this list:
+# its line is commented out at the bottom.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-astr0/debloat-50-2025.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-astr0/debloat-50-2025.txt com.mitv.tvhome
@@ -23,7 +25,8 @@
 #   Menu key. Do NOT add it here.
 # - OS3.0.119's periodic cleaner re-enables packages at boot unless it is off:
 #   `cmd periodic enable false` (this unit was set that way before the verifying reboot).
-# - Firmware updater com.xiaomi.mitv.upgrade is disabled at the owner's request (no OTA);
+# - Firmware updater com.xiaomi.mitv.upgrade: off on this unit at the owner's request.
+#   Its line below is commented out, so applying this list leaves OTA on for other sets;
 #   re-enable it before checking for updates.
 # - ADB over TCP closes on every boot: Settings -> 账号与安全 -> ADB 调试.
 # - No idle clock screensaver is possible: the idle timeout path is a hard panel-off.
@@ -53,8 +56,9 @@ com.netease.cloudmusic.tv
 # Screensaver ads (same Activity as the 55-inch unit; verified live there)
 com.xiaomi.mitv.hyper.screensaver
 
-# Firmware updater (owner's choice: no OTA; re-enable it to check for updates)
-com.xiaomi.mitv.upgrade
+# Firmware updater - off on this unit at the owner's request, not by this list; re-enable
+# with `pm enable --user 0 com.xiaomi.mitv.upgrade` before checking for updates.
+#com.xiaomi.mitv.upgrade
 
 # Stock launcher - LEFT COMMENTED OUT: uncomment ONLY together with the allowlist
 # trampoline in README.md (Home), or Home lands on FallbackHome's black screen.
