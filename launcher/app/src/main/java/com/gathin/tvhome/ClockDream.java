@@ -9,6 +9,7 @@ import android.service.dreams.DreamService;
 public class ClockDream extends DreamService {
 
     private ClockScene scene;
+    private WeatherLine weather;
 
     @Override
     protected void attachBaseContext(android.content.Context base) {
@@ -25,12 +26,14 @@ public class ClockDream extends DreamService {
         ClockFormat.apply(getWindow().getDecorView(), Config.load(this).clockFormat);
         scene = new ClockScene(getWindow().getDecorView());
         scene.useHomeWallpaper(this);
+        weather = new WeatherLine(this, getWindow().getDecorView().findViewById(R.id.dreamWeather));
     }
 
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
         scene.start();
+        weather.refresh();
     }
 
     @Override
@@ -42,6 +45,7 @@ public class ClockDream extends DreamService {
     @Override
     public void onDetachedFromWindow() {
         if (scene != null) scene.stop();
+        if (weather != null) weather.close();
         super.onDetachedFromWindow();
     }
 }

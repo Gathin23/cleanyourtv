@@ -337,6 +337,14 @@
     <!-- A reorder button (two arrows) in the top bar. Off by default: reordering is also in the Settings
          button's long-press menu, so it needs no extra button on screen. -->
     <bool name="reorder_button">false</bool>
+
+    <!-- Top-bar buttons for named HDMI devices, left of the Inputs pill, as "match|icon|label" (icon: tv or
+         gamepad). A button opens the first HDMI input whose name (as shown in the Inputs dropdown) contains
+         "match", and is dimmed while that device is off. Empty: no device buttons. -->
+    <string-array name="input_buttons" translatable="false">
+        <item>ps5|gamepad|PS5</item>
+        <item>shoq|tv|Shoq</item>
+    </string-array>
     <!-- Wi-Fi and Settings as round icon-only buttons (the network name moves to the talkback description);
          Inputs keeps its label. -->
     <bool name="icon_only_buttons">false</bool>

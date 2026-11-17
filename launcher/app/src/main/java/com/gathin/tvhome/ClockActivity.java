@@ -19,6 +19,7 @@ public class ClockActivity extends Activity {
 
 
     private ClockScene scene;
+    private WeatherLine weather;
 
     @Override
     @SuppressWarnings("deprecation")
@@ -30,17 +31,20 @@ public class ClockActivity extends Activity {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
         scene = new ClockScene(getWindow().getDecorView());
         scene.useHomeWallpaper(this);
+        weather = new WeatherLine(this, findViewById(R.id.dreamWeather));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         scene.start();
+        weather.refresh();
     }
 
     @Override
     protected void onPause() {
         scene.stop();
+        weather.close();
         super.onPause();
         finish();   // never left behind in the back stack
     }

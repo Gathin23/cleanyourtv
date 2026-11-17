@@ -301,7 +301,28 @@
                     </LinearLayout>
                 </LinearLayout>
 
+
             </LinearLayout>
+
+            <!-- Weather under the clock and date, from WeatherLine. Outside leftBlock, like stats below, so the top
+                 buttons stay level with the clock row; gone unless latitude and longitude are set. -->
+            <TextView
+                android:id="@+id/weatherLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/leftBlock"
+                android:layout_alignStart="@id/leftBlock"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                android:gravity="left"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#CCFFFFFF"
+                android:textSize="16sp"
+                android:fontFamily="@string/font_regular"
+                android:letterSpacing="0.04"
+                android:focusable="false"
+                android:visibility="gone" />
 
             <!-- Shown only when show_stats is on. Outside leftBlock, so the top buttons stay level with the clock
                  row; gone, it takes no space. -->
@@ -356,6 +377,14 @@
                     android:visibility="gone"
                     android:singleLine="true"
                     android:text="@string/vpn"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
+                    android:id="@+id/btnNextWallpaper"
+                    style="@style/TopButtonIcon"
+                    android:visibility="gone"
+                    android:contentDescription="@string/next_wallpaper"
+                    android:drawableStart="@drawable/ic_skip_next"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView

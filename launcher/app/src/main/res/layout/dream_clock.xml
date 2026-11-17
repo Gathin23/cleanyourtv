@@ -61,5 +61,18 @@
             android:fontFamily="@string/font_regular"
             android:letterSpacing="0.14"
             android:textAllCaps="true" />
+
+        <!-- Weather (WeatherLine): the same reading as Home's line; gone unless latitude and longitude are set. -->
+        <TextView
+            android:id="@+id/dreamWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="14dp"
+            android:textColor="#B3FFFFFF"
+            android:textSize="28sp"
+            android:fontFamily="@string/font_light"
+            android:letterSpacing="0.04"
+            android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

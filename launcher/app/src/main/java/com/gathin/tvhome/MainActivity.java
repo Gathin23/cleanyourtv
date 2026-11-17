@@ -346,6 +346,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** fill_dock false: how many dock slots held an app when reorder mode started. */
     private int dockedAtStart;
     private View btnReorder;
+    private View btnNextWallpaper;
+    private WeatherLine weatherLine;
+    private InputButtons inputButtons;
     /** dock_apps as loaded (config.xml or a theme): a saved Order only applies while these are unchanged. */
     private List<String> dockApps;
     /** fill_dock false: the dock can have empty slots, which reorder mode leaves out and restores afterwards. */
@@ -393,11 +396,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         @Override
         public void onInputAdded(String inputId) {
             updateInputsButton();
+            if (inputButtons != null) inputButtons.refresh();
         }
 
         @Override
         public void onInputRemoved(String inputId) {
             updateInputsButton();
+            if (inputButtons != null) inputButtons.refresh();
+        }
+
+        @Override
+        public void onInputStateChanged(String inputId, int state) {
+            if (inputButtons != null) inputButtons.refresh();
         }
     };
     /** Listens for any VPN coming up or going down, even one this app's traffic is excluded from. */
@@ -446,6 +456,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (festive) updateWifiLabel();
             sky.update();
             wallpaperPlayer.update();
+            if (weatherLine != null) weatherLine.refresh();
             handler.postDelayed(this, MINUTE_MS);
         }
     };
@@ -841,6 +852,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
         btnReorder.setVisibility(cfg.reorderButton ? View.VISIBLE : View.GONE);
+        TextView weatherView = findViewById(R.id.weatherLine);
+        if (weatherView != null) weatherLine = new WeatherLine(this, weatherView);
+        btnNextWallpaper = findViewById(R.id.btnNextWallpaper);
+        btnNextWallpaper.setOnClickListener(v -> wallpaperPlayer.next());
+        btnNextWallpaper.setVisibility(wallpaperPlayer.canAdvance() ? View.VISIBLE : View.GONE);
         if (!cfg.showNetworkPill) btnWifi.setVisibility(View.GONE);
         showInputsPill = cfg.showInputsPill;
         showInputsMenuRow = cfg.showInputsPill;
@@ -908,7 +924,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
+            int firstButton = inputButtons != null && !inputButtons.views().isEmpty() ? inputButtons.views().get(0).getId()
+                    : btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
             int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return v.getId() == leftButton;
@@ -919,11 +936,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnVpn.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
+        btnNextWallpaper.setOnKeyListener(pillKeys);
+        String[] deviceSpecs = getResources().getStringArray(R.array.input_buttons);
+        if (deviceSpecs.length > 0) {
+            inputButtons = new InputButtons(this, (ViewGroup) findViewById(R.id.topButtons), 0, deviceSpecs,
+                    this::openInput, pillKeys);
+            inputButtons.refresh();
+        }
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnNextWallpaper, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
+            if (inputButtons != null) pills.addAll(inputButtons.views());
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
                         .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
@@ -1140,6 +1165,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (gameDay != null) gameDay.start();
         sky.update();
         wallpaperPlayer.start();
+        if (inputButtons != null) inputButtons.refresh();
+        if (weatherLine != null) weatherLine.refresh();
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && lamp != null) {
             lamp.start();
@@ -1394,6 +1421,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         unregisterReceiver(packageReceiver);
         if (openOnStartOnWake) unregisterReceiver(wakeReceiver);
         wallpaperPlayer.close();
+        if (weatherLine != null) weatherLine.close();
         ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);   // as registered
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         if (tim != null) tim.unregisterCallback(inputCallback);

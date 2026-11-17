@@ -59,6 +59,7 @@ final class WallpaperPlayer {
     private final Map<String, Set<String>> moods;
     /** config.xml latitude and longitude for the sun's times, and today's {sunrise, sunset} once worked out. */
     private final String latitude, longitude;
+    private final boolean enabled;
     private LocalDate sunDay;
     private int[] sun;
 
@@ -66,6 +67,7 @@ final class WallpaperPlayer {
         this.root = root;
         backgroundColor = config.backgroundColor;
         files = new ArrayList<>(config.wallpapers);
+        enabled = config.wallpaperEnabled;
         interval = config.wallpaperRotationMinutes * 60_000L;
         bitmapConfig = config.wallpaperTrueColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
         // The dim is painted into the picture (decode), so no full-screen shade layer is drawn on every frame.
@@ -165,14 +167,28 @@ final class WallpaperPlayer {
         decoder.shutdownNow();
     }
 
+    /** True when there is a picture collection on screen to step through (shows the top bar's next button). */
+    boolean canAdvance() {
+        return enabled && !closed && files.size() > 1;
+    }
+
+    /** The top bar's next button: the next picture now, and the rotation interval starts over from it. */
+    void next() {
+        update(true);
+    }
+
     void update() {
+        update(false);
+    }
+
+    private void update(boolean force) {
         if (!active || closed || loading || files.isEmpty()) return;
         String previous = preferences.getString("image", "");
         // A picture outside the time of day's group (the group changed) is replaced at once, not after the interval.
         List<File> playable = playable();
         File selected = WallpaperRotation.find(playable, previous);
         long changed = preferences.getLong("changed", 0);
-        if (selected == null || WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
+        if (selected == null || force || WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
             selected = WallpaperRotation.pick(playable, previous, order, random);
         }
         if (selected == null || selected.getName().equals(displayed)) return;
