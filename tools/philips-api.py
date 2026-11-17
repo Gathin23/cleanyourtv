@@ -62,9 +62,11 @@ PROBE = ("ambilight/topology", "ambilight/power", "ambilight/mode", "ambilight/c
 # EINVAL is the address rather than the route - a bracketed link-local IPv6 with no zone index, an
 # address family this computer does not have - and it is answered here too, because it comes from the
 # local socket layer and never from the set: what the port said in those cases is about the route, not
-# the TV.
+# the TV. Descriptor limits and socket memory/buffer exhaustion also fail here, before a connection
+# can reach the set; they must not suggest that org.droidtv.xtv was disabled.
 UNREACHED = (errno.EHOSTUNREACH, errno.ENETUNREACH, errno.EHOSTDOWN, errno.ENETDOWN, errno.ETIMEDOUT,
-             errno.ECONNABORTED, errno.EACCES, errno.EPERM, errno.EINVAL)
+             errno.ECONNABORTED, errno.EACCES, errno.EPERM, errno.EINVAL,
+             errno.EMFILE, errno.ENFILE, errno.ENOMEM, errno.ENOBUFS)
 
 
 def answered(failure):

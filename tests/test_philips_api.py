@@ -153,6 +153,32 @@ class ASilentTVIsNotADisabledPackage(unittest.TestCase):
     """Nothing answered on either port: the run learned nothing, so it must not send the owner to the
     package list - the shape a set that is asleep, at another address or behind a VPN produces."""
 
+    def test_local_resource_exhaustion_is_not_a_tv_answer(self):
+        # socket()/urllib can fail on this computer before any connection reaches the TV.
+        for number in (errno.EMFILE, errno.ENFILE, errno.ENOMEM, errno.ENOBUFS):
+            for wrapped in (False, True):
+                with self.subTest(errno=number, wrapped=wrapped):
+                    failure = OSError(number, "local resources exhausted")
+                    if wrapped:
+                        failure = urllib.error.URLError(failure)
+                    answers = {f"{scheme}://192.168.1.50:{port}/6/system":
+                               (None, str(failure), failure) for port, scheme in philips_api.PORTS}
+                    code, out, asked, err = run(answers)
+                    self.assertEqual(code, 2)
+                    self.assertEqual(len(asked), 2)
+                    self.assertIn("Nothing is known about org.droidtv.xtv", err)
+                    self.assertNotIn("No JointSpace API", out + err)
+                    self.assertNotIn("still enabled", out + err)
+
+    def test_a_real_refusal_still_counts_when_the_other_attempt_runs_out_of_resources(self):
+        exhausted = OSError(errno.EMFILE, "too many open files")
+        answers = {"https://192.168.1.50:1926/6/system": (None, str(exhausted), exhausted),
+                   "http://192.168.1.50:1925/6/system": (None, "Connection refused", REFUSED)}
+        code, out, _, err = run(answers)
+        self.assertEqual(code, 1)
+        self.assertIn("No JointSpace API", out)
+        self.assertEqual(err, "")
+
     def test_a_timeout_on_both_ports_is_exit_2(self):
         code, out, asked, err = run({})
         self.assertEqual(code, 2)
