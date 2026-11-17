@@ -33,6 +33,38 @@ lower-row preview. Those source changes are not part of this report or evidence 
 unmodified reference launcher has that appearance. Longer-term stability and recovery by
 actually running a full restore remain unverified.
 
+### Exact package state recorded after reboot
+
+The following packages were observed disabled after the final reference-launcher reboot.
+This records the choices made on this unit; it is not a replacement for this folder's shipped
+debloat list and is not a recommendation to disable apps another owner uses.
+
+| Purpose in this session | Disabled packages |
+|---|---|
+| Xiaomi analytics | `com.miui.tv.analytics`, `com.xiaomi.statistic` |
+| Feedback and bug reports | `com.google.android.feedback`, `com.google.android.tv.bugreportsender` |
+| PatchWall, promoted web content and partner auto-installs | `com.mitv.tvhome.atv`, `com.xm.webcontent`, `android.autoinstalls.config.xiaomi.amelie` |
+| Recommendation services | `com.google.android.tvrecommendations`, `com.google.android.leanbacklauncher.recommendations` |
+| Cleaner and print service | `com.xiaomi.mitv.tvmanager`, `com.android.printspooler` |
+| Owner-selected unused apps | `com.netflix.ninja`, `com.amazon.amazonvideo.livingroom`, `com.google.android.videos`, `com.google.android.youtube.tvkids`, `com.google.android.youtube.tvmusic`, `com.google.android.apps.tachyon`, `com.airconsole.androidtv` |
+| Original Home, after the replacement was installed and verified | `com.google.android.tvlauncher` |
+
+The seven owner-selected unused apps above were disabled only because this owner did not use
+them. YouTube (`com.google.android.youtube.tv`), Spotify (`com.spotify.tv.android`), Play Store
+(`com.android.vending`) and Play Games (`com.google.android.play.games`) were kept enabled.
+The older `com.google.android.leanbacklauncher` package was not disabled in this session;
+the Home checks still resolved to the new launcher. Input/TV middleware, remote and Bluetooth
+services, keyboard, Play Services, Assistant, Chromecast and firmware updates were preserved.
+
+### Reference launcher screenshot
+
+![Reference launcher 3.5 on MiTV-MSSP2 PI.6305, with four configured dock apps](pi6305-reference-home.png)
+
+Captured on the real TV during the initial reference-launcher preview, before the custom
+cosmetic changes and later ambient-glass theme changes. The dock order is a per-owner
+configuration. The screenshot shows the unmodified reference UI; it does not demonstrate
+HDMI playback, casting, voice search or long-term stability.
+
 ## Live TV: channel buttons only work on a tuner picked in Xiaomi's source menu
 
 Seen on a second unit, Android TV 11, firmware `RTT2.211214.001.933`, Italy, with the real remote. That unit
