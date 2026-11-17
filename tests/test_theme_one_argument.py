@@ -26,6 +26,7 @@ import tempfile
 import unittest
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools"
+PWSH = shutil.which("pwsh")
 USAGE = "usage: theme.sh <theme folder> | --reset"
 REFUSAL = "cannot share a command line"
 
@@ -149,6 +150,116 @@ class ThemeArgumentSourceTest(unittest.TestCase):
         judged = self.ps.index("if ($Theme -and $Reset)")
         self.assertLess(judged, self.ps.index("if ($Reset) {"), "the reset branch is judged before it runs")
         self.assertIn("exit 2", self.ps[judged:])
+
+    def test_the_windows_twin_keeps_the_words_it_would_not_use(self):
+        # Without a parameter that catches them, PowerShell's own binder refuses the command line before the
+        # script runs: "A positional parameter cannot be found that accepts argument 'x'", exit 1 - the status
+        # the header keeps for a push that ran and failed. theme.sh answers the same line at 2 with its own
+        # sentence, so the twin has to take the words first and refuse them itself.
+        self.assertIn("ValueFromRemainingArguments", self.ps)
+        judged = self.ps.index("if ($Rest")
+        self.assertLess(judged, self.ps.index("if ($Reset) {"), "the reset branch is judged before it runs")
+        self.assertLess(judged, self.ps.index("Invoke-Tv tv.py"), "nothing can be sent before it is refused")
+        self.assertIn("exit 2", self.ps[judged:])
+        # The usage line a dash-led word gets, as theme.sh's `-*` branch answers it.
+        self.assertIn("usage: theme.ps1 <theme folder> | -Reset", self.ps)
+
+
+# The twin's own words, run for real: one theme folder pushes, a word it would not use is refused at 2.
+FAKE_PY = '''\
+import os
+import sys
+with open(os.environ["FAKE_LOG"], "a") as log:
+    log.write(" ".join(sys.argv[1:]) + "\\n")
+sys.exit(0)
+'''
+
+
+class ThemePs1CommandLineTest(unittest.TestCase):
+    """theme.ps1 refuses the words it would drop, in its own words, at the status its header gives them.
+
+    PowerShell's binder refuses them first, and at 1: `theme.ps1 themes\\aurora other` (a second folder, a
+    word pasted from theme.sh), `theme.ps1 themes\\aurora --resett` (the flag one letter too long) and
+    `theme.ps1 -h` all ended in "A positional parameter cannot be found ..." / "A parameter cannot be found
+    ..." with exit 1, while theme.sh answers each at 2 with its own sentence and says nothing was sent. 1 is
+    the status the header keeps for a theme that could not be pushed, so an assistant reading the status was
+    told the push reached the TV when the command line never did.
+
+    tools/tv.py, b64push.py and theme_restart.py are stand-ins that record their calls, and the venv is a shim,
+    so a run that is not refused goes on to push. The cases need `pwsh` on PATH and skip without it; CI has it.
+    """
+
+    def setUp(self):
+        if not PWSH:
+            raise unittest.SkipTest("theme.ps1 needs pwsh on PATH")
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.base = Path(tmp.name)
+        self.repo = self.base / "repo"
+        self.tools = self.repo / "tools"
+        self.tools.mkdir(parents=True)
+        shutil.copy2(TOOLS / "theme.ps1", self.tools / "theme.ps1")
+        for name in ("tv.py", "b64push.py", "theme_restart.py"):
+            (self.tools / name).write_text(FAKE_PY)
+        # The script asks for the Windows path; on Linux and macOS this shim runs the tests' interpreter.
+        client = self.tools / "venv" / "Scripts" / "python.exe"
+        client.parent.mkdir(parents=True)
+        client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+        client.chmod(0o755)
+        self.theme = self.base / "my-theme"
+        self.theme.mkdir()
+        (self.theme / "config.json").write_text('{"background_color": "#000000"}\n', encoding="utf-8")
+        self.log = self.base / "tv-calls.log"
+
+    def run_theme(self, *args):
+        env = dict(os.environ, TV_HOST="192.0.2.10", FAKE_LOG=str(self.log))
+        return subprocess.run([PWSH, "-NoProfile", "-File", str(self.tools / "theme.ps1"), *args],
+                              cwd=self.repo, env=env, capture_output=True, text=True, timeout=180)
+
+    def tv_calls(self):
+        if not self.log.exists():
+            return []
+        return [line for line in self.log.read_text().splitlines() if line.strip()]
+
+    def assert_refused(self, result, word):
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertEqual("", result.stdout, "a refusal writes nothing on stdout")
+        self.assertIn(word, result.stderr, "the message has to name the word that was not used")
+        self.assertIn("Nothing was sent to the TV.", result.stderr, result.stderr)
+        self.assertNotIn("cannot be found", result.stderr,
+                         "PowerShell's own binder answered, not the script")
+        self.assertNotIn("Traceback", result.stderr, result.stderr)
+        self.assertEqual([], self.tv_calls(), "a refused command line asked the TV for something")
+
+    def test_a_second_word_is_refused(self):
+        # `theme.ps1 themes\aurora extra` is the line theme.sh refuses with "would not have been used".
+        self.assert_refused(self.run_theme(str(self.theme), "extra"), "extra")
+        self.assertIn("cannot share a command line", self.run_theme(str(self.theme), "extra").stderr)
+
+    def test_a_misspelt_switch_is_refused_with_the_usage_line(self):
+        # One letter too many: PowerShell would have refused it as an unknown parameter, at 1.
+        result = self.run_theme(str(self.theme), "--resett")
+        self.assert_refused(result, "--resett")
+        self.assertIn("usage: theme.ps1 <theme folder> | -Reset", result.stderr, result.stderr)
+
+    def test_the_help_flag_answers_the_usage_line(self):
+        result = self.run_theme("-h")
+        self.assert_refused(result, "-h")
+        self.assertIn("usage: theme.ps1 <theme folder> | -Reset", result.stderr, result.stderr)
+
+    def test_one_folder_still_pushes(self):
+        result = self.run_theme(str(self.theme))
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("is on the TV", result.stdout)
+        pushes = [line for line in self.tv_calls() if line.startswith("--push")]
+        self.assertTrue(pushes, "the theme's config.json is pushed")
+        self.assertTrue(any(str(self.theme / "config.json") in line for line in pushes), pushes)
+
+    def test_reset_alone_still_resets(self):
+        result = self.run_theme("-Reset")
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("reset", result.stdout)
+        self.assertTrue(self.tv_calls(), "the reset asks the TV to remove the overlay")
 
 
 if __name__ == "__main__":

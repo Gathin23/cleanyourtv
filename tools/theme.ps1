@@ -14,7 +14,10 @@
 param(
     [Parameter(Position = 0)][string]$Theme,
     [switch]$Reset,
-    [string]$TvHost = $env:TV_HOST
+    [string]$TvHost = $env:TV_HOST,
+    # Every word the two parameters above do not take, so the script can refuse it itself: see the judgement
+    # below. Without this, PowerShell's binder refuses the command line before the script runs, and at 1.
+    [Parameter(ValueFromRemainingArguments = $true)][string[]]$Rest
 )
 # theme.sh judges its own command line here, and this is the same judgement: -Reset removes the theme from the
 # TV and a folder pushes it, so `-Reset themes\aurora` used to take the reset branch and throw the folder away
@@ -22,6 +25,24 @@ param(
 # ignored the reset. Nothing is sent for either.
 if ($Theme -and $Reset) {
     [Console]::Error.WriteLine("theme.ps1 takes one argument, a theme folder or -Reset: $Theme would not have been used, and -Reset removes the theme from the TV while a folder pushes it, so the two cannot share a command line. Nothing was sent to the TV.")
+    exit 2
+}
+# The words neither parameter above takes are refused here too, in the same words theme.sh answers them. Left to
+# PowerShell, the binder answers before the script runs - "A positional parameter cannot be found that accepts
+# argument 'other'", "A parameter cannot be found that matches parameter name 'resett'" - with exit 1, the status
+# this header keeps for a theme that could not be pushed or a Home that did not restart, so a line that never
+# parsed read as a push that reached the TV. `-h` and a switch one letter too long are the same shape, and
+# theme.sh answers a single dash-led word with its usage line. Words past the two named ones are a second theme
+# folder, a stock package pasted from restore.ps1, or a flag typed the theme.sh way (`themes\aurora --reset`
+# binds -Reset above, so that one is the first refusal).
+if ($Rest -and $Rest.Count -gt 0) {
+    $words = $Rest -join ' '
+    if ($Rest.Count -eq 1 -and $Rest[0].StartsWith('-')) {
+        [Console]::Error.WriteLine("theme.ps1 takes a theme folder or -Reset, so $words is not a command line it can read. Nothing was sent to the TV.")
+        [Console]::Error.WriteLine('usage: theme.ps1 <theme folder> | -Reset')
+    } else {
+        [Console]::Error.WriteLine("theme.ps1 takes one argument, a theme folder or -Reset: $words would not have been used, and -Reset removes the theme from the TV while a folder pushes it, so the two cannot share a command line. Nothing was sent to the TV.")
+    }
     exit 2
 }
 $ErrorActionPreference = 'Stop'
