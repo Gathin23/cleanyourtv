@@ -64,11 +64,13 @@ the TV: no TV_HOST, a checkout with no tools/venv, and a TV tools/tv.py answered
 first two of those with 2 as well, and b64push.py the second.
 """
 import datetime
+import errno
 import json
 import math
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -779,6 +781,27 @@ def json_kind(value):
     return type(value).__name__
 
 
+def looked_at(path):
+    """What is at `path`: ('folder'|'file'|'missing', None), or ('refused', why) when the filesystem will not say.
+
+    `Path.exists()` answers False for a path that is not there and re-raises every other OSError, so a --theme
+    whose name no filesystem can hold (a component longer than NAME_MAX), or a folder this user may not
+    traverse, ended the run in an OSError traceback with exit 1 - the status this file keeps for "a command on
+    the TV or a script this checkout runs failed", over a run that never looked at a TV and wrote nothing.
+    Judged once, with the reason, the shape becomes the refusal it was meant to be.
+    """
+    try:
+        info = os.stat(path)
+    except OSError as error:
+        # What Path.exists() answers with False for: nothing is there, or nothing that is a folder.
+        if error.errno in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            return "missing", None
+        return "refused", (error.strerror or str(error))
+    except ValueError:      # a NUL in the name, which os.stat refuses before the filesystem sees it
+        return "missing", None
+    return ("folder" if stat.S_ISDIR(info.st_mode) else "file"), None
+
+
 def own_folder_problem(folder):
     """Why set may not write into `folder`, or None: it is one of the folders this checkout ships, a file, or
     not there at all."""
@@ -787,9 +810,14 @@ def own_folder_problem(folder):
         if folder == project or project in folder.parents:
             return (f"{folder} is inside this checkout's {name}/: set writes into a theme folder of your own, "
                     f"so copy one somewhere else first. Nothing was written or pushed.")
-    if folder.exists() and not folder.is_dir():
+    kind, why = looked_at(folder)
+    if kind == "refused":
+        return (f"{folder} cannot be looked at ({why}): --theme takes a theme folder of your own, and set writes "
+                f"into one that can be read. A name the filesystem refuses is usually a folder edited or pasted "
+                f"wrong. Nothing was written or pushed.")
+    if kind == "file":
         return f"{folder} is a file, not a folder: --theme takes a theme folder of your own."
-    if not folder.exists():
+    if kind == "missing":
         # A path with a file in the middle of it cannot be made at all, which is not a typo to point at the
         # folder for: name the file that is in the way, as the write used to.
         for parent in folder.parents:

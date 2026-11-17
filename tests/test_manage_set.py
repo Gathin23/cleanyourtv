@@ -6,7 +6,9 @@ there - the built-in default comes back - so `set dock_band 3` used to write 3, 
 theme and leave the switch at its default on the TV. The type of every key is in the Keys table of
 themes/README.md, so set reads the argument the way that table says and refuses the rest before it writes.
 """
+import errno
 import json
+import os
 import re
 import sys
 import tempfile
@@ -314,6 +316,42 @@ class SetThemeFolderTest(unittest.TestCase):
         self.assertIn("Nothing was written or pushed", refusal)
         self.assertFalse(missing.exists(), "a folder that is not there must not be made")
         self.push.assert_not_called()
+
+    def test_a_theme_name_the_filesystem_will_not_look_at_is_named_not_a_traceback(self):
+        # A --theme whose name no filesystem can hold. Path.exists() re-raises that OSError, so the run ended in
+        # a traceback with exit 1 - the code this file keeps for a command on the TV or a script of this
+        # checkout that failed - after nothing had been read, written or pushed. The refusal also comes back as
+        # a sentence rather than an exception, which is what set_key() returning text proves.
+        long_name = (Path(self.tmp.name) / ("a" * 300)).resolve()
+        try:
+            os.stat(long_name)
+        except OSError:
+            pass
+        else:
+            self.skipTest("this filesystem accepts a 300-character name")
+        refusal = self.set_key(folder=long_name)
+        self.assertIn(f"{long_name} cannot be looked at", refusal)
+        self.assertIn("File name too long", refusal)
+        self.assertIn("Nothing was written or pushed", refusal)
+        self.push.assert_not_called()
+
+    def test_looked_at_reads_the_filesystems_own_answer(self):
+        # The errno table, so the branch is judged on filesystems that would accept the 300-character name.
+        for code in (errno.EACCES, errno.ENAMETOOLONG, errno.EROFS, errno.EIO):
+            with self.subTest(errno=code):
+                with mock.patch.object(manage.os, "stat", side_effect=OSError(code, os.strerror(code))):
+                    self.assertEqual(manage.looked_at(Path("/tmp/theme")), ("refused", os.strerror(code)))
+        # What Path.exists() answers with False for: the shapes set already answered, unchanged.
+        for code in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            with self.subTest(errno=code):
+                with mock.patch.object(manage.os, "stat", side_effect=OSError(code, os.strerror(code))):
+                    self.assertEqual(manage.looked_at(Path("/tmp/theme")), ("missing", None))
+        with mock.patch.object(manage.os, "stat", side_effect=ValueError("embedded null byte")):
+            self.assertEqual(manage.looked_at(Path("/tmp/theme")), ("missing", None))
+        self.assertEqual(manage.looked_at(self.theme), ("folder", None))
+        afile = Path(self.tmp.name) / "a-file"
+        afile.write_text("", encoding="utf-8")
+        self.assertEqual(manage.looked_at(afile), ("file", None))
 
     def test_an_empty_folder_of_their_own_is_still_started(self):
         # The other half: a folder that exists with no config.json yet is where set starts the file.
