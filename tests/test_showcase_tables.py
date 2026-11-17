@@ -79,6 +79,34 @@ def heading_above(lines, stop):
     return ""
 
 
+def author_problems(lines):
+    """[(row, why)] for every table row that does not read as a project, a description, a TV and an author.
+
+    A row of the wrong width is named here with its count rather than unpacked: a row missing its
+    author cell, or one whose description holds a `|` that ends the cell, is a mistake a contributor
+    makes by hand, and `ValueError: not enough values to unpack` points at this file instead of at the
+    row. The count is judged on its own by test_every_row_has_the_four_cells_the_header_names, so the
+    two say the same thing twice on purpose - neither case should go quiet when the other is not run.
+    """
+    problems = []
+    for _, rows in tables(lines):
+        for row in rows:
+            cells_of = cells(row)
+            if len(cells_of) != 4:
+                problems.append((row, f"{len(cells_of)} cells, not the four the header names"))
+                continue
+            project, what, built_on, by = cells_of
+            if not project.startswith("["):
+                problems.append((row, "no project link"))
+            elif not what:
+                problems.append((row, "an empty 'what it is' cell"))
+            elif not built_on:
+                problems.append((row, "no TV or platform named"))
+            elif "/" not in by:
+                problems.append((row, "no author link"))
+    return problems
+
+
 class ShowcaseTables(unittest.TestCase):
     def setUp(self):
         self.lines = PAGE.read_text(encoding="utf-8").splitlines()
@@ -113,13 +141,10 @@ class ShowcaseTables(unittest.TestCase):
                 )
 
     def test_every_row_names_a_project_a_tv_and_an_author(self):
-        for _, rows in tables(self.lines):
-            for row in rows:
-                project, what, built_on, by = cells(row)
-                self.assertTrue(project.startswith("["), f"no project link in: {row[:90]}")
-                self.assertTrue(what, f"an empty 'what it is' cell in: {row[:90]}")
-                self.assertTrue(built_on, f"no TV or platform named in: {row[:90]}")
-                self.assertIn("/", by, f"no author link in: {row[:90]}")
+        problems = [f"{why}: {row[:90]}" for row, why in author_problems(self.lines)]
+        self.assertEqual(
+            problems, [], "a row has to read as a project, a description, a TV and an author"
+        )
 
 
 class TheCheckerItself(unittest.TestCase):
@@ -179,6 +204,48 @@ class TheCheckerItself(unittest.TestCase):
         ]
         self.assertEqual(len(tables(lines)), 1)
         self.assertEqual(len(tables(lines)[0][1]), 1)
+
+    def test_a_row_with_three_cells_is_named_with_its_count(self):
+        """The row a contributor forgets the author cell in; unpacking it raised ValueError instead."""
+        lines = [
+            "| Project | What it is | Built on | By |",
+            "|---|---|---|---|",
+            "| [One](https://example.com/one) | A fork | TCL G08 |",
+        ]
+        problems = author_problems(lines)
+        self.assertEqual([row for row, _ in problems], [lines[2]])
+        self.assertIn("3 cells", problems[0][1])
+
+    def test_a_row_with_a_pipe_in_a_cell_is_named_with_its_count(self):
+        """A `|` typed inside a description ends the cell, the mistake the markdown sweep was written for."""
+        lines = [
+            "| Project | What it is | Built on | By |",
+            "|---|---|---|---|",
+            "| [One](https://example.com/one) | A fork | TCL G08 | music | [me](https://example.com) |",
+        ]
+        problems = author_problems(lines)
+        self.assertEqual([row for row, _ in problems], [lines[2]])
+        self.assertIn("5 cells", problems[0][1])
+
+    def test_a_row_with_four_cells_but_no_author_is_named(self):
+        lines = [
+            "| Project | What it is | Built on | By |",
+            "|---|---|---|---|",
+            "| [One](https://example.com/one) | A fork | TCL G08 | Julien |",
+        ]
+        problems = author_problems(lines)
+        self.assertEqual([row for row, _ in problems], [lines[2]])
+        self.assertIn("author", problems[0][1])
+
+    def test_a_page_of_good_rows_has_no_problems(self):
+        lines = [
+            "## Forks of the launcher",
+            "",
+            "| Project | What it is | Built on | By |",
+            "|---|---|---|---|",
+            "| [One](https://example.com/one) | A fork | TCL G08 | [me](https://example.com) |",
+        ]
+        self.assertEqual([], author_problems(lines))
 
 
 if __name__ == "__main__":
