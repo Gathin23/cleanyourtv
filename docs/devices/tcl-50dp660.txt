@@ -69,6 +69,25 @@
 # and the Play Store started working; Widevine stayed at L3 (software CDM), so HD tiers may not be
 # available. Steps 1-2 alone leave the set broken indefinitely.
 #
+# ---- A reboot into the setup wizard, and no way back over ADB ---------------------------------
+# Seen on a TCL 55DC760 (same product "Percee TV", device tcl_eu, mt5891, firmware
+# V8-T658T01-LF1V602, build OTT1.180130.001), a week after a list based on
+# examples/tcl-50dp660/debloat.txt: com.google.android.tvlauncher, com.tcl.partnercustomizer,
+# android.autoinstalls.config.tcl.device and two of the three PERSISTENT packages disabled,
+# com.gathin.tvhome Home, and one control reboot passed.
+# Then a spontaneous reboot came up in the first-run wizard. The language choice works, and
+# after a minute or two the screen is black with only power working, on every power cycle;
+# 5555 refuses. The set is not bricked: with the stock launcher disabled the wizard has no Home
+# to hand over to, and adb_enabled is 0 again, so tools/restore.sh cannot run. Flashing the full
+# firmware over USB (step 3 above) brought it back and wiped /data.
+# What the reflashed set does instead, three control reboots so far: com.google.android.tvlauncher,
+# com.tcl.partnercustomizer, android.autoinstalls.config.tcl.device and all three PERSISTENT
+# packages left enabled, 20 packages disabled, and Home reached through stock_home_redirect with
+# the key helper filtering Home presses, plus home_long_press_home. user_setup_complete and
+# adb_enabled stay 1. Disabling the PERSISTENT packages buys nothing here anyway - see the note
+# at the bottom of the list.
+# Report: https://github.com/Gathin23/cleanyourtv/issues/4071
+#
 # ---- Audio jack ------------------------------------------------------------------------------
 # After a power cut the set keeps playing through the internal speakers with the 3.5 mm plug in.
 # dumpsys audio reports "speaker" after boot and "headphone" after an activity switch; the
