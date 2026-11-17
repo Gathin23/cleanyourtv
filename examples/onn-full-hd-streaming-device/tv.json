@@ -1,0 +1,6 @@
+{
+  "tv": "onn. Full HD Streaming Device (XNA), Walmart",
+  "os": "Android TV 14",
+  "brand": "onn",
+  "notes": "Same build URO4.260304.011.B1.15051976 as the onn 4K boxes but a separate product code, so it gets its own folder: Google feedback, feedback consent, Privacy Sandbox APEX modules (`com.android.adservices.api`, `com.android.ondevicepersonalization.services`, `com.android.federatedcompute.services`), partner setup, Play Games, print spooler, TalkBack, YouTube, YouTube Music, Netflix, ambient mode (`com.google.android.apps.tv.dreamx`) and `com.google.android.tungsten.setupwraith`, 15 packages; the stock launcher `com.google.android.apps.tv.launcherx` is taken from Home by launcher/build-and-install.sh; port 5555 opens without Wireless debugging pairing; the setup wizard's own Wi-Fi network had to be forgotten in Settings first or disable.sh skips setupwraith; `com.google.android.katniss` kept, `com.google.android.apps.mediashell` kept, `com.onn.updatenotification` kept; 1.4 GB RAM, no tuner or HDMI inputs, so live_tv_package stays empty"
+}

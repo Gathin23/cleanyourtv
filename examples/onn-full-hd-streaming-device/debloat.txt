@@ -1,0 +1,55 @@
+# onn. Full HD Streaming Device (Walmart; device XNA), 1.4 GB RAM
+# Android TV 14 (SDK 34), build URO4.260304.011.B1.15051976
+# Same build as onn-4k-streaming-box-2023 / onn-4k-plus-2025; list inherits from those.
+#
+# Apply:   TV_HOST=<ip>:5555 tools/disable.sh examples/onn-full-hd-streaming-device/debloat.txt
+# Undo:    TV_HOST=<ip>:5555 tools/restore.sh examples/onn-full-hd-streaming-device/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Box: no tuner or HDMI inputs,
+# leave live_tv_package empty in config.xml.
+#
+# Wi-Fi note: the network saved by the first-run wizard was owned by setupwraith and was used only
+# to unlock the region during setup. It was forgotten in Settings > Network before this list was
+# applied, so every saved network now belongs to android.uid.system:1000 and setupwraith is safe to
+# disable. Without that step, disable.sh skips setupwraith (its RecoveryActivity takes Home).
+#
+# Kept on purpose: Google Assistant (com.google.android.katniss), Cast receiver
+# (com.google.android.apps.mediashell), onn update prompts (com.onn.updatenotification),
+# com.gretzky.GlobalKey (remote app buttons), com.gretzky.hwinfo,
+# com.droidlogic.* (Amlogic vendor: HDMI, picture, remote pairing), com.onn.bluetoothconnect,
+# Play Store / Play Services, Gboard, com.google.android.tv.dfuservice (remote firmware),
+# com.google.android.tv.remote.service (phone remote + Bluetooth remote mic).
+
+# Telemetry and feedback
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Privacy Sandbox / on-device ads / federated learning (Android 14 APEX modules).
+# Play Store and voice search keep working with them off.
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Partner app attribution from the setup wizard
+com.google.android.partnersetup
+
+# Preloaded apps
+com.google.android.play.games
+com.android.printspooler
+com.google.android.marvin.talkback              # re-enable if you need the screen reader
+
+# Preinstalled streaming apps, off by choice (re-enable from App library or restore.sh)
+com.google.android.youtube.tv                   # YouTube
+com.google.android.youtube.tvmusic              # YouTube Music
+com.netflix.ninja                               # Netflix
+com.netflix.tokenmanager                        # Netflix partner token service
+
+# Google ambient mode screensaver (replaced by the launcher's Clock screensaver)
+com.google.android.apps.tv.dreamx
+
+# Stock home. launcher/build-and-install.sh disables launcherx itself once the new launcher
+# is installed and verified; setupwraith has to go too (its RecoveryActivity takes Home), so it
+# stays in the list for restore.sh to bring back.
+# com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith
