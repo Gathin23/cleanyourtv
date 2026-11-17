@@ -522,6 +522,37 @@ class InputPanelsTest(unittest.TestCase):
 
 @unittest.skipUnless(importlib.util.find_spec("PIL"), "drawing needs Pillow (tools/requirements-perf.txt)")
 class DrawTest(unittest.TestCase):
+    def test_main_reports_a_written_unicode_path_on_limited_and_utf8_consoles(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "cold-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart_\u5199.png")
+            reference = None
+            for encoding in ("utf-8", "cp1252"):
+                with self.subTest(encoding=encoding):
+                    raw = io.BytesIO()
+                    console = io.TextIOWrapper(raw, encoding=encoding, newline="")
+                    open_trace = lambda path: (fake_trace(), lambda: None)
+                    try:
+                        with mock.patch.object(flamechart.trace_report, "opener", return_value=open_trace), \
+                                contextlib.redirect_stdout(console):
+                            self.assertIsNone(flamechart.main([str(trace), "--out", str(out)]))
+                    finally:
+                        console.flush()
+                        console.detach()
+                    with Image.open(out) as im:
+                        self.assertEqual(im.format, "PNG")
+                        self.assertEqual(im.width, 1600)
+                        size = im.size
+                        im.verify()
+                    shown = str(out).encode(encoding, "replace").decode(encoding)
+                    self.assertEqual(raw.getvalue().decode(encoding), f"{shown}: {size[0]}x{size[1]}\n")
+                    if reference is None:
+                        reference = out.read_bytes()
+                    else:
+                        self.assertEqual(out.read_bytes(), reference, "console encoding must not change the PNG")
+
     def test_draws_both_panels_on_one_scale_with_magenta(self):
         q = fake_trace()
         panel = lambda label, t1: {"label": label, "note": "", "t0": 1000 * MS, "t1": t1,

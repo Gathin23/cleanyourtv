@@ -269,6 +269,13 @@ def parse(argv):
 
 
 def main(argv=None):
+    # The PNG is already written when its path is printed. A limited console must not turn that
+    # success into UnicodeEncodeError for a filename it cannot encode, as in screendiff.py and trace.py.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     args = parse(sys.argv[1:] if argv is None else argv)
     # A TRACE argument is a path on this computer, and it is read before Perfetto's engine is started:
     # trace_report.py, which the same workflow page puts beside this tool, answers `not a file: <path>`
