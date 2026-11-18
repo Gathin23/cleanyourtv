@@ -254,6 +254,51 @@ class RecoveryRecordTest(unittest.TestCase):
         self.assertIn("pm enable com.google.android.tvlauncher", sent)
         self.assertIn("settings put global window_animation_scale 1.0", sent)
 
+    def other_path_to_the_list(self, how):
+        """The list reached by another path: a hard link stands in for another spelling (macOS letter
+        case), a copy is another file."""
+        other = self.base / "elsewhere" / "debloat.txt"
+        other.parent.mkdir()
+        how(self.list_path, other)
+        return other
+
+    def test_record_is_found_through_another_path_to_the_same_file(self):
+        self.tv(settings={"window_animation_scale": "0.5",
+                          "transition_animation_scale": "null",
+                          "animator_duration_scale": "0.6"})
+        self.assertEqual(self.run_script("disable.sh", str(self.list_path)).returncode, 0)
+        other = self.other_path_to_the_list(os.link)
+        self.clear_sent()
+
+        result = self.run_script("restore.sh", str(other))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("no recovery record", result.stderr)
+        self.assertIn("another spelling of its path", result.stderr)
+        self.assertIn("settings put global animator_duration_scale 0.6", self.sent())
+
+    def test_save_through_another_path_to_the_same_file_writes_no_second_record(self):
+        self.tv()
+        self.assertEqual(self.run_script("disable.sh", str(self.list_path)).returncode, 0)
+        first = self.record()
+        other = self.other_path_to_the_list(os.link)
+        # The TV now shows the applied list; recording it again would make it "the original".
+        self.tv(installed=["com.example.already_off", "com.google.android.tvlauncher"],
+                disabled=["com.example.enabled", "com.example.already_off"])
+
+        result = self.run_script("disable.sh", str(other))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("keeping the recovery record", result.stdout)
+        self.assertEqual(self.record(), first)  # record() fails if a second file appeared
+
+    def test_a_copy_of_the_list_still_gets_its_own_record(self):
+        self.tv()
+        self.assertEqual(self.run_script("disable.sh", str(self.list_path)).returncode, 0)
+        copy = self.other_path_to_the_list(shutil.copy)
+
+        result = self.run_script("restore.sh", str(copy))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("no recovery record", result.stderr)
+
     def test_edited_list_leaves_new_names_alone(self):
         self.tv()
         self.assertEqual(self.run_script("disable.sh", str(self.list_path)).returncode, 0)
