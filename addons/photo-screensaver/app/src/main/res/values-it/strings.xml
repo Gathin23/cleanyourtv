@@ -7,6 +7,7 @@
     <string name="empty_body">Metti le foto in questa cartella sulla TV con sync.sh o sync.ps1:</string>
     <string name="settings_title">Salvaschermo con foto</string>
     <string name="option_clock">Mostra ora e data</string>
+    <string name="option_clock_fades">Mostra l\'ora brevemente a ogni foto</string>
     <string name="option_dates">Mostra quando è stata scattata una foto (mese e anno)</string>
     <string name="option_animation">Animazione Ken Burns (zoom e movimento)</string>
     <string name="option_prints">Tre stampe invece dello schermo intero (senza mollette)</string>

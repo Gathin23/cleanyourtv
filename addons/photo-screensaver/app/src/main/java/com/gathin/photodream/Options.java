@@ -8,6 +8,7 @@ import java.io.File;
 /** The switches in SettingsActivity. All off by default: then it is the plain full-screen slideshow. */
 final class Options {
     static final String CLOCK = "clock";
+    static final String CLOCK_FADES = "clock_fades";
     static final String DATES = "photo_dates";
     static final String SKY = "sky";
     static final String PRINTS = "prints";
@@ -19,6 +20,7 @@ final class Options {
     static final int DEFAULT_IDLE_MINUTES = 10;
 
     final boolean clock;
+    final boolean clockFades;
     final boolean dates;
     final boolean sky;
     final boolean prints;
@@ -29,6 +31,7 @@ final class Options {
 
     Options(SharedPreferences p, File dir) {
         clock = p.getBoolean(CLOCK, false);
+        clockFades = p.getBoolean(CLOCK_FADES, false);
         dates = p.getBoolean(DATES, false);
         sky = p.getBoolean(SKY, false);
         prints = p.getBoolean(PRINTS, false);
