@@ -12,10 +12,11 @@
 # Already disabled by the firmware before this debloat (restore.sh leaves them disabled):
 # com.sky.market, com.security.SwaiotTV
 #
-# Tested 2026-11-08 (Taiwan unit), in batches with a screenshot after each and a reboot after the last: the same 25 packages were disabled
-# after the reboot (the firmware re-enables nothing), Home came up on com.gathin.tvhome straight from boot
-# (no Live TV at power-on), HDMI switching from the launcher's Inputs menu worked, Chromecast casting from
-# the YouTube phone app still worked with setupwraith disabled.
+# Tested 2026-11-08 (Taiwan unit), in batches with a screenshot after each and a reboot after the last: the packages
+# this list applies, the two the firmware already had off and the stock launcher stayed disabled after the reboot
+# (the firmware re-enables nothing), Home came up on com.gathin.tvhome straight from boot (no Live TV at power-on), HDMI
+# switching from the launcher's Inputs menu worked, Chromecast casting from the YouTube phone app still worked with
+# setupwraith disabled.
 # Remote (BLE, vendor 0x1d5a product 0xc580): gear = keycode 83 (KEYCODE_NOTIFICATION, HID 0x0c009f),
 # guide = 172 (KEYCODE_GUIDE), account = 288 (KEYCODE_PROFILE_SWITCH); only launcherx answered them.
 # Owner's choice: HOME_KEY_SERVICE=1 with settings_key_keycodes [83] (gear -> Settings) and app_keys
