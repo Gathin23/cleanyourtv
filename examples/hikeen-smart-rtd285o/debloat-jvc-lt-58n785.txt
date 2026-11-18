@@ -8,8 +8,9 @@
 #
 # Tested on: the owner's own unit, one session (applied in three batches, Home checked after each),
 # then two reboots and a cold power cycle with all packages still disabled. On the real remote, Home,
-# Input/Source, HDMI switching from the launcher's Inputs pill, and the Menu and app keys worked. That
-# is one session, not the multi-day soak this folder's debloat.txt has.
+# Input/Source, HDMI switching from the launcher's Inputs pill, and the Menu and app keys worked. Then a
+# day of use (Netflix, YouTube, Prime Video) with nothing re-enabled: shorter than the multi-day soak this
+# folder's debloat.txt has.
 #
 # Stock launcher is com.zeasn.oriontv.open.launcher, left out of this list: launcher/build-and-install.sh
 # with STOCK_LAUNCHER=com.zeasn.oriontv.open.launcher disabled it once the new Home was confirmed.
@@ -24,11 +25,12 @@
 # Notes from this unit:
 # - Screencap works here in apps and the new launcher; only the stock Zeasn Home came back as 0 bytes.
 # - Developer options was hidden even with ADB on (it is on from the factory, and ro.vendor.rtk.force_usb_adb=1).
-#   `settings put global development_settings_enabled 1` shows it again under Device Preferences in
-#   Android TV Settings, which the launcher's Settings pill opens; the Hikeen "SettingCenter" app has none.
+#   It hides again after a cold power cycle. Device Preferences > About > Build pressed 7 times, in Android
+#   TV Settings (the launcher's Settings pill), brings it back; the Hikeen "SettingCenter" app has none.
+#   `settings put global development_settings_enabled 1` shows it too, until the next cold start.
 #   Turning USB debugging off there, then a cold power cycle, closed 5555 (tools/adb-closed.py).
 # - A cold power cycle starts on the last TV input (AV1 here) rather than Home; a reboot over ADB
-#   starts on Home.
+#   starts on Home. The folder's README has the launcher settings that bring Home back at power-on.
 # - Found already disabled from an earlier clean-up and left off by the owner's choice, so not listed:
 #   com.google.android.katniss, com.adups.fota (firmware updater, off by choice), com.ecloud.eshare.server,
 #   com.ecloud.emedia, com.ecloud.eairplay, com.rtk.android.miracast, com.hikeen.cleanmaster,
