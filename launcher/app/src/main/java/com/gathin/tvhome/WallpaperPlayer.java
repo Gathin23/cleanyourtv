@@ -204,8 +204,9 @@ final class WallpaperPlayer {
     }
 
     /**
-     * Small light text under the top-right buttons, above everything else and never focusable. It sits where the
-     * top bar ends in every layout, so it does not cover the clock, the stats line or the tiles.
+     * Small light text under the top-right buttons, above everything else and never focusable. It sits a gap
+     * below the buttons' row rather than flush against it; the offset is fixed, so a taller top bar (font scale,
+     * an extra date line) eats into that gap — and it has to stay clear of the clock block and of the tiles.
      */
     private static TextView makeCaption(Context context, FrameLayout root) {
         float dp = context.getResources().getDisplayMetrics().density;
@@ -230,7 +231,7 @@ final class WallpaperPlayer {
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
-        params.topMargin = Math.round(110 * dp) - pad;
+        params.topMargin = Math.round(137 * dp) - pad;
         params.setMarginEnd(Math.round(62 * dp) - pad);
         root.addView(text, params);
         return text;
