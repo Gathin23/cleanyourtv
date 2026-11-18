@@ -47,6 +47,11 @@ Nothing was recorded, so nothing is half-written: `tools/bench.py`, `tools/check
 | `nav` | 24 D-pad moves, 0.35 s apart | Focus, scrolling, drawing |
 | `custom` | `--step CMD` (repeatable) after `--setup CMD` | Anything else; `sleep N` steps set the length |
 
+Keep delays in standalone literal `sleep` steps, such as `--step 'sleep .5'` or
+`--step 'sleep "0.5s"'`. Whitespace, quoted numbers and the `s`, `m`, `h`, `d` suffixes are counted
+in the recording length and waited on this computer. A variable or compound shell command is sent
+unchanged to the TV; its running time cannot be inferred, so keep its waits in separate literal steps.
+
 - **Output:** each run writes `<scenario>-<n>.pftrace` (10–20 MB) and a `.json` with the commands and the
   TV's model and build. `traces/` is gitignored.
 - **The other app:** `--app package/activity`, or by default the TV's Settings. Both this tool and
