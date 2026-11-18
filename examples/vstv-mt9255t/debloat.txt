@@ -18,7 +18,8 @@
 # stock launcher does not help, because it is not direct-boot-aware either.
 # Never disable com.vstv.fbhome. Recovery is USB only: adbd starts long before the framework and
 # `adb root` works on this build, then pm enable com.vstv.fbhome + reboot.
-# See the "Android wordmark" entry in the main README's Troubleshooting section.
+# See docs/TROUBLESHOOTING.md, "The TV stays on the boot logo after a list, and disabling the only
+# Home app is enough to do it": this board is the CVTE case that bullet describes.
 #
 # Keep: com.vstv.input (VsTvInput - DTV/HDMI inputs), com.vstv.septembersettings (the Settings app),
 # com.vstv.global.service (GlobalUI - OSD/volume/toast surface), com.vstv.mercurylauncher (stock
