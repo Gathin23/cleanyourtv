@@ -363,6 +363,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView.OnScrollListener pendingFocusScroll;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    // Home lets go of its artwork once it has been stopped for three minutes where no trim level would ever ask it to
+    // (MemoryTrimPolicy.releaseWhenStopped): the tiles, their banners and the wallpaper's texture, all rebuilt on the
+    // way back. The key helper in this process is untouched.
+    private static final long RELEASE_STOPPED_MS = 3 * 60_000L;
+    private final Runnable releaseStopped = () -> {
+        if (started) return;
+        releaseArtwork();
+        // The wallpaper's hardware bitmap is freed only once it is collected, and this idle process allocates too
+        // little to start a collection any time soon.
+        Runtime.getRuntime().gc();
+    };
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -1077,6 +1088,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onStart();
         stopped = false;
         started = true;
+        handler.removeCallbacks(releaseStopped);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(timeReceiver, timeFilter, Context.RECEIVER_NOT_EXPORTED);
         } else {
@@ -1341,6 +1353,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(clockCheck);
         stopped = true;
         tileRefresh.onStop();
+        if (MemoryTrimPolicy.releaseWhenStopped(Build.VERSION.SDK_INT,
+                HomeKeyService.running != null || InputKeyService.running != null)) {
+            handler.postDelayed(releaseStopped, RELEASE_STOPPED_MS);
+        }
     }
 
     /**
@@ -1354,6 +1370,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // RUNNING_LOW and CRITICAL also arrive while Home is visible when an accessibility service keeps the
         // process in the foreground; never blank the screen the owner is looking at.
         if (!MemoryTrimPolicy.shouldRelease(level, started)) return;
+        releaseArtwork();
+    }
+
+    /** Every tile's artwork and the wallpaper's texture; Home rebuilds both on the way back. */
+    private void releaseArtwork() {
         adapter.clear();
         // Detach the adapter too: with Home stopped no layout pass runs, so the tile views (and the bitmaps
         // they hold) would stay attached until Home comes back. setAdapter(null) recycles them now.
@@ -1390,6 +1411,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (tree.isAlive()) tree.removeOnGlobalFocusChangeListener(glassFocusListener);
         RemoteKeys.release(this);
         cancelHoldOk();
+        handler.removeCallbacks(releaseStopped);
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
         if (openOnStartOnWake) unregisterReceiver(wakeReceiver);

@@ -23,6 +23,14 @@ public class MemoryTrimPolicyTest {
     }
 
     @Test
+    public void stoppedHomeReleasesByItselfOnlyWhereNoTrimLevelWouldCome() {
+        assertTrue(MemoryTrimPolicy.releaseWhenStopped(34, true));
+        assertTrue(MemoryTrimPolicy.releaseWhenStopped(35, true));
+        assertFalse(MemoryTrimPolicy.releaseWhenStopped(33, true));
+        assertFalse(MemoryTrimPolicy.releaseWhenStopped(34, false));
+    }
+
+    @Test
     public void lowMemorySignalsReleaseResourcesWhenHomeIsStopped() {
         assertTrue(MemoryTrimPolicy.shouldRelease(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW, false));
         assertTrue(MemoryTrimPolicy.shouldRelease(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL, false));
