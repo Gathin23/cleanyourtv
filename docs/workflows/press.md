@@ -14,7 +14,7 @@
    `tools/readme_featured.py`. Every page shows the same picture, so a translation that copies it states the
    same numbers in its own words: the pages named here are the ones that carry it today, not the rule.
    The end of each page's story section repeats the three numbers once more, in prose ("The coverage:
-   <articles> articles from <countries> countries and <videos> videos on YouTube and Bilibili, all in
+   `<articles>` articles from `<countries>` countries and `<videos>` videos on YouTube and Bilibili, all in
    `docs/PRESS.md`"), and the same test reads that sentence too: the page states the count twice, once in
    the card's alt text and once in that sentence, so a reader who sees one number in the picture and
    another in the story section is looking at a page that was half updated. Leave the counts out of the
