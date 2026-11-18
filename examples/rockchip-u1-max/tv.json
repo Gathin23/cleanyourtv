@@ -1,0 +1,6 @@
+{
+  "tv": "U1 Max (Rockchip rk3328, generic box)",
+  "os": "Android 9",
+  "brand": "Rockchip",
+  "notes": "20 packages: backup/print services, Google search, DLNA and AirPlay receivers, test and preloaded extras, Chinese keyboards; firmware updater, USB input and Play services kept; the stock launcher is turned off by the launcher install, not by the list; ro.adb.secure=0; provisional, about two hours on a box that is not the owner's"
+}
