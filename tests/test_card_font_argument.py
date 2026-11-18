@@ -146,6 +146,72 @@ def run_plain(argv):
     return subprocess.run([sys.executable, *argv], cwd=ROOT, env=env, capture_output=True, text=True)
 
 
+class FontCollisionTest(unittest.TestCase):
+    def collision(self, script, spelling, blocked):
+        with tempfile.TemporaryDirectory() as tmp:
+            font = Path(tmp, "font.png" if spelling == "direct" else "font.ttf")
+            shutil.copy2(LAUNCHER_FONT, font)
+            out = font if spelling == "direct" else Path(tmp, "output.png")
+            if spelling != "direct":
+                try:
+                    out.symlink_to(font) if spelling == "symlink" else os.link(font, out)
+                except (OSError, NotImplementedError) as error:
+                    self.skipTest(f"this filesystem cannot create a {spelling}: {error}")
+            original = font.read_bytes()
+            argv = [str(TOOLS / script), str(font), str(out)]
+            done = run(argv, tmp) if blocked else run_plain(argv)
+            try:
+                self.assertEqual(done.returncode, 1, done.stderr)
+                self.assertIn("same file", done.stderr)
+                self.assertIn(str(font), done.stderr)
+                self.assertIn(str(out), done.stderr)
+                self.assertIn("Nothing was written", done.stderr)
+                self.assertNotIn("Traceback", done.stderr)
+                self.assertNotIn(NOT_THE_FONT, done.stderr)
+            finally:
+                self.assertTrue(font.read_bytes() == original, "the input font was overwritten")
+                self.assertTrue(out.read_bytes() == original, "the output alias no longer names the font")
+                self.assertEqual(out.is_symlink(), spelling == "symlink")
+
+    def test_font_aliases_are_refused_before_pillow(self):
+        for script in CARD_SCRIPTS:
+            for spelling in ("direct", "symlink", "hardlink"):
+                with self.subTest(script=script, spelling=spelling):
+                    self.collision(script, spelling, blocked=True)
+
+    @unittest.skipUnless(HAVE_PIL, "drawing needs Pillow (tools/requirements-perf.txt)")
+    def test_font_aliases_are_preserved_with_pillow(self):
+        for script in CARD_SCRIPTS:
+            for spelling in ("direct", "symlink", "hardlink"):
+                with self.subTest(script=script, spelling=spelling):
+                    self.collision(script, spelling, blocked=False)
+
+    @unittest.skipUnless(HAVE_PIL, "drawing needs Pillow (tools/requirements-perf.txt)")
+    def test_a_distinct_output_link_still_draws_without_changing_the_font(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            font = Path(tmp, "font.ttf")
+            shutil.copy2(LAUNCHER_FONT, font)
+            original = font.read_bytes()
+            for script in CARD_SCRIPTS:
+                with self.subTest(script=script):
+                    target = Path(tmp, script + ".png")
+                    target.write_bytes(b"old output")
+                    out = Path(tmp, "link-" + script + ".png")
+                    try:
+                        out.symlink_to(target)
+                    except (OSError, NotImplementedError) as error:
+                        self.skipTest(f"this filesystem cannot create a symlink: {error}")
+                    done = run_plain([str(TOOLS / script), str(font), str(out)])
+                    self.assertEqual(done.returncode, 0, done.stderr)
+                    self.assertTrue(out.is_symlink())
+                    self.assertEqual(font.read_bytes(), original)
+                    with Image.open(target) as picture:
+                        self.assertEqual(picture.format, "PNG")
+                        self.assertEqual(picture.width, 1600)
+                        picture.verify()
+
+
 def fonts(kind):
     """TTF files this machine has, wanted for what Pillow says about setting a weight on them."""
     candidates = [LAUNCHER_FONT]
