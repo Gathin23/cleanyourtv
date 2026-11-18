@@ -26,6 +26,15 @@
   `docs/devices/<name>.md:<line>: <the value>`. A serial number has no shape a test can recognise, so it is
   left out by hand: `docs/devices/coop-cotv-0001.md` once printed one in its Device table while the notes around it
   said they left the serial out (taken out since). Both guards read the same AGENTS.md sentence as the lists do.
+  A command a note prints is held to two rules that are not about the address. One that hands
+  `tools/disable.sh`, `restore.sh` or `theme.sh` a list, a theme folder or `--reset` has to name the TV, or
+  `tests/test_sh_commands_name_the_tv.py` fails it as a command that stops before anything is sent, with
+  `Set TV_HOST to your TV's IP address`. One that starts a Python tool has to name an interpreter in front
+  of it, or `tests/test_documented_tool_commands.py` answers `Permission denied` (exit 126): the tools are
+  100644 in git except `tv.py` and `adb-closed.py`, and the pages name the checkout's venv in front of them,
+  `tools/venv/bin/python -I tools/<x>.py`, since that venv also holds the packages they import.
+  `TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py --fix <list>` passes both, and is the shape the
+  notes already print.
 - Several tests pin facts in `docs/devices/` notes, `PROMPT.md` and `docs/TROUBLESHOOTING.md` (the
   `tests/test_*_note.py` files). If you reword one of those passages, run the suite and keep the fact.
 - Two of them judge where a passage sits, not only what it says, so a true sentence can still red the suite.
