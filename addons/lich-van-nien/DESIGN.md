@@ -136,17 +136,17 @@ in this folder is that screen on the tested TV, and the bullets below are what t
   sans (`sans-serif-light`) letter-spaced uppercase for small captions, like the launcher header. One
   accent colour, muted gold `#E8C77D`; muted red `#D99A8A` only for "Kiêng".
 - Left column: caption "THỨ BA · 3 THÁNG 11 · 2026"; huge lunar day "25" with "tháng Chín" and caption
-  "ÂM LỊCH · <moon phase word>"; thin gold rule; "Ngày Hoàng đạo" (gold) or "Ngày Hắc đạo" (silver)
-  with "sao <star> chiếu"; three columns Ngày / Tháng / Năm with can chi.
+  "ÂM LỊCH · `<moon phase word>`"; thin gold rule; "Ngày Hoàng đạo" (gold) or "Ngày Hắc đạo" (silver)
+  with "sao `<star>` chiếu"; three columns Ngày / Tháng / Năm with can chi.
 - Right: a 12-segment ring like a clock face, Tý at top, each segment labelled with the chi and the
   starting hour outside; good hours filled gold, others faint; a dot at the current hour; centre text
-  "BÂY GIỜ / giờ <chi> / giờ tốt|giờ xấu · đến <h>:00". Drawn with a custom `View` on `Canvas`.
+  "BÂY GIỜ / giờ `<chi>` / giờ tốt|giờ xấu · đến `<h>`:00". Drawn with a custom `View` on `Canvas`.
 - Zodiac animals (owner's request, 03/11/2026): each ring segment shows a cute cartoon animal above the
   chi name, Vietnamese set 🐭 Tý, 🐃 Sửu, 🐯 Dần, 🐱 Mão, 🐲 Thìn, 🐍 Tỵ, 🐴 Ngọ, 🐐 Mùi, 🐵 Thân,
   🐔 Dậu, 🐶 Tuất, 🐷 Hợi; the current hour's animal is drawn large in the ring's centre. Art is the
   TV's own Noto Color Emoji font (`/system/fonts/NotoColorEmoji.ttf`, present on this TV), drawn with
   `Canvas.drawText`, so nothing is bundled. Bad-hour animals are drawn at reduced alpha.
-- Bottom line: "Nên …" and "Kiêng …" for the trực, with "trực <name>"; right side hint
+- Bottom line: "Nên …" and "Kiêng …" for the trực, with "trực `<name>`"; right side hint
   "◀ ▶ đổi ngày · OK về hôm nay".
 - Keys: Left/Right = previous/next day (ring then has no "bây giờ" dot, centre shows the date instead);
   OK/Center = back to today; Back = exit. Up/Down do nothing. No focusable widgets, the activity handles keys.

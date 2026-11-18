@@ -84,5 +84,5 @@ still comes back.
 - Kept on purpose: `com.xiaomi.mitv.smartpanel` (Menu-button panel), `com.xiaomi.voicecontrol` and
   `com.xiaomi.wakeupservice` (XiaoAI), `com.xiaomi.miplay`/`com.xiaomi.mitv.smartshare`/`com.xiaomi.mi_connect_service`
   (casting), `com.xiaomi.mitv.tvplayer` and `mitv.service` (TV app, HDMI, tuner) and `com.xiaomi.mitv.tvmanager`
-  (XiaoAI "open <app>" runs through its provider — see the MFFU0 note).
+  (XiaoAI's `open <app>` command runs through its provider — see the MFFU0 note).
 - **ADB closes on every reboot** on this set: Settings → 账号与安全 → ADB 调试 re-opens it.
