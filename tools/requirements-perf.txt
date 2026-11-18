@@ -3,4 +3,6 @@
 # readme_card.py; see docs/workflows/press.md). Not needed to clean a TV.
 # tools/venv/bin/pip install -r tools/requirements-perf.txt   See tools/trace.md.
 perfetto==0.58.2
-pillow==11.3.0
+# The same pin tools/requirements-photos.txt carries: both extras go into one tools/venv, and a reader who
+# installs them together (a theme's photos and the card that shows it) would have pip refuse the command.
+pillow==13.0.0
