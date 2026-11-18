@@ -324,7 +324,7 @@ you do.
   [Remote buttons](https://github.com/Abner97/remote-buttons), its own repo listed in [SHOWCASE.md](../../SHOWCASE.md):
   tested on a Hisense 65Q6N (`lushan`, Google TV 12), where the gear, YouTube, Prime Video, Disney+, Apps and
   Live TV buttons opened their apps and held volume still ramped. It needs `READ_LOGS` over ADB, which lets it
-  read every app's log, so ask before installing it.
+  read every app's log, so ask before installing it. It does not parse TCL's lines yet.
 
 - **Keep both with a listener you start by hand.** A script run by the `shell` user can answer the app
   buttons without any service bound, so the ramp stays; see "Both at once" below. It does not come back

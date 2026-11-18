@@ -1456,9 +1456,7 @@ turned off in Settings stays off.
   `fusion.android.tv.demo`); for any other package it sends `FLAG=OTHER_APP`, the Picture and Sound page.
   The package name is hard-coded in the firmware and the key never reaches the launcher (with
   `settings_key_keycodes: [82]` the log shows only the firmware's `START ... MainSettings` from uid 1000), so
-  no config key fixes it. Use the Settings gear on Home or a Settings tile for the full Settings. @stivluc's
-  `menu_full_settings` switch ([#3754](https://github.com/Gathin23/cleanyourtv/pull/3754)) has the helper
-  replace that page with the full Settings when Home did not open it.
+  no config key fixes it. Use the Settings gear on Home or a Settings tile for the full Settings.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left

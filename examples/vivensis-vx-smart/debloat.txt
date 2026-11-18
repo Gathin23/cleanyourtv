@@ -31,8 +31,10 @@ com.android.gallery3d
 com.android.music
 com.android.printspooler
 com.android.wallpaperbackup
-com.globo.globotv
+# Streaming app, off on this set; uncomment to disable.
+#com.globo.globotv
 com.google.android.marvin.talkback
 com.google.android.play.games
 com.google.android.tts
-com.google.android.youtube.tvmusic
+# Streaming app, off on this set; uncomment to disable.
+#com.google.android.youtube.tvmusic

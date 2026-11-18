@@ -22,7 +22,7 @@
 
 ## Apply & Undo
 
-`debloat.txt` is the list: 13 packages.
+`debloat.txt` is the list: 11 packages (Globoplay and YouTube Music, off on this set, are commented out).
 
 ```bash
 # 1. Apply the debloat list

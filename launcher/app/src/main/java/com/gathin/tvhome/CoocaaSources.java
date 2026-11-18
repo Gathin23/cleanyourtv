@@ -43,7 +43,8 @@ final class CoocaaSources {
 
     /** HDMI ports in port order, then AV, then the tuner; empty where the provider is missing. */
     static List<Source> list(Context ctx) {
-        return parseAndSort(firstNonEmpty(query(ctx, LIST), query(ctx, LIST_SDK)));
+        List<Object[]> primary = query(ctx, LIST);
+        return parseAndSort(firstNonEmpty(primary, primary == null || primary.isEmpty() ? query(ctx, LIST_SDK) : null));
     }
 
     /** The provider's rows, or null when that authority answers nothing or fails. */

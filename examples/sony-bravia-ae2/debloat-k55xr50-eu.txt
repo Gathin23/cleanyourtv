@@ -22,8 +22,8 @@
 # Quirks on this unit, all seen on the TV:
 # - Network ADB: USB debugging alone never opens port 5555, and "Debugging over Wi-Fi" flips straight back
 #   off while the TV is on Ethernet. Put the TV on Wi-Fi, pair once (`adb pair`), `adb connect` to the port
-#   `adb mdns services` shows, then `adb tcpip 5555`. The reboot switches Debugging over Wi-Fi off again;
-#   switching it back on needs no new code.
+#   `adb mdns services` shows, and run the tools over that paired connection; switch Debugging over Wi-Fi
+#   off when you are done (a reboot also switches it off).
 # - The saved Wi-Fi network belonged to the system (`dumpsys wifi`: cname=android.uid.system), not to
 #   setupwraith, so disabling setupwraith kept the TV on Wi-Fi. With it disabled, sonysystemservice logs
 #   "Failed to find provider info for com.google.android.tungsten.setupwraith" twice a second; nothing

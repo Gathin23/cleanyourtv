@@ -33,9 +33,10 @@ com.vstv.diagnosis            # "Diagnosis" - vendor telemetry/self-test app
 com.vstv.factory              # "Factory Menu" - service-menu UI
 com.vstv.factory.test         # VsFactoryTest - panel/burn-in test routines
 
-# --- Safe: firmware update path. Re-enable both to receive an OTA. ---
-com.vstv.upgradecenter
-com.vstv.ota
+# --- Firmware update path. ---
+# Off on the tested unit (sideload-only, no OTA); kept on in the shared list, uncomment to disable.
+#com.vstv.upgradecenter
+#com.vstv.ota
 
 # --- Safe: AOSP dead weight on a TV. No launcher tile, no runtime use. ---
 com.android.printspooler      # no printing on this board
@@ -56,7 +57,8 @@ com.google.android.partnersetup
 com.vstv.tv.assistant          # "TvAssistant" - remote microphone / voice assistant
 com.google.android.katniss     # Google Assistant + voice search (remote mic button)
 com.vs.phone.remote.search.assistants  # "VsVoiceAssistants" - voice search backend
-com.google.android.tv.remote.service   # Google TV phone remote app pairing (not voice, but unused)
+# Off on the tested unit (sideload-only, no OTA); kept on in the shared list, uncomment to disable.
+#com.google.android.tv.remote.service   # Google TV phone remote app pairing (not voice, but unused)
 
 # --- Your call: these cost RAM but remove a feature you may use. ---
 #com.vstv.mcast               # "MiraCast" - screen casting from a phone
@@ -66,16 +68,17 @@ com.google.android.tv.remote.service   # Google TV phone remote app pairing (not
 #com.google.android.syncadapters.calendar
 #com.google.android.syncadapters.contacts
 
-# --- Applied on this unit: sideload-only, no Play Store and no Play Services. ---
+# --- Off on this unit only: sideload-only, no Play Store and no Play Services. ---
+# Off on the tested unit (sideload-only, no OTA); kept on in the shared list, uncomment to disable.
 # RAM is the real bottleneck (~925 MB visible, ro.config.low_ram=true, zram swap). The Play stack
 # was ~100 MB of resident processes across vending + :background + :quick_launch. Nothing here
 # installs from Play and every app in use (SmartTube, TizenTube, Nuvio, JioHotstar, CloudStream,
 # BROWSER) starts and runs without Play Services. Re-enable com.android.vending - and gms/gsf if an
 # app actually asks for them - before installing or signing in to something that needs Google.
-com.android.vending           # Play Store (+ its child processes)
-com.google.android.gms        # Play Services: persistent/gms/unstable/ui, ~85 MB PSS
-com.google.android.gsf        # Google Services Framework, only useful with gms
-com.vs.phoneremote.google     # "Phone Remote" pairing, unused while voice/phone remote is off.
+#com.android.vending           # Play Store (+ its child processes)
+#com.google.android.gms        # Play Services: persistent/gms/unstable/ui, ~85 MB PSS
+#com.google.android.gsf        # Google Services Framework, only useful with gms
+#com.vs.phoneremote.google     # "Phone Remote" pairing, unused while voice/phone remote is off.
                               # It is android:persistent and runs as uid 1000, so the process keeps
                               # running even while the package is disabled (~8 MB); disabling it
                               # stops its services/receivers, not the process.

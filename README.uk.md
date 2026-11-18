@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="489 моделей телевізорів · 132 бренди · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 530 видань: 546 статті з 57 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV. Репозиторій №1 у трендах тижня, 19–25 жовтня 2026, через trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="492 моделі телевізорів · 135 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 530 видань: 546 статті з 57 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV. Репозиторій №1 у трендах тижня, 19–25 жовтня 2026, через trendshift.io." width="800"></a>
 </p>
 
 ## З чого почати
@@ -136,7 +136,7 @@ platform 34 із build-tools 34 (там асистент збирає лонче
 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
 
 <details>
-<summary>+87 more brands and 15 projector brands</summary>
+<summary>+90 more brands and 15 projector brands</summary>
 
 **RockTek** 3 · **Vidda** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
 **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 ·
@@ -145,8 +145,8 @@ AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · BTV 
 Continental Edison · Daewoo · Dcolor · Dialog · Durabrand · DYON · ENGY · Essentiel b · Freebox · HAAM · Hikeen ·
 Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
 MarQ · MECOOL · Metz · MTC · Next · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV · Prosonic · realme ·
-Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System · Tesla ·
-TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · X.Vision ·
+Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System ·
+Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · Vivensis · VSTV · X.Vision ·
 Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Nonete, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -473,8 +473,8 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 учасників за перші чотири дні. До 19-го репозиторій називався tv-vibehack; старі посилання працюють.
 
 Через два тижні репозиторій став №1 у трендах GitHub за тиждень 19–25 жовтня: понад 46 тис. зірок і 5,7 тис.
-форків, 1,4 млн переглядів і 260 тис. клонів за 14 днів. Станом на 14 листопада: 57 тис. зірок і 7,4 тис. форків. Тепер списки охоплюють 489 моделей телевізорів від
-132 брендів. Публікації: 546 статті з 57 країн і 674 відео на YouTube та Bilibili, усе в [docs/PRESS.md](docs/PRESS.md)
+форків, 1,4 млн переглядів і 260 тис. клонів за 14 днів. Станом на 14 листопада: 57 тис. зірок і 7,4 тис. форків. Тепер списки охоплюють 492 моделей телевізорів від
+135 брендів. Публікації: 546 статті з 57 країн і 674 відео на YouTube та Bilibili, усе в [docs/PRESS.md](docs/PRESS.md)
 (станом на 14 листопада 2026 року).
 
 ## Долучитися
@@ -487,9 +487,7 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 |---|---|
 | **Список прибирання для вашого телевізора** | Найкорисніше: наступна людина з такою моделлю пропускає відкриття. |
 | **Лончер і промпт** | Покращення лончера та точніші формулювання промпту теж вітаються. |
-| **Зробили щось поверх?** | Лончер, порт, тему: додайте до [SHOWCASE.md](SHOWCASE.md), де вже живуть 262 проєктів, поділених на головні екрани, форки, додатки, інструменти та інші платформи, з покажчиком за брендами телевізорів. |
-| **Зробили щось поверх?** | Лончер, порт, тему: додайте до [SHOWCASE.md](SHOWCASE.md), де вже живуть 261 проєктів, поділених на головні екрани, форки, додатки, інструменти та інші платформи, з покажчиком за брендами телевізорів. |
-| **Зробили щось поверх?** | Лончер, порт, тему: додайте до [SHOWCASE.md](SHOWCASE.md), де вже живуть 263 проєктів, поділених на головні екрани, форки, додатки, інструменти та інші платформи, з покажчиком за брендами телевізорів. |
+| **Зробили щось поверх?** | Лончер, порт, тему: додайте до [SHOWCASE.md](SHOWCASE.md), де вже живуть 266 проєктів, поділених на головні екрани, форки, додатки, інструменти та інші платформи, з покажчиком за брендами телевізорів. |
 
 Люди, чия робота є в цьому репозиторії:
 

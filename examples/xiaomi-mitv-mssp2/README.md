@@ -28,10 +28,7 @@ this folder's `debloat.txt` unchanged, so this report does not validate every en
 - The built-in `show_stats` theme option displayed used/total RAM and free storage on Home
   with the ambient-glass theme. It did not require a live Capacity Stats module card.
 
-Later cosmetic testing used a personal launcher build with darker header buttons and a hidden
-lower-row preview. Those source changes are not part of this report or evidence that the
-unmodified reference launcher has that appearance. Longer-term stability and recovery by
-actually running a full restore remain unverified.
+Longer-term stability and recovery by actually running a full restore remain unverified.
 
 ### Exact package state recorded after reboot
 
@@ -55,15 +52,6 @@ them. YouTube (`com.google.android.youtube.tv`), Spotify (`com.spotify.tv.androi
 The older `com.google.android.leanbacklauncher` package was not disabled in this session;
 the Home checks still resolved to the new launcher. Input/TV middleware, remote and Bluetooth
 services, keyboard, Play Services, Assistant, Chromecast and firmware updates were preserved.
-
-### Reference launcher screenshot
-
-![Reference launcher 3.5 on MiTV-MSSP2 PI.6305, with four configured dock apps](pi6305-reference-home.png)
-
-Captured on the real TV during the initial reference-launcher preview, before the custom
-cosmetic changes and later ambient-glass theme changes. The dock order is a per-owner
-configuration. The screenshot shows the unmodified reference UI; it does not demonstrate
-HDMI playback, casting, voice search or long-term stability.
 
 ## Live TV: channel buttons only work on a tuner picked in Xiaomi's source menu
 
