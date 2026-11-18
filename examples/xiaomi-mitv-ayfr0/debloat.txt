@@ -1,6 +1,8 @@
 # Xiaomi TV Stick 4K (model MiTV-AYFR0, codename soul, Amlogic), Android TV 14 (SDK 34),
 # firmware UKG3.250107.001 / V816.0.26.6.10.UZFAATK.
 # Fingerprint: Xiaomi/soul/soul:14/UKG3.250107.001/V816.0.26.6.10.UZFAATK:user/release-keys
+# Android TV 11 firmware RTT0.211222.001.1546 has a different tested package set: use
+# debloat-android11.txt in this folder. Do not combine the two lists.
 #
 # Apply:   TV_HOST=<stick ip> tools/disable.sh examples/xiaomi-mitv-ayfr0/debloat.txt
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/xiaomi-mitv-ayfr0/debloat.txt
