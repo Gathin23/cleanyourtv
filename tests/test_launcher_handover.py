@@ -76,9 +76,19 @@ def run(command):
         if not state["set_home_fails"]:
             state["home"] = STOCK if "resolve-activity" in command else NEW
         return ""
+    if "query-activities" in command:
+        # The HOME claimants. A second launcher stays a claimant next to ours; a plain handover
+        # leaves only whatever owns Home.
+        if state["second_home"]:
+            return NEW + "\n" + "com.spocky.projengone/.MainActivity\n"
+        return state["home"] + "\n"
     if "resolve-activity" in command:
         if state["link_lost"]:
             raise LinkLost()
+        # A second registered HOME app ties with ours and no default is set, so resolve-activity
+        # answers with Android's chooser even though set-home-activity succeeded (#4068).
+        if state["second_home"] and state["home"] == NEW:
+            return "android\n"
         # A disabled package is not a HOME candidate, so the answer falls back to the chooser.
         if state["stock_disabled"] and state["home"] == STOCK:
             return "android\n"
@@ -152,6 +162,7 @@ class HandoverTest(unittest.TestCase):
             "enable_fails": False,
             "drop_after_handover": False,
             "link_lost": False,
+            "second_home": False,
             "commands": [],
         }
         state.update(overrides)
@@ -222,6 +233,18 @@ class HandoverTest(unittest.TestCase):
         self.assertIn("recovery is incomplete", result.stderr)
         self.assertTrue(any("pm enable --user 0" in c for c in state["commands"]))
         self.assertIsNotNone(self.record())
+
+    def test_second_launcher_tie_is_not_rolled_back(self):
+        # A second launcher (e.g. Projectivy) keeps claiming HOME, so after a successful handover
+        # resolve-activity answers with Android's chooser. That must not be read as failure (#4068).
+        result, state = self.handover(second_home=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Installed.", result.stdout)
+        self.assertTrue(state["stock_disabled"], "a correct handover must not be rolled back")
+        self.assertEqual(state["home"], NEW_HOME)
+        self.assertFalse(any("pm enable --user 0" in c for c in state["commands"]),
+                         "the stock launcher must not be re-enabled when our launcher is a HOME claimant")
+        self.assertIsNone(self.record())
 
 
 if __name__ == "__main__":

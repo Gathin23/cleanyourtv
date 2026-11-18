@@ -197,6 +197,20 @@ rollback_home() {
 # system_server (see examples/xiaomi-tv-a-pro-2026). So check where Home ended up, and put the
 # stock launcher back if it is not ours.
 HOME_NOW=$(query_home)
+# A second launcher (e.g. Projectivy at HOME priority 0) can keep claiming Home, so with no user
+# default resolve-activity answers with Android's chooser ("android") even though set-home-activity
+# succeeded. That is a correct handover, not a failure, as long as our launcher is a HOME claimant;
+# rolling back there undid a good state on a Haier MatrixTV EE (#4068). When the answer is the chooser,
+# check the claimants with the same idiom the initial detection uses, and keep the handover if ours is
+# among them; otherwise fall through to the rollback below.
+if [ "$HOME_NOW" = android ]; then
+  CLAIMANTS=$("$PY" -I ../tools/tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
+    | tr -d '\r' | grep -o '[A-Za-z0-9_.]*/' | tr -d / | sort -u)
+  if printf '%s\n' "$CLAIMANTS" | grep -qx com.gathin.tvhome; then
+    HOME_NOW=com.gathin.tvhome/chooser
+    echo "Home is Android's chooser; com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), handover kept."
+  fi
+fi
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
   *)
