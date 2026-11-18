@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- Only to fetch the chosen mosque's timetable from my-masjid.com. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Clean Your TV launcher, game_day (docs/modules.md): the next prayer under the clock. -->
+        <meta-data android:name="com.gathin.tvhome.games" android:value="com.cleanyourtv.masjidtimes.turns" />
+
+        <!-- Read-only: only the next prayer's name and time, which Home shows anyway. -->
+        <provider
+            android:name=".PrayerProvider"
+            android:authorities="com.cleanyourtv.masjidtimes.turns"
+            android:exported="true" />
+    </application>
+</manifest>

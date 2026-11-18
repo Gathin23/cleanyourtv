@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a crescent on deep green. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF0B2A1E" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFF2E6B8"
+        android:pathData="M170,40a50,50 0,1 0,40 80a40,40 0,1 1,-40 -80z" />
+</vector>

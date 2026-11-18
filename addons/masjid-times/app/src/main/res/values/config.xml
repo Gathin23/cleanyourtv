@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The mosque's id on my-masjid.com (the same list the My Masjid app uses). install.ps1 fills these in. -->
+    <string name="masjid_guid" translatable="false"></string>
+    <string name="masjid_name" translatable="false"></string>
+</resources>
