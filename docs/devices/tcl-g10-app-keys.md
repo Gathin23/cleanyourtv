@@ -107,6 +107,9 @@ buttons above. Mapping a working one (☰, Input) would do both.
 
 The same idea, reading the window manager's key lines with `READ_LOGS`, was noted for a BeyondTV set in
 [`tcl-beyondtv-rt2851.md`](tcl-beyondtv-rt2851.md). This is the first unit where it was built and used.
+A built version for Hisense firmware, which logs `interceptKeyTi keyCode=N down=true repeatCount=0` instead of
+`handleKeyBeforeQueueing`, is [Remote buttons](https://github.com/Abner97/remote-buttons) (tested on a Hisense
+65Q6N, Google TV 12), listed in [SHOWCASE.md](../../SHOWCASE.md). It does not parse TCL's lines yet.
 
 ## Limits
 

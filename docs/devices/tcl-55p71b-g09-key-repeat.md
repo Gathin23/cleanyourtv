@@ -320,6 +320,11 @@ you do.
   bound: an accessibility service that filters nothing reads the window manager's key log (`READ_LOGS`) and
   opens the app, and the system binds it again after each boot. See
   [`tcl-g10-app-keys.md`](tcl-g10-app-keys.md); it was not tried on this G09.
+  A ready-made one for Hisense sets that log `interceptKeyTi keyCode=N down=true repeatCount=0` is
+  [Remote buttons](https://github.com/Abner97/remote-buttons), its own repo listed in [SHOWCASE.md](../../SHOWCASE.md):
+  tested on a Hisense 65Q6N (`lushan`, Google TV 12), where the gear, YouTube, Prime Video, Disney+, Apps and
+  Live TV buttons opened their apps and held volume still ramped. It needs `READ_LOGS` over ADB, which lets it
+  read every app's log, so ask before installing it.
 
 - **Keep both with a listener you start by hand.** A script run by the `shell` user can answer the app
   buttons without any service bound, so the ramp stays; see "Both at once" below. It does not come back
