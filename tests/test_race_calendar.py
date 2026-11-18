@@ -3,6 +3,7 @@ import contextlib
 import datetime
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -81,6 +82,39 @@ class CalendarConfigTest(unittest.TestCase):
                 self.assertEqual(self.run_main(), 2)
                 self.urlopen.assert_not_called()
                 self.assertEqual(self.config.read_bytes(), data)
+
+    def test_the_calendar_config_stays_within_the_launchers_byte_limit(self):
+        calendar = [{"round": 1, "name": "Example Grand Prix", "place": "",
+                     "sessions": [{"name": "RACE", "start": "2026-01-04T14:00:00Z"}]}]
+        for size, newline in ((65535, os.linesep), (65536, os.linesep),
+                              (65537, os.linesep), (65537, "\r\n")):
+            with self.subTest(size=size, newline=newline):
+                data = {"greeting_name": "写" * 100, "race_calendar": calendar}
+                text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+                data["greeting_name"] += "x" * (size - len(text.replace("\n", newline).encode("utf-8")))
+                original = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+                self.assertLessEqual(len(original), 65536)
+                self.config.write_bytes(original)
+                self.urlopen.reset_mock()
+                with mock.patch.object(race_calendar.os, "linesep", newline):
+                    code = self.run_main()
+                self.urlopen.assert_called_once()
+                if size > 65536:
+                    self.assertEqual(code, 2)
+                    self.assertEqual(self.config.read_bytes(), original)
+                    self.assertEqual(list(self.theme.iterdir()), [self.config])
+                else:
+                    self.assertEqual(code, 0)
+                    self.assertEqual(len(self.config.read_bytes()), size)
+                    self.assertEqual(json.loads(self.config.read_bytes()), data)
+
+    def test_an_oversize_calendar_does_not_start_a_config(self):
+        payload = json.loads(RESPONSE)
+        payload["MRData"]["RaceTable"]["Races"][0]["raceName"] = "写" * 22000
+        self.urlopen.side_effect = lambda *args, **kwargs: io.BytesIO(json.dumps(payload).encode("utf-8"))
+        self.assertEqual(self.run_main(), 2)
+        self.assertFalse(self.config.exists())
+        self.assertEqual(list(self.theme.iterdir()), [])
 
 
 class AThemeFolderTheConsoleCannotEncode(unittest.TestCase):

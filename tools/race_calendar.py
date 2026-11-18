@@ -11,6 +11,7 @@ community successor to the Ergast API: no key, no account. Run it again when F1 
 season starts. Races that are already over are left out. The theme folder has to exist (config.json in it is
 created if it is not there yet), and its name cannot be empty: `race_calendar.py "$THEME"` with the variable
 unset would otherwise write the calendar into the directory you ran it from.
+The resulting UTF-8 config must fit the launcher's 64 KB read limit; an update over it leaves the theme alone.
 
 A session name is a contract with the launcher as well: RaceWeekend.java answers each name `SESSIONS` writes
 in its two switches and falls back to the raw name for one it does not know, so a session Jolpica starts
@@ -294,6 +295,11 @@ def main():
         return 1
     theme["race_calendar"] = races
     text = json.dumps(theme, indent=2, ensure_ascii=False) + "\n"
+    size = len(text.replace("\n", os.linesep).encode("utf-8"))
+    # Config.read(File) ignores the whole overlay above this limit, not just the calendar.
+    if size > 64 * 1024:
+        return refuse(f"{config} would be {size} bytes: the launcher ignores a config larger than 64 KB "
+                      f"(65536 bytes). Nothing was written.")
     # Stage beside the actual target: a failed write must leave the theme alone, and a symlinked
     # config.json must still update its target without replacing the link itself.
     published = False
