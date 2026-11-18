@@ -21,10 +21,12 @@ no .pftrace in it names the folder.
 """
 import argparse
 import colorsys
+import errno
 import hashlib
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -214,7 +216,9 @@ def output_path(value):
     there with FileNotFoundError - each a traceback with exit 1, thrown after Perfetto's query engine has
     been started and every trace read. 1 is also what a run that drew no chart returns, so the reader
     cannot tell a typo from a chart that failed. Refused here it is an argument error, before anything is
-    read; a suffixless file cannot be saved at all, so it is refused rather than guessed at.
+    read; a suffixless file cannot be saved at all, so it is refused rather than guessed at. A folder the
+    filesystem will not stat is refused with its own reason as well: "create it first" is an instruction
+    nobody can carry out for a folder that is there, or for a name no filesystem will take.
     """
     if not value:
         raise argparse.ArgumentTypeError("--out is empty: name the PNG to write, e.g. --out chart.png")
@@ -224,10 +228,23 @@ def output_path(value):
     if not os.path.splitext(value)[1]:
         raise argparse.ArgumentTypeError(f"{value} has no extension, so the format is unknown: name it {value}.png")
     folder = os.path.dirname(value) or "."
-    if os.path.exists(folder) and not os.path.isdir(folder):
-        raise argparse.ArgumentTypeError(f"{value}: {folder} is a file, not a folder")
-    if not os.path.isdir(folder):
+    # `os.path.exists()` and `os.path.isdir()` answer every OSError with False, so a folder this
+    # filesystem refuses to stat - one this user may not traverse, or a name longer than NAME_MAX -
+    # read as "not there yet", and the reader was told to create it: EACCES on a folder that is there,
+    # and a name nothing can create. One os.stat tells those apart, and the refusal keeps the system's
+    # own words, as tools/trace.py's --out and tools/gen_tables.py's --root already do.
+    try:
+        folder_mode = os.stat(folder).st_mode
+    except OSError as e:
+        if e.errno not in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            raise argparse.ArgumentTypeError(
+                f"{value}: cannot be looked at ({e.strerror or e}), so no PNG could be written there: "
+                f"name the file in a folder this run can open") from e
+        folder_mode = None
+    if folder_mode is None:
         raise argparse.ArgumentTypeError(f"{value}: there is no folder {folder} - create it first")
+    if not stat.S_ISDIR(folder_mode):
+        raise argparse.ArgumentTypeError(f"{value}: {folder} is a file, not a folder")
     if os.path.splitext(value)[1].lower() != ".png":
         raise argparse.ArgumentTypeError(f"{value}: name the PNG with a .png extension")
     return value
