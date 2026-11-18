@@ -70,7 +70,7 @@
 #   com.android.tv.feedbackconsent
 #   com.google.android.tungsten.setupwraith
 #   com.google.android.apps.tv.dreamx
-# The three entries marked [43S5K ONLY] below were not disabled on the 32V5C. Comment them out before
+# The entries marked [43S5K ONLY] below were not disabled on the 32V5C. Comment them out before
 # applying this file to a 32V5C; they remain part of the tested 43S5K set.
 #
 # Another G13 unit on AU10 (G13_2K_GB, UKN2.241110.001 AU10, mt5867, 954 MB). Status: applied 2026-10-27
