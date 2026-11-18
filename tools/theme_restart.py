@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Restart Home after a theme push and verify its previously enabled key helpers (#994).
 
+The launcher package is read from LAUNCHER_PACKAGE (tools/theme.sh and themes pushed by hand set it), and
+defaults to com.gathin.tvhome. On Xiaomi China firmware the launcher has to be installed under the
+applicationId com.ts.launcher for HOME to move to it, and a restart naming the default then restarts
+nothing while reporting that it did.
+
 Used by theme.sh and theme.ps1, and it takes no arguments: --help prints this text (no tools/venv, no
 TV_HOST and no TV needed for it), and a word it does not take is refused before the TV is asked anything.
 
@@ -16,7 +21,7 @@ import shlex
 import sys
 import time
 
-PACKAGE = "com.gathin.tvhome"
+PACKAGE = os.environ.get("LAUNCHER_PACKAGE") or "com.gathin.tvhome"
 SERVICES = "enabled_accessibility_services"
 FLAG = "accessibility_enabled"
 ACTION = "android.accessibilityservice.AccessibilityService"
@@ -35,6 +40,23 @@ def shell(dev, command):
         raise RuntimeError("TV refused the command")
     return text
 
+
+def component(dev, user):
+    """The launcher's own MAIN activity, as package/class, for `am start -n`.
+
+    Ask the TV rather than spell it PACKAGE+"/.MainActivity": the class comes from the Java package the
+    launcher was written under (com.gathin.tvhome.MainActivity), and an applicationId on a firmware
+    allowlist (com.ts.launcher) differs from it, so the shorthand expands to a class that does not exist.
+    The LEANBACK_LAUNCHER entry is the one a TV launcher always declares; a TV that answers nothing keeps
+    the old spelling, which is right when both names are the same.
+    """
+    answer = shell(dev, "cmd package resolve-activity --brief -a android.intent.action.MAIN "
+                        "-c android.intent.category.LEANBACK_LAUNCHER " + PACKAGE)
+    for line in reversed(answer.splitlines()):
+        line = line.strip()
+        if re.fullmatch(r"[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+", line) and line.startswith(PACKAGE + "/"):
+            return line
+    return PACKAGE + "/.MainActivity"
 
 def components(value):
     if value in ("", "null"):
@@ -117,7 +139,13 @@ def restart(dev, pause=time.sleep):
         if home.splitlines()[-1:] and home.splitlines()[-1].startswith(PACKAGE + "/"):
             start = "-a android.intent.action.MAIN -c android.intent.category.HOME"
         else:
-            start = "-n " + PACKAGE + "/.MainActivity"
+            # Ask the TV for the component instead of assuming PACKAGE/.MainActivity: the class name is the
+            # Java package the launcher was written under (com.gathin.tvhome.MainActivity), and some firmware
+            # only hands HOME to an allowlisted applicationId (com.ts.launcher), so the shorthand
+            # "com.ts.launcher/.MainActivity" expands to com.ts.launcher.MainActivity and matches nothing
+            # ("Error type 3: Activity class ... does not exist"). A component the TV does not name falls back
+            # to the default spelling, which is right whenever the two names are the same.
+            start = "-n " + component(dev, user)
         shell(dev, f"am start --user {user} {start}")
         if not helpers:
             return

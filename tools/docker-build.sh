@@ -4,6 +4,10 @@
 #   tools/docker-build.sh                              the launcher, assembleRelease
 #   tools/docker-build.sh addons/weather         an add-on
 #   tools/docker-build.sh launcher testReleaseUnitTest lintRelease assembleRelease
+#   tools/docker-build.sh launcher assembleRelease -PlauncherApplicationId=com.ts.launcher
+# The remaining words go to Gradle as they are, so -P flags work here. Some firmware only hands HOME to a
+# launcher installed under a name on its allowlist (Xiaomi China sets on Android 14 want com.ts.launcher;
+# see launcher/build-and-install.sh, which picks the applicationId for you and passes it through).
 # The APK lands where a native build puts it (<project>/app/build/outputs/apk/release/).
 # Install the launcher with: SKIP_BUILD=1 TV_HOST=<tv ip> launcher/build-and-install.sh
 # Guide, signing key included: tools/docker-build.md

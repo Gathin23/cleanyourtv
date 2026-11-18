@@ -85,12 +85,42 @@ PY=venv/bin/python
 [ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt." \
   "Nothing was sent to the TV." >&2; exit 2; }
 export MSYS_NO_PATHCONV=1
-PKG=com.gathin.tvhome
+PKG="${LAUNCHER_PACKAGE:-com.gathin.tvhome}"
 DIR=/sdcard/Android/data/$PKG/files
 # A unique marker lets the launcher clear on-TV layout/motion choices after every theme push,
 # including a push of identical config.json bytes and --reset.
 REVISION="$("$PY" -I -c 'import uuid; print(uuid.uuid4().hex)')"
 tv() { "$PY" -I tv.py "$@"; }
+# Which package the theme is pushed to. The launcher is usually com.gathin.tvhome, but some firmware only
+# hands HOME to a launcher installed under the applicationId on its allowlist: Xiaomi China sets on
+# Android 14 want com.ts.launcher (docs/devices/xiaomi-mitv-mftr0-debloat-home.md). This script used to
+# hardcode the default, so on those sets the files went into a directory that launcher never reads and the
+# restart named a package that is not installed: the push reported success while the TV showed the old
+# theme, a silent failure that reads like a theme the launcher rejected.
+# LAUNCHER_PACKAGE=<pkg> names it outright. Otherwise ask the TV which package owns Home, and keep the
+# default when the TV cannot say: a push is still worth trying on an unrecognised set, and the restart
+# reports plainly when Home did not come back.
+# Called once the command line is known to be worth running, so a refused one still sends nothing to the TV
+# (`theme.sh --help`, a folder with no config.json, a config.json the launcher would drop): the paths and the
+# provider URI below were built from the default and are rebuilt here.
+resolve_package() {
+  local answer
+  if [ -z "${LAUNCHER_PACKAGE:-}" ]; then
+    # resolve-activity answers the component that answers HOME now, which is the launcher the theme belongs
+    # to. It prints the component on the last line ("com.ts.launcher/com.gathin.tvhome.MainActivity", or
+    # "android" for the chooser). A package that is neither name keeps the default: a third-party launcher at
+    # Home does not serve this launcher's ThemeProvider, so a push addressed to it would be meaningless.
+    answer="$(tv 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
+      2>/dev/null | tr -d '\r' | tail -n 1 || true)"
+    case "${answer%%/*}" in
+      com.gathin.tvhome|com.ts.launcher) PKG="${answer%%/*}" ;;
+    esac
+  fi
+  DIR=/sdcard/Android/data/$PKG/files
+  URI=content://$PKG.theme
+  CLEAR_WALLPAPERS="rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP][eE][gG] $DIR/wallpapers/*.[pP][nN][gG] $DIR/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null"
+  return 0
+}
 # One shared recovery path verifies the helpers after Home restarts.
 
 
@@ -135,7 +165,9 @@ CLEAR_WALLPAPERS="rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP
 # says where the theme stands; the word in $1 is the only thing the two paths say differently.
 restart_home() {
   local status=0
-  "$PY" -I theme_restart.py || status=$?
+  # theme_restart.py restarts the package it is told about, which is the one just pushed to (com.ts.launcher
+  # on firmware that only hands HOME to an allowlisted identity).
+  LAUNCHER_PACKAGE="$PKG" "$PY" -I theme_restart.py || status=$?
   if [ "$status" -ne 0 ]; then
     echo "Home did not restart after $1, so the launcher keeps the screen it has until it starts again." \
       "The TV is already in the state you asked for: the next Home start picks it up." >&2
@@ -160,6 +192,7 @@ put_on() {   # put $1, after the optional command $2 in the same shell call
   fi
 }
 if [ "${1:-}" = --reset ]; then
+  resolve_package
   tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $CLEAR_WALLPAPERS" >/dev/null
   put_on theme_revision "printf '%s' '$REVISION' > $TMP-theme_revision"
   restart_home "the theme was removed"
@@ -216,6 +249,9 @@ if [ -d "$THEME/wallpapers" ]; then
   done
 fi
 
+# Every check passed, so from here the run reaches the TV: resolve the launcher package first, since the
+# directory, the provider URI and the restart below all depend on it.
+resolve_package
 tv "mkdir -p $DIR" >/dev/null 2>&1 || true
 tv --push "$THEME/config.json" "$TMP-config.json" >/dev/null
 put_on config.json
