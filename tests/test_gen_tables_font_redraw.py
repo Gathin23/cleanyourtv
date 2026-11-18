@@ -45,6 +45,9 @@ with a path in it is a command, a bare name is not - and it holds whichever Pyth
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import contextlib
+import errno
+import io
 import os
 import re
 import shutil
@@ -53,10 +56,12 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tests"))
 sys.path.insert(0, str(ROOT / "tools"))
+import gen_tables  # noqa: E402  (main(), judged in-process for an error this filesystem may not give)
 import test_gen_tables as helper  # noqa: E402  (its tree() writes the three files the script rewrites)
 from test_card_font_argument import HAVE_PIL, LAUNCHER_FONT, shadow_dir  # noqa: E402
 
@@ -440,6 +445,75 @@ class OrderTest(unittest.TestCase):
         self.assertIn("1 out of date", doc, "the exit-status line is gone")
         self.assertIn("pictures", doc, "the docstring does not say what exit 1 also means")
         self.assertIn("the tables are written", doc, "the docstring does not say what a failed redraw left")
+
+
+class FontNameTest(unittest.TestCase):
+    """A --font the filesystem will not look at is refused at 2 on every version, and says why.
+
+    `Path.is_file()` answered that word in two ways: up to Python 3.13 it re-raised the OSError, so the run
+    ended in a traceback at 1 - the code --check keeps for tables that are out of date - and 3.14 swallowed
+    every OSError and answered False, so the same word printed "not in this repo" for a font that is there.
+    The check now asks os.stat once, which is the shape --root's own refusal already had (#4032), and these
+    are the two cases that one carries: a real over-long name, and the same branch with the OSError injected
+    in-process for the filesystems that accept such a name.
+    """
+
+    def test_a_font_name_the_filesystem_refuses_is_named_and_writes_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            name = Path(tmp) / ("f" * 300)
+            try:
+                os.stat(name)
+            except OSError:
+                pass
+            else:
+                self.skipTest("this filesystem stats a 300-character name")
+            before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+            done = run(root, name)
+            after = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+            self.assertEqual(done.returncode, 2, done.stderr)
+            self.assertEqual(done.stdout, "")
+            self.assertIn(f"--font {str(name)!r}", done.stderr)
+            self.assertIn("cannot be looked at", done.stderr)
+            self.assertIn("Nothing was read or written", done.stderr)
+            self.assertNotIn("Traceback", done.stderr)
+            self.assertEqual(after, before, "a font it could not look at must not publish the tables")
+
+    def test_an_os_error_from_the_font_check_is_the_same_refusal(self):
+        # The same branch where a 300-character name is acceptable: a font under a folder this user may not
+        # traverse answers EACCES, injected where the check asks rather than made with a real permission bit.
+        refused = PermissionError(errno.EACCES, "Permission denied")
+        real_stat = os.stat
+
+        def stat(path, *args, **kwargs):
+            if str(path) == "Fredoka.ttf":
+                raise refused
+            return real_stat(path, *args, **kwargs)
+
+        stderr = io.StringIO()
+        with mock.patch.object(gen_tables.os, "stat", side_effect=stat), contextlib.redirect_stderr(stderr):
+            with self.assertRaises(SystemExit) as caught:
+                gen_tables.main(["--root", str(ROOT), "--font", "Fredoka.ttf"])
+        self.assertEqual(caught.exception.code, 2)
+        line = stderr.getvalue()
+        self.assertIn("--font 'Fredoka.ttf'", line)
+        self.assertIn("Permission denied", line)
+        self.assertIn("Nothing was read or written", line)
+        self.assertNotIn("Traceback", line)
+
+    def test_a_font_that_is_not_there_or_is_a_folder_keeps_its_own_sentence(self):
+        # The two ordinary ways a path is not a font are not the refusal above: they keep the sentence that
+        # sends the reader after the Fredoka TTF, which is what a typo deserves.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            for name, sentence in ((Path(tmp) / "Fredoka.ttf", "is not in this repo"), (Path(tmp), "cannot open the font at")):
+                with self.subTest(font=str(name)):
+                    done = run(root, name)
+                    self.assertEqual(done.returncode, 2, done.stderr)
+                    self.assertIn("cannot open the font at", done.stderr)
+                    self.assertIn(sentence, done.stderr)
+                    self.assertNotIn("cannot be looked at", done.stderr)
+                    self.assertNotIn("Traceback", done.stderr)
 
 
 if __name__ == "__main__":
