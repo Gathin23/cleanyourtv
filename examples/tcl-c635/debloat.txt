@@ -11,7 +11,8 @@
 #
 # Stock launcher: com.google.android.apps.tv.launcherx (Google TV launcher), kept enabled as
 #   fallback. Installing this repo's launcher works; the Google TV default-home switch remains
-#   a manual pick in Settings (set-home-activity does not stick on this Android TV build).
+#   a manual pick in Settings (set-home-activity did not stick on this C635 unit; the second unit's
+#   notes below are where it persisted across reboots, with setupwraith disabled alongside launcherx).
 # Live TV app: com.tcl.tv, with com.tcl.tvinput for the tuner and the HDMI inputs; keep both.
 #
 # Tested and verified on a real TCL C635 unit (Brazil):
