@@ -9,6 +9,13 @@
 # below with a "second unit" comment. Applied there on 2026-11-01 in six batches with a screenshot after
 # each, then two reboots: nothing came back, Home, HDMI, Wi-Fi and the remote kept working, with the Clean
 # Your TV launcher as Home. Kept there: Prime Video, HBO Max and the Hisense browser.
+# Third unit: Hisense 43A7N (US market), model string "SmartTV 4K", device lushan (product lushan-NF), board
+# his9603 / platform merak, Google TV 12, firmware STT2.230929.001.10901, security patch 2026-09-05, en-US.
+# Applied on 2026-11-16 in five batches with a screenshot after each, then two reboots: nothing came back
+# except the Assistant (see below), Home, the Inputs menu, Wi-Fi, AirPlay and every remote button kept working,
+# with the Clean Your TV launcher as Home. Kept there: Pluto TV. Off there as well: DLNA and Miracast.
+# com.mediatek.tis and com.mediatek.dtv.tvinput.isdbtuner were already disabled from the factory on that
+# unit; nothing here touches them.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-smarttv-4k-ffm-lushan/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-smarttv-4k-ffm-lushan/debloat.txt com.google.android.apps.tv.launcherx
@@ -24,6 +31,9 @@
 # mirroring (Chromecast, AirPlay, Miracast, DLNA), the OTA updaters, Netflix, YouTube, Spotify, Twitch.
 # Never disabled: com.hisense.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.aiot. The huangshan FFM
 # list notes that disabling them sent that set to Android Recovery.
+# Google Assistant cannot be kept off on this board: com.vt.tv.smartsense turns com.google.android.katniss
+# back on at every boot (logcat: "StoreModeManager: katniss is disable,need force enable" from the smartsense
+# process). The third unit disabled it, and it was enabled again after the next reboot. Leave it out of the list.
 
 # Hisense telemetry
 com.vt.tv.evservice                          # viewing-data (ACR) service
@@ -78,6 +88,9 @@ com.vt.tv.protector
 # network and takes the TV off Wi-Fi and ADB. Needs FORCE_SETUPWRAITH=1 to pass disable.sh's Wi-Fi guard.
 # On the second unit the connected network was owned by android.uid.system and only an older saved network
 # by setupwraith; that one was deleted, the TV stayed on Wi-Fi and ADB.
+# On the third unit the same was true, and disable.sh's guard refused anyway because of the older network.
+# That network was out of range, so Settings did not list it to forget; `cmd wifi list-networks` gave its id
+# and `cmd wifi forget-network <id>` removed it, after which the guard passed without FORCE_SETUPWRAITH.
 com.google.android.tungsten.setupwraith
 
 # Not a disable, but worth recording for this remote, for the launcher's config.xml app_keys (find
@@ -93,3 +106,5 @@ com.google.android.tungsten.setupwraith
 # app_keys scan:469/468/418 all four worked on the real remote; Netflix, Input and the mic work without a
 # helper. Measured there: held volume up ramps with no helper and steps once per press with HomeKeyService
 # alone bound. The owner kept the buttons.
+# Third unit (43A7N): YouTube, Netflix, Input, the gear and the other app buttons all worked on the real remote
+# with launcherx disabled and no key helper enabled.
