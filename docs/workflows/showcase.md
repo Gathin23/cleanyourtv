@@ -17,6 +17,8 @@
    number ("these lines start with '|' but are not in a table, so GitHub renders them as text"). The same
    check holds every row to the four cells the header names - the project link first, then what it is, the
    TV or platform, and the author link last - so a row pasted in with three cells stops the suite as well.
+   A fork goes under the one of Forks' four `###` groups that fits best (Looks and restyles, Added
+   features, Made for one TV or brand, Ports to older Android), at the end of that group's table.
 2. Bump the count by one everywhere it is stated: `SHOWCASE.md` opens with an `N projects so far.` line,
    and the "Built something on top?" row carries the same number on seven translated front pages -
    `README.md` ("... projects already live") and `README.pt-BR.md` ("que já reúne ... projetos") spell it
