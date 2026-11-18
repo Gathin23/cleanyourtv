@@ -107,8 +107,9 @@ class CardPicturesTest(unittest.TestCase):
         for text in wanted:
             self.assertIn(text, done.stderr)
 
-    def card(self, out=None):
-        return run_without_pillow([str(CARD), str(LAUNCHER_FONT), str(out or self.out)], self.cwd, self.shadow)
+    def card(self, out=None, halloween=False):
+        return run_without_pillow([str(CARD), *(["--halloween"] if halloween else []),
+                                   str(LAUNCHER_FONT), str(out or self.out)], self.cwd, self.shadow)
 
     def featured(self, out=None):
         out = out or Path(self._tmp.name) / "out.png"
@@ -129,6 +130,40 @@ class CardPicturesTest(unittest.TestCase):
         self.touch("docs/stock-home.jpg", "docs/new-home.jpg", "docs/stats.png")
         done = self.card()
         self.assert_refused(done, "docs/featured.png", "tools/readme_featured.py")
+
+    def test_halloween_needs_only_its_selected_pictures(self):
+        self.touch("docs/stock-home.jpg", "docs/new-home-halloween.jpg",
+                   "docs/stats-halloween.png", "docs/featured.png")
+        for unused in ("missing", "folders"):
+            with self.subTest(unused=unused):
+                if unused == "folders":
+                    for name in ("docs/new-home.jpg", "docs/stats.png"):
+                        (self.cwd / name).mkdir()
+                done = self.card(halloween=True)
+                self.assertEqual(done.returncode, 1, done.stderr)
+                self.assertIn("needs Pillow", done.stderr)
+                self.assertFalse(self.out.exists())
+
+    def test_missing_halloween_stats_names_its_own_generator(self):
+        self.touch("docs/stock-home.jpg", "docs/new-home-halloween.jpg", "docs/featured.png")
+        done = self.card(halloween=True)
+        self.assert_refused(done, "docs/stats-halloween.png", "tools/readme_stats.py --halloween")
+
+    @unittest.skipUnless(HAVE_PIL, "draws the card with Pillow, which tools/venv has not")
+    def test_halloween_renders_without_normal_only_pictures(self):
+        from PIL import Image
+        names = ("docs/stock-home.jpg", "docs/new-home-halloween.jpg",
+                 "docs/stats-halloween.png", "docs/featured.png")
+        for name in names:
+            shutil.copy(DOCS / Path(name).name, self.cwd / name)
+        before = {name: hashlib.sha256((self.cwd / name).read_bytes()).digest() for name in names}
+        done = run_plain([str(CARD), "--halloween", str(LAUNCHER_FONT), str(self.out)], self.cwd)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        with Image.open(self.out) as picture:
+            self.assertEqual(picture.format, "JPEG")
+            self.assertEqual(picture.width, 1600)
+        self.assertEqual(before, {name: hashlib.sha256((self.cwd / name).read_bytes()).digest()
+                                  for name in names})
 
     def test_a_picture_that_is_a_folder_is_named_as_one(self):
         self.touch("docs/stock-home.jpg", "docs/new-home.jpg", "docs/featured.png")
