@@ -82,7 +82,7 @@ final class Prints {
         screenH = context.getResources().getDisplayMetrics().heightPixels;
         File dir = context.getExternalFilesDir(null);
         folder = dir == null ? null : new File(dir, Media.PICTURES);
-        interval = Media.seconds(Photos.read(dir == null ? null : new File(dir, Media.SECONDS))) * 1000L;
+        interval = Options.load(context).secondsPerPicture * 1000L;
         stage.setClipChildren(false);
         LayoutInflater inflater = LayoutInflater.from(context);
         float shadowRoom = context.getResources().getDimensionPixelSize(R.dimen.print_shadow_room);
