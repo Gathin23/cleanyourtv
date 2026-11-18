@@ -52,3 +52,43 @@ reboot, and Home stayed on `com.gathin.tvhome`. `com.cltv.fast` was enabled on t
 - With `com.google.android.backdrop` disabled, `screensaver_components` still pointed at it, so it was set to the
   launcher's Clock as in `docs/launcher.md`. The screensaver was not watched starting.
 - Not checked: several days of use, Chromecast, or a firmware update.
+
+## Also reported: CHiQ AI PONT (`DVB95CQ`, `longshan`)
+
+A third badge of the same board and firmware, from one owner report: the Clean Your TV app's own TV report on
+2026-11-18 (app 0.4.8, full), which read the set and applied its own profile. Nothing from this folder's list
+was applied from this repository, so the package decisions here are still the DEXP and Hyundai units' alone.
+
+| Field | Observed value |
+|---|---|
+| Retail model | `CHiQ AIPOINT`, owner-supplied |
+| Brand / manufacturer | `CHiQ` / `Changhong` |
+| Android model / device | `AI PONT` / `longshan` |
+| Product | `DVB95CQ` |
+| Android / API | `14` / `34` |
+| Build fingerprint | `CHiQ/DVB95CQ/longshan:14/UKNV.260518.001/15441556:user/release-keys` |
+| System apps read | 149 |
+| Home it came with | Android TV (Leanback), Play services present |
+
+### What the app did
+
+- It matched `chiq-gtvu65`, another product (`dangni`, Google TV 14), so its choices are not this folder's.
+- It switched off `com.android.adservices.api`, `com.android.tv.feedbackconsent`, `com.google.android.feedback`,
+  `com.homwee.help` and `com.homwee.store`. Four of the five are active lines in this folder's list;
+  `com.android.adservices.api` is not, though other folders in `examples/` do disable it.
+- A second probe about four minutes later found nothing left to switch off. That is the same session, with no
+  reboot in between.
+
+### Home
+
+The app answered `Home switch: blocked UNKNOWN_HOME`, and the set stayed on
+`com.google.android.tvlauncher/.MainActivity`: the claimants it read were that Home at priority 2 and
+`com.android.tv.settings/.system.FallbackHome` at -1000. That is the app's own answer about switching Home, not
+a measurement of the handover in this repository - the stock Home is the same `com.google.android.tvlauncher`
+the Hyundai unit above handed over from, and `launcher/build-and-install.sh` only disables it once the new
+launcher is confirmed as Home. That was not run here.
+
+### Not checked
+
+No package from this repository, no launcher install and no reboot, so this set is not lived-with evidence for
+the list. No remote, input, casting or standby check; the handover above was not tried.
