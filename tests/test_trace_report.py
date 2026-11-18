@@ -16,6 +16,7 @@ does not have to ask which ones are left. `TracesAreClosedTest` holds both halve
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import contextlib
+import errno
 import importlib.util
 import io
 import json
@@ -382,6 +383,50 @@ class InputSetsTest(unittest.TestCase):
             self.skipTest(f"cannot create {kind}: {error}")
         return target
 
+    def test_an_unreadable_folder_cannot_be_omitted_from_either_input_set(self):
+        denied = self.folder / "unreadable"
+        self.trace(denied, 1, 5000)
+        scan = os.scandir
+        for number in (errno.EACCES, errno.EIO):
+            for args in ([self.before, denied], [self.before, "--vs", self.after, denied]):
+                with self.subTest(errno=number, args=args):
+                    def refused(path):
+                        if os.fspath(path) == str(denied):
+                            raise OSError(number, os.strerror(number), str(denied))
+                        return scan(path)
+
+                    with mock.patch.object(report.os, "scandir", refused):
+                        text, code, opener = self.run_report(args)
+                    self.assertIsNotNone(code, "a partial input set was reported as complete")
+                    self.assertIn(str(denied), code)
+                    self.assertIn(os.strerror(number), code)
+                    self.assertEqual(text, "")
+                    opener.assert_not_called()
+                    self.assertEqual((denied / "home-1.pftrace").read_text(), "5000")
+
+    @unittest.skipUnless(os.name == "posix", "needs POSIX directory permissions")
+    def test_real_directory_read_denial_stops_before_any_trace_is_opened(self):
+        denied = self.folder / "unreadable"
+        trace = self.trace(denied, 1, 5000)
+        mode = denied.stat().st_mode & 0o777
+        denied.chmod(0)
+        try:
+            try:
+                list(denied.iterdir())
+            except PermissionError:
+                pass
+            else:
+                self.skipTest("this user can read the directory without its read permission")
+            text, code, opener = self.run_report([self.before, denied])
+        finally:
+            denied.chmod(mode)
+        self.assertIsNotNone(code, "the inaccessible folder was silently left out")
+        self.assertIn(str(denied), code)
+        self.assertIn("Permission denied", code)
+        self.assertEqual(text, "")
+        opener.assert_not_called()
+        self.assertEqual(trace.read_text(), "5000")
+
     def test_overlapping_inputs_keep_first_spelling_and_numeric_run_order(self):
         first = self.before / "home-2.pftrace"
         args = [first, self.before, self.before, self.before / "home-1.pftrace"]
@@ -542,6 +587,13 @@ class InputSetsTest(unittest.TestCase):
 
 
 class FilesTest(unittest.TestCase):
+    def test_folder_expansion_keeps_hidden_traces_and_other_suffixes_out(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in ("home-2.pftrace", ".home-1.pftrace", "home-1.json", "home-1.pftrace"):
+                Path(tmp, name).write_bytes(b"")
+            self.assertEqual(report.expand([tmp]),
+                             [os.path.join(tmp, name) for name in ("home-1.pftrace", "home-2.pftrace")])
+
     def test_folders_expand_in_run_order(self):
         with tempfile.TemporaryDirectory() as tmp:
             for n in (1, 2, 10):
