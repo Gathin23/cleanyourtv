@@ -20,10 +20,10 @@
 #   com.tcl.gamebar        Game mode for consoles, kept by the owner (a PS5 on HDMI). With Batch 7 off, Game Master
 #                          still turned on for the PS5 (ALLM) and the game bar opened over it.
 #
-# Owner keeps: Chromecast, AirPlay, Miracast, Google Assistant, YouTube, YouTube Music, Stremio, Nuvio. So these,
-# off in debloat.txt by its first owner's choice, stay on here: com.google.android.apps.mediashell (Chromecast),
-# com.tcl.airplay2, com.mediatek.AirplayAPK and com.mediatek.airplaydaemon (AirPlay), com.tcl.miracast and
-# com.google.android.youtube.tvmusic. Samsung's Smart View mirrors through com.tcl.miracast (its SinkActivity,
+# Owner keeps: Chromecast, AirPlay, Miracast, Google Assistant, YouTube, Stremio, Nuvio. So these, off in
+# debloat.txt by its first owner's choice, stay on here: com.google.android.apps.mediashell (Chromecast),
+# com.tcl.airplay2, com.mediatek.AirplayAPK and com.mediatek.airplaydaemon (AirPlay), and com.tcl.miracast.
+# Samsung's Smart View mirrors through com.tcl.miracast (its SinkActivity,
 # over Wi-Fi Direct): switched off for a test, the TV was gone from Smart View, and Google Home's "Cast my screen"
 # did not mirror instead.
 # Already off on this unit before the list, and not in it: com.netflix.ninja (Netflix),
@@ -76,6 +76,8 @@ com.google.android.play.games
 com.tcl.ui_mediaCenter                 # USB media player
 com.tcl.gallery                        # USB photo gallery (not the screensaver: Google's is dreamx, Batch 6)
 com.tcl.t_solo                         # Bluetooth "listen alone"
+com.google.android.youtube.tvmusic     # YouTube Music, as in debloat.txt: on this firmware it only opened the YouTube
+                                       #   app's Music tab
 # com.tcl.browser                      # TCL's browser, the TV's only one: off on this unit, left as a comment here
                                        #   (apps' own web pages use Google's WebView, which stays)
 
