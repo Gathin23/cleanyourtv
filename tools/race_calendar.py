@@ -207,11 +207,20 @@ def main():
     # Three shapes of that file are refused here, before the fetch: a path that is not a file (a stray
     # copy of the folder), text that is not JSON as UTF-8, and JSON that is not an object - `[1, 2]`
     # parsed fine and then met `theme["race_calendar"]` with a TypeError.
-    if config.exists() and not config.is_file():
-        return refuse(f"{config} is not a file. Nothing was written: a theme's config.json is one JSON "
-                      f"object, so move whatever sits at that path aside and run it again.")
     try:
-        theme = json.loads(config.read_text(encoding="utf-8-sig")) if config.is_file() else {}
+        # Ask stat directly: on Python 3.14 exists()/is_file() hide permission and I/O errors,
+        # treating an unreadable config as missing and letting the fetch start. Keep the same
+        # missing-path cases as stat_folder(), but name every other refusal before going online.
+        try:
+            mode = config.stat().st_mode
+        except OSError as e:
+            if e.errno not in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+                raise
+            mode = None
+        if mode is not None and not stat.S_ISREG(mode):
+            return refuse(f"{config} is not a file. Nothing was written: a theme's config.json is one JSON "
+                          f"object, so move whatever sits at that path aside and run it again.")
+        theme = json.loads(config.read_text(encoding="utf-8-sig")) if mode is not None else {}
     except ValueError as e:
         return refuse(f"{config} is not the JSON a theme's config.json has to be, as UTF-8 ({e}). Nothing "
                       f"was written: fix the file - a trailing comma or a missing brace is the usual cause "
