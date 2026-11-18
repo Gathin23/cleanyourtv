@@ -21,6 +21,7 @@ the check, and the engine is replaced by a mock, so what these tests read is the
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import contextlib
+import errno
 import importlib.util
 import io
 import os
@@ -65,6 +66,19 @@ class TracePathTest(unittest.TestCase):
         path = self.folder / name
         path.write_bytes(b"")
         return str(path)
+
+    def test_a_folder_read_error_is_named_before_the_engine_starts(self):
+        folder = self.folder / "unreadable"
+        folder.mkdir()
+        for number in (errno.EACCES, errno.EIO):
+            with self.subTest(errno=number), \
+                    mock.patch.object(trace_report.os, "scandir",
+                                      side_effect=OSError(number, os.strerror(number), str(folder))):
+                code, _, opener = self.run_main([str(folder), "--out", self.out])
+                self.assertIn(str(folder), code)
+                self.assertIn(os.strerror(number), code)
+                opener.assert_not_called()
+                self.assertFalse(Path(self.out).exists())
 
     def test_output_cannot_replace_a_trace_by_path_or_link(self):
         for kind in ("direct", "symlink", "hardlink"):

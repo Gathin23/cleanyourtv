@@ -19,7 +19,7 @@ inside that, and the frames drawn and deadlines missed in the 1.5 s after. For n
 frame times and missed deadlines over the whole recording.
 """
 import argparse
-import glob
+import fnmatch
 import json
 import math
 import os
@@ -167,10 +167,18 @@ def scenario_of(path):
 
 
 def expand(items):
+    """Expand folders in run order, refusing a read error instead of reporting a partial set."""
     paths = []
     for item in items:
         if os.path.isdir(item):
-            paths += sorted(glob.glob(os.path.join(glob.escape(item), "*.pftrace")), key=_run_order)
+            # glob() hides directory read errors as an empty match. With another readable input
+            # folder, that silently drops recordings and changes the report's median and comparison.
+            try:
+                with os.scandir(item) as entries:
+                    paths += sorted((entry.path for entry in entries if not entry.name.startswith(".")
+                                     and fnmatch.fnmatch(entry.name, "*.pftrace")), key=_run_order)
+            except OSError as e:
+                sys.exit(f"cannot read trace folder {item}: {e.strerror or e}. No trace was read.")
         else:
             paths.append(item)
     return paths
