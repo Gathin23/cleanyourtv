@@ -1,0 +1,6 @@
+{
+  "tv": "Skyworth 7T864_H5D (MediaTek MT9638), China market",
+  "os": "Coocaa OS / Android 10",
+  "brand": "Skyworth",
+  "notes": "Coocaa OS cloud ad push, data engine, performance monitors, factory timer, diagnostics and two unused device services; **do not disable `com.skyworth.officehomepage`** (hangs on boot logo); the set has no `com.skyworth.device`; Office Mode first, then this list; reboot-checked; standard HOME via `set-home-activity` survives a reboot where `persist.service.model.*` does not ([device note](../docs/devices/skyworth-7t864-h5d.md))"
+}
