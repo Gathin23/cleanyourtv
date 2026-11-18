@@ -69,6 +69,9 @@ fi
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
 KNOWN_STOCK_LAUNCHERS="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher com.mitv.tvhome"
+# A STOCK_LAUNCHER=none passed in keeps the stock launcher as Home on purpose (stock_home_redirect), so the Home
+# check after the install accepts it (#4070). The none picked below when Home is already ours does not.
+if [ "${STOCK_LAUNCHER:-}" = none ]; then KEEP_STOCK_HOME=1; else KEEP_STOCK_HOME=0; fi
 if [ -z "${STOCK_LAUNCHER:-}" ]; then
   HOME_PKG=$("$PY" -I ../tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
     | tail -n 1 | tr -d '\r' | cut -d/ -f1) || {
@@ -200,17 +203,24 @@ HOME_NOW=$(query_home)
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
   *)
-    if [ -z "$HOME_NOW" ]; then
-      echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2
+    if [ -n "$HOME_NOW" ] && [ "$KEEP_STOCK_HOME" = 1 ]; then
+      echo "Home stays $HOME_NOW, as STOCK_LAUNCHER=none disabled nothing (stock_home_redirect)."
+      if [ "${HOME_KEY_SERVICE:-0}" != 1 ]; then
+        echo "Without HOME_KEY_SERVICE=1 nothing sends Home here; run again with it for stock_home_redirect."
+      fi
     else
-      echo "ERROR: Home resolves to $HOME_NOW, not to the new launcher." >&2
-    fi
-    rollback_home || true
-    if [ -n "$HOME_NOW" ]; then
-      echo "On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to" >&2
-      echo "your debloat list (see README, Troubleshooting), apply the list, then run this script again." >&2
-    fi
-    exit 1 ;;
+      if [ -z "$HOME_NOW" ]; then
+        echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2
+      else
+        echo "ERROR: Home resolves to $HOME_NOW, not to the new launcher." >&2
+      fi
+      rollback_home || true
+      if [ -n "$HOME_NOW" ]; then
+        echo "On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to" >&2
+        echo "your debloat list (see README, Troubleshooting), apply the list, then run this script again." >&2
+      fi
+      exit 1
+    fi ;;
 esac
 
 # Optional accessibility services. Off unless asked for, and Android switches them off again on

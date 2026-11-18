@@ -62,6 +62,9 @@ if ($env:SKIP_BUILD -ne '1') {
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
 $knownStock = @('com.google.android.tvlauncher', 'com.google.android.apps.tv.launcherx', 'com.google.android.leanbacklauncher', 'com.mitv.tvhome')
+# A -StockLauncher none passed in keeps the stock launcher as Home on purpose (stock_home_redirect), so the Home
+# check after the install accepts it (#4070). The none picked below when Home is already ours does not.
+$keepStockHome = $StockLauncher -eq 'none'
 if (-not $StockLauncher) {
     $homePkg = & $py -I ..\tools\tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' | Select-Object -Last 1
     if ($LASTEXITCODE -ne 0 -or -not $homePkg) { throw 'could not ask the TV which launcher owns Home; check -TvHost and the debugging prompt, or pass -StockLauncher <package>' }
@@ -160,13 +163,17 @@ function Undo-Handover {
 # Order matters, see build-and-install.sh: start the new launcher, disable the stock one, set the
 # preference last, then check where Home ended up and put the stock launcher back if it is not ours.
 $homeNow = Get-HomeNow
-if ($homeNow -notlike 'com.gathin.tvhome/*') {
+if ($homeNow -and $homeNow -notlike 'com.gathin.tvhome/*' -and $keepStockHome) {
+    Write-Host "Home stays $homeNow, as -StockLauncher none disabled nothing (stock_home_redirect)."
+    if (-not $HomeKeyService) { Write-Warning 'Without -HomeKeyService nothing sends Home here; run again with it for stock_home_redirect.' }
+}
+elseif ($homeNow -notlike 'com.gathin.tvhome/*') {
     $reason = if ($homeNow) { "Home resolves to '$homeNow', not to the new launcher" } else { 'the TV stopped answering while Home was being switched, so the outcome is unknown' }
     $restored = Undo-Handover
     $hint = if ($homeNow) { ' On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to your debloat list (see README, Troubleshooting), apply it, then run this script again.' } else { '' }
     throw "$reason; $(if ($restored) { "$StockLauncher was re-enabled." } else { 'recovery is incomplete (see above).' })$hint"
 }
-Write-Host "Home now resolves to $homeNow"
+else { Write-Host "Home now resolves to $homeNow" }
 # Optional accessibility services, appended to enabled_accessibility_services without dropping others.
 function Enable-Service([string]$Name) {
     $svc = "com.gathin.tvhome/.$Name"
