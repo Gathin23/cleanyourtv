@@ -1447,6 +1447,18 @@ turned off in Settings stays off.
   it. Set `settings_key_clear_task` (with `settings_key_panel` off) and add 139 to `settings_key_scancodes`:
   Settings replaces that page and Back goes Home. The shell cannot disable a single receiver, so this is the
   route without root.
+- **Menu opens only Picture and Sound once the launcher is Home** (Philips 70PUS7906/12, `PH0M_EA_T32`,
+  Android TV 11, `TPM215E_R.101.000.198.158`, [#3753](https://github.com/Gathin23/cleanyourtv/issues/3753)):
+  with the stock Google TV home in front, the remote's Menu button opens the full Settings; with the launcher
+  as Home it opens only "App preferences" with Picture and Sound. `com.mediatek.tv.service` takes the key
+  (`KEYCODE_MENU`, scancode 139) and its `SettingsAction.launchSettings` opens the full Settings
+  (`FLAG=LUNCHER_APP`) only when the top task is `com.google.android.tvlauncher` (or the retail demo
+  `fusion.android.tv.demo`); for any other package it sends `FLAG=OTHER_APP`, the Picture and Sound page.
+  The package name is hard-coded in the firmware and the key never reaches the launcher (with
+  `settings_key_keycodes: [82]` the log shows only the firmware's `START ... MainSettings` from uid 1000), so
+  no config key fixes it. Use the Settings gear on Home or a Settings tile for the full Settings. @stivluc's
+  `menu_full_settings` switch ([#3754](https://github.com/Gathin23/cleanyourtv/pull/3754)) has the helper
+  replace that page with the full Settings when Home did not open it.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
