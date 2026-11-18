@@ -359,6 +359,31 @@ class GeneratorTest(unittest.TestCase):
             root = tree(tmp, [("x-1", tv("X", "X", notes="a \\| b, [list](x-1/debloat.txt), [web](https://x.y)"))])
             self.assertEqual(len(gen_tables.load(root)), 1)
 
+    def test_external_link_scheme_case_does_not_make_tv_json_invalid(self):
+        for key in ("tv", "notes"):
+            for target in ("http://example.invalid/Model", "HTTP://example.invalid/Model",
+                           "hTtPs://example.invalid/Model", "MAILTO:reader@example.invalid"):
+                with self.subTest(key=key, target=target), tempfile.TemporaryDirectory() as tmp:
+                    data = tv("X", "X")
+                    data[key] = f"X [reference]({target})"
+                    root = tree(tmp, [("x-1", data)])
+                    code, output = run(root)
+                    self.assertEqual(code, 0, output)
+                    self.assertIn(f"]({target})", (root / "examples/README.md").read_text(encoding="utf-8"))
+                    self.assertEqual(run(root, "--check")[0], 0)
+                    self.assertEqual(json.loads((root / "examples/x-1/tv.json").read_text()), data)
+
+    def test_an_external_link_does_not_hide_a_missing_relative_link(self):
+        target = "HTTPS://example.invalid/Model"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = tree(tmp, [("x-1", tv("X", "X", notes=f"[web]({target}), [note](x-1/missing.md)"))])
+            before = (root / "README.md").read_bytes()
+            code, output = run(root)
+            self.assertEqual(code, 2)
+            self.assertIn("x-1/missing.md", output)
+            self.assertNotIn(target, output)
+            self.assertEqual((root / "README.md").read_bytes(), before)
+
     def test_markers_must_be_there_once(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = tree(tmp, [("a", tv("Alpha", "A"))])

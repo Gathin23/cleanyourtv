@@ -137,7 +137,8 @@ def load(root, allow_missing=False):
             value = data.get(key)
             # A value that is not a string has no link to read, and check_cell has already said it is wrong.
             for target in LINK.findall(value if isinstance(value, str) else ""):
-                if re.match(r"^(https?:|mailto:|#)", target):
+                # URI schemes are case-insensitive; keep the original link text and path unchanged.
+                if target.lower().startswith(("http:", "https:", "mailto:", "#")):
                     continue
                 if not (root / "examples" / target.split("#")[0]).exists():
                     problems.append(f"{where}: the link {target} in \"{key}\" leads nowhere "
