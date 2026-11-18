@@ -74,6 +74,41 @@ class SetValueTest(unittest.TestCase):
                 self.assertIs(self.written()["dock_band"], expected)
                 self.assertIsInstance(self.written()["dock_band"], bool)
 
+    def test_the_edited_config_stays_within_the_launchers_byte_limit(self):
+        for size, newline in ((65535, os.linesep), (65536, os.linesep),
+                              (65537, os.linesep), (65537, "\r\n")):
+            with self.subTest(size=size, newline=newline):
+                data = {"greeting_name": "写" * 100, "dock_band": True}
+                text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+                data["greeting_name"] += "x" * (size - len(text.replace("\n", newline).encode("utf-8")))
+                data["dock_band"] = False
+                original = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+                self.assertLessEqual(len(original), 65536)
+                self.config.write_bytes(original)
+                self.push.reset_mock()
+                with mock.patch.object(manage.os, "linesep", newline):
+                    refusal = self.set_key("dock_band", "true")
+                if size > 65536:
+                    self.assertIsNotNone(refusal)
+                    self.assertIn(str(self.config), refusal)
+                    self.assertIn(str(size), refusal)
+                    self.assertEqual(self.config.read_bytes(), original)
+                    self.push.assert_not_called()
+                    self.assertEqual(list(self.theme.iterdir()), [self.config])
+                else:
+                    self.assertIsNone(refusal)
+                    self.assertEqual(len(self.config.read_bytes()), size)
+                    self.assertIs(self.written()["dock_band"], True)
+                    self.assertEqual(self.written()["greeting_name"], data["greeting_name"])
+                    self.push.assert_called_once()
+
+    def test_a_first_edit_that_is_too_large_does_not_start_a_config(self):
+        refusal = self.set_key("greeting_name", json.dumps("写" * 22000))
+        self.assertIsNotNone(refusal)
+        self.assertFalse(self.config.exists())
+        self.assertEqual(list(self.theme.iterdir()), [])
+        self.push.assert_not_called()
+
     def test_a_list_key_refuses_a_bare_package_name(self):
         # The shape a reader types by hand: one package where the launcher wants an array.
         refusal = self.set_key("dock_apps", "com.example.player")

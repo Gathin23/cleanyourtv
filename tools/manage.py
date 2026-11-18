@@ -39,7 +39,8 @@ the tile never shows. The two keys the Inputs menu reads a vendor number out of 
 and `source_panel_extra` as the `"name=value"` pair openSourcePanel() sends, since a value without a name or a
 whole number before the '=' sends no extra at all. A theme's config.json is hand-edited, so one
 that cannot be read, is not JSON, or is not a JSON object is named before the key is written, and a write it cannot
-make says so instead of ending in a traceback.
+make says so instead of ending in a traceback. An edit whose UTF-8 config would exceed the launcher's 64 KB
+read limit is refused before writing or pushing; the previous file is kept.
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
 left over are answered with the usage line and exit 2 before a theme folder is read or written. list, status,
 show, install and remove read their own words the same way, before anything is read from this checkout or asked
@@ -1136,6 +1137,12 @@ def cmd_set(key, value, theme_folder):
     command = theme_command(folder)
     data[key] = parsed
     f = folder / "config.json"
+    text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    size = len(text.replace("\n", os.linesep).encode("utf-8"))
+    # Config.read(File) ignores the whole overlay above this limit, not just the edited key.
+    if size > 64 * 1024:
+        sys.exit(f"{f} would be {size} bytes: the launcher ignores a config larger than 64 KB "
+                 f"(65536 bytes). Nothing was written or pushed.")
     replaced = False
     try:
         # own_folder_problem() above refuses a missing folder; an existing empty one is valid.
@@ -1154,7 +1161,7 @@ def cmd_set(key, value, theme_folder):
                 pass   # keep refusing a read-only file, even when its folder permits replacement
         with tempfile.TemporaryDirectory(prefix=".manage-config-", dir=target.parent) as staging:
             pending = Path(staging) / target.name
-            pending.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            pending.write_text(text, encoding="utf-8")
             if target.exists():
                 shutil.copymode(target, pending)
             os.replace(pending, target)
