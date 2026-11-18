@@ -28,11 +28,13 @@ import io
 import os
 from pathlib import Path
 import subprocess
+import struct
 import sys
 import tempfile
 import unittest
 from unittest import mock
 import warnings
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("cyt_screendiff", ROOT / "tools" / "screendiff.py")
@@ -298,6 +300,52 @@ class CompareTest(unittest.TestCase):
                 self.assertIn("Nothing was compared", err.getvalue())
                 self.assertNotIn("Traceback", err.getvalue())
                 self.assertEqual(out.getvalue(), "")
+
+    def test_a_broken_png_chunk_is_unreadable_and_preserves_reports(self):
+        good = Path(self.shot("good.png"))
+        data = good.read_bytes()
+        start = data.index(b"IDAT")
+        length = struct.unpack(">I", data[start - 4:start])[0]
+        pixels = data[start + 4:start + 4 + length]
+
+        def chunk(kind, body):
+            checksum = zlib.crc32(body, zlib.crc32(kind))
+            return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", checksum)
+
+        # Keep the image header and compressed pixels, but break the second IDAT's identifier.
+        middle = len(pixels) // 2
+        bad = Path(self.tmp.name) / "broken.png"
+        bad.write_bytes(data[:start - 4] + chunk(b"IDAT", pixels[:middle]) +
+                        chunk(b"!DAT", pixels[middle:]) + data[start + length + 8:])
+        originals = {p: p.read_bytes() for p in (good, bad)}
+        with self.Image.open(bad) as image:
+            self.assertEqual(image.size, (200, 100))
+            with self.assertRaises(SyntaxError):
+                image.load()
+        for which in ("before", "after"):
+            for existing in (False, True):
+                with self.subTest(which=which, existing=existing):
+                    outputs = [Path(self.tmp.name) / name for name in ("pair.png", "diff.png")]
+                    for path in outputs:
+                        path.unlink(missing_ok=True)
+                        if existing:
+                            path.write_bytes(b"previous report")
+                    before, after = (bad, good) if which == "before" else (good, bad)
+                    with contextlib.redirect_stdout(io.StringIO()) as out, \
+                            contextlib.redirect_stderr(io.StringIO()) as err, \
+                            mock.patch.object(screendiff, "_compare") as compare:
+                        code = screendiff.main([str(before), str(after), "--out", str(outputs[0]),
+                                               "--diff", str(outputs[1])])
+                    self.assertEqual(code, 2, err.getvalue())
+                    self.assertIn(f"cannot read the {which} screenshot {bad}", err.getvalue())
+                    self.assertEqual(out.getvalue(), "")
+                    compare.assert_not_called()
+                    self.assertEqual({p: p.read_bytes() for p in originals}, originals)
+                    for path in outputs:
+                        if existing:
+                            self.assertEqual(path.read_bytes(), b"previous report")
+                        else:
+                            self.assertFalse(path.exists())
 
     def test_an_out_name_the_console_cannot_encode_is_printed_with_replacement_characters(self):
         a, b = self.shot("a.png"), self.shot("b.png")
@@ -581,8 +629,20 @@ class DecodeBeforeCompareTest(unittest.TestCase):
         self.assertIn("image = Image.open(path)", body)
         self.assertIn("image.load()", body,
                       "Image.open() reads the header only; a cut-short file fails at the first pixel")
-        self.assertIn("except OSError as e:", body)
         self.assertIn("Nothing was compared", body)
+
+    def test_decoder_failures_close_the_image_and_name_the_input(self):
+        # Exercise refusal even without the optional Pillow installation CI omits.
+        for error in (OSError("cut short"), SyntaxError("broken PNG chunk")):
+            with self.subTest(error=type(error).__name__):
+                image = mock.Mock()
+                image.load.side_effect = error
+                pil = mock.Mock()
+                pil.Image.open.return_value = image
+                with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                        self.assertRaisesRegex(ValueError, "cannot read the before screenshot"):
+                    screendiff.screenshot("before", "broken.png")
+                image.close.assert_called_once_with()
 
     def test_a_file_it_cannot_read_stops_before_the_comparison(self):
         after_read = self.SOURCE.split("        a, b = screenshot(", 1)[1]
