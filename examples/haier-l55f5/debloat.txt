@@ -1,0 +1,101 @@
+# Haier L55F5 (retail name) / LRM9633_ALI7H_A (ro.product.model), China retail TV (not an operator build),
+# MediaTek MT9633 board, AliOS-family firmware on Android 13 (API 33), build 13-R-20250109.0858,
+# zh-CN locale, no GMS packages at all, Youku Taitan content launcher as the visible stock home.
+# Session 2026-10-25. The set is used with an operator set-top box on HDMI1 (CEC) and USB media.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/haier-l55f5/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/haier-l55f5/debloat.txt com.haier.tv.provision
+# Applied from Windows in the report's session, where the twins are
+#   tools\disable.ps1 -TvHost <tv ip> examples\haier-l55f5\debloat.txt
+#   tools\restore.ps1 -TvHost <tv ip> examples\haier-l55f5\debloat.txt -Stock com.haier.tv.provision
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Reported by @scud3g in #2955, who ran it on their own set from 2026-10-25; the full session log - the
+# launcher builds, the Youku detour, the standby experiments - is in that issue.
+#
+# HOME claimants: com.haier.tv.provision/.DefaultActivity (preferred, priority 1),
+# com.youku.taitan.tv HomeActivity (priority 0, the visible content home), com.android.tv.settings
+# /.system.FallbackHome. android.settings.SETTINGS resolves to com.android.tv.settings/.MainSettings,
+# so the stock launcher needs no settings source change on this firmware.
+# com.youku.taitan.tv is left enabled: it hosts the stock installer UI, and the firmware opens its home
+# by component and never falls back, so it is the Home stepping stone the launcher bounces off (the
+# Home note below is the session that settled this). com.haier.tv.provision (a DefaultActivity-only
+# stub) was disabled by the launcher install once Home landed on the new launcher.
+# Boot goes straight to the last HDMI source (owner requirement); nothing here touches the boot flow
+# (com.haier.tv.bootpolicy and com.haier.bootlead.base stay enabled).
+#
+# KEEP despite the names (components checked with dumpsys package):
+# - com.haier.tv.infraredreminder: MOUNT_UNMOUNT/MOUNT_FORMAT/WRITE_MEDIA_STORAGE + mediatek
+#   source-select permissions + .FloatService - plausibly the USB-insert popup; owner uses USB media.
+# - com.yunos.tv.probe: network diagnostics, not telemetry (as on haier-android-tv-dvb2k).
+# - com.android.adservices.api: Android Privacy Sandbox module, not the TV's ad service.
+# - com.android.music / com.android.gallery3d: kept for USB media playback routes.
+# - com.alira.info: dream/screensaver info service (.raService.dream), WRITE_SECURE_SETTINGS.
+# - com.haier.tv.uart, com.haier.tv.hm, com.haier.tv.bluetooth.rcinfo: remote/key/bt services.
+# - com.example.realsil.otahaier: Realtek BT/wireless firmware OTA.
+# - mediatek.factorymenu.ui / com.haier.tv.factory.menu: factory menus - never disable, never open.
+# - CEC on this firmware is vendor-managed: `settings get global hdmi_control_enabled` is null;
+#   com.mediatek.tv.service, com.mediatek.tvinput and com.mediatek.wwtv.tvcenter all stay enabled.
+#
+# Owner choices this session: no voice, no Haier smart-home, no Youku content home, no auto-updates,
+# USB media yes, CEC/HDMI set-top box yes, stock settings panel yes (com.android.tv.settings).
+
+# Ads, telemetry, promo, silent installs
+com.yunos.advert.service                         # AdvertService + FakeNotification: system ads
+com.haier.tv.electag                             # ad material library: no entry components, silent download perms
+com.haier.activeuser                             # active-user stats upload (BOOT_SEND_ACCESSTOKEN, SCREEN_ON)
+com.haier.tv.modelintroduction                   # retail demo mode
+com.haier.tv.downloadapk                         # background APK downloader (boot + connectivity), silent installs
+com.yunos.tv.edu                                 # AliOS education content app
+com.yunos.music                                  # AliOS music app (RECORD_AUDIO)
+
+# Voice assistant stack (owner does not use voice)
+com.haier.tv.intelligentvoice                    # Haier voice assistant
+com.haier.tv.tmallasr                            # Tmall Genie ASR
+com.haier.tv.voicemedia                         # voice media search
+com.haier.tv.mic.detect                          # microphone detection
+
+# Haier smart-home / IoT (owner does not use UHome)
+com.haier.uhome.uplustv                          # U+ cloud TV
+com.haierubic.usmartdevice                       # smart-device service (remote power control)
+com.haier.tv.iotprovider                         # IoT provider
+
+# Updates (owner choice: no auto-updates). The AliOS firmware updater is commented out below, the way
+# AGENTS.md asks a shared list to leave one: an owner who wants it can uncomment the line.
+# com.yunos.osupdate                             # AliOS firmware update service: kept enabled in the
+#                                                # shared list; this set has it off
+com.haier.tv.appversion                          # Haier app updater with INSTALL_PACKAGES (background app installs)
+
+# Unused AOSP apps (music/gallery3d kept for USB media)
+com.android.deskclock                            # AOSP clock
+com.android.calendar                             # AOSP calendar
+com.android.contacts                             # AOSP contacts
+com.android.camera2                              # AOSP camera
+
+# Content home and HOME stub, applied after the replacement launcher owned Home (2026-10-25 session).
+# The boot flow and the physical Home key on this firmware route straight to the Youku home and eat
+# KEYCODE_HOME before Android's default handling and before the accessibility key filter (Android 13):
+# with Youku disabled, the Home button did nothing. So Youku is RE-ENABLED as a stepping stone and the
+# launcher's stock_home_redirect bounces back to it the moment the Youku home appears (a short flash).
+# It is hidden from the launcher grid (hidden_apps) and stays otherwise unused.
+# com.haier.tv.provision stays disabled: enabled, it claims HOME at priority 1, and
+# cmd package set-home-activity reports Success while resolve-activity still returns it.
+# com.haier.tv.provision                              # preferred HOME stub; disabled after the launcher took Home
+#
+# What the firmware does, from the session recorded in #2955:
+# - One early boot turned five of these back on (deskclock, calendar, contacts, camera2, appversion) and
+#   the next run kept them off: it is the firmware reconciling its own package list, and re-applying the
+#   list is safe. check.py reports the same thing after an update.
+# - It clears third-party accessibility settings at every boot and on the standby force-stop, so the
+#   launcher's key helper has to be put back by the theme's restore_key_services, and with key_filter
+#   on it is the only thing that keeps the physical Home key from landing on the Youku desktop.
+# - The stock installer UI is an AliOS plugin hosted inside the Youku process: the com.aliott.* and
+#   com.yunos.* hosts stay enabled (they are not in this list), and Youku itself stays on as the Home
+#   stepping stone the launcher bounces off. Disabling Youku leaves the Home key dead and the installer
+#   hung on its check phase.
+# - The owner also disabled 57 of Youku's own components with `pm disable --user 0 <package>/<component>`
+#   (the installer still verified after it). Component disables are not list lines: tools/disable.sh
+#   sends package names only, and `pm disable-user` on a component answers "new state: default" on this
+#   firmware while `pm disable` works.
+# - The userspace is 32-bit (armeabi-v7a, zygote32 on a 64-bit-capable MT9633), so arm64-only APKs fail
+#   with INSTALL_FAILED_NO_MATCHING_ABIS.
