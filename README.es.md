@@ -388,6 +388,7 @@ La contribución más valiosa es la lista de limpieza de aplicaciones de tu tele
 | **Launcher y prompt** | Las mejoras en el launcher y los refinamientos para que el prompt resulte más claro son igualmente bienvenidos. |
 | **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 262 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
 | **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 261 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
+| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 263 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
 
 Las personas cuyo trabajo forma parte de este repositorio:
 
