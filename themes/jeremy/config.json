@@ -1,0 +1,41 @@
+{
+	"dock_apps": [
+		"com.netflix.ninja",
+		"com.google.android.youtube.tv",
+		"com.orange.owtv.tv",
+		"com.crunchyroll.crunchyroid",
+		"com.plexapp.android"
+	],
+	"hidden_apps": [
+		"com.tcl.tv",
+		"com.google.android.videos",
+		"com.tcl.suspension"
+	],
+	"app_labels": [
+		"com.netflix.ninja=Netflix",
+		"com.google.android.youtube.tv=YouTube ❤️",
+		"com.orange.owtv.tv=TV",
+		"com.crunchyroll.crunchyroid=Crunchy",
+		"com.plexapp.android=Cinéma"
+	],
+	"app_keys": [
+		"190:com.google.android.youtube.tv",
+		"4062:com.netflix.ninja",
+		"4057:com.plexapp.android"
+	],
+	"columns": 5,
+	"rows_below_dock": 1,
+	"background_color": "#000000",
+	"wallpaper": false,
+	"app_library": true,
+	"reorder_button": false,
+	"icon_only_buttons": true,
+	"icon_only_inputs": true,
+	"reduced_motion": false,
+	"greeting_name": "Jérémy \u0026 Margaux",
+	"advanced_effects": true,
+	"show_stats": true,
+	"inputs_connected_only": true,
+	"clock_format": "24",
+	"dock_glass": true
+}

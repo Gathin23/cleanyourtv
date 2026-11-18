@@ -1,8 +1,8 @@
 # Photo screensaver
 
 A system screensaver (Android's "Daydream") for any Android TV or Google TV that shows your own pictures
-and MP4 clips, separate from the launcher. Pictures go in filename order, each displayed for 20 seconds 
-(or what you set, configurable in settings) and fade into the next with optional Ken Burns animation (zoom 
+and MP4 clips, separate from the launcher. Pictures go in filename order, each displayed for 20 seconds
+(or what you set through sync or settings) and fade into the next with optional Ken Burns animation (zoom
 and drift). A clip plays once, muted and cropped to fill the screen, then the loop moves on; a lone clip 
 loops. Any key wakes the TV back to where it was.
 
@@ -12,14 +12,14 @@ holding OK (or Menu) opens the settings, Back leaves.
 
 ## Options
 
-All off by default, which is the plain full-screen slideshow above. Switch them on in the screensaver's own
+Except for Ken Burns animation, all options are off by default. Change them in the screensaver's own
 settings (TV settings > screensaver > Photos > settings), or by holding OK (or pressing Menu) in the card's
 slideshow. Google TV has no settings entry for other screensavers, so there it is the slideshow only:
 
 | Option | What it does |
 |---|---|
 | Ken Burns animation (zoom and drift) | Enable the slow zoom and drift effect on each picture. On by default; turn it off for a static slideshow. |
-| Time per picture | Minutes each picture stays on screen, from 1 to 120 (default 1 minute). Configurable in settings. |
+| Time per picture | Seconds each picture stays on screen, from 5 to 3600. Starts with sync's value from `seconds.txt` (20 seconds if missing or invalid); changing it in settings overrides sync. |
 | Time and date | A line along the bottom with the time and the date, moved a little every minute against burn-in |
 | When a picture was taken | Month and year, from a name ending in the date (`trip-20231202.jpg`) or else the camera's EXIF date |
 | Three prints | Three pictures at a time as tilted prints, the whole picture, never cropped; clips are skipped |
@@ -52,12 +52,13 @@ WebP, up to 10 MB, 4K at most) and MP4 clips (H.264 or HEVC, up to 1 GB) in it, 
 
 ```sh
 TV_HOST=192.168.1.50 addons/photo-screensaver/sync.sh                          # or pass another folder
+TV_HOST=192.168.1.50 SECONDS_PER_PICTURE=30 IDLE_MINUTES=5 START=1 addons/photo-screensaver/sync.sh
 TV_HOST=192.168.1.50 START=1 addons/photo-screensaver/sync.sh                  # and show it now
 TV_HOST=192.168.1.50 addons/photo-screensaver/sync.sh --off                    # previous screensaver back
 ```
 
 ```powershell
-addons\photo-screensaver\sync.ps1 -TvHost 192.168.1.50 [-Start]
+addons\photo-screensaver\sync.ps1 -TvHost 192.168.1.50 [-Seconds 30] [-IdleMinutes 5] [-Start]
 addons\photo-screensaver\sync.ps1 -TvHost 192.168.1.50 -Off
 ```
 
@@ -67,9 +68,13 @@ running it again. Files go through the shell as base64, about 200 KB/s, so keep 
 1080p at 8 Mbit/s is about 60 MB, roughly five minutes to send. The screensaver the TV had before the
 first run is remembered for `--off`; `build-and-install.sh --uninstall` does `--off` and removes the app.
 
-Time per picture is configurable in the app's settings. Open the screensaver settings on your TV (TV settings > screensaver > Photos > settings)
-or hold OK / press Menu in the Photos card on the launcher's Home. The idle timeout (when the screensaver starts) is set via
-`sync.ps1 -IdleMinutes` or `IDLE_MINUTES` environment variable with `sync.sh`.
+Set the time per picture with `sync.ps1 -Seconds` or `SECONDS_PER_PICTURE` for `sync.sh` (5 to 3600 seconds,
+default 20). Sync writes `seconds.txt`, which supplies the interval until you change it in the app's
+settings. Merely opening settings or focusing the field does not save an override. A saved override takes
+priority over later syncs, in both full-screen and three-prints modes. Open the screensaver settings on
+your TV (TV settings > screensaver > Photos > settings) or hold OK / press Menu in the Photos card on the
+launcher's Home. The idle timeout (when the screensaver starts) is set via `sync.ps1 -IdleMinutes` or the
+`IDLE_MINUTES` environment variable with `sync.sh`.
 
 ## Memory
 

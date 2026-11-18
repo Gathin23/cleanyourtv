@@ -74,7 +74,7 @@ public class SettingsActivity extends Activity {
         secondsLabel.setPadding(dp(8), 0, 0, dp(8));
         updateSecondsLabel();
         list.addView(secondsLabel);
-        int currentSeconds = preferences.getInt(Options.SECONDS_PER_PICTURE, Options.DEFAULT_SECONDS_PER_PICTURE);
+        int currentSeconds = Options.load(this).secondsPerPicture;
         EditText secondsInput = new EditText(this);
         secondsInput.setText(String.valueOf(currentSeconds));
         secondsInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
@@ -92,11 +92,13 @@ public class SettingsActivity extends Activity {
                     try {
                         int seconds = Integer.parseInt(text);
                         seconds = Math.max(5, Math.min(3600, seconds));
-                        preferences.edit().putInt(Options.SECONDS_PER_PICTURE, seconds).apply();
+                        if (seconds != Options.load(this).secondsPerPicture) {
+                            preferences.edit().putInt(Options.SECONDS_PER_PICTURE, seconds).apply();
+                        }
                         secondsInput.setText(String.valueOf(seconds));
                         updateSecondsLabel();
                     } catch (NumberFormatException e) {
-                        secondsInput.setText(String.valueOf(currentSeconds));
+                        secondsInput.setText(String.valueOf(Options.load(this).secondsPerPicture));
                     }
                 }
             }
@@ -165,7 +167,7 @@ public class SettingsActivity extends Activity {
     }
 
     private void updateSecondsLabel() {
-        int seconds = preferences.getInt(Options.SECONDS_PER_PICTURE, Options.DEFAULT_SECONDS_PER_PICTURE);
+        int seconds = Options.load(this).secondsPerPicture;
         secondsLabel.setText(String.format(getString(R.string.seconds_per_picture), seconds));
     }
 
