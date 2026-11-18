@@ -181,6 +181,21 @@ class ScreenshotPullFailureTest(unittest.TestCase):
         self.assertIn("Traceback", r.stderr, "a bug in the client shows where it is")
         self.assertEqual(OLD, self.target.read_bytes())
 
+    def test_a_capture_through_a_link_updates_the_picture_without_replacing_the_link(self):
+        actual = self.folder / "saved.png"
+        actual.write_bytes(OLD)
+        try:
+            self.target.symlink_to("saved.png")
+        except (OSError, NotImplementedError) as e:
+            self.skipTest(f"file symlinks are unavailable: {e}")
+        r = self.run_screenshot()
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertTrue(self.target.is_symlink())
+        self.assertEqual("saved.png", os.readlink(self.target))
+        self.assertEqual(PNG, actual.read_bytes())
+        self.assertEqual([f"screenshot {self.target} ({len(PNG)} bytes)"], r.stdout.splitlines())
+        self.assertFalse(list(self.folder.glob(".*.part")))
+
     def test_a_capture_that_works_still_prints_its_one_line(self):
         r = self.run_screenshot("ok")
         self.assertEqual(0, r.returncode, r.stderr)
