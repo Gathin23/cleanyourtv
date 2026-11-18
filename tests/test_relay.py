@@ -257,6 +257,42 @@ class RelayTest(unittest.TestCase):
                 self.assertIn("not a port number", result.stderr)
                 self.assertEqual(result.stdout, "")
 
+    THIS_COMPUTER = ("LOCALHOST", "localhost.", "LOCALHOST.", "tv.localhost", "127.0.1.1", "127.1",
+                     "2130706433", "0x7f000001", "0177.0.0.1", "::1", "[::1]", "::ffff:127.0.0.1",
+                     "[::ffff:127.0.0.1]", "0.0.0.0", "::", "[::]")
+
+    def test_pointing_the_relay_at_itself_under_another_local_name_is_refused(self):
+        # Every way the socket API takes to write this computer (matching tools/adb-closed.py): without
+        # this, `relay.py LOCALHOST --tv-port 15555` or `127.1:15555` bound 127.0.0.1:15555 and connected
+        # back to its own socket in a loop when the first client arrived.
+        port = str(free_port())
+        for host in self.THIS_COMPUTER:
+            with self.subTest(host=host):
+                result = self.run_relay(host, "--tv-port", port, "--port", port, timeout=3)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn("the relay itself", result.stderr)
+                self.assertEqual(result.stdout, "")
+
+    def test_a_relay_written_another_way_still_refuses_its_tv_port_for_the_tvs_ip(self):
+        for relay_host in self.THIS_COMPUTER:
+            env = env_with(TV_HOST=relay_host, TV_PORT="15556")
+            with self.subTest(TV_HOST=relay_host):
+                try:
+                    result = subprocess.run([sys.executable, str(ROOT / "tools" / "relay.py"), "192.0.2.1",
+                                             "--port", "0"], env=env, capture_output=True, text=True, timeout=3)
+                except subprocess.TimeoutExpired:
+                    self.fail(f"TV_HOST={relay_host} TV_PORT=15556 started a relay to 192.0.2.1:15556")
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn("TV_PORT=15556 is a relay's port", result.stderr)
+                self.assertEqual(result.stdout, "")
+
+    def test_names_that_only_look_local_still_count_as_the_tvs(self):
+        for host in ("localhost.example.com", "mytv.local", "127.example", "10.0.0.1", "[::ffff:192.0.2.1]"):
+            with self.subTest(host=host):
+                _, _, first = self.launch(host, "--port", "0", env=env_with(TV_HOST=host, TV_PORT="5877"))
+                expected = host[1:-1] if host.startswith("[") else host
+                self.assertIn(f"-> {expected}:5877\n", first)
+
 
 if __name__ == "__main__":
     unittest.main()
