@@ -374,6 +374,13 @@ public class HomeKeyService extends AccessibilityService {
         return now < armedUntil;
     }
 
+    /** power_on_home: a key on Home hands the TV to the user too. With key_filter false this service sees no keys,
+     *  so an input picked from the Inputs menu was sent back to Home until the window ran out. */
+    static void keyOnHome() {
+        HomeKeyService service = running;
+        if (service != null) service.powerOnUntil = 0;
+    }
+
     /** The settings menu offers Restart only while this helper is bound: it opens the system power menu. */
     static boolean canOpenPowerMenu() {
         return running != null;
