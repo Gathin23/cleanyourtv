@@ -63,8 +63,9 @@ checks. Commands are copy-pasteable. Nothing here needs root.
   does not override the priority comparison.
 - **The vendor pointer is bookkeeping.** `settings_startup_source_custom_pkg_key` lives in the `system`
   namespace and did not move the boot launcher in two controlled reboots.
-- **No window events to third-party services.** Same behaviour as the Vidda C1S report in aerial-tv (#545):
-  the guard binds but never sees the stock launcher's `TYPE_WINDOW_STATE_CHANGED`, so it cannot bounce back.
+- **No window events to third-party services.** Same behaviour as the Vidda C1S report in
+  [pengchujin/aerial-tv#545](https://github.com/pengchujin/aerial-tv/pull/545): the guard binds but never
+  sees the stock launcher's `TYPE_WINDOW_STATE_CHANGED`, so it cannot bounce back.
 
 ---
 
