@@ -4,7 +4,11 @@
 
 1. Create `launcher/app/src/main/res/values-<qualifier>/strings.xml` and translate every string in
    `launcher/app/src/main/res/values/strings.xml`, skipping the ones marked `translatable="false"`. Keep
-   placeholders (`%1$s`, `%d`) and XML escapes intact. The folder suffix is the qualifier Android reads:
+   placeholders (`%1$s`, `%d`) and XML escapes intact: `tests/test_string_format_arguments.py` reads every
+   locale string against the English one, and a specifier that moved or changed letter
+   (`%1$d` written `%1$s` for a count) is an `IllegalFormatConversionException` on the line that draws the
+   row, on a TV set to that language and nowhere else - the row never appears and the build stays green.
+   The folder suffix is the qualifier Android reads:
    `de` for a language, `zh-rCN` for a language with a region, or the BCP-47 form the tree also uses,
    `b+sr+Latn`, for a language with a script (`values-sr-Latn` is not a folder it reads).
 2. A language may also need one of the other files `values/` carries. Add it only when `values/` has the
@@ -28,7 +32,11 @@
    in this test's table". Step 3's `locales_config.xml` entry does not satisfy it.
 5. To fix a missing string in existing locales, add it to every `values-*` folder you can, in the same order as
    the default `strings.xml`. A missing string falls back to English (`launcher/app/lint.xml`), but a new switch
-   needs its strings in every locale.
+   needs its strings in every locale. The other direction counts too: a string you rename or delete in
+   `launcher/app/src/main/res/values/strings.xml` has to be renamed or deleted in every locale along with
+   it, because a name the default no longer has is read by nothing -
+   `tests/test_string_format_arguments.py` names it once per folder, so renaming one key reds all thirty
+   locales rather than one.
 6. Moving hard-coded text into resources is welcome; do not bundle unrelated build changes with it.
 7. Check the size gate before you push. A language's strings ship in the release APK, and that APK has to
    stay under 589,824 B (576 KB): `launcher/app/build/outputs/apk/release/app-release.apk`, measured with
