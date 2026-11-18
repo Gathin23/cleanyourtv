@@ -35,7 +35,8 @@ Then create `res/xml/module_card.xml`:
 <card spec="1" label="Retro" caption="NES games" accent="#E8A33D" />
 ```
 
-- `label`: 1 to 24 characters, letters, digits, space and `. & + ' -`. Keep it short; it is the
+- `label`: 1 to 24 characters, letters, digits, space and `. & + ' -`, with no space at either end and
+  at least one letter or digit. Keep it short; it is the
   name on the tile and in the top shelf. Words like "verified" or "official", the launcher's own UI
   names and input names such as HDMI are refused, and so is a new card whose label (or whose app
   label) is the name of another app installed on the TV (the full list is in the spec). Changing
@@ -43,7 +44,8 @@ Then create `res/xml/module_card.xml`:
 - `caption`: optional, up to 32 characters from the same set as `label` — letters, digits, space and
   `. & + ' -`, so a `/`, a comma or a colon is not read. A character outside the set drops the whole
   card rather than showing it without the caption (`logcat -s TvHomeCards` says `caption has
-  characters outside A-Z a-z 0-9 space . & + ' -`). The
+  characters outside A-Z a-z 0-9 space . & + ' -`), and so does a space at either end (`caption starts
+  or ends with a space`), which is the rule a label follows too. The
   endorsement words refused in labels are refused here too. The
   name line under the tile is one line; label and caption together show about 26 characters on a
   4 column grid, so keep the caption to a few words. `tests/test_addon_module_cards.py` holds every
