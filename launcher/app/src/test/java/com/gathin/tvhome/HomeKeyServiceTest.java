@@ -7,6 +7,11 @@ import static org.junit.Assert.assertTrue;
 public class HomeKeyServiceTest {
     private static final long SOON = 45_000L;
 
+    @Test public void aKeyOnHomeWithNoHelperBoundDoesNothing() {
+        HomeKeyService.running = null;
+        HomeKeyService.keyOnHome();
+    }
+
     @Test public void aTapIsAShortPress() {
         assertTrue(HomeKeyService.isShortPress(1_000, 1_120, 400));
     }
