@@ -70,4 +70,16 @@ jobs:
         run: |
           size=$(stat -c %s launcher/app/build/outputs/apk/release/app-release.apk)
           echo "release APK: $((size / 1024)) KB"
+          # Where the budget goes, so a translation or asset PR can see what to trim before it fails the
+          # gate below (#3842). Informational only; read from the APK's own entry listing.
+          apk=launcher/app/build/outputs/apk/release/app-release.apk
+          echo "headroom to 576 KB: $(( (589824 - size) / 1024 )) KB"
+          echo "fonts:"
+          unzip -l "$apk" 2>/dev/null | awk '
+            $4 ~ /\.(ttf|otf)$/ { printf "  %6.1f KB  %s\n", $1/1024, $4 }'
+          echo "top locale resource tables (res/*-<locale>/ entries):"
+          unzip -l "$apk" 2>/dev/null | awk '
+            $4 ~ /^res\/[^\/]+-/ { split($4, p, "/"); by[p[2]] += $1 }
+            END { for (d in by) printf "%d\t%s\n", by[d], d }' \
+            | sort -rn | head -12 | awk -F'\t' '{ printf "  %6.1f KB  %s\n", $1/1024, $2 }'
           test "$size" -lt 589824 || { echo "APK is over 576 KB; the launcher targets 1 GB TVs, keep it small"; exit 1; }
