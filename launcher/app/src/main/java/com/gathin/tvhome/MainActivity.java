@@ -2920,21 +2920,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void refreshPillsAfterNextDraw() {
-        root.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                root.getViewTreeObserver().removeOnPreDrawListener(this);
-                // Posted from inside the frame's traversal, so it runs after that frame is drawn. A post straight
-                // from onResume would run first: the frame is only scheduled after onResume returns.
-                handler.post(() -> {
-                    if (isDestroyed()) return;
-                    updateWifiLabel();
-                    updateInputsButton();
-                });
-                return true;
-            }
+        // After that frame is drawn; a resume that changes nothing on screen still draws once, so the refresh runs.
+        FirstFrame.afterNextDraw(root, 0, () -> {
+            if (isDestroyed()) return;
+            updateWifiLabel();
+            updateInputsButton();
         });
-        root.invalidate();   // a resume that changes nothing on screen still draws once, so the refresh runs
     }
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */

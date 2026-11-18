@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -29,8 +30,17 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** Displays and rotates a theme's local wallpaper images while Home is visible. */
+/**
+ * Displays and rotates a theme's local wallpaper images while Home is visible.
+ *
+ * Home's opening picture is decoded on the main thread, as always, but its copy to GPU memory waits until a second
+ * after Home's first frame and runs on the decoder thread (toGpu), so the main thread does not wait for that upload
+ * before the first frame. The pixels are the same, so nothing on screen changes. The decoder runs at background
+ * priority, except to fill a screen left empty by onTrimMemory.
+ */
 final class WallpaperPlayer {
+    /** After the frame that first draws an ordinary bitmap: its copy to GPU memory, once the tiles' entrance is over. */
+    private static final long GPU_COPY_DELAY_MS = 1_000;
     private final FrameLayout root;
     private final ImageView image;
     private final int backgroundColor;
@@ -48,8 +58,9 @@ final class WallpaperPlayer {
     private final int dimColor;
     /** The picture on screen, released once the next one has been drawn. */
     private Bitmap current;
-    private boolean active;
-    private boolean closed;
+    /** Read on the decoder thread too: a picture decoded for a Home that left is not copied to GPU memory. */
+    private volatile boolean active;
+    private volatile boolean closed;
     private boolean loading;
     private String displayed = "";
     /** wallpaper_captions: the shown picture's name from wallpapers/captions.txt; null when off or there are none. */
@@ -101,7 +112,9 @@ final class WallpaperPlayer {
     /**
      * The picture Home opens with is decoded right here, on the main thread, as the single wallpaper always was:
      * Home's first frame already has it instead of drawing the plain colour and the picture popping in later.
-     * Only the later changes of a rotation decode in the background.
+     * Only the later changes of a rotation decode in the background. It is decoded before start(), so decode()
+     * leaves it an ordinary bitmap, which the first frame's RenderThread uploads as it draws it; show() has
+     * toGpu() make the GPU copy after that frame.
      */
     private void showFirst() {
         String previous = preferences.getString("image", "");
@@ -177,8 +190,10 @@ final class WallpaperPlayer {
         }
         if (selected == null || selected.getName().equals(displayed)) return;
         File next = selected;
+        int priority = decodePriority(current == null);
         loading = true;
         decoder.execute(() -> {
+            priority(priority);
             Bitmap bitmap = decode(next);
             root.post(() -> {
                 loading = false;
@@ -264,7 +279,11 @@ final class WallpaperPlayer {
         return key.toString();
     }
 
-    /** Puts a picture on screen and releases the previous one after a frame has drawn the new one. */
+    /**
+     * Puts a picture on screen and releases the previous one after a frame has drawn the new one. An ordinary bitmap
+     * (Home's opening picture) gets its GPU copy a second after that frame; the rotation waits for it (loading), so
+     * the two never work on the same picture.
+     */
     private void show(Bitmap bitmap) {
         Bitmap old = current;
         current = bitmap;
@@ -272,6 +291,56 @@ final class WallpaperPlayer {
         root.setBackground(null);
         image.setImageBitmap(bitmap);
         if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
+        if (bitmap.getConfig() != Bitmap.Config.HARDWARE) {
+            loading = true;
+            FirstFrame.afterNextDraw(root, GPU_COPY_DELAY_MS, this::toGpu);
+        }
+    }
+
+    /**
+     * The ordinary bitmap on screen moves to GPU memory: copied on the decoder thread, then put in its place. One copy
+     * in memory instead of a bitmap plus its texture, and Home's later returns draw it without uploading it again.
+     */
+    private void toGpu() {
+        if (closed) return;
+        Bitmap soft = current;   // null once onTrimMemory has dropped it
+        decoder.execute(() -> {
+            priority(Process.THREAD_PRIORITY_BACKGROUND);
+            Bitmap gpu = soft == null ? null : hardware(soft);
+            root.post(() -> {
+                loading = false;
+                // Only in place of the same picture: the copy has the same pixels, so the screen does not change.
+                if (gpu != null && current == soft && !closed) show(gpu);
+                else if (gpu != null) gpu.recycle();
+                update();
+            });
+        });
+    }
+
+    /** A copy in GPU memory, or null when none can be made; the bitmap is then kept as it is. */
+    private static Bitmap hardware(Bitmap bitmap) {
+        try {
+            return bitmap.copy(Bitmap.Config.HARDWARE, false);
+        } catch (RuntimeException | OutOfMemoryError failure) {
+            return null;
+        }
+    }
+
+    /**
+     * The decoder's priority for a picture: background, so Home's frames and the app being opened come first, except
+     * for a screen left empty by onTrimMemory, which the owner is looking at.
+     */
+    static int decodePriority(boolean screenEmpty) {
+        return screenEmpty ? Process.THREAD_PRIORITY_DEFAULT : Process.THREAD_PRIORITY_BACKGROUND;
+    }
+
+    /** The decoder thread's priority for the task it starts. */
+    private static void priority(int priority) {
+        try {
+            Process.setThreadPriority(priority);
+        } catch (RuntimeException ignored) {
+            // the priority it has is fine
+        }
     }
 
     private Bitmap decode(File file) {
@@ -296,6 +365,10 @@ final class WallpaperPlayer {
             Bitmap decoded = BitmapFactory.decodeFile(file.getPath(), options);
             if (decoded == null) return null;
             if (dimColor != 0) new Canvas(decoded).drawColor(dimColor);
+            // Only for a Home in front. Home's opening picture is decoded before start(), and a rotation's picture
+            // decoded for a Home that left is thrown away: both stay ordinary bitmaps, and show() has one that reaches
+            // the screen copied after its first frame.
+            if (!active || closed) return decoded;
             // One copy in GPU memory instead of a software bitmap plus its texture; the decode stays off the UI
             // thread for rotations, and Home's return no longer uploads 4-8 MB to the GPU.
             Bitmap gpu = decoded.copy(Bitmap.Config.HARDWARE, false);
