@@ -46,7 +46,6 @@ import math
 import os
 from pathlib import Path
 import re
-import shlex
 import shutil
 import stat
 import sys
@@ -111,16 +110,14 @@ def perfetto_config(package, duration_ms):
 
 def sleep_seconds(command):
     """A standalone literal sleep, in seconds; None for a command that must run on the TV."""
-    try:
-        words = shlex.split(command, comments=True)
-    except ValueError:
-        return None
-    if len(words) != 2 or words[0] != "sleep":
-        return None
-    match = re.fullmatch(r"(\+?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)([smhd]?)", words[1])
+    # A shell comment needs whitespace before '#'; inside an argument it is literal. Match only
+    # this simple command, so a newline or separator cannot hide later commands from the TV.
+    match = re.fullmatch(
+        r"sleep[ \t]+(?P<quote>['\"]?)(?P<number>\+?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)"
+        r"(?:[eE][+-]?[0-9]+)?)(?P<unit>[smhd]?)(?P=quote)(?:[ \t]+#[^\r\n]*)?", command.strip())
     if not match:
         return None
-    seconds = float(match[1]) * {"": 1, "s": 1, "m": 60, "h": 3600, "d": 86400}[match[2]]
+    seconds = float(match["number"]) * {"": 1, "s": 1, "m": 60, "h": 3600, "d": 86400}[match["unit"]]
     return seconds if math.isfinite(seconds) else None
 
 

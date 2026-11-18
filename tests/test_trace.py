@@ -386,7 +386,8 @@ class RecordTest(unittest.TestCase):
 
     def test_nonliteral_and_compound_commands_are_forwarded_unchanged(self):
         for command in ("echo 'sleep 99'", "sleep .5; echo done", "sleep $WAIT",
-                        "sleep", "sleep invalid", "sleep 'unterminated", "sleep inf"):
+                        "sleep", "sleep invalid", "sleep 'unterminated", "sleep inf",
+                        "sleep 1#note; echo done", "sleep\n1", "sleep 1 # comment\necho done"):
             with self.subTest(command=command), mock.patch.object(trace.time, "sleep") as sleep:
                 remote = mock.Mock()
                 trace._run(remote, command)
