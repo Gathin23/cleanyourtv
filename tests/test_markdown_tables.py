@@ -36,8 +36,10 @@ def pipes(line):
     count = 0
     i = 0
     while i < len(line):
-        if line[i] == "\\":
-            i += 2           # the escaped character, pipe or not, is text
+        # Table splitting precedes inline unescaping: even a pipe after two backslashes
+        # stays in its cell in GFM. Only skip the pair that actually contains a pipe.
+        if line[i:i + 2] == "\\|":
+            i += 2
             continue
         if line[i] == "|":
             count += 1
@@ -138,8 +140,25 @@ class Rows(unittest.TestCase):
                 "| a | b (a signature\\|privileged permission); c |\n")
         self.assertEqual([], rows_that_break_their_header(page))
 
-    def test_an_escaped_backslash_does_not_escape_the_pipe(self):
-        # `\\` is one backslash of text, so the pipe after it still ends the cell.
+    def test_adjacent_backslashes_do_not_turn_an_escaped_pipe_into_a_separator(self):
+        # GFM splits table cells before inline backslash unescaping. cmark-gfm keeps the pipe
+        # inside the cell for both odd and even runs of backslashes immediately before it.
+        for count in range(1, 7):
+            for content in ("left{}|right", "`left{}|right`", "**left{}|right**"):
+                with self.subTest(backslashes=count, content=content):
+                    cell = content.format("\\" * count)
+                    page = "| a | b |\n|---|---|\n| one | " + cell + " |\n"
+                    self.assertEqual([], rows_that_break_their_header(page))
+
+    def test_an_escaped_pipe_does_not_hide_a_later_extra_cell(self):
+        for count in range(1, 7):
+            with self.subTest(backslashes=count):
+                cell = "left" + "\\" * count + "|right"
+                page = "| a | b |\n|---|---|\n| one | " + cell + " | extra |\n"
+                self.assertEqual([(3, 3, 1, 2)], rows_that_break_their_header(page))
+
+    def test_backslashes_separated_from_the_pipe_do_not_escape_it(self):
+        # The space separates the backslashes from the pipe, which still ends the cell.
         page = ("| a | b |\n"
                 "|---|---|\n"
                 "| one\\\\ | two | three |\n")
