@@ -2,7 +2,8 @@
 
 **When to use this:** a widget or tile that can be its own small app, shown through a module card.
 
-1. Create `addons/<name>/` as its own Gradle project (`settings.gradle`, its own `gradlew` and `gradlew.bat`
+1. Create `addons/<name>/` as its own Gradle project (`settings.gradle`, or `settings.gradle.kts` as
+   `addons/tv-hub` ships it - `tests/test_addons.py` accepts either - its own `gradlew` and `gradlew.bat`
    wrappers and an `app` module), with its own package name. Copy the two wrappers from an add-on that is
    already here: the add-on build names `./gradlew` on macOS and Linux and `gradlew.bat` in a Command Prompt,
    and `tests/test_addons.py` refuses a folder without either one.
