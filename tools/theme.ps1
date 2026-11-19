@@ -8,7 +8,8 @@
 # Exit status: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not
 # restart after it (a failure of the shared helper stops this script with that status); 2 the run stopped
 # before the theme was up and nothing was sent - the command line is not one theme folder or -Reset, the
-# folder has no config.json or one the launcher would drop, a wallpaper name b64push.py refuses, no TV host
+# folder has no config.json or one the launcher would drop (not JSON, not a JSON object, or over its 64 KB
+# read limit), a wallpaper name b64push.py refuses, no TV host
 # was given, or tools\venv is missing. 1 is a run that reached the push, so a theme this script cannot read
 # answers 2, as theme.sh does, instead of stopping with a PowerShell error record.
 param(
@@ -144,6 +145,14 @@ catch {
 # Judged here, before anything is pushed, so "is on the TV" cannot mean the opposite.
 if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
     [Console]::Error.WriteLine("$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV.")
+    exit 2
+}
+# The launcher's other limit on the same file, as in theme.sh: Config.read() answers "no overlay" for a
+# config.json over 64 KB (`file.length() > 64 * 1024`), so a larger one puts the TV back on its built-in config
+# while the push would still end "is on the TV". manage.py set and race_calendar.py refuse to write one.
+$configBytes = (Get-Item -LiteralPath $config).Length
+if ($configBytes -gt 65536) {
+    [Console]::Error.WriteLine("$config is $configBytes bytes, and the launcher ignores a config.json larger than 64 KB (65536 bytes) as a whole, so it would put the TV back on its built-in config instead of this theme (themes/README.md). Nothing was sent to the TV.")
     exit 2
 }
 # Every collection name is checked before anything changes on the TV, as in theme.sh: a name refused halfway
