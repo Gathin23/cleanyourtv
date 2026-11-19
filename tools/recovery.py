@@ -208,34 +208,41 @@ def record_path(list_path, host):
     return record_name(list_path, lan_address(host) or host)
 
 
-def same_list_record(name, list_path):
-    """The record filed for the TV in `name` under another spelling of this list's path, or None.
+def same_list_records(name, list_path):
+    """The records filed for the TV in `name` under another spelling of this list's path.
 
     A record's name hashes the list's path as typed, and a case-insensitive disk (macOS) or a link
     reaches one file by several paths. From the other spelling, undo found no record and fell back to
     defaults, and a second disable.sh run recorded the cleaned TV as its original state. A record whose
     list is the same file (os.path.samefile) is this list's; a copy is another file and keeps its own.
+
+    Every one of them, not the first sorted match: two spellings of one list each wrote a record before
+    this lookup existed, and find_record has to see both of them to refuse between them.
     """
     prefix = name.name[:-len(f"-{list_digest(list_path)}.json")]
+    found = []
     for other in sorted(name.parent.glob(prefix + "-" + "[0-9a-f]" * 8 + ".json")):
         try:
             with open(other) as handle:
                 listed = json.load(handle).get("list")
             if isinstance(listed, str) and os.path.samefile(listed, list_path):
-                return other
+                found.append(other)
         except (OSError, ValueError, AttributeError):
             continue
-    return None
+    return found
 
 
 def find_record(list_path, host):
     """The record file for this TV and list: record_path's name, or the name older versions gave a
     record on the network, TV_HOST exactly as typed with its port (recovery-192.168.1.50_5555-...).
-    With neither, a record taken for the same file under another spelling of its path (same_list_record).
+    With neither, every record taken for the same file under another spelling of its path
+    (same_list_records).
 
     Records under both names cannot be told apart from here: they may be this TV before and after
     cleanup, or two TVs that had this address in turn. So nothing is chosen for the owner, and the
-    run stops before anything reaches the TV.
+    run stops before anything reaches the TV. Two spellings of one list are the same question asked
+    of the path instead of the address - they may be this list's record from before the same-file
+    lookup, or another one - so they are collected the same way and refused together.
     """
     path = record_path(list_path, host)
     address = lan_address(host)
@@ -247,7 +254,11 @@ def find_record(list_path, host):
         names = dict.fromkeys((path, record_name(list_path, typed), record_name(list_path, host)))
     found = [name for name in names if name.exists()]
     if not found:
-        found = [other for other in dict.fromkeys(same_list_record(name, list_path) for name in names) if other]
+        # Across every name this address can have: a record for this file under another spelling of
+        # its path is filed under that spelling's digest, so it can sit beside either name. Collecting
+        # the first sorted match chose one for the owner when two spellings had each written one.
+        found = list(dict.fromkeys(other for name in names
+                                   for other in same_list_records(name, list_path)))
         if len(found) == 1:
             sys.stderr.write(f"using {found[0]}, the record taken for this list under another spelling "
                              "of its path.\n")
@@ -255,10 +266,11 @@ def find_record(list_path, host):
     if not found:
         return path
     if len(found) > 1:
-        raise SystemExit("this TV and list have two recovery records, under the name older versions "
-                         "gave it and the one\nit gets now:\n" + "".join(f"  {name}\n" for name in found)
-                         + "They may be this TV before and after cleanup, or two TVs that had this address "
-                         "in turn.\nMove the one that is not this TV's state from before cleanup aside "
+        raise SystemExit("this TV and list have two recovery records:\n"
+                         + "".join(f"  {name}\n" for name in found)
+                         + "They may be this TV before and after cleanup, may be two TVs that had this "
+                         "address in turn,\nor may be records taken for this list under two spellings of "
+                         "its path.\nMove the one that is not this TV's state from before cleanup aside "
                          "deliberately, then run this again.\nNothing was changed on the TV.")
     if found[0] != path:
         sys.stderr.write(f"using {found[0]}, the name an older version gave this TV's record.\n")
