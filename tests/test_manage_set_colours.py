@@ -111,6 +111,33 @@ class ColourValueTest(unittest.TestCase):
         self.assertIsNone(self.set_key("accent_color", " #FF7A1A "))
         self.assertEqual("#FF7A1A", self.written()["accent_color"])
 
+    def test_json_string_colours_write_the_decoded_value(self):
+        for key, value in (("background_color", "#0A0B0C"), ("background_color", "#FF112233"),
+                           ("background_color", "red"), ("accent_color", "#FF7A1A"),
+                           ("background_color", "  #aAbBcC "), ("accent_color", " #aAbBcC ")):
+            for argument in dict.fromkeys((json.dumps(value), json.dumps(value).replace("#", r"\u0023"))):
+                with self.subTest(key=key, argument=argument):
+                    self.config.write_text('{"greeting_name": "Keep"}\n', encoding="utf-8")
+                    self.push.reset_mock()
+                    self.assertIsNone(self.set_key(key, argument))
+                    self.assertEqual(self.written(), {"greeting_name": "Keep", key: value.strip()})
+                    self.push.assert_called_once()
+
+    def test_json_string_quotes_do_not_bypass_the_colour_refusals(self):
+        for key, value in (("background_color", "#12345"), ("background_color", "#80112233"),
+                           ("accent_color", "#12345"), ("accent_color", "#FF112233"),
+                           ("accent_color", "gold")):
+            for argument in dict.fromkeys((json.dumps(value), json.dumps(value).replace("#", r"\u0023"))):
+                with self.subTest(key=key, argument=argument):
+                    original = b'\xef\xbb\xbf{"greeting_name": "Keep"}\r\n'
+                    self.config.write_bytes(original)
+                    self.push.reset_mock()
+                    refusal = self.set_key(key, argument)
+                    self.assertIsNotNone(refusal)
+                    self.assertIn(key, refusal)
+                    self.assertEqual(self.config.read_bytes(), original)
+                    self.push.assert_not_called()
+
     def test_another_string_key_is_not_held_to_a_colour(self):
         # greeting_name's row is `string`, read by Config.string(): "#12345" is the text it is.
         self.assertIsNone(self.set_key("greeting_name", "#12345"))

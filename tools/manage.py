@@ -683,7 +683,13 @@ def value_as(key, item, text):
             sys.exit(f"{key} is a bool, so pass true or false, not {text}")
         return text.strip().lower() == "true"
     if kind == "colour":
-        return colour_value(key, text)
+        # Colours are strings too: decode JSON string arguments as the other string keys do.
+        # Validate the decoded colour, so its JSON quotes cannot hide a malformed hex value.
+        try:
+            parsed = json.loads(text)
+        except ValueError:
+            parsed = text
+        return colour_value(key, parsed if isinstance(parsed, str) else text)
     if kind in (None, "string"):
         try:
             parsed = json.loads(text)
