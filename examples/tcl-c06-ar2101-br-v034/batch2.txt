@@ -1,0 +1,3 @@
+com.tcl.micmanager
+com.tcl.smartalexa
+com.google.android.tv.assistant

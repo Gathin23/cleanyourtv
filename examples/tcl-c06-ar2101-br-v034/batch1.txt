@@ -1,0 +1,6 @@
+com.tcl.usercenter
+com.tcl.waterfall.overseas
+com.tcl.esticker
+com.tcl.useragreement
+com.tcl.copydatatotv
+android.autoinstalls.config.tcl.device
