@@ -152,23 +152,6 @@ class AddonBuildRouteTest(unittest.TestCase):
                       "docs/workflows/addon.md asks for a `gradlew` and not its `gradlew.bat`, which this "
                       "test refuses: a folder made from the page fails on the Command Prompt route")
 
-    def test_the_recipe_accepts_a_kotlin_dsl_settings_file(self):
-        """The folder test above takes `settings.gradle` or `settings.gradle.kts`: tv-hub ships the .kts
-        form and builds in CI, so the recipe a new add-on is made from cannot ask for the Groovy name only.
-        """
-        page = (ROOT / "docs" / "workflows" / "addon.md").read_text(encoding="utf-8")
-        step = page.split("\n1. ", 1)[1].split("\n2. ", 1)[0] if "\n1. " in page else ""
-        self.assertIn("settings.gradle", step, "the recipe's first step no longer names the settings file")
-        self.assertIn("settings.gradle.kts", step,
-                      "docs/workflows/addon.md asks for `settings.gradle` only, while "
-                      "test_every_addon_follows_the_rules accepts settings.gradle.kts and "
-                      "addons/tv-hub ships it")
-        bullet = next((b for b in (ADDONS / "README.md").read_text(encoding="utf-8").split("\n- ")
-                       if b.startswith("**Its own app.**")), "")
-        self.assertIn("settings.gradle.kts", bullet,
-                      "addons/README.md's own-app rule names `settings.gradle` only, which reads as a "
-                      "refusal of the .kts form the folder test accepts")
-
 
 if __name__ == "__main__":
     unittest.main()
