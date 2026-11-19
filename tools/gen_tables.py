@@ -58,7 +58,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 KEYS = ("tv", "os", "brand", "notes")
 OPTIONAL = ("readme_os",)
@@ -140,7 +140,9 @@ def load(root, allow_missing=False):
                 # URI schemes are case-insensitive; keep the original link text and path unchanged.
                 if target.lower().startswith(("http:", "https:", "mailto:", "#")):
                     continue
-                if not (root / "examples" / target.split("#")[0]).exists():
+                # Strip the fragment before decoding: %23 belongs to the filename, not the anchor.
+                local = unquote(target.split("#")[0])
+                if not (root / "examples" / local).exists():
                     problems.append(f"{where}: the link {target} in \"{key}\" leads nowhere "
                                     f"(links are relative to examples/)")
         entries.append((folder.name, data))
