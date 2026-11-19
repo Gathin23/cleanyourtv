@@ -121,7 +121,9 @@ def season(value):
     URL that 404s or as a season that never existed, and its answer was a traceback either way.
     """
     if value == "current" or (len(value) == 4 and value.isdigit() and int(value) >= FIRST_SEASON):
-        return value
+        # int() also accepts fullwidth and Arabic decimal digits; the HTTP path needs ASCII.
+        # Keep accepted years usable instead of blaming a request-encoding failure on Jolpica's JSON.
+        return value if value == "current" else str(int(value))
     raise argparse.ArgumentTypeError(
         f"a season is 'current' or a year from {FIRST_SEASON} on, not {value!r}")
 

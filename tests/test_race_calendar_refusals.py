@@ -92,6 +92,34 @@ class SeasonArgumentTest(unittest.TestCase):
         self.assertEqual(race_calendar.season("2026"), "2026")
         self.assertEqual(race_calendar.season(str(race_calendar.FIRST_SEASON)), str(race_calendar.FIRST_SEASON))
 
+    def test_decimal_years_build_ascii_requests_and_update_the_calendar(self):
+        for value in ("2026", "２０２６", "٢٠٢٦", "20２٦"):
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as tmp:
+                folder = Path(tmp)
+                config = folder / "config.json"
+                config.write_bytes(THEME_BYTES)
+                urls = []
+
+                def fetch(request, **kwargs):
+                    # Exercise HTTP's actual request-line encoding without opening a connection.
+                    connection = http.client.HTTPSConnection("api.jolpi.ca")
+                    try:
+                        connection.putrequest(request.get_method(), request.selector)
+                    finally:
+                        connection.close()
+                    urls.append(request.full_url)
+                    return io.BytesIO(RESPONSE)
+
+                with mock.patch.object(sys, "argv", ["race_calendar.py", str(folder), "--season", value]), \
+                        mock.patch.object(race_calendar, "datetime", clock()), \
+                        mock.patch.object(race_calendar.urllib.request, "urlopen", side_effect=fetch), \
+                        contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(race_calendar.main(), 0)
+                self.assertEqual(urls, [race_calendar.API.format(season="2026")])
+                data = json.loads(config.read_text(encoding="utf-8"))
+                self.assertEqual(data.pop("race_calendar")[0]["round"], 1)
+                self.assertEqual(data, {k: v for k, v in THEME.items() if k != "race_calendar"})
+
     def test_a_typo_and_a_year_before_the_first_season_are_refused(self):
         for value in ("2027x", "26", "26x", str(race_calendar.FIRST_SEASON - 1), "1899", "", "2026.5",
                       "-2026"):
