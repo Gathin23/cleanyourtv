@@ -49,10 +49,12 @@ Without the stock launcher these keep working on their own: Home, Back, volume, 
 the Prime Video button. The list leaves YouTube, YouTube Music and Netflix commented out; if you
 uncomment them, the YouTube and Netflix buttons do nothing.
 
-The Settings (gear) button was answered only by launcherx and goes dead without it. Settings stays one
-press away on the launcher's Settings pill (Home, then Up). It could be mapped back with the launcher's
-key service (`HOME_KEY_SERVICE=1` and `app_keys`, as on the BenQ GV32), but on this board a bound
-key-filtering service drops held-key repeats (holding volume moves one step per press), so it was left off.
+The Settings (gear) button does nothing once launcherx is disabled: it sends scancode 249, which the
+remote's key layout does not map. Settings stays one press away on the launcher's Settings pill (Home,
+then Up). The launcher's key service (`HOME_KEY_SERVICE=1`) could map it back, but on this board a bound
+key-filtering service drops held-key repeats (holding volume moves one step per press). The
+[Settings key note](../../docs/devices/epson-ef21-settings-key.md) brings the gear back with a
+keyboard-layout overlay instead, with no key helper, so held volume still ramps.
 
 ## Re-enable an app
 

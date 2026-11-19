@@ -30,6 +30,7 @@
 # - Remote: Home, Back, volume, D-pad, Input and the Prime Video button keep working without launcherx.
 #   The Settings (gear) button goes dead with launcherx; Settings stays reachable from the launcher's
 #   Settings pill. HOME_KEY_SERVICE was left off to keep held-key repeat (see examples/benq-gv32).
+#   docs/devices/epson-ef21-settings-key.md brings the gear back without a key helper.
 #   The YouTube and Netflix buttons do nothing if you uncomment those apps below.
 # - Reboot-checked: everything listed stays disabled, Home survives, Wi-Fi stays connected.
 
