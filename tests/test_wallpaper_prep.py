@@ -3,6 +3,7 @@ import importlib.util
 import contextlib
 import io
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -51,6 +52,34 @@ def swapped_primaries_profile():
 
 @unittest.skipUnless(HAVE_CMS, "Pillow with LittleCMS is needed for colour profiles")
 class ColourProfileTest(unittest.TestCase):
+    def test_missing_colour_management_warns_and_still_writes_the_photo(self):
+        script = ROOT / "tools" / "wallpaper_prep.py"
+        # ImageCms can import successfully without its native core and defer ImportError
+        # until profile parsing, so exercise both missing-module shapes in fresh processes.
+        for missing in ("PIL.ImageCms", "PIL._imagingcms"):
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as tmp:
+                source, output = Path(tmp, "photos"), Path(tmp, "out")
+                source.mkdir()
+                photo = source / "a.png"
+                Image.new("RGB", (64, 36), (220, 40, 20)).save(
+                    photo, icc_profile=swapped_primaries_profile())
+                original = photo.read_bytes()
+                code = ("import runpy,sys; missing,tool=sys.argv[1:3]; "
+                        "sys.modules[missing]=None; sys.argv=sys.argv[2:]; "
+                        "runpy.run_path(tool,run_name='__main__')")
+                result = subprocess.run([sys.executable, "-c", code, missing, str(script), str(source),
+                                         str(output), "--size", "64x36", "--brightness", "1", "--gradient", "0"],
+                                        capture_output=True, text=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+                self.assertIn("1 of 1 pictures written", result.stdout)
+                self.assertIn("warning:", result.stderr)
+                self.assertIn("LittleCMS", result.stderr)
+                with Image.open(output / "01.jpg") as image:
+                    red, green, blue = image.getpixel((32, 18))
+                self.assertGreater(red, 200)
+                self.assertLess(blue, 30)
+                self.assertEqual(photo.read_bytes(), original)
+
     def test_embedded_rgb_profiles_are_applied_before_darkening(self):
         for mode, suffix in (("RGB", ".png"), ("RGBA", ".png"), ("P", ".png"), ("RGB", ".jpg")):
             with self.subTest(mode=mode, suffix=suffix), tempfile.TemporaryDirectory() as tmp:
