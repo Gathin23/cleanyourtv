@@ -1,6 +1,6 @@
 {
-  "tv": "Hisense 55QD6QF Fire TV (AFTOLCBC82, ginza), Canada",
+  "tv": "Hisense 55QD6QF / 43QD65QFC Fire TV (AFTOLCBC82, ginza), Canada and US",
   "os": "Fire OS 8.1.8.0 / Android 11",
   "brand": "Hisense",
-  "notes": "Fire OS 8.1 TV: Amazon telemetry, ACR, ad/recommendation feeders, advertising ID, Shopping, Channels, tutorials; Amazon preloads, Miracast and Alexa off by choice (vizzini returns at every boot); retailer apps re-enable at boot (remove them in Settings > Applications); Wi-Fi owned by oobe; input switching, the Home key and the homekey broadcast reserved to Amazon; AirPlay, Live TV, Silk, OTA kept; debloat only"
+  "notes": "Fire OS 8.1 TV: Amazon telemetry, ACR, ad/recommendation feeders, advertising ID, Shopping, Channels, tutorials; Amazon preloads, Miracast and Alexa off by choice (vizzini returns at every boot on the Canadian set); retailer apps re-enable at boot (remove them in Settings > Applications); Wi-Fi owned by oobe; input switching, the Home key and the homekey broadcast reserved to Amazon; AirPlay, Live TV, Silk, OTA kept; the 43-inch US unit is `debloat-43qd65qfc.txt` (Tubi is user-installed there and off its list, its contentsupport line commented out for the voice-typing reason, vizzini stayed off across its reboot); debloat only"
 }
