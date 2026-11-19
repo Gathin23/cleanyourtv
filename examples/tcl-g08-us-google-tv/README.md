@@ -67,7 +67,7 @@ the app buttons, so the kernel reports `KEY_UNKNOWN` (scancode 240) and TCL's in
 | YouTube | `0x000c0057` | `BUTTON_3` (190) | a global key: Android sends it to launcherx's `GlobalKeyListener_Receiver`, no window sees it |
 | Apple TV | `0x000c0086` | 4160 | reaches the focused window, nothing opens |
 | TCL tv+ | `0x000c0150` | 4184 | TCL's `TclShortCutKeyManager` starts `tcl://com.tcl.tvplus`, which fails with TCL TV+ disabled |
-| Disney+ | `0x000c004d` | 4141 | still opens: TCL starts it itself (codes from the fifth unit) |
+| Disney+ | `0x000c004d` | 4141 | still opens: TCL starts it itself (codes from the sixth unit) |
 
 Input, Back, Home, the Assistant button and volume work as before. `dumpsys window policy` lists the global keys
 that go to launcherx on this build: `GUIDE`, `BUTTON_3`, `PROFILE_SWITCH`, `FEATURED_APP_1` and `MACRO_1`.
@@ -151,7 +151,8 @@ several reboots.
 - **Energy Modes > Increased ("Always connected") leaves Low Power Standby on.** `low_power_standby_enabled` stays
   1 and the firmware sets it back to 1 at every boot, so apps lose the network while the TV sleeps
   (`blocked=LOW_POWER_STANDBY` in `dumpsys netpolicy`). Only the system and the shell can write that setting.
-## Fifth unit: TCL 55Q77K with Google TV's home kept
+## Sixth unit: TCL 55Q77K with Google TV's home kept
+
 TCL 55Q77K, model "Smart TV Pro", product `G08_4K_US`, the same firmware `UTT2.250416.001 AU16`, on Wi-Fi with
 the TV speakers, remote `BT_RC923A_B1`, a Google account signed in. Set up on 14 November 2026 with
 `tools/disable.sh`: this list without AirPlay (kept by that owner) and with launcherx left enabled, plus Pluto TV
