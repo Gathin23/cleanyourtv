@@ -1,0 +1,68 @@
+# CHiQ U43QM8V 43" (Changhong, reports model "AI PONT", product DVB99CQ, device changi), Google TV on
+# Android 11 (API 30), firmware RTMA.250416.195, fingerprint
+# CHiQ/DVB99CQ/changi:11/RTMA.250416.195/13988618:user/release-keys.
+# Not the build in examples/chiq-ai-pont (DVB93CQ, samseong, Android TV 11 on tvlauncher) and not the
+# Google TV 14 DVB99PQ/changi set in docs/TROUBLESHOOTING.md: this is the Android 11 changi build, whose
+# Home is com.google.android.apps.tv.launcherx.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/chiq-u43qm8v/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/chiq-u43qm8v/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER; left to
+# launcher/build-and-install.sh, which disables it only after the new Home is set). Live TV:
+# com.mediatek.wwtv.tvcenter.
+#
+# Before the setupwraith line: the saved Wi-Fi network belonged to it (dumpsys wifi answered
+# cname=com.google.android.tungsten.setupwraith). Forgetting and re-joining that network in Settings moved
+# it to cname=com.android.tv.settings, with the randomized MAC unchanged, and setupwraith could then be
+# disabled without losing Wi-Fi. Check the cname on this set before disabling it.
+#
+# Not on this unit, unlike examples/chiq-ai-pont: the Anoki ACR (tv.anoki.acr.controller), com.cltv.fast
+# and the com.homwee.aipont portal. logcat shows "Failed to find provider tvlauncher.widget" once
+# launcherx goes; no package on this firmware provides it and com.mediatek.tv.service did not crash, so
+# there is no partner customizer to install here for it.
+#
+# KEEP: com.mediatek.* (Live TV, inputs, remote pairing, picture), com.homwee.dmt.upgrade and
+# com.homwee.synckey (firmware updates and the remote key service). Kept by the owner's choice:
+# Chromecast, Homwee screen share, the Google ambient screensaver, Netflix, YouTube and Disney+.
+#
+# Gear key: with launcherx gone and no helper the gear does nothing. getevent prints MSC_SCAN 000c009f
+# and KEY_UNKNOWN for it, and HOME_KEY_SERVICE=1 with settings_key_keycodes = [83] opened Settings on the
+# first try; with the helper bound and volume_pauses_filter true a held Volume+ steps once on the first
+# press and then ramps normally within 4 s, which is why this owner runs without the helper. The keycode-83
+# route and what to do when a getevent code matches nothing: docs/TROUBLESHOOTING.md, the "Which keycode"
+# bullet.
+#
+# Tested on one set on 19 November 2026, 43" Czech retail, in three batches with a reboot after each stage
+# and a second reboot afterwards. ADB was network ADB on 5555, opened by USB debugging alone. The reference
+# launcher installed and the boot went FallbackHome straight to it, with no Live TV in front and no helper.
+# Home, Input, Netflix, YouTube and held volume work on the Bluetooth remote. One day, not a multi-day soak.
+
+# Vendor apps
+com.homwee.store
+com.homwee.help
+com.homwee.upgrade                      # vendor app updater; the Play Store still updates apps
+
+# Partner installs, telemetry and account sync
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.syncadapters.calendar
+
+# Preloaded apps
+com.amazon.amazonvideo.livingroom
+com.wbd.stream
+com.iqiyi.i18n.tv
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+
+# Personal choice: comment out what you use
+com.google.android.katniss              # Google Assistant (the mic button stops working)
+
+# Disable only after the saved network no longer says cname=com.google.android.tungsten.setupwraith;
+# see the note above.
+com.google.android.tungsten.setupwraith
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
+# after the new home is installed and set as default; restore.sh re-enables it.
+# com.google.android.apps.tv.launcherx
