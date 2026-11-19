@@ -347,16 +347,28 @@ public class HomeKeyService extends AccessibilityService {
         CharSequence pkg = event.getPackageName(), cls = event.getClassName();
         if (stockHome.isEmpty() || pkg == null || cls == null) return;
         long now = SystemClock.elapsedRealtime();
-        if (stockHome.contains(pkg + "/" + cls)) {
+        String window = pkg.toString();
+        if (stockHome.contains(window + "/" + cls)) {
             // Google TV shows voice search results in launcherx's HomeActivity, reached through the Assistant and
             // launcherx's own LauncherDeepLink; sending that back here lost the results. Such a window stays.
             boolean onPurpose = deepLinked(now, stockDeepLinkUntil);
             stockDeepLinkUntil = 0;
-            if (!onPurpose) openHome();
-        } else if (opensStockHome(pkg.toString(), stockHomePackages) && isActivity(pkg, cls)) {
+            handler.removeCallbacks(stockHomeBack);
+            // Not at once: the Assistant can bring the stock home up a few ms before the app it was asked to open
+            // (YouTube), and Home started then would cover that app. Any other window in between cancels it.
+            if (!onPurpose) handler.postDelayed(stockHomeBack, STOCK_HOME_DELAY_MS);
+        } else if (opensStockHome(window, stockHomePackages)
+                && (ASSISTANT_PACKAGE.equals(window) || isActivity(pkg, cls))) {
             stockDeepLinkUntil = now + DEEP_LINK_WINDOW_MS;
+            handler.removeCallbacks(stockHomeBack);
+        } else if (!stockHomePackages.contains(window)) {
+            handler.removeCallbacks(stockHomeBack);
         }
     }
+
+    /** stock_home_redirect after STOCK_HOME_DELAY_MS, unless another window came up meanwhile. */
+    private final Runnable stockHomeBack = this::openHome;
+    static final long STOCK_HOME_DELAY_MS = 400L;
 
     /** The Google TV Assistant (voice search), which hands its results to the stock launcher. */
     static final String ASSISTANT_PACKAGE = "com.google.android.katniss";
