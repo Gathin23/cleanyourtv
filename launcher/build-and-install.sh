@@ -196,21 +196,30 @@ rollback_home() {
 # on Google TV 14 the next candidate is the setup wizard's RecoveryActivity, which crash-loops
 # system_server (see examples/xiaomi-tv-a-pro-2026). So check where Home ended up, and put the
 # stock launcher back if it is not ours.
+# STOCK_LAUNCHER=none with HOME_KEY_SERVICE=1 keeps the stock launcher as Home on purpose: nothing was disabled,
+# and stock_home_redirect sends its home screen here. Fire OS needs this: Amazon's launcher can't be disabled and
+# outranks set-home-activity, so Home never resolves to this launcher there.
+KEPT_HOME=0
+if [ "$STOCK_LAUNCHER" = none ] && [ "${HOME_KEY_SERVICE:-0}" = 1 ]; then KEPT_HOME=1; fi
 HOME_NOW=$(query_home)
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
   *)
-    if [ -z "$HOME_NOW" ]; then
-      echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2
+    if [ -n "$HOME_NOW" ] && [ "$KEPT_HOME" = 1 ]; then
+      echo "Home stays $HOME_NOW; HomeKeyService sends it here (stock_home_redirect)."
     else
-      echo "ERROR: Home resolves to $HOME_NOW, not to the new launcher." >&2
-    fi
-    rollback_home || true
-    if [ -n "$HOME_NOW" ]; then
-      echo "On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to" >&2
-      echo "your debloat list (see README, Troubleshooting), apply the list, then run this script again." >&2
-    fi
-    exit 1 ;;
+      if [ -z "$HOME_NOW" ]; then
+        echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2
+      else
+        echo "ERROR: Home resolves to $HOME_NOW, not to the new launcher." >&2
+      fi
+      rollback_home || true
+      if [ -n "$HOME_NOW" ]; then
+        echo "On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to" >&2
+        echo "your debloat list (see README, Troubleshooting), apply the list, then run this script again." >&2
+      fi
+      exit 1
+    fi ;;
 esac
 
 # Optional accessibility services. Off unless asked for, and Android switches them off again on

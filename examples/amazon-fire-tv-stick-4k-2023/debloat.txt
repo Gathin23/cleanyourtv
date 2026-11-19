@@ -2,7 +2,14 @@
 # Android 11 (SDK 30), Brazil. The first Fire OS 8 list here: it starts from amazon-fire-tv-stick-lite-2020/ and
 # amazon-fire-tv-stick-4k-2018/, and every package new in Fire OS 8 was checked with `dumpsys package` before listing.
 #
-# FIRE OS: DEBLOAT ONLY. Home is com.amazon.tv.launcher/.ui.HomeActivity_vNext (priority 950); launcher/ does not apply.
+# FIRE OS: Home stays com.amazon.tv.launcher/.ui.HomeActivity_vNext (priority 950): Amazon's launcher can't be disabled
+# and outranks set-home-activity. The launcher runs on top of it with stock_home_redirect: set it to
+# com.amazon.tv.launcher (config.xml or a theme), then install with
+#   STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 TV_HOST=<stick ip> launcher/build-and-install.sh
+# Seen 2026-11-04 on another AFTKM (Fire OS 8.1.8.2): Home from an app starts the launcher 0.14 to 0.36 s after
+# Amazon's home (0.8 to 1 s on the first press after an install), and Amazon's home shows until then. Fire OS keeps
+# the Home key itself from accessibility services, so the redirect reacts to the window. Settings and Wi-Fi open
+# (MainSettingsActivity is started directly, so Amazon's home never shows on the way) and Back returns to the launcher.
 #
 # Apply:   TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-4k-2023/debloat.txt
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/amazon-fire-tv-stick-4k-2023/debloat.txt com.amazon.tv.launcher
