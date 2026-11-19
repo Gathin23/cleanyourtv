@@ -1,0 +1,14 @@
+{
+  "dock_apps": [
+    "com.stremio.one",
+    "org.smarttube.beta",
+    "com.wbd.stream",
+    "com.canal.android.canal"
+  ],
+  "hidden_apps": [
+    "com.sdmc.implayer"
+  ],
+  "live_tv_package": "",
+  "columns": 4,
+  "rows_below_dock": 0
+}
