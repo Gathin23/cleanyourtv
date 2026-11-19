@@ -23,6 +23,12 @@ it names the folder.
 An output that is the same file as any input trace (including symbolic and hard links) is refused
 with exit 2 before the engine starts, so drawing the chart cannot overwrite a recording.
 
+Keep `nav` recordings separate from starts (`cold`, `coldsys`, `home`, `custom`) when choosing a
+folder's median, as for the report. Across panels, `nav` always draws the whole recording, so comparing
+it with a start's first-frame or `start:MS` window is refused before the engine starts, leaving an
+existing output untouched. Draw them separately, or explicitly use `--window all` to compare whole
+recordings in every panel. A trace's sidecar scenario takes precedence over its filename, as in the report.
+
 | Option | Default | Notes |
 |---|---|---|
 | `TRACE ...` | | Before, then after (up to 4). A folder draws its median run, by the first of time to first frame, median frame time and median RenderThread draw that every run has; the panel names the run and the measure. A folder with none of them in every run is refused. |
