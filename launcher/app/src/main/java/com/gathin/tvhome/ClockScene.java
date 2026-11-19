@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -42,7 +43,8 @@ final class ClockScene {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
-    private final View content;
+    private View content;
+    private boolean floatingClock;
     private final ClockRefresh clockRefresh;
     private final ImageView ambient;
     private final GradientDrawable glow;
@@ -69,7 +71,7 @@ final class ClockScene {
     private final Runnable tick = new Runnable() {
         @Override
         public void run() {
-            moveClock();
+            if (!floatingClock) moveClock();
             shiftGlow();
             advanceWallpaper();
             handler.postDelayed(this, MOVE_MS);
@@ -98,7 +100,7 @@ final class ClockScene {
         });
         handler.removeCallbacks(tick);
         handler.postDelayed(tick, MOVE_MS);
-        clockRefresh.start();
+        if (!floatingClock) clockRefresh.start();
         if (wallpaperFile != null && !wallpaperShown) loadWallpaper();
     }
 
@@ -126,6 +128,14 @@ final class ClockScene {
         // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
         glowOff = !cfg.clockGlow;
         if (glowOff) ambient.setBackground(null);
+        // floating_clock: replace the static TextClock layout with the full-screen floating digital clock.
+        if (cfg.floatingClock && !floatingClock) {
+            floatingClock = true;
+            content.setVisibility(View.GONE);
+            FloatingClockView view = new FloatingClockView(ctx);
+            ((ViewGroup) content.getParent()).addView(view, -1, -1);
+            content = view;
+        }
         if (!cfg.clockWallpaper) return;
         // What Home plays, and Config puts the single wallpaper in it when a theme has no collection.
         // Reading cfg.wallpaper first held the screensaver on wallpaper.jpg while Home rotated.
@@ -234,6 +244,10 @@ final class ClockScene {
 
     /** A random spot that keeps the whole clock on screen, with the glow centred behind it. */
     private void placeClock() {
+        if (floatingClock) {
+            glow.setGradientCenter(0.5f, 0.5f);
+            return;
+        }
         View parent = (View) content.getParent();
         int maxX = Math.max(0, parent.getWidth() - content.getWidth());
         int maxY = Math.max(0, parent.getHeight() - content.getHeight());
