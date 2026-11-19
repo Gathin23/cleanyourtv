@@ -360,6 +360,12 @@ def parse(argv):
 
 
 def main(argv=None):
+    # Run names and the report's range separators may not fit the console's code page.
+    # A completed measurement must still print, as in flamechart.py and screendiff.py.
+    try:
+        sys.stdout.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
     args = parse(sys.argv[1:] if argv is None else argv)
     sets = [expand(args.traces)] + ([expand(args.vs)] if args.vs else [])
     for paths in sets:
