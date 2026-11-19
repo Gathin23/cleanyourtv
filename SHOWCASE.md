@@ -365,7 +365,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Kogan:** [Quay](https://github.com/checkmate-automate/Quay-DebloatedAndroidLauncher)
 - **LG:** [Clean Your TV — LG webOS](https://github.com/Razdva122/clean-your-tv-lg-webos), [CleanYourTV for LG webOS](https://github.com/lasharor/cleanyourtv-WebOS), [CleanYourTV webOS edition](https://github.com/SamuelSHernandez/cleanyourtv-webOS/tree/main/webos), [webOS launcher](https://github.com/OmkarK97/webos-vibehack)
 - **Lumio:** [Web Remote](https://github.com/UjjwalKaul/webremote)
-- **Magcubic:** [Magcubic HY320 Pro Launcher](https://github.com/KeyErrorFinn/cleanyourtv-magcubic-hy320pro-launcher), [Re:HY320](https://github.com/raffaeledf9/ReHY320)
+- **Magcubic:** [Magcubic HY320 Pro Launcher](https://github.com/KeyErrorFinn/cleanyourtv-magcubic-hy320pro-launcher)
 - **Magyar Telekom (SDMC box):** [CleanYourTV Blocky Cabin](https://github.com/CsPS0/cleanyourtv-blocky)
 - **MOKA:** [Corner Player](https://github.com/maxhayim/corner-player), [Webmote](https://github.com/maxhayim/webmote), [Kids Mode](https://github.com/maxhayim/kids-mode), [Standby Light](https://github.com/maxhayim/standby-light), [Workplace Home](https://github.com/maxhayim/cleanyourtv/tree/workplace-options), [Retro Launchers](https://github.com/maxhayim/cleanyourtv/blob/retro-launchers/RETRO_LAUNCHERS.md)
 - **Motorola:** [Casa](https://github.com/joseorteha/casa-tv), [TV Motorola Launcher](https://github.com/kartikcool15/tv-motorola-launcher)
