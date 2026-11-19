@@ -30,14 +30,25 @@
 # Gear key: with launcherx gone and no helper the gear does nothing. getevent prints MSC_SCAN 000c009f
 # and KEY_UNKNOWN for it, and HOME_KEY_SERVICE=1 with settings_key_keycodes = [83] opened Settings on the
 # first try; with the helper bound and volume_pauses_filter true a held Volume+ steps once on the first
-# press and then ramps normally within 4 s, which is why this owner runs without the helper. The keycode-83
-# route and what to do when a getevent code matches nothing: docs/TROUBLESHOOTING.md, the "Which keycode"
-# bullet.
+# press and then ramps normally within 4 s, which is why the filtering mode was dropped here - the
+# non-filtering mode below leaves held volume alone. The keycode-83 route and what to do when a getevent
+# code matches nothing: docs/TROUBLESHOOTING.md, the "Which keycode" bullet.
+#
+# Power key, and what a wake opens: the remote's power button only suspends this set, and while a cold
+# boot goes FallbackHome straight to the reference launcher, a sleep and wake brings back whatever ran
+# last (YouTube in the owner's test). HOME_KEY_SERVICE=1 with power_on_home_always true and key_filter
+# false, power_on_home and volume_pauses_filter left false, brings Home forward about 1.5 s after a wake:
+# measured with KEYCODE_SLEEP / KEYCODE_WAKEUP from YouTube and on the real remote, where a held Volume+
+# still ramps at once because nothing filters keys. So the "no helper" in the session below holds for the
+# cold boot only - for everyday use this owner runs the helper in that non-filtering mode, and the gear
+# stays dead that way, since the keycode-83 mapping above needs the filter. The options are the ones the
+# OK. unit in examples/chiq-ai-pont/README.md carries.
 #
 # Tested on one set on 19 November 2026, 43" Czech retail, in three batches with a reboot after each stage
 # and a second reboot afterwards. ADB was network ADB on 5555, opened by USB debugging alone. The reference
 # launcher installed and the boot went FallbackHome straight to it, with no Live TV in front and no helper.
 # Home, Input, Netflix, YouTube and held volume work on the Bluetooth remote. One day, not a multi-day soak.
+# The power-key paragraph above is the owner's follow-up on the same set, measured after that session.
 
 # Vendor apps
 com.homwee.store
