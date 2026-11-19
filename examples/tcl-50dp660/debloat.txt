@@ -11,6 +11,11 @@
 # Stock launcher is com.google.android.tvlauncher and it has HOME priority 2 on this firmware: it
 # must be disabled, or set-home-activity reports Success and HOME still lands on it. Install the
 # replacement launcher first, otherwise disable.sh will skip that line for its own HOME guard.
+# If you cannot reflash the set from USB, comment that line out instead and take Home through
+# stock_home_redirect with key_filter and home_long_press_home: a set that comes back on the
+# first-run wizard with the stock launcher disabled finishes into a black screen, with no Home to
+# hand over to and adb_enabled back to 0 so tools/restore.sh cannot run, and only the full firmware
+# reflash brings it back, wiping /data. docs/devices/tcl-50dp660.txt has the session (#4071).
 # Live TV is com.tcl.tv, the tuner input is com.tcl.tvinput, HDMI and AV are com.tcl.tvpassthrough.
 #
 # Factory menu from the remote, no software needed:
