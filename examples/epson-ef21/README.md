@@ -6,7 +6,7 @@ Both halves work: the debloat list and the Clean Your TV launcher as Home.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 16 packages that were disabled, grouped and commented, with what to keep and why (`build-and-install.sh` disables launcherx on top) |
+| `debloat.txt` | The 13 packages the list disables (YouTube, YouTube Music and Netflix, also off on this unit, are commented out), grouped and commented, with what to keep and why (`build-and-install.sh` disables launcherx on top) |
 | `config.json` | Dock order and the hidden USB player tile; push it with `tools/theme.sh` |
 
 All commands run from the repo root, with the projector's IP in `TV_HOST`.
@@ -46,8 +46,8 @@ TV_HOST=<tv ip> tools/tv.py 'settings put secure screensaver_components com.gath
 ## Remote buttons
 
 Without the stock launcher these keep working on their own: Home, Back, volume, the D-pad, Input and
-the Prime Video button. The YouTube and Netflix buttons do nothing because the list disables those apps;
-comment their lines out if you use them.
+the Prime Video button. The list leaves YouTube, YouTube Music and Netflix commented out; if you
+uncomment them, the YouTube and Netflix buttons do nothing.
 
 The Settings (gear) button was answered only by launcherx and goes dead without it. Settings stays one
 press away on the launcher's Settings pill (Home, then Up). It could be mapped back with the launcher's
