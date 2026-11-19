@@ -43,14 +43,15 @@ com.xiaomi.mitv.tvmanager
 com.xiaomi.gamecenter.sdk.service.mibox
 
 # Stock launcher (duokan content wall, incl. a PREDETAIL_AD_ACTIVITY); replaced by launcher/.
-# Unhide it first if you ever factory-reset the TV. Left commented out: the launcher needs the
-# minSdk-22 build proposed in PR #146, which is not merged, so for now take the debloat half only.
+# Unhide it first if you ever factory-reset the TV. Left commented out: launcher/ needs Android 8
+# (minSdk 26) and this set runs 5.1, and the minSdk-22 build proposed in PR #146 was closed unmerged
+# on 2026-10-22, so take the debloat half only.
 # com.mitv.tvhome
 
 # Owner's-choice removals NOT listed above (uninstalled with APKs backed up first, restore by
 # installing the APK again): gala demo video, KKTv, Bilibili TV (xiaodianshi), Tencent TV
 # (ktcp), Mi app store (27 MB background updater), phone-remote service, voice control.
 #
-# Launcher notes for this model: needs the minSdk-22 build (PR #146, not merged yet); the Settings
-# and Wi-Fi pills require the com.xiaomi.mitv.settings fallback keys in config.xml - the
-# firmware never registers the standard android.settings.* actions.
+# Launcher notes for this model, for a fork that lowers minSdk: the Settings and Wi-Fi pills require
+# the com.xiaomi.mitv.settings fallback keys in config.xml - the firmware never registers the
+# standard android.settings.* actions.
