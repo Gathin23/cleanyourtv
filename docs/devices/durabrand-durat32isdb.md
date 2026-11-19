@@ -57,9 +57,14 @@ end of that session.
 - `com.google.android.tvrecommendations` and `com.haier.launcher.haiermatrix` come back on every
   boot: `com.at.factory.factorymanager` calls `enableApp` for both, and the second is a system app
   re-enabled during the boot package scan. Disabling them looks like it worked until the next
-  restart. ([PR #434](https://github.com/Gathin23/cleanyourtv/pull/434) is the tool that reports
-  this kind of drift; until it is merged, check by hand with
-  `tools/tv.py 'pm list packages -d | grep -E "tvrecommendations|haiermatrix"'` after a reboot.)
+  restart. `tools/check.py` ([#434](https://github.com/Gathin23/cleanyourtv/pull/434)) reports that
+  drift for a list - exit 1 naming what a firmware update turned back on, `--fix` to disable it
+  again - so after an update run
+  `TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/durabrand-durat32isdb/debloat.txt`.
+  Both are named in that list's header, under "Comes back at every boot, so it is not listed",
+  rather than on a line of it, so neither `check.py` nor `--fix` touches them: check them by hand
+  after a reboot with
+  `tools/tv.py 'pm list packages -d | grep -E "tvrecommendations|haiermatrix"'`.
 - `com.haier.tv.hmagicboard` receives the remote's hot keys, and `com.cvte.tv.hkcfac` is the
   factory app that also receives them - see the trap below before touching either.
 - `com.google.android.tungsten.setupwraith` owns a saved Wi-Fi network on this firmware. Forget and
