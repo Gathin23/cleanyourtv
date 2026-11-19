@@ -27,6 +27,14 @@
 # com.homwee.synckey (firmware updates and the remote key service). Kept by the owner's choice:
 # Chromecast, Homwee screen share, the Google ambient screensaver, Netflix, YouTube and Disney+.
 #
+# Two Homwee updaters, and which one is below. com.homwee.dmt.upgrade in that KEEP line is the firmware one
+# and stays enabled. com.homwee.upgrade is a different package, disabled below as the vendor app updater -
+# the reading examples/chiq-ai-pont and examples/aiwa-ai-pont-sa also record for it. Other Changhong boards
+# keep it beside the firmware one (examples/chiq-gtvu65 and examples/kogan-gtvu65kg list both as "firmware
+# updates"), and examples/rca-ai-pont disables it with "re-enable to check for RCA firmware", so the same
+# name does more than one job across boards. Firmware updating was not tested on this set after it went;
+# comment the line out to have the vendor's OTA check back.
+#
 # Gear key: with launcherx gone and no helper the gear does nothing. getevent prints MSC_SCAN 000c009f
 # and KEY_UNKNOWN for it, and HOME_KEY_SERVICE=1 with settings_key_keycodes = [83] opened Settings on the
 # first try; with the helper bound and volume_pauses_filter true a held Volume+ steps once on the first
@@ -53,7 +61,7 @@
 # Vendor apps
 com.homwee.store
 com.homwee.help
-com.homwee.upgrade                      # vendor app updater; the Play Store still updates apps
+com.homwee.upgrade                      # vendor app updater (the firmware one, com.homwee.dmt.upgrade, is kept); the Play Store still updates apps
 
 # Partner installs, telemetry and account sync
 android.autoinstalls.config.google.gtvpai
