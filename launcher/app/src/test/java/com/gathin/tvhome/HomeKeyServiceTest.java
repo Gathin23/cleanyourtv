@@ -72,4 +72,17 @@ public class HomeKeyServiceTest {
         assertTrue(HomeKeyService.stockHomeList("").isEmpty());
         assertTrue(HomeKeyService.stockHomeList(null).isEmpty());
     }
+
+    @Test public void voiceSearchResultsInTheStockHomeStay() {
+        java.util.Set<String> stock = HomeKeyService.stockHomeList("com.google.android.apps.tv.launcherx");
+        assertTrue(HomeKeyService.opensStockHome(HomeKeyService.ASSISTANT_PACKAGE, stock));
+        assertTrue(HomeKeyService.opensStockHome("com.google.android.apps.tv.launcherx", stock));
+        assertFalse(HomeKeyService.opensStockHome("com.google.android.youtube.tv", stock));
+        assertTrue(HomeKeyService.deepLinked(SOON, SOON + HomeKeyService.DEEP_LINK_WINDOW_MS));
+    }
+
+    @Test public void aStockHomeLongAfterADeepLinkIsSentBack() {
+        assertFalse(HomeKeyService.deepLinked(SOON + HomeKeyService.DEEP_LINK_WINDOW_MS, SOON + HomeKeyService.DEEP_LINK_WINDOW_MS));
+        assertFalse(HomeKeyService.deepLinked(SOON, 0));
+    }
 }

@@ -22,7 +22,7 @@ android {
         minSdk 26
         targetSdk 34
         versionCode 14
-        versionName '3.5-umut.1'
+        versionName '3.5-umut.2'
     }
 
     signingConfigs {

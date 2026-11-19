@@ -73,6 +73,8 @@ public class HomeKeyService extends AccessibilityService {
     private final Set<String> stockHome = new HashSet<>();
     /** stock_home_redirect, the stock launcher packages (a comma-separated list; ones not installed add nothing). */
     private final Set<String> stockHomePackages = new HashSet<>();
+    /** Until this uptime a stock home window is one opened on purpose (voice search results), not a revived home. */
+    private long stockDeepLinkUntil;
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -343,7 +345,40 @@ public class HomeKeyService extends AccessibilityService {
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
         CharSequence pkg = event.getPackageName(), cls = event.getClassName();
-        if (!stockHome.isEmpty() && pkg != null && cls != null && stockHome.contains(pkg + "/" + cls)) openHome();
+        if (stockHome.isEmpty() || pkg == null || cls == null) return;
+        long now = SystemClock.elapsedRealtime();
+        if (stockHome.contains(pkg + "/" + cls)) {
+            // Google TV shows voice search results in launcherx's HomeActivity, reached through the Assistant and
+            // launcherx's own LauncherDeepLink; sending that back here lost the results. Such a window stays.
+            boolean onPurpose = deepLinked(now, stockDeepLinkUntil);
+            stockDeepLinkUntil = 0;
+            if (!onPurpose) openHome();
+        } else if (opensStockHome(pkg.toString(), stockHomePackages) && isActivity(pkg, cls)) {
+            stockDeepLinkUntil = now + DEEP_LINK_WINDOW_MS;
+        }
+    }
+
+    /** The Google TV Assistant (voice search), which hands its results to the stock launcher. */
+    static final String ASSISTANT_PACKAGE = "com.google.android.katniss";
+    /** How long after the Assistant or a stock launcher deep link its home window still counts as opened on purpose. */
+    static final long DEEP_LINK_WINDOW_MS = 5_000L;
+
+    /** A window from the Assistant, or a non-home activity of a stock launcher (its deep link trampoline). */
+    static boolean opensStockHome(String pkg, Set<String> stockHomePackages) {
+        return ASSISTANT_PACKAGE.equals(pkg) || stockHomePackages.contains(pkg);
+    }
+
+    static boolean deepLinked(long now, long deepLinkUntil) {
+        return now < deepLinkUntil;
+    }
+
+    private boolean isActivity(CharSequence pkg, CharSequence cls) {
+        try {
+            getPackageManager().getActivityInfo(new ComponentName(pkg.toString(), cls.toString()), 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException notAnActivity) {
+            return false;
+        }
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
