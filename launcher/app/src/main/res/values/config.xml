@@ -128,7 +128,7 @@
          "key_filter"). Some firmware (TCL Google TV on Android 12) drops key auto-repeat once ANY service
          filters keys, so long-pressing volume only steps once: set false and the service keeps running but
          stops filtering, which brings repeat back at the price of the remote buttons below doing nothing. -->
-    <bool name="key_filter">true</bool>
+    <bool name="key_filter">false</bool>
 
     <!-- With key_filter on, true makes HomeKeyService and InputKeyService stop filtering keys while a game
          controller is connected, so games see its buttons (Steam Link with an Xbox controller on a TCL G07
@@ -197,7 +197,7 @@
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
          Settings stays off. Needs WRITE_SECURE_SETTINGS, which build-and-install grants with RESTORE_KEY_SERVICES=1
          (-RestoreKeyServices on Windows) and takes back on an install without it. Can also be set with "restore_key_services": true in a theme's config.json. -->
-    <bool name="restore_key_services">false</bool>
+    <bool name="restore_key_services">true</bool>
 
     <!-- More remote buttons that open the input switcher, by Android keycode (INPUT_KEY_SERVICE=1
          build-and-install.sh; KEYCODE_TV always does). For buttons only a disabled app answered: the Xiaomi
@@ -247,8 +247,11 @@
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
          com.xgimi.xrmservice does, on every one of its remote keys, power included (docs/TROUBLESHOOTING.md).
          Whenever that launcher's home screen comes up anyway, HomeKeyService (HOME_KEY_SERVICE=1) sends the TV
-         straight back here. A theme's config.json can set it too. Leave empty to omit. -->
-    <string name="stock_home_redirect" translatable="false"></string>
+         straight back here. A theme's config.json can set it too. Leave empty to omit. Several packages can be
+         listed, separated by commas; ones not installed on the TV add nothing. This fork's prebuilt APK lists the
+         known stock launchers (Google TV, Android TV, older Android TV, Xiaomi PatchWall), so one APK covers them
+         all once its accessibility helper is turned on. -->
+    <string name="stock_home_redirect" translatable="false">com.google.android.apps.tv.launcherx,com.google.android.tvlauncher,com.google.android.leanbacklauncher,com.mitv.tvhome</string>
 
     <!-- For TVs whose firmware opens the Live TV app (live_tv_package) by itself at every power-on, with no setting
          to change it (Changhong / Homwee boards start com.mediatek.wwtv.tvcenter from its own boot receiver, which
@@ -557,6 +560,14 @@
          faint outer glow), rim (the crisp rim alone, no sheen, fill or glow, for a quiet focus over a wallpaper) or
          halo (the rim with a lighter outer glow). Can also be set with "glass_style": "rim" in a theme's config.json. -->
     <string name="glass_style" translatable="false">glass</string>
+
+    <!-- Apps with no TV banner (phone apps such as sideloaded players) drawn as uniform_tiles cards: a large icon
+         on a card tinted from it. Apps with a banner keep it. Ignored when uniform_tiles is on. -->
+    <bool name="bannerless_card_tiles">true</bool>
+    <!-- With bannerless_card_tiles, apps drawn as that card even though they ship a banner (a weak or small one). -->
+    <string-array name="card_tiles" translatable="false">
+        <item>com.rectv.shot</item>
+    </string-array>
 
     <!-- Tiles drawn from the app's icon and name instead of its banner (for banners that crop badly). -->
     <string-array name="icon_tiles" translatable="false">

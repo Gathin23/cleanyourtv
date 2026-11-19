@@ -2,6 +2,14 @@ plugins {
     id 'com.android.application'
 }
 
+// Release signing for the prebuilt APK on this fork's GitHub Releases. The keystore and its passwords live only on
+// the maintainer's machine, in launcher/release-signing.properties (git-ignored), with storeFile, storePassword,
+// keyAlias and keyPassword. Without that file the release build is signed with the debug key, as upstream does,
+// so build-and-install.sh keeps installing over a debug build.
+def releaseSigningFile = rootProject.file('release-signing.properties')
+def releaseSigning = new Properties()
+if (releaseSigningFile.exists()) releaseSigningFile.withInputStream { releaseSigning.load(it) }
+
 android {
     namespace 'com.gathin.tvhome'
     compileSdk 34
@@ -14,7 +22,18 @@ android {
         minSdk 26
         targetSdk 34
         versionCode 14
-        versionName '3.5'
+        versionName '3.5-umut.1'
+    }
+
+    signingConfigs {
+        if (releaseSigning.getProperty('storeFile')) {
+            release {
+                storeFile file(releaseSigning.getProperty('storeFile'))
+                storePassword releaseSigning.getProperty('storePassword')
+                keyAlias releaseSigning.getProperty('keyAlias')
+                keyPassword releaseSigning.getProperty('keyPassword')
+            }
+        }
     }
 
     buildTypes {
@@ -23,8 +42,9 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
-            signingConfig signingConfigs.debug
+            // Upstream sideloads over ADB and signs with the debug key so it installs over a debug build. This fork's
+            // published APK uses the release key when release-signing.properties is present (see the top of this file).
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
         }
     }
 

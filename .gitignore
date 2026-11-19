@@ -21,3 +21,8 @@ bench-results/
 *.aab
 launcher/hs_err_pid*.log
 launcher/replay_pid*.log
+
+# Release keystore and its passwords for the fork's prebuilt APK: maintainer's machine only, never in git.
+launcher/release-signing.properties
+*.jks
+*.keystore

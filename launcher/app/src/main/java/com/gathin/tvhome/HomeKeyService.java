@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,10 +69,10 @@ public class HomeKeyService extends AccessibilityService {
 
     /** Waits for the user to unlock when Android binds this service at boot; null once the config is read. */
     private BroadcastReceiver unlockReceiver;
-    /** The stock launcher's HOME activities (stock_home_redirect), disabled ones included. */
+    /** The stock launchers' HOME activities (stock_home_redirect) as "package/class", disabled ones included. */
     private final Set<String> stockHome = new HashSet<>();
-    /** stock_home_redirect, the stock launcher's package. */
-    private String stockHomePackage = "";
+    /** stock_home_redirect, the stock launcher packages (a comma-separated list; ones not installed add nothing). */
+    private final Set<String> stockHomePackages = new HashSet<>();
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -202,11 +203,14 @@ public class HomeKeyService extends AccessibilityService {
         frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
         boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
         stockHome.clear();
-        stockHomePackage = config.stockHomeRedirect;
-        if (!config.stockHomeRedirect.isEmpty()) {
-            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(config.stockHomeRedirect);
+        stockHomePackages.clear();
+        for (String pkg : stockHomeList(config.stockHomeRedirect)) {
+            // This launcher is never its own stock home, even if a theme lists it.
+            if (pkg.equals(getPackageName())) continue;
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg);
             for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
-                stockHome.add(ri.activityInfo.name);
+                stockHome.add(ri.activityInfo.packageName + '/' + ri.activityInfo.name);
+                stockHomePackages.add(ri.activityInfo.packageName);
             }
         }
         // power_on_home, off by default. Not with boot_to_live_tv, or with Live TV picked as the Open on start app:
@@ -338,8 +342,8 @@ public class HomeKeyService extends AccessibilityService {
             return;
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
-        CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+        CharSequence pkg = event.getPackageName(), cls = event.getClassName();
+        if (!stockHome.isEmpty() && pkg != null && cls != null && stockHome.contains(pkg + "/" + cls)) openHome();
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
@@ -451,7 +455,18 @@ public class HomeKeyService extends AccessibilityService {
         if (stockHome.isEmpty() || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         ResolveInfo home = getPackageManager().resolveActivity(
                 new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY);
-        return home != null && stockHomePackage.equals(home.activityInfo.packageName);
+        return home != null && stockHomePackages.contains(home.activityInfo.packageName);
+    }
+
+    /** stock_home_redirect as a list: one package, or several separated by commas (blanks and repeats dropped). */
+    static Set<String> stockHomeList(String value) {
+        Set<String> packages = new LinkedHashSet<>();
+        if (value == null) return packages;
+        for (String part : value.split(",")) {
+            String pkg = part.trim();
+            if (!pkg.isEmpty()) packages.add(pkg);
+        }
+        return packages;
     }
 
     @Override

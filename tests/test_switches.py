@@ -40,7 +40,7 @@ MAX_WIDTH = 1920
 # docs/switches.md, take it off here.
 SCREENSHOT_WANTED = {
     "accent_color", "advanced_effects", "always_show_names", "ambient_glow", "animations",
-    "app_banners", "app_glow", "app_keys", "app_labels", "app_library", "app_library_selection",
+    "app_banners", "bannerless_card_tiles", "card_tiles", "app_glow", "app_keys", "app_labels", "app_library", "app_library_selection",
     "background_color", "boot_to_live_tv", "cinematic_art", "cinematic_dots", "cinematic_home",
     "cinematic_scrim", "cinematic_white_focus", "coocaa_sources", "dock_apps", "dock_even_padding",
     "dock_glass", "dock_opacity", "dock_row", "dock_title", "fade_rows", "festival_until", "fill_dock",
