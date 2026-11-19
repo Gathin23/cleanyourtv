@@ -62,6 +62,7 @@ Google TV ana ekran seçtirmez. Bunun yerine uygulamanın erişilebilirlik yard�
 - **Bazı Çin pazarı TCL yazılımları** üçüncü parti ana ekranı hiç kabul etmez.
 - **Kumandadaki uygulama tuşları** (YouTube, Netflix vb.) bu APK'da yeniden atanmaz. Bu sürüm, basılı tutulan ses tuşunun tekrar etmesi için tuş filtrelemeyi kapalı tutar (`key_filter=false`). Google TV'de bu tuşları stok ana ekran karşılamaya devam eder.
 - Stok ana ekran zaten açıkken Home'a basılırsa (ör. yeniden başlatmadan hemen sonra) birkaç saniye stok ekranda kalabilir. Başka bir uygulama açılıp kapanınca veya tekrar Home'a basınca düzelir.
+- **Sesli arama (Google TV):** "YouTube'da ... aç" gibi isteklerin sonuçları Google TV'nin kendi ekranında açılır, CleanYourTV bu ekranı kapatmaz. Oradan bir uygulama açıp Home'a basınca CleanYourTV'ye dönersin. "Müzik aç" gibi istekler uygulamayı (ör. Spotify) doğrudan açar.
 - `restore_key_services` açık gelir ama ADB ile izin verilmeden bir işe yaramaz. Zararı da yoktur.
 
 ## Geri alma
