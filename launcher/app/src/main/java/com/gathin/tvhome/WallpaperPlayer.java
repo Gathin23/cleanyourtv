@@ -51,6 +51,8 @@ final class WallpaperPlayer {
     private boolean active;
     private boolean closed;
     private boolean loading;
+    /** releaseForMemoryPressure let the picture go; start() puts it back before Home's first frame. */
+    private boolean released;
     private String displayed = "";
     /** wallpaper_captions: the shown picture's name from wallpapers/captions.txt; null when off or there are none. */
     private final TextView caption;
@@ -130,6 +132,12 @@ final class WallpaperPlayer {
 
     void start() {
         active = true;
+        // Back after a release: the picture is decoded here, before Home's first frame, as when Home opens. Decoded in
+        // the background, the screen stayed black through the way back and the picture popped in after the tiles.
+        if (released && !closed && !loading) {
+            released = false;
+            showFirst();
+        }
         update();
     }
 
@@ -145,6 +153,7 @@ final class WallpaperPlayer {
         // let Android reclaim its native buffer after rendering releases it instead of recycling it mid-frame.
         current = null;
         displayed = "";
+        released = true;
         root.setBackgroundColor(backgroundColor);
     }
 
