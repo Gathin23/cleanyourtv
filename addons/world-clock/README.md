@@ -112,9 +112,10 @@ dream, input dismissal and city/appearance persistence after a cold process rest
 cities and appearance were restored; the selected screensaver and existing five-minute system
 timeout were retained. This signed build is 54,175 bytes (about 53 KiB); signing can change APK size.
 
-The current repository suite ran 1,497 tests: 1,496 passed, with one optional real-Perfetto-trace
-case skipped. The prior 0.1 device checks covered city entry on the TV keyboard, change/move/remove,
-empty-search cancellation, the six-clock limit, 24-hour format, cold restart and module-card launch.
+The repository suite ran 1,497 tests when this add-on was contributed: 1,496 passed, with one optional
+real-Perfetto-trace case skipped. The prior 0.1 device checks covered city entry on the TV keyboard,
+change/move/remove, empty-search cancellation, the six-clock limit, 24-hour format, cold restart and
+module-card launch.
 
 The TV's installed time-zone database supplies the rules. There is no network time sync,
 working-hours overlay or live clock inside the launcher's grid. Other Android versions and
