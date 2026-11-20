@@ -127,7 +127,8 @@ firmware `RTO2.250804.001` (Android TV 11 / API 30):
 | Live TV | `com.mediatek.wwtv.tvcenter` |
 
 ### Cleanup applied
-The 15 packages in the main list were disabled in batches with a full package and settings backup saved first:
+The 15 packages below were disabled on that unit, in batches, with a full package and settings backup saved
+first. Fourteen are lines of this folder's list; `com.homwee.howtocast` is on that set and in no list here:
 - Telemetry and bloat: `tv.anoki.acr.controller`, `com.homwee.aipont`, `com.google.android.tvrecommendations`, `android.autoinstalls.config.homwee`
 - Vendor services: `com.homwee.store`, `com.homwee.help`, `com.homwee.howtocast`
 - Unused preloads: `com.google.android.feedback`, `com.google.android.play.games`, `com.google.android.youtube.tvmusic`, `com.google.android.videos`, `com.google.android.syncadapters.calendar`, `com.homwee.multiscreenshare`, `com.homwee.mmp.screenshare`, `com.google.android.backdrop`
