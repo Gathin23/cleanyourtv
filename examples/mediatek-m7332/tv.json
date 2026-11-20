@@ -1,0 +1,6 @@
+{
+  "tv": "MediaTek m7332 board (Chinese \"RP\" firmware, sold unbranded)",
+  "os": "Android 11",
+  "brand": "MediaTek",
+  "notes": "18 packages disabled; the vendor's 4K app that crash-loops its service, the memory cleaner, the intro and promo apps and the cast hub (`com.android.toofifi`) disabled, casting stops with it; vendor Settings, live TV and the setup wizard kept; factory menus kept unlisted; stock launcher `com.rp.launcher` disabled once another launcher owned HOME"
+}
