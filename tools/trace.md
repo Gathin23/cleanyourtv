@@ -85,6 +85,11 @@ the file. Each message is the last line of the run's traceback.
   ([Setup](#setup)), and the length of the recording, which is 3 s before the first step, the `sleep`s
   in the step list and 2 s after it - so a `custom` run whose steps hold no `sleep` records for about 5 s.
 
+A local staging-folder cleanup failure after a complete trace or its JSON metadata has been published
+prints a warning naming that file. It stays written, and metadata and later recordings are still attempted;
+the leftover `.trace-*` folder can be removed once the filesystem allows it. Download, metadata-write and
+publication failures still stop the run.
+
 ## Report
 
 Keep `nav` traces separate from start traces (`home`, `cold`, `coldsys`, `custom`), since their frame
