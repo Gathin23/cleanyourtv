@@ -2,8 +2,9 @@
 
 A MECOOL-built Amlogic box sold in Turkey as the Next NEK7: Android TV 9 (SDK 28), build
 `PPR1.180610.011` / `V9.20221214.151020`, product `franklin`, board `newton`, a `userdebug` build with
-`ro.adb.secure=0`. No tuner and no HDMI input, so it is a streaming box: leave `live_tv_package` empty in
-`launcher/app/src/main/res/values/config.xml`.
+`ro.adb.secure=0`. No HDMI input, and it does have a DVB-S/S2 tuner whose driver this firmware never loads, so
+out of the box it behaves like the streaming box this list was written for: see "The satellite tuner" below
+before setting `live_tv_package` in `launcher/app/src/main/res/values/config.xml`.
 
 The stock home is Droidlogic's `com.droidlogic.mboxlauncher`. The Google launcher
 (`com.google.android.leanbacklauncher`) looks like a second way back, but on this firmware the APK is a stub:
@@ -116,6 +117,36 @@ The dump carried the greeting, the clock, the date, the Wi-Fi name and the pills
 are reachable that way. Taps for the pills are taken from the dump's `bounds` and sent with `input tap <x> <y>`:
 the Settings pill opened `com.android.tv.settings/.MainSettings`, and `KEYCODE_HOME` came back to the new Home
 from Settings and from YouTube.
+
+## The satellite tuner
+
+The box has a DVB-S/S2 frontend (an AVL6221C demod, with `/dev/dvb0.*` beside it), and the list above keeps
+`th.dtv` enabled for it. What never happens is the `insmod`: `/vendor/build.prop` sets
+`ro.platform.vs.dtv=1`, while `/vendor/etc/init/hw/init.amlogic.board.rc` loads `vs_frontend_fe.ko` only when
+that property is 0, so `/dev/dvb0.frontend0` is missing and the live TV app reports no signal on every
+transponder.
+
+```bash
+tools/tv.py 'getprop ro.platform.vs.dtv'          # 1
+tools/tv.py 'su 0 grep -n vs_frontend_fe /vendor/etc/init/hw/init.amlogic.board.rc'
+# 83:    insmod /vendor/lib/modules/vs_frontend_fe.ko      (under on property:ro.platform.vs.dtv=0)
+tools/tv.py 'ls /dev/dvb0.*'                      # ca0 ca1 demux0-2 dvr0-2 net0-2, and no frontend0
+```
+
+Loading the module is a root step that writes a system partition, which nothing in this repo does, so
+`live_tv_package` stays empty here and the box is debloated as the streaming set the list describes. With the
+module loaded the frontend registers — `DVB: registering adapter 0 frontend 0 (vs_frontend)`, `Detect demod type
+[ DVBS2/S2X AVL6221C ]` — and `th.dtv` tunes, on one app-side condition: the antenna setup's LNB supply has to
+be On. Until it is, `logcat` repeats `lock tp freq` with `voltage:0` and `Sat Tuner[0] ---> Unlocked`; with it
+On, the same transponder answers `Sat Tuner[0] ---> Locked` (11747 H 27500, 64% signal and 49% quality on the
+first unit). A scan on that transponder still stored 0 services, which fits the current Türksat 4A list:
+11747 H 27500 is no longer on it, and 12380 V 27500 or 12423 H 30000 are the network-search transponders to
+try instead.
+
+Both units also leave the network on their own. The UWE5621 driver fails in power save
+(`sprdwl_tx_ba_mgmt ... tx_addba failed, reason=1, lut_index=6, tid=0, map=64`) and the link dies with it;
+`iw dev wlan0 set power_save off` holds it, but Android turns power save back on, so a NEK7 that drops off
+Wi-Fi is behaving as its driver does, not as something the list did.
 
 ## What the list turns off
 
