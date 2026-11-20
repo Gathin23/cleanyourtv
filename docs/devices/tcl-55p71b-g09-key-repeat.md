@@ -320,6 +320,11 @@ you do.
   bound: an accessibility service that filters nothing reads the window manager's key log (`READ_LOGS`) and
   opens the app, and the system binds it again after each boot. See
   [`tcl-g10-app-keys.md`](tcl-g10-app-keys.md); it was not tried on this G09.
+  A ready-made one for Hisense sets that log `interceptKeyTi keyCode=N down=true repeatCount=0` is
+  [Remote buttons](https://github.com/Abner97/remote-buttons), its own repo listed in [SHOWCASE.md](../../SHOWCASE.md):
+  tested on a Hisense 65Q6N (`lushan`, Google TV 12), where the gear, YouTube, Prime Video, Disney+, Apps and
+  Live TV buttons opened their apps and held volume still ramped. It needs `READ_LOGS` over ADB, which lets it
+  read every app's log, so ask before installing it. It does not parse TCL's lines yet.
 
 - **Keep both with a listener you start by hand.** A script run by the `shell` user can answer the app
   buttons without any service bound, so the ramp stays; see "Both at once" below. It does not come back
@@ -338,13 +343,16 @@ you do.
   it needs `key_filter` on: with filtering off the helper never sees the key. The G08 above is the opposite
   result, where the helpers did not seem to receive the volume key and the switch had nothing to repeat, so
   hold volume after setting it rather than assume. Not checked: a reboot after the switch, or a soundbar or
-  HDMI eARC setup. Not tried on the AS23 unit the bisect comes from.
+  HDMI eARC setup. Not tried on the AS23 unit the bisect comes from. On a TCL 50P7K on AS23 (same
+  `G09_4K_GB` product, `InputKeyService` alone) it did not ramp: a held Volume Up moved one step, as on the G08.
 
 - **Keep the buttons and a ramp after a tap with `volume_pauses_filter`.** Where `consume_volume_keys` has
   nothing to repeat, a volume change can pause the helpers' key filtering for 4 s instead: the first press
   steps once, and a press or hold inside the pause repeats as usual. On the TCL 55QM8B (G08, Google TV 14)
   above, a tap followed by a hold ramped and the mapped buttons kept working; a hold with no tap first is
-  still one step. Not tried on a G09.
+  still one step. On a G09, a TCL 50P7K on AS23 with `InputKeyService` alone, it gave the same: a tap and
+  then a hold ramped up and down, and Netflix, Prime Video, YouTube and the gear (`83:settings`) kept working
+  (the "TCL 50P7K" section of [the G09 example](../../examples/tcl-g09-google-tv/README.md)).
 
 The first two are a toggle, not a fix: two one-line `settings` writes switch between the two behaviours
 whenever you want, but never both at once.

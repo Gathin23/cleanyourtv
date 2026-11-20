@@ -1,0 +1,59 @@
+# Philips 65OLED908/12 (65" 4K OLED+ with Ambilight, Bowers & Wilkins sound), France
+# Google TV 14 (API 34), firmware UKN2.241117.001 build 3000518, security patch 2026-01-05, board PH1M_WW_9972
+# ro.product.model=Philips Google TV TA2  ro.product.device=PH1M_WW_9972  SoC MediaTek MT9972 (ro.hardware mt5896)
+# 273 packages installed. On Wi-Fi. Home: Orba (https://github.com/btalal/orba) through its accessibility
+# service; the stock launcher (launcherx) is NOT disabled.
+#
+# Same board and firmware build as examples/philips-55oled820 (PH1M_WW_9972, UKN2.241117.001 / 3000518); its
+# notes on launcherx and setupwraith apply here too.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-65oled908/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-65oled908/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED (pm disable-user), never uninstalled. Comment out any line you want to keep.
+#
+# STATUS: applied 2026-11-18 (17 packages), in daily use since; checked again 2026-11-19 with
+# `pm list packages -d`. Memory available went from 868 MB to 1 017 MB after the cleanup and a reboot (part of
+# that gain is the reboot itself).
+#
+# DO NOT DISABLE on this TV:
+#   * org.droidtv.eum (Help / e-manual). The SOURCES panel (org.droidtv.channels/.sources.SourcesActivity)
+#     binds to its service when it opens. With eum disabled it crashes at once (NullPointerException in
+#     bindToEumService) and HDMI inputs can no longer be selected. It was disabled here on 2026-11-18 and
+#     re-enabled the next morning for that reason. Hide it from Home instead.
+#   * org.droidtv.channels, org.droidtv.hdmiservice, org.droidtv.playtv: inputs and live TV.
+#   * com.google.android.apps.tv.launcherx and com.google.android.tungsten.setupwraith (Cast credentials).
+#   * The streaming apps (Netflix, YouTube, Prime Video, Disney+...): that is taste, not bloat.
+#
+# Already disabled before this cleanup (not part of this list): the region config packages
+# (org.droidtv.*config*), com.tpv.moments, com.vewd.core.browser, io.mimi.tvapp, ru.ivi.client,
+# com.omni.ssutv.*, the ATSC and ISDB tuners, and com.google.android.katniss.
+
+# --- telemetry: the TV reporting on you --------------------------------------
+tv.samba.ssm                              # Samba TV ACR: recognises what is on screen, for ad targeting
+com.google.android.feedback               # Market Feedback Agent (Google usage reports)
+org.droidtv.candeebug                     # Philips "DAC" analytics and debug log uploader
+
+# --- promoted content and retail junk ----------------------------------------
+com.google.android.apps.tv.dreamx         # Google ambient screensaver with suggestions; Orba has its own
+com.tpv.nftgallery                        # "NFT Collection" art gallery
+org.droidtv.demome                        # retail demo mode
+com.google.android.play.games             # Play Games, not used on a TV
+
+# --- services for other countries --------------------------------------------
+# Ginga is TV middleware, left on in shared lists; uncomment only if you never use broadcast TV.
+#tv.mopa.ginga                             # Ginga, Brazilian interactive TV
+org.droidtv.astrahdplus                   # HD+ (German satellite operator) pages; not used in France
+
+# --- unused home and audio integrations --------------------------------------
+org.droidtv.control4adapterservice        # Control4 home automation (4 packages)
+org.droidtv.control4app
+org.droidtv.control4sddp
+org.droidtv.control4UcService
+org.droidtv.amazonalexa                   # Alexa bridge; Google Assistant is separate
+com.phorus.playfi.tv                      # DTS Play-Fi multi-room audio
+com.phorus.playfi.softap                  # its soft access point
+
+# --- owner's choice on this unit ---------------------------------------------
+# This set has these off (owner's choice); uncomment to do the same.
+#org.droidtv.aurora                        # Aurora ambient display (art and clock when the TV is idle)
+#org.droidtv.sunrise                       # Sunrise alarm (Ambilight wake-up light)

@@ -1,0 +1,6 @@
+{
+  "tv": "Next NEK7 (SDT newton, MECOOL-built Amlogic), Turkey, streaming box",
+  "os": "Android TV 9",
+  "brand": "Next",
+  "notes": "MECOOL-built Amlogic box on Android TVs oldest current home (droidlogic mboxlauncher); factory and burn-in test apps, ad consent SDK, disguised TVOptimizer, recommendation rows, vendor screensavers, camera2, the stock music player, AirPin PRO, D-Smart Go, Play Music, the YouTube app, Next IPTV and the MoviePlayer app off on the test box, the first two streaming apps commented out for other owners; MX Player, Miracast and the owner's tool server kept; repo launcher as Home, screencap broken on this firmware, some apps declare only the phone LAUNCHER category so the grid needs library_apps"
+}

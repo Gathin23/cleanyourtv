@@ -159,6 +159,55 @@ class PullFailureTest(unittest.TestCase):
         self.assertEqual(OLD, self.target.read_bytes())
         self.assertEqual(["notes.txt"], os.listdir(self.folder))
 
+    def link_to(self, destination):
+        try:
+            self.target.symlink_to(destination)
+        except (OSError, NotImplementedError) as e:
+            self.skipTest(f"file symlinks are unavailable: {e}")
+
+    def test_a_pull_through_a_relative_link_updates_its_target_and_keeps_the_link(self):
+        actual = self.folder / "archive" / "saved.txt"
+        actual.parent.mkdir()
+        actual.write_bytes(OLD)
+        actual.chmod(0o640)
+        self.link_to("archive/saved.txt")
+        r = self.run_pull("ok")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertTrue(self.target.is_symlink())
+        self.assertEqual("archive/saved.txt", os.readlink(self.target))
+        self.assertEqual(b"new contents from the TV", actual.read_bytes())
+        if os.name != "nt":
+            self.assertEqual(0o640, actual.stat().st_mode & 0o777)
+        self.assertEqual(["saved.txt"], os.listdir(actual.parent))
+        self.assertEqual(["archive", "notes.txt"], sorted(os.listdir(self.folder)))
+
+    def test_a_pull_through_a_dangling_link_creates_its_target(self):
+        actual = self.folder / "archive" / "saved.txt"
+        actual.parent.mkdir()
+        self.link_to(actual)
+        r = self.run_pull("ok")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertTrue(self.target.is_symlink())
+        self.assertEqual(str(actual), os.readlink(self.target))
+        self.assertEqual(b"new contents from the TV", actual.read_bytes())
+        self.assertEqual(["saved.txt"], os.listdir(actual.parent))
+        self.assertEqual(["archive", "notes.txt"], sorted(os.listdir(self.folder)))
+
+    def test_failed_pulls_through_a_link_keep_the_link_and_its_target(self):
+        actual = self.folder / "archive" / "saved.txt"
+        actual.parent.mkdir()
+        actual.write_bytes(OLD)
+        self.link_to(actual)
+        for how in ("missing", "drop"):
+            with self.subTest(how=how):
+                r = self.run_pull(how)
+                self.assertFailedInWords(r)
+                self.assertTrue(self.target.is_symlink())
+                self.assertEqual(str(actual), os.readlink(self.target))
+                self.assertEqual(OLD, actual.read_bytes())
+                self.assertEqual(["saved.txt"], os.listdir(actual.parent))
+                self.assertEqual(["archive", "notes.txt"], sorted(os.listdir(self.folder)))
+
     def test_a_pull_that_works_replaces_the_file(self):
         self.target.write_bytes(OLD)
         r = self.run_pull("ok")

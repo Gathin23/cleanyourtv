@@ -42,6 +42,7 @@ import base64
 import errno
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -107,10 +108,23 @@ def perfetto_config(package, duration_ms):
     return buffers + b"".join(_field(2, _field(1, source)) for source in sources) + _field(3, int(duration_ms))
 
 
+def sleep_seconds(command):
+    """A standalone literal sleep, in seconds; None for a command that must run on the TV."""
+    # A shell comment needs whitespace before '#'; inside an argument it is literal. Match only
+    # this simple command, so a newline or separator cannot hide later commands from the TV.
+    match = re.fullmatch(
+        r"sleep[ \t]+(?P<quote>['\"]?)(?P<number>\+?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)"
+        r"(?:[eE][+-]?[0-9]+)?)(?P<unit>[smhd]?)(?P=quote)(?:[ \t]+#[^\r\n]*)?", command.strip())
+    if not match:
+        return None
+    seconds = float(match["number"]) * {"": 1, "s": 1, "m": 60, "h": 3600, "d": 86400}[match["unit"]]
+    return seconds if math.isfinite(seconds) else None
+
+
 def recording_ms(steps):
-    """How long to record: the steps' sleeps plus a margin either side."""
-    slept = sum(float(s.split()[1]) for s in steps if re.fullmatch(r"sleep \d+(\.\d+)?", s.strip()))
-    return int((START_MARGIN_S + slept + END_MARGIN_S) * 1000)
+    """How long to record: the steps' literal sleeps plus margins, rounded up to whole milliseconds."""
+    slept = math.fsum(seconds for step in steps if (seconds := sleep_seconds(step)) is not None)
+    return math.ceil((START_MARGIN_S + slept + END_MARGIN_S) * 1000)
 
 
 def scenario(name, launcher_component, other_component, setup=(), steps=()):
@@ -270,9 +284,9 @@ def other_app(shell, package):
 
 def _run(run_shell, cmd):
     """A step: `sleep N` waits here (an adb shell sleep would block the connection), anything else runs on the TV."""
-    m = re.fullmatch(r"sleep (\d+(?:\.\d+)?)", cmd.strip())
-    if m:
-        time.sleep(float(m.group(1)))
+    seconds = sleep_seconds(cmd)
+    if seconds is not None:
+        time.sleep(seconds)
     else:
         run_shell(cmd)
 

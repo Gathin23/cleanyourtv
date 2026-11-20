@@ -1,0 +1,88 @@
+# CHiQ U43QM8V 43" (Changhong, reports model "AI PONT", product DVB99CQ, device changi), Google TV on
+# Android 11 (API 30), firmware RTMA.250416.195, fingerprint
+# CHiQ/DVB99CQ/changi:11/RTMA.250416.195/13988618:user/release-keys.
+# Not the build in examples/chiq-ai-pont (DVB93CQ, samseong, Android TV 11 on tvlauncher) and not the
+# Google TV 14 DVB99PQ/changi set in docs/TROUBLESHOOTING.md: this is the Android 11 changi build, whose
+# Home is com.google.android.apps.tv.launcherx.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/chiq-u43qm8v/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/chiq-u43qm8v/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER; left to
+# launcher/build-and-install.sh, which disables it only after the new Home is set). Live TV:
+# com.mediatek.wwtv.tvcenter.
+#
+# Before the setupwraith line: the saved Wi-Fi network belonged to it (dumpsys wifi answered
+# cname=com.google.android.tungsten.setupwraith). Forgetting and re-joining that network in Settings moved
+# it to cname=com.android.tv.settings, with the randomized MAC unchanged, and setupwraith could then be
+# disabled without losing Wi-Fi. Check the cname on this set before disabling it.
+#
+# Not on this unit, unlike examples/chiq-ai-pont: the Anoki ACR (tv.anoki.acr.controller), com.cltv.fast
+# and the com.homwee.aipont portal. logcat shows "Failed to find provider tvlauncher.widget" once
+# launcherx goes; no package on this firmware provides it and com.mediatek.tv.service did not crash, so
+# there is no partner customizer to install here for it.
+#
+# KEEP: com.mediatek.* (Live TV, inputs, remote pairing, picture), com.homwee.dmt.upgrade and
+# com.homwee.synckey (firmware updates and the remote key service). Kept by the owner's choice:
+# Chromecast, Homwee screen share, the Google ambient screensaver, Netflix, YouTube and Disney+.
+#
+# Two Homwee updaters, and which one is below. com.homwee.dmt.upgrade in that KEEP line is the firmware one
+# and stays enabled. com.homwee.upgrade is a different package, disabled below as the vendor app updater -
+# the reading examples/chiq-ai-pont and examples/aiwa-ai-pont-sa also record for it. Other Changhong boards
+# keep it beside the firmware one (examples/chiq-gtvu65 and examples/kogan-gtvu65kg list both as "firmware
+# updates"), and examples/rca-ai-pont disables it with "re-enable to check for RCA firmware", so the same
+# name does more than one job across boards. Firmware updating was not tested on this set after it went;
+# comment the line out to have the vendor's OTA check back.
+#
+# Gear key: with launcherx gone and no helper the gear does nothing. getevent prints MSC_SCAN 000c009f
+# and KEY_UNKNOWN for it, and HOME_KEY_SERVICE=1 with settings_key_keycodes = [83] opened Settings on the
+# first try; with the helper bound and volume_pauses_filter true a held Volume+ steps once on the first
+# press and then ramps normally within 4 s, which is why the filtering mode was dropped here - the
+# non-filtering mode below leaves held volume alone. The keycode-83 route and what to do when a getevent
+# code matches nothing: docs/TROUBLESHOOTING.md, the "Which keycode" bullet.
+#
+# Power key, and what a wake opens: the remote's power button only suspends this set, and while a cold
+# boot goes FallbackHome straight to the reference launcher, a sleep and wake brings back whatever ran
+# last (YouTube in the owner's test). HOME_KEY_SERVICE=1 with power_on_home_always true and key_filter
+# false, power_on_home and volume_pauses_filter left false, brings Home forward about 1.5 s after a wake:
+# measured with KEYCODE_SLEEP / KEYCODE_WAKEUP from YouTube and on the real remote, where a held Volume+
+# still ramps at once because nothing filters keys. So the "no helper" in the session below holds for the
+# cold boot only - for everyday use this owner runs the helper in that non-filtering mode, and the gear
+# stays dead that way, since the keycode-83 mapping above needs the filter. The options are the ones the
+# OK. unit in examples/chiq-ai-pont/README.md carries.
+#
+# Tested on one set on 19 November 2026, 43" Czech retail, in three batches with a reboot after each stage
+# and a second reboot afterwards. ADB was network ADB on 5555, opened by USB debugging alone. The reference
+# launcher installed and the boot went FallbackHome straight to it, with no Live TV in front and no helper.
+# Home, Input, Netflix, YouTube and held volume work on the Bluetooth remote. One day, not a multi-day soak.
+# The power-key paragraph above is the owner's follow-up on the same set, measured after that session.
+
+# Vendor apps
+com.homwee.store
+com.homwee.help
+com.homwee.upgrade                      # vendor app updater (the firmware one, com.homwee.dmt.upgrade, is kept); the Play Store still updates apps
+
+# Partner installs, telemetry and account sync
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.syncadapters.calendar
+
+# Preloaded apps
+com.amazon.amazonvideo.livingroom
+com.wbd.stream
+com.iqiyi.i18n.tv
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+
+# Personal choice: comment out what you use
+com.google.android.katniss              # Google Assistant (the mic button stops working)
+
+# Disabling setupwraith gives Home back but can cost casting (Chromecast built-in); keep it if you cast.
+# Disable only after the saved network no longer says cname=com.google.android.tungsten.setupwraith;
+# see the note above.
+com.google.android.tungsten.setupwraith
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
+# after the new home is installed and set as default; restore.sh re-enables it.
+# com.google.android.apps.tv.launcherx

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Build Frigate Glance, install it on the TV, push its config and check it reaches MQTT and Frigate.
 #   TV_HOST=<tv ip> addons/frigate-glance/install.sh <config.json>
+#   TV_HOST=<tv ip> SKIP_BUILD=1 addons/frigate-glance/install.sh <config.json>
+#     installs the APK already built, for instance with tools/docker-build.sh addons/frigate-glance
 # The config holds passwords: keep it outside the repo (backup/ is git-ignored). This script never prints it.
 set -euo pipefail
 CONFIG="${1:?usage: TV_HOST=<tv ip> $0 <config.json>}"
@@ -38,7 +40,12 @@ EOF
 
 [ -f local.properties ] || { [ -n "${ANDROID_HOME:-}" ] && echo "sdk.dir=${ANDROID_HOME//\\//}" > local.properties; } || true
 if [ -n "${JAVA_HOME:-}" ]; then export PATH="$JAVA_HOME/bin:$PATH"; fi
-./gradlew assembleRelease -q --console=plain
+if [ -z "${SKIP_BUILD:-}" ]; then
+  ./gradlew assembleRelease -q --console=plain
+elif [ ! -f app/build/outputs/apk/release/app-release.apk ]; then
+  echo "ERROR: SKIP_BUILD is set but there is no APK; build it first with tools/docker-build.sh addons/frigate-glance" >&2
+  exit 1
+fi
 
 "$PY" -I ../../tools/b64push.py app/build/outputs/apk/release/app-release.apk /data/local/tmp/fg.apk
 OUT=$(tv 'pm install -r /data/local/tmp/fg.apk; rm -f /data/local/tmp/fg.apk')

@@ -1,0 +1,86 @@
+# Sony K-55XR50 (BRAVIA 5, BRAVIA 4K AE2 / BRAVIA_AE2), European firmware - the EU unit of this folder
+# Google TV 14 (API 34), build BRAVIA_AE2_EU-user 14 UKN4.250422.001 602080
+#
+# Same platform as the North American AE2 in debloat.txt, and this file is a second unit for that folder,
+# not a replacement. Read against each other: the ATSC tuner group of debloat.txt is left out here (an EU
+# set has a DVB tuner instead, and three of those packages are not installed), and eight more packages are
+# off here than there (Help guide, YouTube Music, TalkBack, print spooler, Assistant, USB media player, two
+# DLNA packages).
+#
+# Tested 2026-11-14 to 2026-11-17 in daily use (streaming apps, a PlayStation 5 on HDMI): every package
+# below disabled, one reboot with the disabled list unchanged, Home on the reference launcher, the
+# launcher's Inputs menu switching HDMI, YouTube casting from an iPhone working with setupwraith disabled.
+# Live TV was not used on this set.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-ae2/debloat-k55xr50-eu.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-ae2/debloat-k55xr50-eu.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it after Home
+# has moved). No separate Live TV app: HDMI inputs come from TvInputManager.
+#
+# Quirks on this unit, all seen on the TV:
+# - Network ADB: USB debugging alone never opens port 5555, and "Debugging over Wi-Fi" flips straight back
+#   off while the TV is on Ethernet. Put the TV on Wi-Fi, pair once (`adb pair`), `adb connect` to the port
+#   `adb mdns services` shows, and run the tools over that paired connection; switch Debugging over Wi-Fi
+#   off when you are done (a reboot also switches it off).
+# - The saved Wi-Fi network belonged to the system (`dumpsys wifi`: cname=android.uid.system), not to
+#   setupwraith, so disabling setupwraith kept the TV on Wi-Fi. With it disabled, sonysystemservice logs
+#   "Failed to find provider info for com.google.android.tungsten.setupwraith" twice a second; nothing
+#   visible breaks, and casting still works.
+# - The remote's Settings (gear) button does nothing once launcherx is disabled: Android asks for
+#   TOGGLE_NOTIFICATION_HANDLER_PANEL, which only launcherx answers (TvNotificationPanel: "Could not resolve
+#   activityInfo"). getevent shows it as KEY_CLEARVU_SONAR, HID usage 0x000c0586. The owner left it so
+#   rather than bind a key helper; see docs/devices/sony-bravia-4k-ae2-eu-remote-keys.md for the app
+#   buttons, the helper and its volume trade-off.
+# - Default screensaver on this unit was Google's ambient mode (dreamx), so disabling livingfit changes
+#   nothing there.
+# - The UK catch-up stubs (iPlayer, ITV, My5, All 4, Sounds, YouView) came disabled from the factory.
+# - Keep com.sony.dtv.sensingfusionservice: on the Chinese K-75XR50 disabling it blanked Settings >
+#   Display & Sound (docs/devices/sony-k75xr50-ae2-cn.md).
+
+# tracking / ads / recommendations
+tv.samba.ssm                                   # Samba TV (ACR viewing data)
+tv.samba.ssm.ui                                # Samba TV's opt-in and settings screens
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service
+com.sonyericsson.idd.agent                     # Sony usage data
+com.sony.dtv.usercontext                       # viewing context for recommendations
+com.sony.dtv.seeds.iot
+com.google.android.feedback
+com.sony.dtv.sonybugreportsys                  # bug-report uploader
+com.sony.dtv.b2b.vendorprotocol                # broadcasts model/MAC/IP over SDDP
+
+# promos / demo / help
+com.sony.dtv.promos
+com.sony.dtv.sonyselect
+com.sony.dtv.sonytab                           # Sony tab on the Google TV home; unused once launcherx is off
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.helpguidecontents                 # on-TV help guide
+
+# Sony extras and preloads, disabled by choice
+com.sony.dtv.calibrationmonitor
+com.sony.dtv.gestureapp                        # camera gestures
+com.sony.dtv.livingfit
+com.sony.dtv.osat.music.toast
+com.crunchyroll.crunchyroid
+com.sonypicturescore                           # Sony Pictures Core
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.marvin.talkback
+com.android.printspooler
+
+# Assistant, USB media and DLNA, disabled by choice
+com.google.android.katniss                     # Google Assistant; the remote's mic button stops working
+com.sony.dtv.smartmediaapp                     # USB media player
+com.sony.huey.dlna.module
+com.sonyericsson.dlna
+
+# Home: disable before the launcher install, or Home can land on its RecoveryActivity
+com.google.android.tungsten.setupwraith
+# com.google.android.apps.tv.launcherx   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved

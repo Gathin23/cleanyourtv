@@ -1,0 +1,73 @@
+# TCL 50P7K, Brazil (device G09, product G09_4K_GB, model "Smart TV Pro", Amlogic), Android 12 (Google TV), firmware STT2.230203.001.AS23
+# Same board as debloat.txt in this folder; this list is the 50P7K owner's choices on AS23.
+# Applied on 19 November 2026 with the Clean Your TV launcher as Home; checked through two reboots
+# and on the real remote. Nothing came back enabled after either reboot.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g09-google-tv/debloat-50p7k.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat-50p7k.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Install order, the remote buttons and volume on this unit: README.md, "TCL 50P7K (G09, AS23)".
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it, so it is
+# not a line here). Live TV / HDMI app: com.tcl.tv.
+# Keep: com.tcl.tv, com.tcl.tvinput, com.tcl.suspension (Input menu), com.tcl.dashboard, com.tcl.autopair,
+# com.tcl.systemserver, com.tcl.providers.config, com.tcl.inputmethod.international, Play Store and Play Services.
+# com.tcl.factory.view is TCL's factory menu: leave it alone and never open it.
+# Kept on this unit: com.tcl.ttvs. Its dumpsys lists SystemUpdateActivity, SystemUpdateService and
+# SystemUpdateReceiver here, so on this build it is also TCL's firmware updater (as on the 55T7B in
+# examples/tcl-55p7k), not only BI and Samba TV ACR. Also kept: Netflix and com.netflix.tokenmanager,
+# YouTube, Prime Video, YouTube Music, Spotify, Max, Chromecast (com.google.android.apps.mediashell),
+# AirPlay (com.amlogic.airplay, com.tcl.airplay2) and the game bar (com.tcl.gamebar).
+
+# TCL telemetry and analytics
+com.tcl.logkit                         # log capture and upload
+com.tcl.interactive                    # TCL TIAS background service
+com.google.android.feedback
+
+# TCL content, ads and promos
+com.tcl.waterfall.overseas             # TCL content "waterfall" recommendations; also the TCL Channel tile
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.messagebox                     # TCL pushed messages and promos
+android.autoinstalls.config.google.gtvpai  # partner auto-installs
+com.tcl.smartlink.core                 # bundles a silent app installer
+com.tcl.channelplus                    # TCL Live FAST channels
+
+# Background services, store demo, preloads
+com.tcl.guard                          # TGuard memory "cleaner"
+com.tcl.useragreement                  # EULA/privacy screens
+com.tcl.usercenter                     # TCL account sign-in
+com.tcl.exhibit                        # store demo
+com.tcl.esticker                       # store demo stickers
+com.tcl.hotelmenu                      # hotel mode
+com.tcl.ocean.instructions             # e-manual
+com.tcl.hearaid                        # hearing test / volume adaptation
+com.google.android.marvin.talkback
+com.tcl.ui_mediaCenter                 # USB media player
+com.tcl.UpdatePeripheral               # TCL soundbar updater; keep it with a TCL soundbar
+com.google.android.apps.tv.dreamx      # Ambient screensaver; the launcher's Clock (ClockDream) replaces it
+# com.tcl.repairguide is in debloat.txt but not installed on this unit
+
+# This 50P7K has these off by the owner's choice; uncomment what you don't use
+#com.disney.disneyplus
+#com.cbs.ca                             # Paramount+
+#com.crunchyroll.crunchyroid
+#com.globo.globotv                      # Globoplay
+#br.com.claro.now.smarttvclient         # Claro tv+
+#com.google.android.videos              # Google TV / Play Movies
+#com.google.android.play.games
+#com.google.android.katniss             # Google Assistant: the remote's mic button does nothing without it
+#com.tcl.smartalexa                     # Alexa
+#com.google.android.tv.remote.service   # Google TV phone-remote app (and the mic bridge, see debloat.txt)
+#com.tcl.miracast                       # Miracast screen mirroring; Chromecast and AirPlay still cast
+#com.tcl.magiconnectfree                # T-Cast / MagiConnect phone app
+
+# No antenna or cable on this unit, so this 50P7K has these off; uncomment only without broadcast TV
+#com.tcl.initsetup                      # TCL first-run setup and channel installation; re-enable before a scan
+#com.mirakulo.astrotv.service           # Ginga, the ISDB-Tb broadcast interactive-TV engine
+
+# Second Home claimant: disable it while Google TV's home is still Home, then install the launcher.
+# Disabling setupwraith gives Home back but can cost casting.
+# On this unit it owned the saved Wi-Fi network: forget the network and join it again in Settings first
+# (tools/disable.sh refuses until then).
+com.google.android.tungsten.setupwraith

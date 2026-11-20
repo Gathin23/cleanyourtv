@@ -1,0 +1,60 @@
+# SHARP 2T-C43GH3000X (reports as "SHARP 2K Smart TV"; Skyworth-built, device umeda, product SW7_SHARP_PH, MediaTek mt5867), Philippines, Google TV on Android 11 (SDK 30), firmware RTM9.241015.159
+# ~1.4 GB RAM. Same board and firmware family as examples/sharp-32gf3265e (RTM9.241015.004, EU).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-2t-c43gh3000x/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-2t-c43gh3000x/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it once the new
+# launcher owns Home). Setup wizard: com.google.android.tungsten.setupwraith (claims HOME).
+# Live TV and inputs: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput.
+# Port 5555 was open out of the box (Network debugging), no Wireless debugging pairing needed; turn
+# Network debugging off in Developer options when you are done.
+#
+# Kept on purpose: the HDMI/tuner stack (com.mediatek.*), com.smartdevice.global.service and
+# com.smartdevice.dailyshortcut (global keys), com.smartdevice.bleconnectservice (remote pairing and battery),
+# com.skyworth.backligthadjust, com.tianci.localmedia (USB media), Dolby audio, Gboard, Google TTS, Play Store and
+# Play Services, the factory packages (com.smartdevice.factory, mediatek.factorymenu.ui: never launch them).
+# Kept by the owner's choice: Netflix, YouTube, Prime Video, the Assistant (com.google.android.katniss), Chromecast
+# (com.google.android.apps.mediashell), the phone remote (com.google.android.tv.remote.service), iCast mirroring
+# (com.smartdevice.dtv.icast). No separate firmware-updater package was found on this build.
+# TalkBack and com.smartdevice.recommendation were already disabled on this unit before the list.
+#
+# WARNING: setupwraith owned a saved Wi-Fi network on this unit (a phone hotspot joined during first setup);
+# the home network belonged to the system. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` before disabling it,
+# and forget any network it owns in Settings first.
+#
+# Applied in three batches with screenshots between them, then a reboot: nothing came back.
+
+# --- Skyworth and Google telemetry, partner installs ---
+com.smartdevice.recordactivation             # records first activation
+com.smartdevice.aftersale                    # "after-sale" service: boot + network receivers, can install APKs
+com.google.android.feedback                  # Market Feedback Agent
+com.google.android.partnersetup              # partner-app attribution
+android.autoinstalls.config.google.gtvpai    # silently installs partner apps
+com.google.android.apps.nbu.smartconnect.tv  # data-saver VPN
+
+# --- Skyworth content, retail demo and preloads ---
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects rows into the home screen
+com.coocaa.demonow.lightining                # "Demo Now" retail mode, boot receiver
+fusion.android.tv.demo                       # retail demo mode
+com.Smartdevice.emanual                      # on-screen manual
+com.smartdevice.dailymanage                  # TV Guard / cleaner
+com.smartdevice.myapp                        # Daily Key app manager; the remote's profile button opened it (see README.md)
+com.mstar.android.tv.disclaimercustomization # disclaimer screen used only by first-run setup
+
+# --- Unused ---
+com.android.printspooler                     # printing
+com.android.cts.ctsshim                      # Android test shim
+com.android.cts.priv.ctsshim                 # Android test shim
+com.android.settings.intelligence            # suggestions in Settings
+# Off on this set by the owner's choice; uncomment if you don't use them.
+#com.google.android.youtube.tvmusic           # YouTube Music, off by choice
+#com.google.android.play.games                # Play Games, off by choice
+
+# --- After the new launcher is Home ---
+# dreamx: set the screensaver to the launcher's clock first:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+# Back to Google's: settings put secure screensaver_components com.google.android.apps.tv.dreamx/.service.Backdrop
+com.google.android.apps.tv.dreamx            # ambient-mode screensaver
+com.google.android.tungsten.setupwraith      # its RecoveryActivity takes Home otherwise; check its Wi-Fi first (above)

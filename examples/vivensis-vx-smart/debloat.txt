@@ -1,0 +1,40 @@
+# Vivensis VX Smart (SkyworthDigital, device HYR2B-Vivensis, Realtek), Android TV 12 (API 31),
+# build STTB.220726.001.C2.2.4_20250613 release-keys.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/vivensis-vx-smart/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vivensis-vx-smart/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock Home and Live TV app: com.vivensis.launcher (Skyworth Digital).
+# IMPORTANT: Do NOT disable com.vivensis.launcher or com.vivensis.dtvsetup. They run the satellite DTV
+# tuner (com.skyworthdigital.tv.TvActivity) and antenna/channel search. Instead, keep com.vivensis.launcher
+# enabled and run launcher/build-and-install.sh with STOCK_LAUNCHER=none, HOME_KEY_SERVICE=1 and
+# RESTORE_KEY_SERVICES=1, plus "stock_home_redirect": "com.vivensis.launcher" in config.json (see README.md).
+#
+# USB expandable storage warning: if a USB drive is formatted as internal storage (/mnt/expand/<uuid>),
+# Android mounts it ~13 s after PackageManagerService starts at boot, which drops the preferred Home activity
+# and unbinds HomeKeyService on every reboot. Always move the launcher to internal flash storage after install:
+#   TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm move-package com.gathin.tvhome internal'
+#
+# Kept on purpose: com.vivensis.launcher, com.vivensis.dtvsetup, com.sdt.ota (firmware updates),
+# com.google.android.tungsten.setupwraith (Wi-Fi setup), com.google.android.backdrop (Ambient screensaver),
+# com.google.android.tvrecommendations, com.google.android.partnersetup, com.google.android.katniss (voice).
+
+# Telemetry and factory test packages
+com.google.android.feedback
+com.sdt.producttest                          # Skyworth factory test package
+
+# Preloaded apps and unused services
+com.android.camera2
+com.android.dreams.basic
+com.android.gallery3d
+com.android.music
+com.android.printspooler
+com.android.wallpaperbackup
+# Streaming app, off on this set; uncomment to disable.
+#com.globo.globotv
+com.google.android.marvin.talkback
+com.google.android.play.games
+com.google.android.tts
+# Streaming app, off on this set; uncomment to disable.
+#com.google.android.youtube.tvmusic

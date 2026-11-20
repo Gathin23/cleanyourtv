@@ -111,10 +111,20 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   (or 1926), the JointSpace API `tools/philips-api.py` reads.
 - **A cable to the computer gives no device in `adb devices`**: a TV's USB-A ports are usually host
   ports, for a drive, a keyboard or an Ethernet adapter, and the cable route in the bullet above needs
-  one that carries ADB device mode instead - the exception, as on the Xiaomi boxes below. On the GX655
-  the cable gave no device either, and the port scan above is the remaining check; with neither route a
-  firmware offers no way in, and there is nothing to disable on it. Every step here goes through the ADB
-  port, so a set is unchanged by these checks and no list is applied until `tools/tv.py --probe` answers.
+  one that carries ADB device mode instead - the exception, as on the Xiaomi boxes below. Which cable
+  matters: on the GX655 the first owner's gave no device, while a second owner of the same model and
+  Android version reported on 2026-11-19 that a **male-to-male USB-A** (A-to-A) cable to a Windows PC did
+  work - the TV raised its USB debugging authorisation prompt as soon as it was plugged in, `adb devices`
+  listed the set, and `adb tcpip 5555` from that session is what let the scripts run
+  ([that thread](https://github.com/Gathin23/cleanyourtv/issues/2930#issuecomment-7016611639)). An A-to-A
+  cable is also what opened the port on a Kodak 55CA0909, a different set that reports the same
+  `PTT1.181130.001` build ([its header](../examples/kodak-55ca0909/debloat.txt); plugged into the
+  computer directly, since a hub there reset the TV's USB configuration). So try one before concluding
+  that a firmware offers no way in (an A-to-A cable joins two USB power supplies: plug it straight into the
+  computer, no hub, and unplug it if no prompt appears; the port `adb tcpip 5555` opens lasts until the TV
+  reboots, so reboot it when you are done); the port scan above is the check after that, and with neither route
+  there is nothing to disable on that set. Every step here goes through the ADB port, so a set is
+  unchanged by these checks and no list is applied until `tools/tv.py --probe` answers.
 - **USB devices go dead while USB debugging is on**, seen on the Xiaomi Mi Box S and the Xiaomi TV
   Box S 3rd gen ([MiTV-AFMU0, Google TV 14](https://github.com/Gathin23/cleanyourtv/issues/737)):
   their firmware switches the USB port to ADB device mode, which cuts the power to a USB speaker or
@@ -714,6 +724,21 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   package` is missing (Android 6 and older, where that command does not exist) and warns when neither
   answers. That warning means the guard did not run, not that the list is safe. Without ADB and
   without a vendor recovery image, a set stuck this way is still out of reach.
+- **The TV and the set-top box on its HDMI input restart together after the print spooler is
+  disabled**, seen once, on a Sony BRAVIA 2015 (KDL-43W807C, platform `SVP-DTV15`, Android 7.0,
+  API 24, build `SVPDTV15_EU-user 7.0 NRD91N.S34 5.433 release-keys`,
+  [#3504](https://github.com/Gathin23/cleanyourtv/issues/3504)). The owner had
+  `com.android.printspooler` in the batch he applied and, as he put it, disabling it "caused a device
+  (a Pepephone set-top box) to restart both the TV and the set-top box itself". The package is
+  suspected rather than shown: the report carries the set's installed-app inventory and no `logcat`,
+  so neither the batch nor what preceded it is recorded. A set that restarts signals its power
+  changes on the CEC line, and a box set to follow the TV's power goes down and comes back with it,
+  which is the reading to check first - `logcat -b all` around one
+  `pm disable-user --user 0 com.android.printspooler`, and the box's own log for `CEC` in the same
+  seconds. `pm enable com.android.printspooler` puts the package back, one command per package. Many
+  lists here carry the line (`grep -l '^com.android.printspooler' examples/*/debloat*.txt` prints the
+  current set) and this is the only report of a side effect, so on a set with a box, a soundbar or a
+  console on its HDMI ports the line is a choice to make rather than free space.
 - **China-market Xiaomi rejects a default Home despite `set-home-activity` reporting success**,
   verified on MiTV-AETP0 (dofus), Android 9, firmware 22.9.2.851: the framework filters third-party
   HOME candidates by a package-name allowlist. Disabling the stock launcher then selects
@@ -1447,6 +1472,16 @@ turned off in Settings stays off.
   it. Set `settings_key_clear_task` (with `settings_key_panel` off) and add 139 to `settings_key_scancodes`:
   Settings replaces that page and Back goes Home. The shell cannot disable a single receiver, so this is the
   route without root.
+- **Menu opens only Picture and Sound once the launcher is Home** (Philips 70PUS7906/12, `PH0M_EA_T32`,
+  Android TV 11, `TPM215E_R.101.000.198.158`, [#3753](https://github.com/Gathin23/cleanyourtv/issues/3753)):
+  with the stock Google TV home in front, the remote's Menu button opens the full Settings; with the launcher
+  as Home it opens only "App preferences" with Picture and Sound. `com.mediatek.tv.service` takes the key
+  (`KEYCODE_MENU`, scancode 139) and its `SettingsAction.launchSettings` opens the full Settings
+  (`FLAG=LUNCHER_APP`) only when the top task is `com.google.android.tvlauncher` (or the retail demo
+  `fusion.android.tv.demo`); for any other package it sends `FLAG=OTHER_APP`, the Picture and Sound page.
+  The package name is hard-coded in the firmware and the key never reaches the launcher (with
+  `settings_key_keycodes: [82]` the log shows only the firmware's `START ... MainSettings` from uid 1000), so
+  no config key fixes it. Use the Settings gear on Home or a Settings tile for the full Settings.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
@@ -2048,6 +2083,27 @@ To undo it, set it back to `0`. Three things came up on the same set once the TV
 With these in place, a device that starts while another is on screen takes over the input, and the TV sends the
 first device `<Standby>` itself. Not checked: other TCL boards, and whether the Shield turns the TV off when it
 sleeps.
+
+## Bluetooth headphones connect, but the sound stays on the soundbar or the speakers (TCL)
+
+Headphones pair and connect, and the sound keeps playing through the soundbar or the TV's speakers. Seen on a TCL
+55C805 (G08, `G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU04`) with a soundbar on eARC. TCL's own Sound output
+choice decides where the sound goes, ahead of Android's routing, and on **Auto**, the default, it picks eARC when a
+soundbar answers and the TV's speakers otherwise, never Bluetooth. The choice is a global setting, which
+`system_server` applies at once:
+
+```sh
+tools/tv.py 'settings get global tcl_device_out_type'
+#   1 Auto, 4 Bluetooth, 16 eARC: the values the TV's Sound output menu writes
+```
+
+Choosing Bluetooth in that menu, or `tools/tv.py 'settings put global tcl_device_out_type 4'`, sends the sound to
+the headphones. It does not come back by itself: with the headphones switched off and the output still on
+Bluetooth, the TV says "this type of device is not connected. Please choose another device to output sound" until
+Auto (`1`) is chosen again. An app can switch it as headphones connect and disconnect, but writing the setting needs
+`WRITE_SECURE_SETTINGS`, which only ADB can grant (`pm grant <package> android.permission.WRITE_SECURE_SETTINGS`).
+Standby drops the headphones' Bluetooth link, so with such an app the sound is back on Auto when the TV comes back
+on. Not checked: what standby leaves the output on without one, the menu's other choices, and other TCL boards.
 
 ## Moonlight: two controllers both drive player 1, or a DualSense button opens the exit prompt
 

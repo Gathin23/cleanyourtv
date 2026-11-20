@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Minimal TV banner: subtle dark glow with stylized floating clock digits and vertical second stream. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF000000" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#262B5CFF" android:pathData="M160,90m-110,0a110,75 0 1,0 220,0a110,75 0 1,0 -220,0" />
+    <!-- Floating clock bars representing HH : MM . S1 and vertical S2 stream -->
+    <path android:fillColor="#E6FFFFFF" android:pathData="M62,74h20v30h-20z M66,78v22h12v-22z" />
+    <path android:fillColor="#E6FFFFFF" android:pathData="M96,78h6v30h-6z" />
+    <path android:fillColor="#B3FFFFFF" android:pathData="M116,84h4v4h-4z M116,96h4v4h-4z" />
+    <path android:fillColor="#E6FFFFFF" android:pathData="M134,72h20v30h-20z M138,76v22h12v-22z" />
+    <path android:fillColor="#E6FFFFFF" android:pathData="M166,78h20v30h-20z M170,82v22h12v-22z" />
+    <path android:fillColor="#B3FFFFFF" android:pathData="M198,98h4v4h-4z" />
+    <path android:fillColor="#E6FFFFFF" android:pathData="M214,74h18v30h-18z M218,78v22h10v-22z" />
+    <!-- Vertical stream -->
+    <path android:fillColor="#38FFFFFF" android:pathData="M244,24h16v24h-16z M247,27v18h10v-18z" />
+    <path android:fillColor="#88FFFFFF" android:pathData="M246,52h16v24h-16z M249,55v18h10v-18z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M244,80h16v24h-16z M247,83v18h10v-18z" />
+    <path android:fillColor="#88FFFFFF" android:pathData="M242,108h16v24h-16z M245,111v18h10v-18z" />
+    <path android:fillColor="#38FFFFFF" android:pathData="M244,136h16v24h-16z M247,139v18h10v-18z" />
+</vector>

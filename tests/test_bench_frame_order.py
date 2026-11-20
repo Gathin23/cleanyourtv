@@ -11,12 +11,12 @@ from tools import bench  # noqa: E402
 
 
 class FrameOrderTest(unittest.TestCase):
-    def measure(self, blocks, count):
+    def measure(self, blocks, count, janky=0):
         answers = {
             "dumpsys gfxinfo com.gathin.tvhome reset": "Uptime: 1000 Realtime: 1000\n",
             "input keyevent 22": "",
             "dumpsys gfxinfo com.gathin.tvhome framestats":
-                f"Uptime: 2000 Realtime: 2000\nTotal frames rendered: {count}\nJanky frames: 0\n"
+                f"Uptime: 2000 Realtime: 2000\nTotal frames rendered: {count}\nJanky frames: {janky}\n"
                 + "".join(blocks),
             "logcat -d -b main -t 2000 | grep injectKeyEvent":
                 "injectKeyEvent action=ACTION_DOWN KEYCODE_DPAD_RIGHT eventTime=1000",
@@ -56,6 +56,28 @@ class FrameOrderTest(unittest.TestCase):
             for order in itertools.permutations(blocks):
                 with self.subTest(version=version, order=order):
                     self.assertEqual(self.measure(order, 4), (20.0, 60.0, 4, 0))
+
+    def test_window_summaries_do_not_replace_the_process_counts(self):
+        # AOSP prints the process summary first, then each window's own summary and frames:
+        # https://github.com/aosp-mirror/platform_frameworks_base/blob/android-14.0.0_r1/core/java/android/view/ThreadedRenderer.java#L613-L615
+        # https://github.com/aosp-mirror/platform_frameworks_base/blob/android-14.0.0_r1/libs/hwui/renderthread/CanvasContext.cpp#L872-L874
+        for version, header in HEADERS.items():
+            blocks = ("Window: Main\nTotal frames rendered: 8\nJanky frames: 3 (37.5%)\n"
+                      + profile(header, frame(header)),
+                      "Window: Dialog\nTotal frames rendered: 2\nJanky frames: 0 (0%)\n"
+                      + profile(header, frame(header, 200_000_000)))
+            for order in itertools.permutations(blocks):
+                with self.subTest(version=version, order=order):
+                    self.assertEqual(self.measure(order, 10, 3), (20.0, 20.0, 10, 3))
+
+    def test_an_empty_window_cannot_clear_the_process_counts(self):
+        for version, header in HEADERS.items():
+            blocks = ("Window: Main\nTotal frames rendered: 10\nJanky frames: 3 (30%)\n"
+                      + profile(header, frame(header)),
+                      "Window: Hidden\nTotal frames rendered: 0\nJanky frames: 0 (0%)\n"
+                      + profile(header))
+            with self.subTest(version=version):
+                self.assertEqual(self.measure(blocks, 10, 3), (20.0, 20.0, 10, 3))
 
 
 if __name__ == "__main__":

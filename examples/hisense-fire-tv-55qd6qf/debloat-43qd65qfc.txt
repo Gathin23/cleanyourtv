@@ -1,0 +1,106 @@
+# Hisense 43QD65QFC Fire TV (Amazon model AFTOLCBC82, codename ginza, MediaTek), Fire OS 8.1.8.0
+# (RS8180.3746N), Android 11 (SDK 30), 1.8 GB of RAM, US market. The 43-inch sibling of the 55QD6QF
+# whose list is debloat.txt beside this one: the same AFTOLCBC82 model code on the same build, so the
+# two units share a folder and each has its own list. Every name below was checked as installed on
+# THIS set with pm list packages before it was disabled.
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher (Home: .ui.HomeActivity_vNext) is protected, and Fire OS
+# never hands Home to a third-party launcher, so launcher/ does not apply here; the stock Home and Live TV
+# (com.amazon.vodcsp.livefiretv) are kept. AirPlay, casting, the input row, Silk and the firmware updater
+# are kept. Wi-Fi is owned by com.amazon.tv.oobe: never disable it.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-fire-tv-55qd6qf/debloat-43qd65qfc.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-fire-tv-55qd6qf/debloat-43qd65qfc.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Reported by @rabbit718 in #3523 (opened 2026-11-07): applied with tools/disable.ps1 over the native-ADB
+# backend, each name checked as installed first, then rebooted. tools/check.py read 0 drift after the
+# reboot and Home was still com.amazon.tv.launcher/.ui.HomeActivity_vNext; 547 MB free of 1.8 GB at boot
+# after. Netflix, YouTube, Prime Video, Apple TV, Spotify, casting, AirPlay, HDMI-CEC, the input row and
+# the firmware updater all worked. One session on one unit and one reboot read back, so this is not a
+# multi-week soak test.
+#
+# How this list differs from debloat.txt (the 55QD6QF, Canada):
+# - com.tubitv.ott is not a line here: Tubi is a user-installed app on US sets rather than a retailer
+#   preload, and it is not installed on this set. naatyam and miniTV ARE installed here and stay off.
+# - com.amazon.providers.contentsupport is commented out, although this owner disabled it. The 55QD6QF
+#   header measured what that costs: with it off, voice typing inside apps stops (the Fire TV keyboard
+#   logs "Voice input is disabled since user's locale = en_US is not supported") while the remote's
+#   Alexa button still works. Uncomment the line if you do not voice-type inside apps.
+# - com.amazon.vizzini (Alexa voice) stayed DISABLED_USER across the reboot here, where the 55QD6QF has
+#   it coming back at every boot. Re-check after a reboot and re-run this list if it does come back.
+#
+# ADB quirk on this firmware (ro.adb.secure=1): the "Allow USB debugging?" popup only renders when a
+# fresh client challenges right after adbd restarts. If a connection sits at unauthorized, start the
+# client and toggle ADB debugging off and on; adbd serves one client, so kill other adb clients first.
+# "Always allow from this computer" persists across reboots. Turn ADB debugging off in Developer options
+# when you are done.
+
+# Amazon data collection and telemetry (the silent background uploaders)
+com.amazon.ceviche                     # data collection pipelines
+com.amazon.client.metrics.api          # metrics client API
+com.amazon.device.telemetry.emitter    # telemetry emitter
+com.amazon.dp.logger                   # device log upload
+com.amazon.perfc                       # performance telemetry
+com.amazon.perfcollection              # performance telemetry
+com.amazon.wirelessmetrics.service     # Wi-Fi metrics upload
+com.amazon.livedeviceservice           # live device reporting
+com.amazon.privacypassservice          # privacy pass token service
+com.amazon.tv.developer.dataservice    # personalization data for third-party apps
+com.amazon.wifilocker                  # uploads Wi-Fi passwords to Amazon
+
+# What You Watch / ACR and advertising
+com.amazon.tv.acr                      # Automatic Content Recognition (what's on screen, HDMI included)
+com.amazon.hybridadidservice           # advertising ID
+com.amazon.kso.blackbird               # launcher ad sync / bidding
+com.amazon.media.recommendations       # sponsored and recommendation rows
+com.amazon.sneakpeek                   # autoplaying previews on Home
+# com.amazon.providers.contentsupport    # KEEP: this owner had it off, but with it off the keyboard turns off voice input inside apps (see above)
+
+# Shopping, promos, retail mode and popups
+com.amazon.shoptv.client               # Shop on Fire TV
+com.amazon.tv.democontent.provider     # retail demo content
+com.amazon.tv.easyupgrade              # "upgrade your Fire TV" promos
+com.amazon.systemnotices               # system notices popups
+com.amazon.uxnotification              # UX notification popups
+com.amazon.tv.releasenotes             # "what's new"
+com.amazon.hedwig                      # Fire TV Channels (free channels with ads)
+com.amazon.storm.lightning.tutorial    # remote app tutorial
+com.amazon.tmm.tutorial                # remote tutorial
+
+# Amazon preloads (regular apps - the owner can also remove them from Settings instead; their
+# Home tiles linger until cleared per app from Settings > Applications > Manage all installed apps)
+com.amazon.bueller.music               # Amazon Music
+com.amazon.bueller.photos              # Amazon Photos
+com.amazon.tahoe                       # Amazon Kids
+com.amazon.gamehub                     # games hub
+com.amazon.spiderpork                  # Amazon Luna
+com.amazon.minitv.android.app          # miniTV
+com.amazon.naatyam                     # Naatyam
+com.amazon.tv.localgallery             # Gallery
+com.amazon.smarthomemapviewapp         # smart home dashboard (cameras, lights)
+com.amazon.ods.kindleconnect           # "show on Fire TV" from Echo / Fire tablet
+
+# Screen mirroring: disable to kill the Input row's Miracast tile (Cast-to-app and AirPlay still
+# work: apps keep casting, and com.apple.android.phPlayFTV is untouched; re-enable to restore it)
+com.amazon.cast.sink
+
+# Alexa group (owner's choice, disabled; voice is not half-on: vizzini is the voice capture, the
+# rest of the group is what makes the answers usable). vizzini stayed disabled across a reboot on
+# this set, unlike the 55QD6QF.
+com.amazon.vizzini
+com.amazon.alexamediaplayer.runtime.ftv # Alexa media player
+com.amazon.alexa.externalmediaplayer.fireos # Alexa music playback
+com.amazon.aca                         # Alexa hints/cues providers (AlexaCentralForApps)
+com.amazon.aiondec                     # Alexa skill connections
+com.amazon.audiohome                   # Alexa Home Theater
+com.amazon.tv.alexaalerts              # alarms, timers, reminders
+com.amazon.tv.alexanotifications       # Alexa notifications
+com.amazon.rtcsessioncontroller        # Alexa calling / Drop In
+com.amazon.spotify.mediabrowserservice # Spotify for Alexa (the Spotify app is separate)
+
+# Smart home and setup extras
+com.amazon.tv.mattercohost             # Matter smart-home controller (com.amazon.tv.matter, Matter casting, stays)
+com.amazon.tv.ffsprovisioneeclient     # frustration-free setup client
+com.amazon.whisperjoin.middleware.np   # frustration-free setup of other Amazon devices
+com.amazon.whisperjoin.middleware.v2.np # frustration-free setup of other Amazon devices

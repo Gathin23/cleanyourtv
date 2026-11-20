@@ -12,6 +12,7 @@ the AS24 list and install sequence that follow.
 |---|---|
 | `debloat.txt` | The 35 packages that were disabled, grouped and commented |
 | `config.json` | Dock order, hidden apps, Live TV app, columns; push it with `tools/theme.sh` |
+| `debloat-50p7k.txt` | A TCL 50P7K on AS23 with its owner's choices: see [below](#tcl-50p7k-g09-as23) |
 
 All commands run from the repo root, with the TV's IP in `TV_HOST`. USB debugging must be on while you
 run them (Settings → System → Developer options).
@@ -160,6 +161,52 @@ com.tcl.hotelmenu
 Voice assistants, casting, HDMI, tuner, keyboard, remote/Bluetooth, Play Store/Services and updates
 were preserved. The owner kept Netflix, YouTube, UniTV, Prime Video, F1 TV, Globoplay, YouTube Music,
 Moonlight and Downloader. No measured performance improvement is claimed.
+
+## TCL 50P7K (G09, AS23)
+
+A **TCL 50P7K** in Brazil: system model `Smart TV Pro`, device `G09`, product `G09_4K_GB`, Google TV /
+Android 12 (SDK 31), firmware `STT2.230203.001.AS23`, on Wi-Fi. Set up on 19 November 2026 with
+[`debloat-50p7k.txt`](debloat-50p7k.txt) and the Clean Your TV launcher as Home (launcherx and setupwraith
+disabled), through two reboots, with every remote button below pressed on the real remote.
+
+```bash
+TV_HOST=<tv ip> tools/disable.sh examples/tcl-g09-google-tv/debloat-50p7k.txt
+INPUT_KEY_SERVICE=1 TV_HOST=<tv ip> launcher/build-and-install.sh
+TV_HOST=<tv ip> tools/theme.sh examples/tcl-g09-google-tv
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+```
+
+Undo: `TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat-50p7k.txt com.google.android.apps.tv.launcherx`.
+
+- **setupwraith owned the saved Wi-Fi network** (`cname=com.google.android.tungsten.setupwraith`), and
+  `tools/disable.sh` refused it until the network was forgotten and joined again in Settings, which moved it to
+  `com.android.tv.settings`. The TV came back on a new DHCP address after the re-join, so look the address up
+  again before reconnecting. setupwraith was then disabled while launcherx was still Home, and
+  `launcher/build-and-install.sh` handed Home over at the first run.
+- **`com.tcl.ttvs` is kept**: on this unit it holds `SystemUpdateActivity`, so it is the firmware updater as
+  well as TCL's analytics.
+- **Remote:** Netflix (4062, scan 472), Prime Video (4099, scan 473) and YouTube (4065, scan 569) work through
+  `InputKeyService` with the `app_keys` in this folder's `config.json`. The gear sends `KEYCODE_NOTIFICATION`
+  (83, scan 561) and does nothing until `"83:settings"` is added to `app_keys`; then it opens Settings. Input
+  opens TCL's own source panel with no entry.
+- **Volume:** with `InputKeyService` bound, a held Volume Up reached the window manager as one key down with
+  `repeatCount=0` and its key up only at release, 3.7 s later: one step. `"consume_volume_keys": true` did not
+  change that on AS23. `"volume_pauses_filter": true` did: the first press still moves one step, and a press or
+  hold within the next 4 s ramps, both directions, with Netflix and the gear still working. This unit's config
+  was this folder's `config.json` with its own dock and these two changes:
+
+  ```json
+  "app_keys": [
+    "4062:com.netflix.ninja",
+    "4099:com.amazon.amazonvideo.livingroom",
+    "4065:com.google.android.youtube.tv",
+    "83:settings"
+  ],
+  "volume_pauses_filter": true
+  ```
+- **Power-on:** after a full reboot the launcher was Home and `com.tcl.tv` did not come to the front by itself
+  (`logcat -b events | grep wm_set_resumed_activity`), so neither `power_on_home` nor `boot_to_live_tv` is set.
+- With Location off (the default here), the Wi-Fi pill says "Wi-Fi" rather than the network name.
 
 ## Notes for this set
 

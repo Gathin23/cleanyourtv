@@ -11,8 +11,10 @@ import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -29,6 +31,7 @@ public class SettingsActivity extends Activity {
     private Switch skySwitch;
     private TextView weatherStatus;
     private Button locationButton;
+    private TextView secondsLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,9 @@ public class SettingsActivity extends Activity {
         list.addView(title);
 
         list.addView(toggle(Options.CLOCK, R.string.option_clock, null));
+        list.addView(toggle(Options.CLOCK_FADES, R.string.option_clock_fades, null));
         list.addView(toggle(Options.DATES, R.string.option_dates, null));
+        list.addView(toggle(Options.ANIMATION, R.string.option_animation, null));
         list.addView(toggle(Options.PRINTS, R.string.option_prints, on -> skySwitch.setEnabled(on)));
         skySwitch = toggle(Options.SKY, R.string.option_sky, null);
         skySwitch.setEnabled(preferences.getBoolean(Options.PRINTS, false));
@@ -62,6 +67,46 @@ public class SettingsActivity extends Activity {
         locationButton.setOnClickListener(v -> openLocationSettings());
         list.addView(locationButton, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        list.addView(createSpacer(dp(16)));
+
+        secondsLabel = new TextView(this);
+        secondsLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        secondsLabel.setPadding(dp(8), 0, 0, dp(8));
+        updateSecondsLabel();
+        list.addView(secondsLabel);
+        int currentSeconds = Options.load(this).secondsPerPicture;
+        EditText secondsInput = new EditText(this);
+        secondsInput.setText(String.valueOf(currentSeconds));
+        secondsInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        secondsInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        LinearLayout.LayoutParams inputLp2 = new LinearLayout.LayoutParams(
+                dp(100), LinearLayout.LayoutParams.WRAP_CONTENT);
+        inputLp2.topMargin = dp(8);
+        inputLp2.bottomMargin = dp(8);
+        inputLp2.leftMargin = dp(8);
+        secondsInput.setLayoutParams(inputLp2);
+        secondsInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String text = secondsInput.getText().toString();
+                if (!text.isEmpty()) {
+                    try {
+                        int seconds = Integer.parseInt(text);
+                        seconds = Math.max(5, Math.min(3600, seconds));
+                        if (seconds != Options.load(this).secondsPerPicture) {
+                            preferences.edit().putInt(Options.SECONDS_PER_PICTURE, seconds).apply();
+                        }
+                        secondsInput.setText(String.valueOf(seconds));
+                        updateSecondsLabel();
+                    } catch (NumberFormatException e) {
+                        secondsInput.setText(String.valueOf(Options.load(this).secondsPerPicture));
+                    }
+                }
+            }
+        });
+        list.addView(secondsInput);
+
+        list.addView(createSpacer(dp(16)));
 
         Button preview = new Button(this);
         preview.setText(R.string.preview);
@@ -92,12 +137,39 @@ public class SettingsActivity extends Activity {
         s.setText(label);
         s.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         s.setPadding(dp(8), dp(12), dp(8), dp(12));
-        s.setChecked(preferences.getBoolean(key, false));
+        s.setChecked(preferences.getBoolean(key, key.equals(Options.ANIMATION)));
         s.setOnCheckedChangeListener((button, value) -> {
             preferences.edit().putBoolean(key, value).apply();
             if (changed != null) changed.on(value);
         });
         return s;
+    }
+
+    private SeekBar createSeekBar(int min, int max, int current, TextView label) {
+        SeekBar bar = new SeekBar(this);
+        bar.setMin(min);
+        bar.setMax(max);
+        bar.setProgress(current);
+        bar.setPadding(dp(8), 0, dp(8), 0);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(8);
+        lp.bottomMargin = dp(8);
+        bar.setLayoutParams(lp);
+        return bar;
+    }
+
+    private View createSpacer(int height) {
+        View spacer = new View(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, height);
+        spacer.setLayoutParams(lp);
+        return spacer;
+    }
+
+    private void updateSecondsLabel() {
+        int seconds = Options.load(this).secondsPerPicture;
+        secondsLabel.setText(String.format(getString(R.string.seconds_per_picture), seconds));
     }
 
     private void weatherChanged(boolean on) {

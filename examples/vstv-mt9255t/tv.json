@@ -1,0 +1,6 @@
+{
+  "tv": "VSTV MT9255T (MediaTek mt5862)",
+  "os": "Android 9",
+  "brand": "VSTV",
+  "notes": "Vendor telemetry/factory tooling, AOSP dead weight and the voice/assistant stack off (18 packages, reboot-checked); the OTA path and the Play stack, off on the tested unit, stay as comments; keep `com.vstv.fbhome` (the only direct-boot-aware Home), `com.vstv.mercurylauncher`, `com.vstv.input`, `com.vstv.septembersettings` and every `com.mediatek.*`; firmware quirks in [the folder README](vstv-mt9255t/README.md)"
+}

@@ -277,7 +277,7 @@ Eskiroq qurilmada nima qolgani [Nosozliklarni bartaraf etish](docs/TROUBLESHOOTI
 |---|---|
 | **Sozlash** | Dock tartibi, yashirin ilovalar, Jonli TV ilovasi, qatoriga 4 dan 7 gacha katakcha, kamaytirilgan harakat. Hammasi [`config.xml`](launcher/app/src/main/res/values/config.xml) da |
 | **Televizordagi sozlamalar** | Launcher sozlamalari uchun Sozlamalar ustida OK ni bosib turing. Ixtiyoriy `launcher_settings_button` oddiy bosish ularni toʻgʻridan-toʻgʻri ochishini taʼminlaydi; televizor sozlamalari sozlamalar sahifasida va oʻz ilova katakchasida qoladi. |
-| **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 32 ta mavzu [`themes/`](themes/) da keladi |
+| **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 33 ta mavzu [`themes/`](themes/) da keladi |
 | **31 til** | Televizor tiliga ergashadi; ivrit uchun toʻliq oynalashtirilgan, oʻngdan chapga joylashuv |
 | **Ilovalar kutubxonasi** | Ixtiyoriy: oʻrnatilgan barcha ilovalarni koʻrib chiqing va Home yorliqlarini qoʻshing yoki olib tashlang. Qarang: [ilovalar kutubxonasi qoʻllanmasi](docs/app-library.md) |
 | **Katakcha menyusi** | Standart boʻyicha yoqilgan (`tile_menu`): Koʻchirish va Ilova maʼlumoti uchun katakchada OK ni bosib turing; ilovalar kutubxonasi yoqilganda Home dan olib tashlash ham chiqadi. Oʻchiqda OK ni bosib turish Ilova maʼlumotini ochadi |
@@ -479,7 +479,7 @@ birinchi toʻrt kunda 200 dan ortiq hissa qoʻshuvchidan 170 dan ortiq TV modeli
 deb ataldi; eski havolalar ishlaydi.
 
 Ikki hafta oʻtib, 19–25 oktabr haftasida GitHub ning 1-oʻrindagi trend ombori boʻldi; 46 mingdan ortiq yulduz,
-5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. 14-noyabr holatiga 57 ming yulduz va 7,4 ming fork. Roʻyxatlar endi 489 TV modelini va 132 brendni
+5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. 20-noyabr holatiga 59 ming yulduz va 7,8 ming fork. Roʻyxatlar endi 504 TV modelini va 138 brendni
 qamrab oladi. Matbuotdagi aks: 546 maqola (57 mamlakatdan) va YouTube hamda Bilibili da 674 video, hammasi
 [docs/PRESS.md](docs/PRESS.md) da (raqamlar 2026-yil 14-noyabr holatiga).
 
@@ -493,7 +493,7 @@ Kodlash agenti orqali hissa qoʻshyapsizmi? [AGENTS.md](AGENTS.md) unga xuddi sh
 |---|---|
 | **Televizoringizning tozalash roʻyxati** | Eng foydalisi: shu modelga ega keyingi kishi kashfiyotni oʻtkazib yuboradi. |
 | **Launcher va prompt** | Launcher yaxshilanishlari va promptning aniqroq ifodalanishi ham mamnuniyat bilan qabul qilinadi. |
-| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 262 ta loyiha allaqachon yashaydi. |
+| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 268 ta loyiha allaqachon yashaydi. |
 
 Ishlari bu omborda joylashgan odamlar:
 

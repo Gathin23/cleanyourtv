@@ -267,7 +267,7 @@ class WindowsPlatformTest(unittest.TestCase):
         # short-circuits, and the old decorator called it and raised.
         program = "\n".join([
             "import importlib.util, os, sys",
-            "del os.geteuid",
+            "if hasattr(os, 'geteuid'): del os.geteuid",
             f"spec = importlib.util.spec_from_file_location('staging', {str(Path(__file__).resolve())!r})",
             "module = importlib.util.module_from_spec(spec)",
             "spec.loader.exec_module(module)",

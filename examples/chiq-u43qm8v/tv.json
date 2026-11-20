@@ -1,0 +1,6 @@
+{
+  "tv": "CHiQ U43QM8V 43\" (Changhong AI PONT, DVB99CQ, changi)",
+  "os": "Google TV 11",
+  "brand": "CHiQ",
+  "notes": "Android 11 changi build with the launcherx Home, unlike chiq-ai-pont: Homwee store/help and the app updater (com.homwee.upgrade, a different package from the kept firmware updater com.homwee.dmt.upgrade), Google partner auto-installs, feedback, calendar sync, Prime Video, WBD, iQIYI, YouTube Music and Play Games; Assistant and setupwraith off, Chromecast, mirroring, ambient screensaver, Netflix, YouTube and Disney+ kept; 13 packages; no Anoki ACR, FAST channel app or AI PONT portal on this unit; setupwraith owned the saved Wi-Fi until the network was re-joined; gear prints MSC_SCAN 000c009f and settings_key_keycodes [83] opened Settings"
+}

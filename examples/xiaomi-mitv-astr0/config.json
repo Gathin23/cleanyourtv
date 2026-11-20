@@ -1,0 +1,13 @@
+{
+  "dock_apps": [
+    "com.xiaodianshi.tv.yst",
+    "com.cibn.tv",
+    "com.dangbeimarket",
+    "com.ktcp.video"
+  ],
+  "fill_dock": false,
+  "live_tv_package": "com.xiaomi.mitv.tvplayer",
+  "hidden_apps": ["com.xiaomi.mitv.tvplayer"],
+  "input_action": "com.xiaomi.mitv.tvplayer.EXTSRC_PLAY",
+  "input_sources": ["HW5=23", "HW6=24", "HW1=2"]
+}

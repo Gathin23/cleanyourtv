@@ -1,0 +1,80 @@
+# Next NEK7 (SDT newton, product franklin), Turkey, MECOOL-built Amlogic streaming box
+# Amlogic S905-class, Android TV 9 (SDK 28), build PPR1.180610.011 / V9.20221214.151020, userdebug + test-keys
+# Fingerprint: Amlogic/newton/newton:9/PPR1.180610.011/V9.20221214.151020:userdebug/test-keys
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/next-nek7/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/next-nek7/debloat.txt com.droidlogic.mboxlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# A streaming box: no tuner and no HDMI-in, so leave live_tv_package empty in config.xml. Stock launcher:
+# com.droidlogic.mboxlauncher (this firmware's Home; not one of the launchers launcher/build-and-install.sh
+# recognises, so pass STOCK_LAUNCHER=com.droidlogic.mboxlauncher). Tested with the repo launcher as Home.
+#
+# ADB: network debugging on port 5555 from Developer options. ro.adb.secure=0 on this userdebug firmware, so
+# there is no on-screen "Allow" prompt and any device on the LAN gets a shell: switch debugging off when done.
+# screencap is broken here (see README.md): verify changes with `dumpsys window | grep mCurrentFocus` and
+# `uiautomator dump` instead of tools/tv.py --screenshot.
+#
+# Kept on purpose: com.droidlogic.* (TV settings, FileBrower, SubTitleService, BluetoothRemote, miracast), com.droidlogic.vsota (firmware updater), com.vs.market and com.vs.drawer (vendor store and the
+# sideload drawer that shows phone-only apps), x.cpe (vendor system app, unknown), th.dtv,
+# the owner's IPTV apps (com.bp.box, com.beyazport.pro, com.ceyhan.sets), com.abc.netflixhook (Netflix),
+# com.google.android.katniss and com.google.android.tts, Play Store and Play Services, the Google launcher
+# (com.google.android.leanbacklauncher) as the way back to a stock Home.
+
+# Factory and burn-in test apps
+com.videostrong.factorytest               # BoxFactoryTest_Prebuilt; never opened, see PROMPT.md
+com.softwinner.agingdragonbox             # VSDragonAging, the factory burn-in runner
+
+# Vendor junk wearing an Android name: .TVOptimizer with a BOOT_COMPLETED receiver
+com.android.core.process
+
+# Ad consent SDK shipped as an app (.com.common.ad.cmp.CmpMainActivity)
+com.yjlink.secretsettings
+
+# Background "saver" daemon
+com.ecosaver.daemon
+
+# Play auto-install list: reinstalls the vendor's preloads on a fresh account
+android.autoinstalls.config.MECOOL
+
+# Feedback and bug-report senders
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# Recommendation rows and the stock launcher's own feed
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+
+# Vendor screensavers
+com.vs.customdream
+com.whale.screensaver
+com.android.dreams.basic
+
+# Android bits a streaming box never uses
+com.android.printspooler
+com.android.camera2                       # a box has no camera; the package only adds a permission surface
+com.android.music                         # Android's stock music player, superseded on this box
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+
+# Preloaded apps the owner does not use (off by choice, not by rule)
+# this set has them off; uncomment to disable
+# com.dsmart.go.android                     # D-Smart Go, the owner's own streaming app
+# com.google.android.youtube.tv            # owner watches with SmartTube, so this belongs to that owner
+com.google.android.music                   # Play Music, discontinued by Google
+com.droidlogic.videoplayer                 # "MoviePlayer" / Film Oynatıcı, the preloaded player; MX Player stays
+#com.next.iptv                              # Next IPTV, preloaded and not used by this owner
+
+# Receivers the owner does not use
+com.waxrain.airplaydmr                    # AirPin PRO: AirPlay/DLNA sink, starts at boot, holds INSTALL_PACKAGES
+                                          # and DELETE_PACKAGES and listens on 49153, 5000, 7000, 7100, 7700, 8888
+                                          # com.droidlogic.miracast stays, so Miracast still works
+
+# Seen in docs/TROUBLESHOOTING.md and other lists, not tried on this box yet: comment in to test
+# com.vs.market                            # vendor app store
+# com.vs.drawer                            # sideload drawer for phone-only apps
+# com.tcl.browser
+# com.google.android.marvin.talkback
+# com.droidlogic.miracast
+# dev.vodik7.atvtoolsserver              # Windows/ADB tool server the owner uses; it listens on the LAN
+# com.google.android.leanbacklauncher      # only after the replacement Home is confirmed

@@ -284,7 +284,7 @@ décrit dans le [dépannage](docs/TROUBLESHOOTING.md).
 |---|---|
 | **Configuration** | Ordre du dock, applications masquées, application de TV en direct, de 4 à 7 vignettes par rangée, animations réduites. Tout se trouve dans [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Réglages sur le téléviseur** | Maintenez OK sur Paramètres pour ouvrir les réglages du launcher. L'option `launcher_settings_button` permet de les ouvrir directement d'un simple clic ; les réglages du téléviseur restent accessibles depuis la page des réglages et leur vignette d'application. |
-| **Thèmes** | Arrière-plan, fond d'écran et disposition à partir d'un `config.json` envoyé par Wi-Fi, sans recompilation. 32 thèmes sont fournis dans [`themes/`](themes/), y compris le `default/` intégré |
+| **Thèmes** | Arrière-plan, fond d'écran et disposition à partir d'un `config.json` envoyé par Wi-Fi, sans recompilation. 33 thèmes sont fournis dans [`themes/`](themes/), y compris le `default/` intégré |
 | **31 langues** | Suit la langue du téléviseur, avec une disposition de droite à gauche entièrement inversée pour l'hébreu |
 | **Bibliothèque d'applications** | Facultative : parcourez toutes les applications installées et ajoutez ou retirez des raccourcis sur l'accueil. Voir [le guide de la bibliothèque d'applications](docs/app-library.md) |
 | **Menu des vignettes** | Activé par défaut (`tile_menu`) : maintenez OK sur une vignette pour Déplacer et Infos sur l'appli, plus Retirer de l'accueil lorsque la bibliothèque d'applications est activée. Désactivé, maintenir OK ouvre Infos sur l'appli |
@@ -545,8 +545,8 @@ plus de 170 modèles de téléviseurs, venant de plus de 200 contributeurs, en q
 tv-vibehack jusqu'au 19 ; les anciens liens fonctionnent toujours.
 
 Deux semaines plus tard, c'était le dépôt n° 1 des tendances sur GitHub pour la semaine du 19 au 25 octobre, avec
-plus de 46 000 étoiles et 5 700 forks, ainsi que 1,4 million de vues et 260 000 clones en 14 jours. Au 14 novembre, il compte 57 000 étoiles et 7 400 forks. Les listes
-couvrent désormais 489 modèles de téléviseurs de 132 marques. La couverture médiatique : 546 articles de 57 pays et
+plus de 46 000 étoiles et 5 700 forks, ainsi que 1,4 million de vues et 260 000 clones en 14 jours. Au 20 novembre, il compte 59 000 étoiles et 7 800 forks. Les listes
+couvrent désormais 504 modèles de téléviseurs de 138 marques. La couverture médiatique : 546 articles de 57 pays et
 674 vidéos sur YouTube et Bilibili, tous recensés dans [docs/PRESS.md](docs/PRESS.md)
 (chiffres au 14 novembre 2026).
 
@@ -560,7 +560,7 @@ demandons. Vous contribuez par l'intermédiaire d'un agent de code ? [AGENTS.md]
 |---|---|
 | **La liste de nettoyage de votre téléviseur** | La plus utile : la prochaine personne qui a ce modèle saute l'étape de découverte. |
 | **Launcher et prompt** | Les améliorations du launcher et une formulation plus précise du prompt sont aussi les bienvenues. |
-| **Vous avez construit quelque chose par-dessus ?** | Un launcher, un portage, un thème : ajoutez-le à [SHOWCASE.md](SHOWCASE.md), qui rassemble déjà 262 projets, classés en écrans d'accueil, forks, add-ons, outils et autres plateformes, avec un index par marque de téléviseur. |
+| **Vous avez construit quelque chose par-dessus ?** | Un launcher, un portage, un thème : ajoutez-le à [SHOWCASE.md](SHOWCASE.md), qui rassemble déjà 268 projets, classés en écrans d'accueil, forks, add-ons, outils et autres plateformes, avec un index par marque de téléviseur. |
 
 Les personnes dont le travail figure dans ce dépôt :
 

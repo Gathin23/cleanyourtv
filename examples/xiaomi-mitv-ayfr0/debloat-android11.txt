@@ -1,0 +1,49 @@
+# Xiaomi TV Stick 4K (model MiTV-AYFR0, codename soul, Amlogic), Android TV 11 (SDK 30),
+# firmware RTT0.211222.001.1546, security patch 2025-08-01.
+#
+# Second tested firmware variant for this folder. The 18 active packages below were disabled for user 0,
+# used daily with the replacement Home and streaming apps, and checked again after a reboot. The tested
+# owner also disabled the phone remote and YouTube Music, left as comments below for the shared list.
+# Two PatchWall packages were re-enabled by later package updates, then disabled again; recheck them
+# after an OTA before relying on this list.
+#
+# Apply:   TV_HOST=<stick ip> tools/disable.sh examples/xiaomi-mitv-ayfr0/debloat-android11.txt
+# Undo:    TV_HOST=<stick ip> tools/restore.sh examples/xiaomi-mitv-ayfr0/debloat-android11.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# A streaming stick: no HDMI-in or tuner, so leave live_tv_package empty in config.xml.
+# Stock launcher: com.google.android.tvlauncher (disabled by launcher/build-and-install.sh after Home moves).
+# Before disabling the two stock screensavers below, install the launcher and select Clock in the TV's
+# screensaver settings, or run `settings put secure screensaver_components com.gathin.tvhome/.ClockDream`.
+# Otherwise comment out the screensaver package the TV is currently using.
+#
+# Kept on purpose: the OTA updater, Play Store and Play Services, inputs, Bluetooth and the on-screen keyboard.
+# com.google.android.tungsten.setupwraith owns this unit's saved Wi-Fi network, so it stays enabled.
+
+# Xiaomi and Google telemetry / partner attribution
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.google.android.partnersetup
+
+# PatchWall, Xiaomi content and promotion surfaces
+com.mitv.tvhome.atv                         # later package updates re-enabled it; check after OTA
+com.mitv.tvhome.michannel
+com.mitv.tvhome.mitvplus                    # later package updates re-enabled it; check after OTA
+com.xm.webcontent
+
+# Casting, screen sharing and Assistant, off by the tested owner's choice
+com.google.android.apps.mediashell
+com.xiaomi.mitv.smartshare
+com.xiaomi.wfdsinkhelperservice
+com.google.android.katniss
+# com.google.android.tv.remote.service      # off on the tested unit; shared lists keep the phone remote on
+
+# Unused media, accessibility and utility apps
+# com.google.android.youtube.tvmusic         # off on the tested unit; shared lists keep streaming apps on
+com.google.android.play.games
+com.google.android.marvin.talkback          # re-enable if you need the screen reader
+com.mitv.videoplayer
+com.android.printspooler
+com.google.android.backdrop
+com.mitv.dream

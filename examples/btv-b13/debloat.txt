@@ -1,0 +1,35 @@
+# BTV B13 (ohm, Amlogic/Droidlogic), streaming box, Brazil, Android 11 (SDK 30), firmware
+# Droidlogic/ohm/ohm:11/RD2A.211001.002/eng.admin1.20230625.111104 user test-keys, 2 GB RAM
+# Network ADB listens on port 5188, not 5555 (service.adb.tcp.port=5188), so every command here takes
+# TV_HOST=<tv ip>:5188.
+#
+# Apply:   TV_HOST=<tv ip>:5188 tools/disable.sh examples/btv-b13/debloat.txt
+# Undo:    TV_HOST=<tv ip>:5188 tools/restore.sh examples/btv-b13/debloat.txt com.bb.launcher2
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.bb.launcher2 (4.2.1) is not in the install script's known list, so it was left
+# enabled and the launcher was installed with STOCK_LAUNCHER=none. On the reporting box Home was a
+# third-party launcher set earlier with cmd package set-home-activity; this list touches neither.
+#
+# The vendor updater stays on. com.bb.ota (1.3.5) is the installerPackageName of com.live.evo,
+# com.app.istore and com.bb.launcher2, and it also delivers BTV firmware and component updates. It is
+# the reason the live TV app below is turned off rather than removed: once that package was gone the
+# installer put it back on a newer version, and only disabling it kept it off. Turning the updater off
+# would very likely stop that too, but nobody has tried it on this box, so it stays on.
+#
+# Never open cn.giec.testmode. It is this firmware's factory test app: the reporting owner neither
+# opened nor disabled it, and nothing here may start it.
+#
+# Kept: Play Store and Play Services, the remote's voice search (com.uv.droid.voicecontrol),
+# com.bb.launcher2 and com.bb.ota, the BTV app store (com.app.istore) and the preloaded streaming apps.
+# One unit, one session on 2026-10-31 (checkout 1937c80), read back with tools/check.py and no drift:
+# that is a day-one result, not a soak test.
+#
+# Reported by @Higor-Matos in #2870.
+
+# Telemetry: tools/privacy.py matched these two and nothing else on a 100-package read of the box
+com.google.android.partnersetup
+com.google.android.feedback
+
+# Vendor live TV app; the box's own installer brings it back if it is removed (see the header)
+com.live.evo

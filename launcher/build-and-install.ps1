@@ -78,9 +78,22 @@ if (-not $StockLauncher) {
         if ($LASTEXITCODE -ne 0) { throw 'could not query Home claimants; stock launcher was left untouched' }
         $found = @($knownStock | Where-Object { $claimants -match ([regex]::Escape($_) + '/') })
         if ($found.Count -eq 1) { $StockLauncher = $found[0]; Write-Host "Home is Android's chooser; the stock launcher among the candidates is $StockLauncher." }
-        else { throw "Home is Android's launcher chooser and $($found.Count) known stock launchers claim Home: pick a default on the TV first, or run again with -StockLauncher <package to disable> or -StockLauncher none." }
+        else {
+            # Name the TV's actual HOME claimants so the message lists the packages that could be passed
+            # as -StockLauncher, matching build-and-install.sh (#3471).
+            $candidates = (($claimants -split "`n") | ForEach-Object { if ($_ -match '([A-Za-z0-9_.]+)/') { $Matches[1] } } | Sort-Object -Unique) -join ' '
+            throw "Home is Android's launcher chooser and $($found.Count) known stock launchers claim Home: pick a default on the TV first, or run again with -StockLauncher <package to disable> or -StockLauncher none.`nHOME candidates on this TV: $candidates"
+        }
     }
-    else { throw "Home currently resolves to '$homePkg', which is not a stock launcher this script knows (android = launcher chooser, com.google.android.tungsten.setupwraith = setup wizard, see README Troubleshooting; anything else = another launcher is the default). Run again with -StockLauncher <package to disable> or -StockLauncher none." }
+    else {
+        # List the TV's actual HOME claimants so the message names the packages that could be passed as
+        # -StockLauncher, instead of leaving the reader to find them by hand (#3471).
+        $candidatesRaw = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
+        $candidates = if ($LASTEXITCODE -eq 0) { (($candidatesRaw -split "`n") | ForEach-Object { if ($_ -match '([A-Za-z0-9_.]+)/') { $Matches[1] } } | Sort-Object -Unique) -join ' ' } else { '' }
+        $msg = "Home currently resolves to '$homePkg', which is not a stock launcher this script knows (android = launcher chooser, com.google.android.tungsten.setupwraith = setup wizard, see README Troubleshooting; anything else = another launcher is the default)."
+        if ($candidates) { $msg += "`nHOME candidates on this TV: $candidates" }
+        throw "$msg`nRun again with -StockLauncher <package to disable> or -StockLauncher none."
+    }
 }
 Write-Host "Stock launcher: $StockLauncher"
 $disableStock = if ($StockLauncher -eq 'none') { 'echo stock launcher left alone' } else { "pm disable-user --user 0 $StockLauncher" }
@@ -114,12 +127,18 @@ if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m
 @(
     'pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted',
     'cmd package compile -m speed -f com.gathin.tvhome',
-    $disableStock,
-    'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
+    $disableStock
 ) | & $py -I ..\tools\tv.py --batch
 # A failed batch is not fatal here: the stock launcher may already be disabled, so fall through to the
 # Home check, which rolls back when Home is not ours.
 if ($LASTEXITCODE -ne 0) { Write-Warning "tv.py --batch failed (exit code $LASTEXITCODE); checking where Home ended up" }
+
+# set-home-activity on its own, so its result is read (build-and-install.sh does the same): our
+# launcher is a HOME candidate whenever it is installed, so the chooser check below cannot tell a
+# switch that took from one that did not on its own (#4068). It prints "Success" when the preference
+# took; anything else means it did not.
+$setHomeOut = (& $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>$null) -join "`n"
+$setHomeOk = ($LASTEXITCODE -eq 0 -and $setHomeOut -match 'Success')
 
 $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 # Home's owner, or '' when the TV cannot be reached: $null.Trim() would throw past the rollback.
@@ -163,6 +182,16 @@ function Undo-Handover {
 # Order matters, see build-and-install.sh: start the new launcher, disable the stock one, set the
 # preference last, then check where Home ended up and put the stock launcher back if it is not ours.
 $homeNow = Get-HomeNow
+# A second launcher (e.g. Projectivy) can keep claiming Home, so resolve-activity answers with the
+# chooser ("android") even though set-home-activity took. Keep the handover only when set-home-activity
+# reported Success and our launcher is among the claimants; otherwise fall through to the rollback (#4068).
+if ($homeNow -eq 'android' -and $setHomeOk) {
+    $claimants = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
+    if ($claimants -match 'com\.gathin\.tvhome/') {
+        $homeNow = 'com.gathin.tvhome/chooser'
+        Write-Host "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
+    }
+}
 if ($homeNow -and $homeNow -notlike 'com.gathin.tvhome/*' -and $keepStockHome) {
     Write-Host "Home stays $homeNow, as -StockLauncher none disabled nothing (stock_home_redirect)."
     if (-not $HomeKeyService) { Write-Warning 'Without -HomeKeyService nothing sends Home here; run again with it for stock_home_redirect.' }

@@ -258,6 +258,22 @@
 # - usercenter off and a standby (`input keyevent SLEEP`, then the remote's power button) did not reboot this unit
 #   (/proc/uptime kept counting), unlike the 43C641 in #3533. Standby took the TV off the network until it woke.
 # - Power-on and wake from standby both landed on the new Home, with no Live TV.
+#
+# TCL G03 US, 2026-10-28, status 2026-11-13 (16 days, nothing re-enabled): product G03_4K_US_NF_DB (BeyondTV4, model
+# group 2021RT51MUHDGTV), Google TV on Android 11 (SDK 30), build RP1A.200622.001 AR37, US firmware. The owner's own
+# selection, based on this folder and examples/tcl-55s546-us: this list minus com.tcl.logkit,
+# com.tcl.overseasappshow, com.tcl.tv.tclhome_passive, com.tcl.waterfall.overseas, Netflix, Prime Video, the USB
+# player, gamebar, the TCL browser, micmanager, Chromecast, Miracast and T-Cast, plus com.tcl.tv.tclchannel,
+# com.tcl.tv.plus and launcherx (which the install script disabled during the handover) - 29 packages, every one
+# disabled rather than uninstalled. Confirmed with the physical remote: Home returns to the new launcher and it opens
+# at startup, apps and Back work, Input opens the source panel, Settings opens, and a held volume button keeps
+# adjusting, all without a remote-key helper. All 29 stayed disabled and Wi-Fi reconnected at the check after the
+# setup reboot; the package state was not re-audited at the end of the two weeks. Kept: Chromecast (mediashell), the
+# USB player, com.tcl.versionUpdateApp and com.tcl.xian.StartandroidService. setupwraith owned the saved network here
+# too - forgetting it and re-joining in Settings before disabling setupwraith kept Wi-Fi. Not separately confirmed:
+# the Netflix, YouTube and Prime Video buttons, HDMI-CEC, casting, USB playback and a completed firmware update. USB
+# debugging was off and the port checked closed afterwards. Reported by @tjmcleod8 (#3876).
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
@@ -281,6 +297,8 @@ com.tcl.overseasappshow                     # "recommended apps" showcase
 com.tcl.esticker                            # sticker / emoji overlay
 com.tcl.tv.tclhome_passive                  # pushes TCL content to the home screen at boot
 com.tcl.waterfall.overseas                  # TCL web-video recommendation portal
+# com.tcl.tv.tclchannel                    # off on the AR37 US unit (see the header), left on in the shared list
+# com.tcl.tv.plus                          # off on the AR37 US unit (see the header), left on in the shared list
 android.autoinstalls.config.google.gtvpai   # silently installs partner apps
 com.google.android.partnersetup             # partner-app attribution
 com.google.android.onetimeinitializer       # one-time setup leftovers

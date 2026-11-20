@@ -1,0 +1,84 @@
+# Element E450AD65G (65" 4K, reported as "ElementPlatiumTV", device kaitak, MTC/MediaTek), Google TV, Android 14 (SDK 34)
+# Firmware build: UKNV.260416.001. US set. Same board family as examples/sharp-55gp6260e.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
+# Setup wizard: com.google.android.tungsten.setupwraith (claims HOME with .RecoveryActivity).
+# Live TV app: com.mediatek.wwtv.tvcenter; HDMI/tuner inputs: com.mediatek.tvinput, com.mediatek.tv.service.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/element-e450ad65g/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/element-e450ad65g/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Tested on one unit in a single session, not over several days: applied in three batches with a screenshot
+# after each, then one reboot (every package stayed disabled, the TV booted straight into the new launcher and
+# did not open Live TV by itself), D-pad from every edge, and the Inputs menu listing HDMI 1-4, Composite and
+# Live TV. Live TV and HDMI playback were not opened. Treat it as a starting point and report anything that broke.
+#
+# Network: built-in Ethernet, Wi-Fi off. ro.adb.secure=1. Port 5555 stayed open with USB debugging and Network
+# debugging both off and the TV restarted; it only refused connections (tools/adb-closed.py) after the
+# Developer options switch itself was turned off and the TV restarted again.
+#
+# Home: launcher/build-and-install.sh rolled the first handover back because setupwraith's RecoveryActivity took
+# Home, as on the Sharp kaitak set. The handover held once setupwraith was disabled. tools/disable.sh skipped
+# setupwraith because `dumpsys wifi` showed no saved networks to check (Wi-Fi off, `cmd wifi list-networks`
+# answered "No networks"), so it was disabled with FORCE_SETUPWRAITH=1 with the owner's agreement. On a set that
+# joined Wi-Fi during setup, run the Wi-Fi check in PROMPT.md first.
+#
+# Remote (IR): Netflix, YouTube, Input, gear and Home kept working with launcherx disabled; the MediaTek hotkey
+# dispatcher in com.mediatek.tv.service opens Netflix and YouTube itself. The Prime Video button (IR 0xb7,
+# KEYCODE_TV_INPUT_COMPONENT_2, 183) reaches the dispatcher and then does nothing. The launcher's
+# HOME_KEY_SERVICE=1 with app_keys KEYCODE_TV_INPUT_COMPONENT_2:com.amazon.amazonvideo.livingroom fixed it on the
+# real remote, but a held volume key then moved one step per press instead of ramping (as on the Sharp set and
+# docs/devices/tcl-55p71b-g09-key-repeat.md), so the owner left the button unmapped and the helper off.
+#
+# Already disabled before this list, left as it was: com.mtc.emanual (also listed below, harmless).
+# Re-enabled along the way: only the stock launcher, once and automatically, by build-and-install.sh's rollback.
+#
+# Kept on purpose: Play Store + Play Services, Gboard, Dolby audio, com.mediatek.tvinput / com.mediatek.tv.service /
+# com.mediatek.wwtv.tvcenter (Live TV and HDMI), com.mediatek.wwtv.setupwizard (channel scan),
+# com.mediatek.wwtv.mediaplayer (USB media player), com.mediatek.autopair and com.google.android.tv.remote.service
+# (remote pairing), com.mediatek.mtc.factory and mediatek.factorymenu.ui (factory tools, never launched),
+# com.google.android.apps.tv.dreamx (ambient mode), com.google.android.tts, Netflix, Prime Video, YouTube, Hulu,
+# Pluto TV and both preloaded browsers (the owner uses them). No separate firmware updater package was found.
+
+# --- Content recognition, ads and telemetry ---
+tv.anoki.acr.anokiacroptin                    # Anoki ACR: recognises what is on screen
+com.android.adservices.api                    # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services  # on-device ad personalisation
+com.android.federatedcompute.services         # federated learning for the above
+com.android.tv.feedbackconsent                # feedback consent prompts
+com.google.android.feedback                   # feedback reporter
+
+# --- Partner rows, store demo, disclaimer, manual ---
+fusion.android.tv.demo                        # store/demo mode
+com.mstar.android.tv.disclaimercustomization  # first-run disclaimer screen
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows for the stock launcher
+com.google.android.partnersetup               # Play partner customizations
+com.mtc.emanual                               # on-screen manual (the FAV key opens it on the Sharp set)
+com.mtc.emanual.overlay.ok
+
+# --- Apps the owner does not use (off by choice; all still installed) ---
+# This set has these off by the owner's choice; uncomment the ones you don't use.
+#com.google.android.youtube.tvmusic
+#com.google.android.youtube.tvunplugged        # YouTube TV
+#com.google.android.videos                     # Google TV movies and shows
+#com.apple.atve.androidtv.appletv
+#com.wbd.stream                                # Max
+#com.sling
+#com.philo.philo.google
+#com.tubitv
+#com.xumo.xumo.tv
+#com.roku.web.trc                              # The Roku Channel
+#com.plexapp.android
+#com.spotify.tv.android
+#com.google.android.play.games
+
+# --- Voice, Chromecast and Miracast (off by choice) ---
+com.google.android.katniss                    # Google Assistant / voice search
+com.google.android.tv.assistant               # Assistant mic LED service
+com.google.android.apps.mediashell            # Chromecast built-in
+com.mediatek.androidbox                       # Miracast / Wi-Fi Display sink (MiracastService)
+
+# --- Stock Google TV home and setup wizard ---
+# Disable only after installing and verifying the new launcher, and after the Wi-Fi check in the header!
+com.google.android.tungsten.setupwraith      # first-run wizard; claims HOME. Re-enable before a factory reset
+com.google.android.apps.tv.launcherx         # stock Google TV home

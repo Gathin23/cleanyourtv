@@ -21,10 +21,12 @@ no .pftrace in it names the folder.
 """
 import argparse
 import colorsys
+import errno
 import hashlib
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -79,7 +81,8 @@ def lanes(q, package, names, t0, t1):
         if utid in seen:
             continue
         seen.add(utid)
-        rows = q(f"select s.id, s.ts, s.dur, s.depth, s.name, s.parent_id from slice s join thread_track tt "
+        # TrackEvent names are optional; keep unnamed slices, with an empty label for regexes and drawing.
+        rows = q(f"select s.id, s.ts, s.dur, s.depth, coalesce(s.name, '') as name, s.parent_id from slice s join thread_track tt "
                  f"on s.track_id = tt.id where tt.utid = {utid} and s.ts < {t1} and s.ts + s.dur > {t0} "
                  f"and s.dur > 0 order by s.ts")
         out.append(("main thread" if name == "main" else name, rows))
@@ -214,7 +217,9 @@ def output_path(value):
     there with FileNotFoundError - each a traceback with exit 1, thrown after Perfetto's query engine has
     been started and every trace read. 1 is also what a run that drew no chart returns, so the reader
     cannot tell a typo from a chart that failed. Refused here it is an argument error, before anything is
-    read; a suffixless file cannot be saved at all, so it is refused rather than guessed at.
+    read; a suffixless file cannot be saved at all, so it is refused rather than guessed at. A folder the
+    filesystem will not stat is refused with its own reason as well: "create it first" is an instruction
+    nobody can carry out for a folder that is there, or for a name no filesystem will take.
     """
     if not value:
         raise argparse.ArgumentTypeError("--out is empty: name the PNG to write, e.g. --out chart.png")
@@ -224,10 +229,23 @@ def output_path(value):
     if not os.path.splitext(value)[1]:
         raise argparse.ArgumentTypeError(f"{value} has no extension, so the format is unknown: name it {value}.png")
     folder = os.path.dirname(value) or "."
-    if os.path.exists(folder) and not os.path.isdir(folder):
-        raise argparse.ArgumentTypeError(f"{value}: {folder} is a file, not a folder")
-    if not os.path.isdir(folder):
+    # `os.path.exists()` and `os.path.isdir()` answer every OSError with False, so a folder this
+    # filesystem refuses to stat - one this user may not traverse, or a name longer than NAME_MAX -
+    # read as "not there yet", and the reader was told to create it: EACCES on a folder that is there,
+    # and a name nothing can create. One os.stat tells those apart, and the refusal keeps the system's
+    # own words, as tools/trace.py's --out and tools/gen_tables.py's --root already do.
+    try:
+        folder_mode = os.stat(folder).st_mode
+    except OSError as e:
+        if e.errno not in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            raise argparse.ArgumentTypeError(
+                f"{value}: cannot be looked at ({e.strerror or e}), so no PNG could be written there: "
+                f"name the file in a folder this run can open") from e
+        folder_mode = None
+    if folder_mode is None:
         raise argparse.ArgumentTypeError(f"{value}: there is no folder {folder} - create it first")
+    if not stat.S_ISDIR(folder_mode):
+        raise argparse.ArgumentTypeError(f"{value}: {folder} is a file, not a folder")
     if os.path.splitext(value)[1].lower() != ".png":
         raise argparse.ArgumentTypeError(f"{value}: name the PNG with a .png extension")
     return value
@@ -269,6 +287,13 @@ def parse(argv):
 
 
 def main(argv=None):
+    # The PNG is already written when its path is printed. A limited console must not turn that
+    # success into UnicodeEncodeError for a filename it cannot encode, as in screendiff.py and trace.py.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     args = parse(sys.argv[1:] if argv is None else argv)
     # A TRACE argument is a path on this computer, and it is read before Perfetto's engine is started:
     # trace_report.py, which the same workflow page puts beside this tool, answers `not a file: <path>`
@@ -298,6 +323,14 @@ def main(argv=None):
         sets = [trace_report.unique_traces(paths) for paths in sets]
     except ValueError as e:
         sys.exit(str(e))
+    # Nav always uses the whole recording; a start uses its first-frame or requested window.
+    # Unlike windows cannot give a meaningful highlighted-time change; --window all makes them alike.
+    families = [{"nav" if trace_report.scenario_of(path) == "nav" else "start" for path in paths}
+                for paths in sets]
+    if any(len(family) > 1 for family in families):
+        sys.exit("cannot mix nav and start traces in one set; draw them separately")
+    if args.window != "all" and any(family != families[0] for family in families[1:]):
+        sys.exit("cannot compare nav and start windows; use --window all or draw them separately")
     try:
         import PIL  # noqa: F401
     except ImportError:

@@ -92,6 +92,34 @@ class SeasonArgumentTest(unittest.TestCase):
         self.assertEqual(race_calendar.season("2026"), "2026")
         self.assertEqual(race_calendar.season(str(race_calendar.FIRST_SEASON)), str(race_calendar.FIRST_SEASON))
 
+    def test_decimal_years_build_ascii_requests_and_update_the_calendar(self):
+        for value in ("2026", "２０２６", "٢٠٢٦", "20２٦"):
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as tmp:
+                folder = Path(tmp)
+                config = folder / "config.json"
+                config.write_bytes(THEME_BYTES)
+                urls = []
+
+                def fetch(request, **kwargs):
+                    # Exercise HTTP's actual request-line encoding without opening a connection.
+                    connection = http.client.HTTPSConnection("api.jolpi.ca")
+                    try:
+                        connection.putrequest(request.get_method(), request.selector)
+                    finally:
+                        connection.close()
+                    urls.append(request.full_url)
+                    return io.BytesIO(RESPONSE)
+
+                with mock.patch.object(sys, "argv", ["race_calendar.py", str(folder), "--season", value]), \
+                        mock.patch.object(race_calendar, "datetime", clock()), \
+                        mock.patch.object(race_calendar.urllib.request, "urlopen", side_effect=fetch), \
+                        contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(race_calendar.main(), 0)
+                self.assertEqual(urls, [race_calendar.API.format(season="2026")])
+                data = json.loads(config.read_text(encoding="utf-8"))
+                self.assertEqual(data.pop("race_calendar")[0]["round"], 1)
+                self.assertEqual(data, {k: v for k, v in THEME.items() if k != "race_calendar"})
+
     def test_a_typo_and_a_year_before_the_first_season_are_refused(self):
         for value in ("2027x", "26", "26x", str(race_calendar.FIRST_SEASON - 1), "1899", "", "2026.5",
                       "-2026"):
@@ -607,6 +635,47 @@ with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io
         status, stderr = self.run_main(str(self.theme), "--season", "2026")
         self.assert_refused(status, stderr, f"{self.config} is not a file")
         self.urlopen.assert_not_called()
+
+    def test_a_config_json_the_filesystem_will_not_stat_never_fetches(self):
+        self.stub()
+        self.config.write_bytes(THEME_BYTES)
+        real_stat = Path.stat
+        for number in (errno.EACCES, errno.EIO, errno.ENAMETOOLONG, errno.EINVAL):
+            with self.subTest(errno=number):
+                def refused(path, *args, **kwargs):
+                    if path == self.config:
+                        raise OSError(number, os.strerror(number))
+                    return real_stat(path, *args, **kwargs)
+
+                with mock.patch.object(Path, "stat", refused):
+                    status, stderr = self.run_main(str(self.theme), "--season", "2026")
+                self.assert_refused(status, stderr, str(self.config), os.strerror(number))
+                self.urlopen.assert_not_called()
+                self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+                self.assertEqual(self.out.getvalue(), "")
+
+    @unittest.skipUnless(os.name == "posix", "needs POSIX directory search permissions")
+    def test_a_theme_without_search_permission_refuses_its_config_before_fetching(self):
+        # stat(theme) succeeds without searching inside it; stat(theme/config.json) does not.
+        # On 3.13 that error escaped exists(), while 3.14 treated it as a missing config and fetched.
+        self.stub()
+        self.config.write_bytes(THEME_BYTES)
+        mode = stat.S_IMODE(self.theme.stat().st_mode)
+        self.theme.chmod(0)
+        try:
+            try:
+                self.config.stat()
+            except PermissionError:
+                pass
+            else:
+                self.skipTest("this user can search a directory without its search permission")
+            status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        finally:
+            self.theme.chmod(mode)
+        self.assert_refused(status, stderr, str(self.config), "Permission denied")
+        self.urlopen.assert_not_called()
+        self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+        self.assertEqual(self.out.getvalue(), "")
 
     def test_a_config_json_that_cannot_be_written_is_named_after_the_fetch(self):
         # The other half of the same file: the fetch happens first, so this one is not "nothing was

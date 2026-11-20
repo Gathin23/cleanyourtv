@@ -94,29 +94,29 @@
 
 | | | | | | |
 |:---|:---|:---|:---|:---|:---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 88 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 24 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 17 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 |
-| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 11 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
-| [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 |
-| [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 89 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 18 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 17 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 |
+| [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 |
 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
 
 </div>
 
 <details>
-<summary>עוד 87 מותגים ו־15 מותגי מקרנים</summary>
+<summary>עוד 92 מותגים ו־16 מותגי מקרנים</summary>
 
 <div dir="ltr" align="left">
 
-**RockTek** 3 · **Vidda** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
-**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 ·
-**Síragon** 2 · **TIM** 2 ·
-AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · BTV · Caxium · Cecotec · Compac ·
-Continental Edison · Daewoo · Dcolor · Dialog · Durabrand · DYON · ENGY · Essentiel b · Freebox · HAAM · Hikeen ·
-Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
-MarQ · MECOOL · Metz · MTC · Next · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV · Prosonic · realme ·
-Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System · Tesla ·
-TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · X.Vision ·
-Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Nonete, Portronics, Stellamore, Wanbo, XGIMI
+**RockTek** 3 · **Vidda** 3 · **Vu** 3 · **BTV** 2 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **Next** 2 · **PRISM+** 2 · **Sankey** 2 ·
+**Sber** 2 · **Síragon** 2 · **TIM** 2 ·
+AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Continental Edison ·
+Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Freebox · HAAM · Hikeen · Home+ · Impex ·
+INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom · MarQ · MECOOL ·
+MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV · Prosonic · realme · Rockchip · Salora ·
+SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System · Tesla · TiVo ·
+Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · Vivensis · VSTV · X.Vision ·
+Alwtniet, Anker Nebula, Aurzen, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Nonete, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </div>
 
@@ -238,7 +238,7 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py
 |---:|---:|
 | **התאמה אישית** | סדר המועדפים, אפליקציות מוסתרות, אפליקציית שידור חי, 4 עד 7 אריחים בשורה והפחתת תנועה. ההגדרות נמצאות ב־[config.xml](launcher/app/src/main/res/values/config.xml). |
 | **הגדרות בטלוויזיה** | לחיצה ארוכה על OK בכפתור ההגדרות פותחת את הגדרות מסך הבית. עם <code dir="ltr">launcher_settings_button</code> מספיקה לחיצה רגילה. הגדרות הטלוויזיה זמינות גם מדף ההגדרות ומאריח האפליקציה. |
-| **ערכות עיצוב** | רקע, תמונה ופריסה מקובץ <code dir="ltr">config.json</code> שנשלח דרך הרשת. יש 32 ערכות ב־[themes](themes/), כולל ברירת המחדל. |
+| **ערכות עיצוב** | רקע, תמונה ופריסה מקובץ <code dir="ltr">config.json</code> שנשלח דרך הרשת. יש 33 ערכות ב־[themes](themes/), כולל ברירת המחדל. |
 | **31 שפות** | השפה נקבעת לפי הטלוויזיה. בעברית הפריסה מוצגת מימין לשמאל. |
 | **ספריית אפליקציות** | אפשר לדפדף בכל האפליקציות המותקנות ולהוסיף או להסיר קיצורי דרך ממסך הבית. [מדריך](docs/app-library.md) |
 | **תפריט אריח** | <code dir="ltr">tile_menu</code> מופעל כברירת מחדל. לחיצה ארוכה על OK מאפשרת להזיז אריח ולפתוח פרטי אפליקציה. כשספריית האפליקציות מופעלת אפשר גם להסיר את האריח מהבית. כשהתפריט כבוי, לחיצה ארוכה פותחת את פרטי האפליקציה. |
@@ -378,7 +378,7 @@ ADB ברשת ביציאה 5555 אינו מוצפן. בחלק מהטלוויזי�
 
 ב־17 באוקטובר 2026 פרסם יוצר הפרויקט [תמונות לפני ואחרי](https://x.com/gathint/status/2111379569030939102) של הטלוויזיה של הוריו, אחרי ניקוי באמצעות Claude Code דרך Wi-Fi. הפרסום הגיע ל־8.6 מיליון צפיות. בתוך ארבעה ימים הקהילה תרמה רשימות ליותר מ־170 דגמים, בעזרת יותר מ־200 תורמים. עד 19 באוקטובר המאגר נקרא tv-vibehack, והקישורים הישנים עדיין עובדים.
 
-בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־14 בנובמבר יש לו 57 אלף כוכבים ו־7,400 פיצולים. הרשימות כיסו 489 דגמים מ־132 מותגים. סיקור בתקשורת: 546 כתבות מ־57 מדינות ו־674 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־14 בנובמבר 2026)
+בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־20 בנובמבר יש לו 59 אלף כוכבים ו־7,800 פיצולים. הרשימות כיסו 504 דגמים מ־138 מותגים. סיקור בתקשורת: 546 כתבות מ־57 מדינות ו־674 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־14 בנובמבר 2026)
 
 ## תרומה לפרויקט
 

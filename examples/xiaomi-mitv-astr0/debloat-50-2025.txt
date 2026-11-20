@@ -1,0 +1,66 @@
+# Xiaomi Redmi Smart TV A Pro 50" 2025 Energy-saving (MiTV-ASTR0, blueplanet, Amlogic
+# AMLT963D4/T5M), China firmware OS3.0.119.0.USTAATV (HyperOS TV 3), Android 14 (SDK 34),
+# 3 GB RAM. Second unit in this folder: the 55-inch ASTR0 on OS3.0.106 is debloat.txt
+# beside this list. The 50-inch unit ships a different preload set (no WPS, calendar,
+# health, weather, Xiaomi store or Pictorial; it has CIBN, Tencent, Bilibili, Xunlei,
+# NetEase, Dangbei Market, Shafa Market and Filmly/Yamby), so its list is separate.
+# Applied and verified on 2026-11-17: 18 packages, one reboot
+# (tools/check.py reports no drift), with the com.ts.launcher Home handover in README.md.
+# The firmware updater is the one change made by hand on this unit, not by this list:
+# its line is commented out at the bottom.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-astr0/debloat-50-2025.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-astr0/debloat-50-2025.txt com.mitv.tvhome
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Kept by the owner: Tencent, Bilibili, CIBN, Filmly, Yamby, all three app markets
+# (Xiaomi, Dangbei, Shafa), XiaoAI voice, casting/Mi Home, TV Manager, the Sogou IME,
+# Bluetooth and the TV input stack. The 55-inch list's packages that do not exist here
+# (WPS, calendar, health, weather, shop, Gallery) are in debloat.txt only.
+#
+# Notes from this firmware:
+# - The standby/screensaver ads come from com.xiaomi.mitv.hyper.screensaver: a plain
+#   Activity with its own downloaded carousel, so screensaver_enabled=0 does not touch it.
+# - Keep com.xiaomi.mitv.smartpanel enabled (Menu-button panel); disabling it kills the
+#   Menu key. Do NOT add it here.
+# - OS3.0.119's periodic cleaner re-enables packages at boot unless it is off:
+#   `cmd periodic enable false` (this unit was set that way before the verifying reboot).
+# - Firmware updater com.xiaomi.mitv.upgrade: off on this unit at the owner's request.
+#   Its line below is commented out, so applying this list leaves OTA on for other sets;
+#   re-enable it before checking for updates.
+# - ADB over TCP closes on every boot: Settings -> 账号与安全 -> ADB 调试.
+# - No idle clock screensaver is possible: the idle timeout path is a hard panel-off.
+#   Keep screen_off_timeout at 2147483647.
+
+# Xiaomi telemetry / ads / push
+com.miui.tv.analytics                    # TV usage statistics
+com.xiaomi.tvqs                          # quality/performance reporting
+com.xiaomi.mitv.tvpush.tvpushservice     # push ads/notifications
+com.mitv.overseaservice                  # overseas service partner helper
+com.xm.webcontent                        # webview container for promotions
+com.mitv.shoplugin                       # TV Taobao shopping plugin
+com.mitv.toolhouse
+com.xiaomi.gamecenter.sdk.service.mibox  # game center SDK
+com.android.adservices.api
+com.android.ext.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Cloud control and preloaded apps the owner does not use
+com.mitv.cloudcontrol                    # remote configuration; also pushes apps
+com.xiaomi.mitv.healthdiagnosis
+com.xiaomi.mitv.karaoke.service
+com.xunlei.downloadprovider.hd
+com.netease.cloudmusic.tv
+
+# Screensaver ads (same Activity as the 55-inch unit; verified live there)
+com.xiaomi.mitv.hyper.screensaver
+
+# Firmware updater - off on this unit at the owner's request, not by this list; re-enable
+# with `pm enable --user 0 com.xiaomi.mitv.upgrade` before checking for updates.
+#com.xiaomi.mitv.upgrade
+
+# Stock launcher - LEFT COMMENTED OUT: uncomment ONLY together with the allowlist
+# trampoline in README.md (Home), or Home lands on FallbackHome's black screen.
+# Undo: pm enable com.mitv.tvhome + reboot.
+#com.mitv.tvhome

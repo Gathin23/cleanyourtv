@@ -12,6 +12,12 @@ The sweep reads every page and list under examples/, with a list's `#` comment w
 README section through only when the README still has a heading of that name. The table names the
 bullet each of those seven headers points at now, and the bullet has to start that way in the doc.
 
+A second shape landed nowhere for the same reason: `examples/tcl-g08-eu-android12` sent a reader to
+"launcher Troubleshooting #3", and the troubleshooting page's entries are bullets - there is no numbered
+list on it or on `docs/launcher.md`, so the number counts to nothing. That header names the bullet now,
+and a `Troubleshooting #N` pointer is refused as well: the doc is checked for a numbered entry first, so
+if it ever gains one this test says so rather than passing on a premise that stopped being true.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
@@ -28,6 +34,9 @@ DOC = (ROOT / "docs" / "TROUBLESHOOTING.md").read_text(encoding="utf-8")
 # "README, Troubleshooting", "README Troubleshooting", "the README troubleshooting section",
 # "README's Troubleshooting", "README gotchas".
 README_SECTION = re.compile(r"\bREADME(?:'s)?,?\s+(troubleshooting|gotchas)\b", re.I)
+# "launcher Troubleshooting #3": the troubleshooting page's entries are bullets, so a number names
+# nothing a reader can count down to.
+NUMBERED = re.compile(r"\btroubleshooting\s+#\d+\b", re.I)
 # A list wraps its header at about 105 columns, and a pointer can be cut anywhere in it.
 COMMENT_WRAP = re.compile(r"\s*\n#\s*")
 FENCE = re.compile(r"```.*?```", re.S)
@@ -41,6 +50,7 @@ POINTERS = {
     "tcl-55s470g": "The new launcher still doesn't own Home",
     "xiaomi-mitv-moor2": "The new launcher still doesn't own Home",
     "xiaomi-mi-tv-4a": "No on-screen keyboard",
+    "tcl-g08-eu-android12": "The new launcher still doesn't own Home",
 }
 
 
@@ -73,6 +83,15 @@ def missing_sections(root, headings):
     return found
 
 
+def numbered_pointers(root):
+    """(file, pointer) for every page that sends the reader to `Troubleshooting #N`."""
+    found = []
+    for path, text in pages(root):
+        for match in NUMBERED.finditer(joined(text)):
+            found.append((str(path), match.group(0)))
+    return found
+
+
 class ListTroubleshootingPointersTest(unittest.TestCase):
     def test_the_pattern_reads_every_spelling_the_lists_used(self):
         for text in ("works on 5555 (README, Troubleshooting).", "installed (see README Troubleshooting).",
@@ -92,6 +111,23 @@ class ListTroubleshootingPointersTest(unittest.TestCase):
     def test_no_page_in_examples_names_a_readme_section_the_readme_does_not_have(self):
         self.assertEqual(missing_sections(EXAMPLES, readme_headings()), [],
                          "the section moved to docs/TROUBLESHOOTING.md: name the bullet there")
+
+    def test_the_numbered_pattern_reads_the_spelling_the_g08_list_used(self):
+        for text in ("see launcher Troubleshooting #3.", "launcher TROUBLESHOOTING #12."):
+            with self.subTest(text=text):
+                self.assertRegex(text, NUMBERED)
+        for text in ('docs/TROUBLESHOOTING.md, "The new launcher still doesn\'t own Home"',
+                     "Step 3 of the launcher guide.", "Troubleshooting setupwraith on a G08."):
+            with self.subTest(text=text):
+                self.assertNotRegex(text, NUMBERED)
+
+    def test_no_page_in_examples_points_at_a_numbered_troubleshooting_entry(self):
+        # The premise, then the sweep: the doc's entries are bullets, so `#N` counts to nothing.
+        self.assertIsNone(re.search(r"^\s*\d+\.\s", DOC, re.M),
+                          "docs/TROUBLESHOOTING.md gained a numbered entry; the `Troubleshooting #N` "
+                          "pointers below can be read again")
+        self.assertEqual(numbered_pointers(EXAMPLES), [],
+                         "the troubleshooting entries are bullets: name the bullet, not a number")
 
     def test_each_header_names_the_bullet_the_fix_is_in(self):
         for folder, lead in POINTERS.items():

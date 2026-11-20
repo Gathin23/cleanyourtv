@@ -1,0 +1,96 @@
+# VSTV MT9255T / MT5862 (MediaTek), Android 9 (SDK 28), build TVOS-04.16.031.01.12, ~1 GB RAM
+# ro.build.display.id is "mt5862-userdebug 9 PPR2.180905.006.A1 TVOS-04.16.031.01.12 dev-keys",
+# dated 2022-09-05; build device "mt5862", USB-serial model string "mt9255t".
+# Vendor launcher/apps all use the com.vstv.* prefix and run under the system uid.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/vstv-mt9255t/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vstv-mt9255t/debloat.txt com.vstv.mercurylauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# WARNING, this is how this board bricks: com.vstv.fbhome is VsFallbackHome, the only home in the
+# firmware declared android:directBootAware="true". PackageManager hides everything that is not
+# direct-boot-aware while user 0 is still locked, so fbhome is the only HOME activity
+# startHomeActivityLocked can launch before the unlock; the stock launcher cannot stand in for it.
+# Disable fbhome together with com.vstv.mercurylauncher and systemReady() logs "No home screen
+# found", user 0 never leaves State: BOOTING, init.svc.bootanim never stops and the TV sits on the
+# Android wordmark forever. Ethernet still comes up at 100 Mbps in that state but receives zero
+# bytes and port 5555 stays closed, so network adb cannot rescue you - and re-enabling only the
+# stock launcher does not help, because it is not direct-boot-aware either.
+# Never disable com.vstv.fbhome. Recovery is USB only: adbd starts long before the framework and
+# `adb root` works on this build, then pm enable com.vstv.fbhome + reboot.
+# See docs/TROUBLESHOOTING.md, "The TV stays on the boot logo after a list, and disabling the only
+# Home app is enough to do it": this board is the CVTE case that bullet describes.
+#
+# Keep: com.vstv.input (VsTvInput - DTV/HDMI inputs), com.vstv.septembersettings (the Settings app),
+# com.vstv.global.service (GlobalUI - OSD/volume/toast surface), com.vstv.mercurylauncher (stock
+# launcher, the restore.sh default home), com.vstv.fbhome (fallback home), and all com.mediatek.*
+# (tvinput, autopair, wwtv.tvcenter). Nothing below touches the input path or the UI surface.
+# Hotstar, Nuvio, Cloudstream, CloudStream prerelease, BROWSER and com.activitymanager are
+# side-loaded apps on this unit, not firmware - they are not listed here.
+
+# --- Safe: vendor diagnostics and factory tooling. No everyday feature is lost. ---
+com.vstv.diagnosis            # "Diagnosis" - vendor telemetry/self-test app
+com.vstv.factory              # "Factory Menu" - service-menu UI
+com.vstv.factory.test         # VsFactoryTest - panel/burn-in test routines
+
+# --- Firmware update path. ---
+# Off on the tested unit (sideload-only, no OTA); kept on in the shared list, uncomment to disable.
+#com.vstv.upgradecenter
+#com.vstv.ota
+
+# --- Safe: AOSP dead weight on a TV. No launcher tile, no runtime use. ---
+com.android.printspooler      # no printing on this board
+com.android.wallpaperbackup
+com.android.dreams.basic      # screensaver/daydream
+com.android.soundrecorder
+com.android.htmlviewer        # opens file:// HTML; the browser app covers this
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.proxyhandler
+com.android.cts.ctsshim       # CTS test shims, no UI
+com.android.cts.priv.ctsshim
+com.google.android.onetimeinitializer
+com.google.android.partnersetup
+
+# --- Off by choice on this unit: no voice/assistant use. Uncomment to get voice back. ---
+# The remote's mic button does nothing while these are off; everything else is unaffected.
+com.vstv.tv.assistant          # "TvAssistant" - remote microphone / voice assistant
+com.google.android.katniss     # Google Assistant + voice search (remote mic button)
+com.vs.phone.remote.search.assistants  # "VsVoiceAssistants" - voice search backend
+# Off on the tested unit (sideload-only, no OTA); kept on in the shared list, uncomment to disable.
+#com.google.android.tv.remote.service   # Google TV phone remote app pairing (not voice, but unused)
+
+# --- Your call: these cost RAM but remove a feature you may use. ---
+#com.vstv.mcast               # "MiraCast" - screen casting from a phone
+#com.vstv_india.mediacenter   # "Media Center" - USB/network media playback
+#com.vstv.filebrowser         # "FileBrowser" - on-TV file manager
+#com.google.android.marvin.talkback      # Android Accessibility Suite (screen reader)
+#com.google.android.syncadapters.calendar
+#com.google.android.syncadapters.contacts
+
+# --- Off on this unit only: sideload-only, no Play Store and no Play Services. ---
+# Off on the tested unit (sideload-only, no OTA); kept on in the shared list, uncomment to disable.
+# RAM is the real bottleneck (~925 MB visible, ro.config.low_ram=true, zram swap). The Play stack
+# was ~100 MB of resident processes across vending + :background + :quick_launch. Nothing here
+# installs from Play and every app in use (SmartTube, TizenTube, Nuvio, JioHotstar, CloudStream,
+# BROWSER) starts and runs without Play Services. Re-enable com.android.vending - and gms/gsf if an
+# app actually asks for them - before installing or signing in to something that needs Google.
+#com.android.vending           # Play Store (+ its child processes)
+#com.google.android.gms        # Play Services: persistent/gms/unstable/ui, ~85 MB PSS
+#com.google.android.gsf        # Google Services Framework, only useful with gms
+#com.vs.phoneremote.google     # "Phone Remote" pairing, unused while voice/phone remote is off.
+                              # It is android:persistent and runs as uid 1000, so the process keeps
+                              # running even while the package is disabled (~8 MB); disabling it
+                              # stops its services/receivers, not the process.
+
+# --- Never disable (left commented as a reminder) ---
+#com.vstv.mercurylauncher
+#com.vstv.fbhome
+#com.vstv.input
+#com.vstv.septembersettings
+#com.vstv.global.service
+#com.mediatek.tvinput
+#com.mediatek.tvinputservice.arbitratorservice
+#com.mediatek.wwtv.tvcenter
+#com.android.tv.settings           # TV settings UI used by Setup/inputs
+#com.android.webview

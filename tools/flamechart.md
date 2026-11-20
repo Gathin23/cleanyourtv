@@ -14,11 +14,20 @@ tools/venv/bin/python tools/flamechart.py traces/before traces/after \
 ```
 
 `--out` is the PNG to write; a folder, a name with no extension and a folder that is not there are refused
-before the traces are opened, so a typo cannot read as a chart that failed. A `TRACE` path is checked the
-same way, before the trace engine is started: a path that is not there is `not a file: <path>`, the words
-`tools/trace_report.py` uses, and a folder with no `.pftrace` in it names the folder.
+before the traces are opened, so a typo cannot read as a chart that failed. A folder the filesystem will
+not look at - one under a folder your user may not traverse, or a name longer than the filesystem takes -
+is refused with that reason rather than told to be created, since the folder is there already or nothing
+can make it. A `TRACE` path is checked the same way, before the trace engine is started: a path that is not
+there is `not a file: <path>`, the words `tools/trace_report.py` uses, and a folder with no `.pftrace` in
+it names the folder.
 An output that is the same file as any input trace (including symbolic and hard links) is refused
 with exit 2 before the engine starts, so drawing the chart cannot overwrite a recording.
+
+Keep `nav` recordings separate from starts (`cold`, `coldsys`, `home`, `custom`) when choosing a
+folder's median, as for the report. Across panels, `nav` always draws the whole recording, so comparing
+it with a start's first-frame or `start:MS` window is refused before the engine starts, leaving an
+existing output untouched. Draw them separately, or explicitly use `--window all` to compare whole
+recordings in every panel. A trace's sidecar scenario takes precedence over its filename, as in the report.
 
 | Option | Default | Notes |
 |---|---|---|

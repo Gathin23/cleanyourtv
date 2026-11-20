@@ -359,6 +359,64 @@ class GeneratorTest(unittest.TestCase):
             root = tree(tmp, [("x-1", tv("X", "X", notes="a \\| b, [list](x-1/debloat.txt), [web](https://x.y)"))])
             self.assertEqual(len(gen_tables.load(root)), 1)
 
+    def test_encoded_local_links_resolve_without_rewriting_the_destination(self):
+        cases = [("note.md", "note.md"), ("unit notes.md", "unit%20notes.md"),
+                 ("电视.md", "%E7%94%B5%E8%A7%86.md"), ("note#.md", "note%23.md#details"),
+                 ("unit%20notes.md", "unit%2520notes.md"), ("note+.md", "note+.md")]
+        for key in ("tv", "notes"):
+            for filename, destination in cases:
+                with self.subTest(key=key, destination=destination), tempfile.TemporaryDirectory() as tmp:
+                    target = f"x-1/{destination}"
+                    data = tv("X", "X")
+                    data[key] = f"X [note]({target})"
+                    root = tree(tmp, [("x-1", data)])
+                    (root / "examples/x-1" / filename).write_text("# Details\n", encoding="utf-8")
+                    code, output = run(root)
+                    self.assertEqual(code, 0, output)
+                    self.assertIn(f"]({target})", (root / "examples/README.md").read_text(encoding="utf-8"))
+                    self.assertEqual(run(root, "--check")[0], 0)
+                    self.assertEqual(json.loads((root / "examples/x-1/tv.json").read_text()), data)
+
+    def test_an_encoded_link_is_refused_when_only_its_literal_spelling_exists(self):
+        for key in ("tv", "notes"):
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as tmp:
+                target = "x-1/unit%20notes.md"
+                data = tv("X", "X")
+                data[key] = f"X [note]({target})"
+                root = tree(tmp, [("x-1", data)])
+                (root / "examples" / target).write_text("Not the URL's decoded target.\n", encoding="utf-8")
+                pages = [root / "README.md", root / "examples/README.md", root / "tools/readme_stats.py"]
+                before = [p.read_bytes() for p in pages]
+                code, output = run(root)
+                self.assertEqual(code, 2)
+                self.assertIn(target, output)
+                self.assertEqual([p.read_bytes() for p in pages], before)
+
+    def test_external_link_scheme_case_does_not_make_tv_json_invalid(self):
+        for key in ("tv", "notes"):
+            for target in ("http://example.invalid/Model", "HTTP://example.invalid/Model",
+                           "hTtPs://example.invalid/Model", "MAILTO:reader@example.invalid"):
+                with self.subTest(key=key, target=target), tempfile.TemporaryDirectory() as tmp:
+                    data = tv("X", "X")
+                    data[key] = f"X [reference]({target})"
+                    root = tree(tmp, [("x-1", data)])
+                    code, output = run(root)
+                    self.assertEqual(code, 0, output)
+                    self.assertIn(f"]({target})", (root / "examples/README.md").read_text(encoding="utf-8"))
+                    self.assertEqual(run(root, "--check")[0], 0)
+                    self.assertEqual(json.loads((root / "examples/x-1/tv.json").read_text()), data)
+
+    def test_an_external_link_does_not_hide_a_missing_relative_link(self):
+        target = "HTTPS://example.invalid/Model"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = tree(tmp, [("x-1", tv("X", "X", notes=f"[web]({target}), [note](x-1/missing.md)"))])
+            before = (root / "README.md").read_bytes()
+            code, output = run(root)
+            self.assertEqual(code, 2)
+            self.assertIn("x-1/missing.md", output)
+            self.assertNotIn(target, output)
+            self.assertEqual((root / "README.md").read_bytes(), before)
+
     def test_markers_must_be_there_once(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = tree(tmp, [("a", tv("Alpha", "A"))])

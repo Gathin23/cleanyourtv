@@ -7,7 +7,9 @@ same `G08` board, same `AU14` build — and read the deltas and the two traps be
 confirmed the cast-receiver symptom on a TCL BeyondTV2 in the same thread. A second unit, a
 55QM751G on the same build, is [further down](#a-second-unit-55qm751g-same-build): reboot
 persistence, the remote's keycodes, the mic, and the volume trade with a key helper. A third, a
-[65QM7K (2025)](#a-third-unit-65qm7k-2025-same-build), adds which buttons still work with no helper.
+[65QM7K (2025)](#a-third-unit-65qm7k-2025-same-build), adds which buttons still work with no helper. A
+fourth, a [65QM7K still on Android 12](#a-fourth-unit-65qm7k-on-android-12-stt2230203001), records what
+`com.tcl.ttvs` holds there and a TCL package that disabling does not stop.
 
 ## Identify the firmware, not the retail name
 
@@ -214,6 +216,40 @@ been switched on was not checked.
 **Closing ADB.** After Network debugging and USB debugging were switched off, the authorisations revoked and
 the TV restarted, `tools/adb-closed.py` reported 5555 closed.
 
+## A fourth unit: 65QM7K on Android 12 (STT2.230203.001)
+
+A 65QM7K, sold in the US as the QM765QM7K, reported `ro.product.model` `Smart TV Pro` and
+`STT2.230203.001 release-keys` on Android 12, so it had not taken the Android 14 `AU14` build the third unit
+runs. Its `ro.product.device` and product name were not recorded. One owner, read on 26 March 2026 over
+network ADB on 5555 and cleaned the same day with plain `pm disable-user --user 0` calls rather than
+`tools/disable.sh`.
+
+**The list.** Twelve TCL packages: `com.tcl.ttvs`, `com.tcl.tv.tclhome_passive`, `com.tcl.useragreement`,
+`com.tcl.logkit`, `com.tcl.channelplus`, `com.tcl.tv.plus`, `com.tcl.exhibit`, `com.tcl.smartlink.core`,
+`com.tcl.esticker`, `com.tcl.hotelmenu`, `com.tcl.ocean.instructions` and `com.tcl.initsetup`.
+`com.tcl.ttvs` was turned off by the owner's choice. It is the firmware updater on this build too, so TCL's
+updates stop until it is enabled again, and a shared list keeps it commented out. After a reboot the same
+day, `pm list packages -d` was unchanged and no `com.tcl.ttvs` process was running, while AirPlay
+(`com.tcl.airplay2`), the game bar (`com.tcl.gamebar`), `com.tcl.tv` and `com.tcl.tvinput` were.
+
+**`com.tcl.ttvs` comes back after a force-stop.** It runs as `android.uid.system` and declares
+`tcl.permission.SambaVideoService` and a `com.ttvs.datatrack.fetchdata` receiver. Granted on this build:
+`ACCESS_SURFACE_FLINGER`, `PACKAGE_USAGE_STATS`, `READ_LOGS`, `ACCESS_FINE_LOCATION`, `BLUETOOTH_SCAN` and
+`com.google.android.gms.permission.AD_ID`. It requests `FAKE_PACKAGE_SIGNATURE`, which was not granted.
+`com.tcl.tv` and `com.android.tv.settings` hold bindings to its `.bi.core.BIService` (`CR WACT` connection
+records in `dumpsys activity services`). After `am force-stop` it was not running 15 seconds later, but was
+back under a new PID at the next check, 76 seconds after the stop. `pm disable-user` held across the reboot.
+
+**One outbound socket.** At the first read, `/proc/net/tcp6` held an established socket from UID 1000 to a
+Google Cloud address on port 6178, a non-standard port. UID 1000 is shared by every
+`android.uid.system` package, so this does not say which one opened it. After the reboot, with the twelve
+disabled, no socket to that port was open.
+
+**`com.tcl.onlinesupport` keeps running when disabled.** TCL's online support agent, another
+`android.uid.system` package, runs `com.tcl.guard.commonware.BroadcastDispatchService`, which was started
+from `BOOT_COMPLETED`. After `pm disable-user --user 0` and a reboot it was listed by `pm list packages -d`
+and running again under a new PID. On this build, adding it to a list changes nothing.
+
 ## Test limits
 
 - One set, one firmware, one session, same day. Nothing here has been lived with for days.
@@ -231,3 +267,7 @@ the TV restarted, `tools/adb-closed.py` reported 5555 closed.
 - The 65QM7K is one set and one firmware too, with two days of use. It kept Chromecast, AirPlay and the
   Assistant enabled; casting, AirPlay and the Cast receiver hang above were not checked on it, and Private DNS
   was not set. The key table was pressed on the real remote, once per setup.
+- The 65QM7K on Android 12 is one set and one firmware, read and cleaned on one day with plain `pm` calls, not
+  this repo's tools, so neither the QM6K list nor the launcher was tried on it. HDMI switching, the remote,
+  AirPlay and Home were checked by hand after a force-stop pass, not after the reboot; the reboot check is the
+  package and process listing above.

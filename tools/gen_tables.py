@@ -39,8 +39,8 @@ installs Pillow into and the one the two card scripts' own usage lines name; a c
 one whose venv interpreter cannot be started at all - uses the Python that ran this script, and an interpreter
 that starts for the Pillow probe but not for the picture is reported as a picture that was not drawn, not as a
 traceback.
-2 what it was given cannot be read: a tv.json, a marker, or the path in --root or --adopt (nothing is written
-then), or a page or a tv.json it cannot write: the pages
+2 what it was given cannot be read: a tv.json, a marker, or the path in --root, --adopt or --font (nothing is
+written then), or a page or a tv.json it cannot write: the pages
 are written beside themselves and replaced only once all of them are, so such a run leaves every page with
 the text it had and names the one that stopped it (the tv.json files an --adopt run already wrote stay
 written), or an --adopt row main has changed since the PR was written: the tv.json files the patch did
@@ -58,7 +58,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 KEYS = ("tv", "os", "brand", "notes")
 OPTIONAL = ("readme_os",)
@@ -137,9 +137,12 @@ def load(root, allow_missing=False):
             value = data.get(key)
             # A value that is not a string has no link to read, and check_cell has already said it is wrong.
             for target in LINK.findall(value if isinstance(value, str) else ""):
-                if re.match(r"^(https?:|mailto:|#)", target):
+                # URI schemes are case-insensitive; keep the original link text and path unchanged.
+                if target.lower().startswith(("http:", "https:", "mailto:", "#")):
                     continue
-                if not (root / "examples" / target.split("#")[0]).exists():
+                # Strip the fragment before decoding: %23 belongs to the filename, not the anchor.
+                local = unquote(target.split("#")[0])
+                if not (root / "examples" / local).exists():
                     problems.append(f"{where}: the link {target} in \"{key}\" leads nowhere "
                                     f"(links are relative to examples/)")
         entries.append((folder.name, data))
@@ -646,10 +649,29 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.check and a.adopt is not None:
         ap.error("--check and --adopt cannot be used together")
-    if a.font is not None and not Path(a.font).is_file():
+    if a.font is not None:
         # The scripts this hands the font to exit with their own line, but subprocess.run(check=True) would
         # then turn that into a CalledProcessError traceback, which names neither the file nor where it is.
-        ap.error(f"cannot open the font at {a.font!r}: Fredoka (variable TTF, Google Fonts) is not in this repo")
+        # Judged with os.stat rather than Path.is_file(), because a name the filesystem will not look at -
+        # longer than NAME_MAX, or under a folder this user may not traverse - got two different answers out
+        # of is_file() across the versions this runs on: up to 3.13 it re-raises that OSError, so the run
+        # ended in a traceback at 1, the code --check keeps for tables that are out of date, over a run that
+        # read and wrote nothing; 3.14 swallows every OSError and answers False, so the same word printed the
+        # "not in this repo" sentence for a name that is there. One stat, then: the two ordinary ways a path is
+        # not a font keep that sentence, and every other refusal names the path and the system's words, as
+        # --root's does. The last answer is os.path.isfile()'s - a second read of a stat that just succeeded,
+        # which cannot raise the way is_file() did, so nothing on this path becomes a traceback.
+        not_in_the_repo = (f"cannot open the font at {a.font!r}: Fredoka (variable TTF, Google Fonts) is not in "
+                           f"this repo")
+        try:
+            os.stat(a.font)
+        except (FileNotFoundError, NotADirectoryError):
+            ap.error(not_in_the_repo)
+        except OSError as e:
+            ap.error(f"--font {a.font!r}: cannot be looked at ({e.strerror or e}). Nothing was read or "
+                     f"written, so no picture was drawn: name a font this run can read.")
+        if not os.path.isfile(a.font):
+            ap.error(not_in_the_repo)
     root = Path(a.root)
     patch, problem = read_inputs(root, a.adopt)
     if problem:

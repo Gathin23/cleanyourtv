@@ -41,6 +41,14 @@ def font_and_out(argv):
     if not os.path.isfile(font):
         sys.exit(f"cannot open the font at {font}: Fredoka, the variable TTF from Google Fonts, is not in\n"
                  "this repo, so pass the path of the copy you downloaded")
+    # A picture suffix can still name the supplied font through a symbolic or hard link.
+    try:
+        if os.path.samefile(out, font):
+            sys.exit(f"cannot write {out}: it is the same file as input font {font}. Nothing was written.")
+    except FileNotFoundError:
+        pass  # A distinct output that does not exist yet is fine.
+    except OSError as error:
+        sys.exit(f"cannot compare output {out} with input font {font}: {error}. Nothing was written.")
     return font, out
 
 
@@ -94,7 +102,7 @@ try:
 except ImportError:
     sys.exit("readme_stats.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt")
 
-STATS = [("489", "TV MODELS"), ("132", "BRANDS"), ("31", "LANGUAGES"), ("572 KB", "LAUNCHER")]
+STATS = [("504", "TV MODELS"), ("138", "BRANDS"), ("31", "LANGUAGES"), ("572 KB", "LAUNCHER")]
 W, H = 1600, 240
 img = Image.new("RGB", (W, H), "#15181e"); d = ImageDraw.Draw(img)
 def f(size, wt):

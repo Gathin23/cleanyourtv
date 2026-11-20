@@ -1,0 +1,66 @@
+# JVC LT-58N785, Android TV 9 (SDK 28), build RealtekATV-userdebug 9 PTT1.190222.001 eng.qdl.20210130.121213.
+# ro.product.model SmartTV-D58A212, device CC575PU1L, manufacturer JVC, Realtek rtd285o, 1.5 GB RAM
+# (ro.config.low_ram true). The same Hikeen/Zeasn firmware as this folder's debloat.txt, badged JVC.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hikeen-smart-rtd285o/debloat-jvc-lt-58n785.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hikeen-smart-rtd285o/debloat-jvc-lt-58n785.txt com.zeasn.oriontv.open.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested on: the owner's own unit, one session (applied in three batches, Home checked after each),
+# then two reboots and a cold power cycle with all packages still disabled. On the real remote, Home,
+# Input/Source, HDMI switching from the launcher's Inputs pill, and the Menu and app keys worked. Then a
+# day of use (Netflix, YouTube, Prime Video) with nothing re-enabled: shorter than the multi-day soak this
+# folder's debloat.txt has.
+#
+# Stock launcher is com.zeasn.oriontv.open.launcher, left out of this list: launcher/build-and-install.sh
+# with STOCK_LAUNCHER=com.zeasn.oriontv.open.launcher disabled it once the new Home was confirmed.
+# com.hikeen.setupwizard also claims HOME; it is disabled below, after first setup.
+#
+# Differences from this folder's debloat.txt:
+# - Ten more Android leftovers (test shims, backup agents, contacts sync, second-screen auth, HTML
+#   viewer, the Settings search box), all lines other tested lists disable.
+# - com.android.dreams.phototable kept: it is the active screensaver on this unit.
+# - setupwraith is not installed on this build, so it is not listed.
+#
+# Notes from this unit:
+# - Screencap works here in apps and the new launcher; only the stock Zeasn Home came back as 0 bytes.
+# - Developer options was hidden even with ADB on (it is on from the factory, and ro.vendor.rtk.force_usb_adb=1).
+#   It hides again after a cold power cycle. Device Preferences > About > Build pressed 7 times, in Android
+#   TV Settings (the launcher's Settings pill), brings it back; the Hikeen "SettingCenter" app has none.
+#   `settings put global development_settings_enabled 1` shows it too, until the next cold start.
+#   Turning USB debugging off there, then a cold power cycle, closed 5555 (tools/adb-closed.py).
+# - A cold power cycle starts on the last TV input (AV1 here) rather than Home; a reboot over ADB
+#   starts on Home. The folder's README has the launcher settings that bring Home back at power-on.
+# - Found already disabled from an earlier clean-up and left off by the owner's choice, so not listed:
+#   com.google.android.katniss, com.adups.fota (firmware updater, off by choice), com.ecloud.eshare.server,
+#   com.ecloud.emedia, com.ecloud.eairplay, com.rtk.android.miracast, com.hikeen.cleanmaster,
+#   com.android.printspooler, com.google.android.leanbacklauncher.recommendations, com.android.chrome,
+#   com.google.android.tts, com.facebook.katana, com.factory.factoryautomation,
+#   com.zeasn.deviceportal.asdprovider.hikeen, com.android.traceur.
+# - Leave alone, as in debloat.txt: com.hikeen.factorymenu and com.factory.* (never start them),
+#   com.android.tv (Live TV and the AV/HDMI inputs), com.realtek.*, com.hikeen.settings, menu,
+#   Quickmenu, scrollhelper and mediabrowser.
+
+# Content, ads and telemetry (Zeasn)
+com.zeasn.services.general
+cn.zeasn.overseas.tv.hikeen.orion
+
+# OEM extras (Hikeen)
+com.hikeen.hotelmenu
+com.hikeen.setupwizard
+
+# Background services not needed
+com.android.wallpaper.livepicker
+com.android.dreams.basic
+
+# Android leftovers
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.google.android.backuptransport
+com.google.android.syncadapters.contacts
+com.google.android.sss.authbridge
+com.android.settings.intelligence

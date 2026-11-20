@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Outfit at weight 200, built once per process. android:fontVariationSettings on each TextView rebuilt
+     the variable font for every view (about 10 ms each on a TV CPU). Android 8 ignores the weight here, as
+     it did on the views, and draws the default instance. -->
+<font-family xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <font
+        android:font="@font/outfit"
+        android:fontStyle="normal"
+        android:fontWeight="200"
+        android:fontVariationSettings="'wght' 200"
+        tools:targetApi="28" />
+</font-family>

@@ -8,10 +8,11 @@
 # the TCL browser and the streaming apps, kept by choice, and the set came through a reboot the same day.
 # README.md has that unit's remote button codes and notes. No package changes from it: a few more it disabled
 # have one day of use, not a few.
-# Fifth unit: TCL 55Q77K on Wi-Fi, same firmware, set up on 14 November 2026 with tools/disable.sh: this list
-# except AirPlay (kept by that owner) and launcherx, which stayed enabled so that voice and the app buttons keep
-# working (README.md, "Fifth unit"). It came through a reboot the same day. Two streaming apps that set had in
-# /data/app are commented out at the end of the streaming group; no other package changes from it.
+# Sixth unit: TCL 55Q77K on Wi-Fi with Google TV's home kept, same firmware, set up on 14 November 2026 with
+# tools/disable.sh: this list except AirPlay (kept by that owner) and launcherx, which stayed enabled so that
+# voice and the app buttons keep working (README.md, "Sixth unit"). It came through a reboot the same day.
+# Two streaming apps that set had in /data/app are commented out at the end of the streaming group; no other
+# package changes from it.
 #
 # Tested 20-21 October 2026 on one set, 37 packages in all. The first 35 were disabled, the TV was rebooted and
 # all 35 were still disabled afterwards. The last two (launcherx and setupwraith) were added later for a custom
@@ -30,7 +31,7 @@
 # this 144 Hz gaming set), com.google.android.katniss (voice), Netflix, YouTube, Play Services and all
 # com.mediatek.* and com.dolby.* except the AirPlay ones.
 # Also left enabled, not tried: com.tcl.ttvs (analytics; the C755 list disables it as Samba TV ACR, and on
-# some TCL sets it is also the firmware updater: on the 55Q77K fifth unit it declares
+# some TCL sets it is also the firmware updater: on the 55Q77K sixth unit it declares
 # .versionUpdateApp.core.service.SystemUpdateService), com.tcl.partnercustomizer, com.tcl.interactive,
 # com.tcl.smartlink.core, com.tcl.UpdatePeripheral, com.google.android.partnersetup.
 # Fifth unit (98-inch, AU14) disabled com.tcl.ttvs and com.tcl.UpdatePeripheral as well, at the owner's choice,
@@ -83,7 +84,7 @@ com.google.android.videos              # Google TV / Play Movies storefront
 com.google.android.youtube.tvunplugged # YouTube TV
 com.amazon.amazonvideo.livingroom      # Prime Video
 com.google.android.play.games
-# Fifth unit only: installed in /data/app, not the firmware, so not on every set; off there by choice
+# Sixth unit only: installed in /data/app, not the firmware, so not on every set; off there by choice
 # tv.pluto.android                     # Pluto TV
 # com.roku.web.trc                     # Roku's free streaming app (The Roku Channel)
 

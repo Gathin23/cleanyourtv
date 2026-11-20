@@ -70,7 +70,7 @@ off. Keep `screen_off_timeout` at 2147483647 (never); any finite value makes the
   `mitv.service`, the Sogou IME (`com.sohu.inputmethod.sogou.tv`, the only keyboard) —
   same as other CN Xiaomi lists.
 - `com.xiaomi.mitv.tvmanager` is disabled in the example list; if XiaoAI's
-  "open <app>" stops answering, re-enable it (see the MFFU0 note about
+  `open <app>` command stops answering, re-enable it (see the MFFU0 note about
   `com.xiaomi.aicr.action.provider`).
 
 ## Other firmware notes

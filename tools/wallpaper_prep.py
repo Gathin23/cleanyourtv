@@ -12,6 +12,10 @@ brought under the limit at the quality floor is printed as over it, at the size 
 limit no picture can meet - 0 or less - is refused before anything is read.
 Each output is replaced only after a complete JPEG is ready; a failed conversion leaves any earlier
 wallpaper at that name intact.
+Embedded ICC colour profiles are converted to sRGB before darkening, so Display P3 and Adobe RGB
+photos are interpreted in their own colour space instead of assuming sRGB samples.
+Without Pillow's LittleCMS support, a warning says the profile was not applied and conversion uses the
+original RGB path; malformed profiles still skip that photo when colour management is available.
 
 The darkening is painted into the picture, so wallpaper_dim can stay at 0 and the launcher draws no shade
 layer. The numbers that worked on a Xiaomi Mi Box S (2 GB) are the defaults: brightness 0.25 and a gradient
@@ -26,6 +30,7 @@ installed (PEP 668 leaves it externally managed):
 Use pictures you have the right to show.
 """
 import argparse
+import io
 import os
 from pathlib import Path
 import stat
@@ -82,11 +87,33 @@ def darken(image, brightness, gradient):
     return image
 
 
+def to_srgb(image):
+    """Read profiled photo samples in their own colour space before writing an sRGB JPEG."""
+    profile = image.info.get("icc_profile")
+    if not profile:
+        return image.convert("RGB")
+    try:
+        from PIL import ImageCms
+        source = ImageCms.ImageCmsProfile(io.BytesIO(profile))
+        # A palette or grayscale/alpha PNG needs its colour channels expanded for LittleCMS;
+        # a CMYK JPEG must keep its CMYK samples until its own profile has been applied.
+        mode = {"RGB": "RGB", "GRAY": "L", "CMYK": "CMYK"}.get(source.profile.xcolor_space.strip())
+        if mode:
+            image = image.convert(mode)
+        return ImageCms.profileToProfile(image, source, ImageCms.createProfile("sRGB"), outputMode="RGB")
+    except ImportError:
+        # ImageCms can defer a missing native core's ImportError until profile parsing.
+        # Keep the original conversion available, but do not claim its profile was applied.
+        print("warning: ICC colour conversion needs Pillow with LittleCMS; using RGB conversion "
+              "without applying the profile.", file=sys.stderr)
+        return image.convert("RGB")
+
+
 def prepare(path, out_path, size, brightness, gradient, quality, max_kb):
     """Writes one wallpaper and returns (size in KB, JPEG quality used)."""
     from PIL import Image, ImageOps
     with Image.open(path) as opened:
-        image = ImageOps.exif_transpose(opened).convert("RGB")
+        image = to_srgb(ImageOps.exif_transpose(opened))
     image = ImageOps.fit(image, size, Image.LANCZOS, centering=(0.5, 0.5))
     image = darken(image, brightness, gradient)
     # Save candidates beside the destination, so an encoder/disk failure leaves

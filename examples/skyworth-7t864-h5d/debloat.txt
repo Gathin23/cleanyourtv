@@ -1,0 +1,58 @@
+# Skyworth 7T864_H5D (MediaTek MT9638, mt9638), China market, Coocaa OS on Android 10 (API 29)
+# Build QQ2A.200305.004.A1 — the same firmware build as the 7T861_A23 list, on a different board.
+# Stock home: com.skyworth.officehomepage (com.skyworth.officehomepage.view.HomepageActivity).
+# TV/inputs: com.skyworth.tv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-7t864-h5d/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-7t864-h5d/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# CRITICAL SAFETY NOTE:
+# Do NOT disable com.skyworth.officehomepage or com.tianci.movieplatform directly.
+# Coocaa OS boot chain hardcodes dependencies on these stock home launchers. Disabling
+# either package causes the system to hang indefinitely at the boot logo (network stack
+# does not initialize, ADB drops). Recovery requires a hardware factory reset.
+# Also keep com.loostone.tuning (audio HAL) and com.tianci.user (auth IPC) enabled.
+#
+# WHAT THIS UNIT DOES NOT HAVE, unlike the 7T861_A23 list:
+# com.skyworth.device and com.skyworth.skymarket are not installed here. The package list is
+# 69 packages in total, already close to a bare Android 10 TV, so this list is short on purpose.
+#
+# RECOMMENDED BEST PRACTICE:
+# Switching the television to "Office Mode" (办公模式) in the native settings shuts off all video
+# streaming feeds, banner advertisements and background cloud preloading from the source, with
+# nothing disabled at all (pm list packages -d stays empty). It is the lowest-risk way to lose the
+# recommendations and the ad screensaver's lead-in, and it is worth doing before any line here.
+#
+# The list disables 7 packages: cloud ad push, the data engine, background monitors, factory
+# diagnostics, and two owner-confirmed-unused device services. All 7 were verified to stay
+# disabled across a cold boot on this unit.
+
+# --- Telemetry, ad push, background monitors (disabled by default) ---
+# Verified safe across cold boots:
+com.tianci.ad                       # Tianci advertising cloud push receiver, keeps a background connection open
+com.tianci.de                       # Tianci Data Engine daemons listening for package add/update
+com.skyworth.performance.monitors   # Background performance/telemetry monitor
+
+# --- Factory diagnostics and unused device services (disabled by default) ---
+com.skyworth.testtime               # Factory test timer
+com.skyworthdigital.stb.dataprovider # Diagnostics data provider
+com.skyworth.microphone             # Karaoke / external microphone companion; com.loostone.tuning keeps system audio
+# EPG guide, TV middleware: commented out for everyone; this set has it off.
+#com.coocaa.guide                    # Boot guide and EPG program guide / push receiver; not used without broadcast TV
+
+# --- Optional, kept on the tested unit: uncomment to disable ---
+# com.tianci.appstore               # Built-in app store. Disabling it leaves no way to install apps without a sideload.
+# com.skyworth.angel.voice          # Remote voice key / XiaoWei AI assistant
+# com.skyworth.smartcast            # Phone screen casting
+# com.coocaa.os.upgrade             # System OTA updater. Keep it if you want firmware updates.
+# com.coocaa.theme_package_ccos_nine # Stock Coocaa OS theme. Kept here because Office Mode still draws its home with it.
+# com.coocaa.app_browser            # App store browser
+# com.coocaa.tvmanager              # CooCaa content recommendation and app/storage scanning manager; also scans USB, so keep it if USB drives must show up
+# com.coocaa.factory                # Factory menu app. This is where the ADB switch lives, so keep it if you may need to turn ADB back on.
+#
+# --- Never disable, for reference ---
+# com.skyworth.officehomepage, com.tianci.movieplatform (boot chain), com.loostone.tuning (audio HAL),
+# com.tianci.user (auth / Binder IPC), com.skyworth.tv (HDMI, AV, tuner), com.cibn.tv (CIBN broadcast
+# control platform, which is where the Youku app lives on this set), com.coocaa.teampresent (Office Mode
+# presentation stack), com.coocaa.safelauncher (crash fallback launcher).

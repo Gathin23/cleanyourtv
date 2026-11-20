@@ -1,7 +1,7 @@
 # Skyworth / Coocaa 8R40_K5C (Realtek rtd285x, 1 GB RAM, 32-bit), Android 8.0 (API 26), build OPR6.170623.012
 # Mainland China domestic firmware (com.tianci.* / com.coocaa.* family), NOT the Google-TV
 # Skyworth in examples/skyworth-sw-22sa (that one is com.smartdevice.*, Android 14).
-# Stock launcher: com.tianci.movieplatform (hardcoded in /system/pcfg, DO NOT DISABLE).
+# Stock launcher: com.tianci.movieplatform (boot target set in read-only /system/pcfg, DO NOT DISABLE).
 # Live TV / System UI: com.skyworth.tv (DO NOT DISABLE).
 # If you pass package names to tools/restore.sh or launcher/build-and-install.sh, use the two above.
 #
@@ -11,7 +11,7 @@
 #
 # CRITICAL SAFETY TRAPS (READ BEFORE USING). Full details: docs/devices/skyworth-8r40-k5c.md
 # 1. The ONLY ADB toggle lives inside Settings > 基本设置 > 设备信息 (About this TV) > 更多信息.
-#    That page crashes if any of these are disabled:
+#    That page crashes if these are disabled together:
 #      com.tianci.de
 #      com.skyworthdigital.stb.dataprovider
 #      com.coocaa.sky.ccapi
@@ -19,11 +19,20 @@
 #    BEFORE debloating, install Activity Launcher (de.szalkowski.activitylauncher.oss) and confirm you
 #    can open com.tianci.setting/.factorysetting.FactorySetting (action coocaa.intent.action.TIANCI_FACTORY).
 #    Apply in small batches and re-open the About page after each batch.
+#    com.tianci.de alone is fine (About, device info and the factory menu all render; ~70 MB freed in two
+#    processes), but never batch it with the other two on this line. See "optional additions" at the end.
 # 2. DO NOT DISABLE com.tianci.movieplatform (stock launcher) or any other current launcher.
-#    HOME is hardcoded in read-only /system/pcfg and no package declares category HOME, so disabling
-#    the launcher gives a black screen on boot (sys.boot_completed never set).
+#    The boot target comes from read-only /system/pcfg (DEFAULT_HOMEPAGE) and the rule table
+#    /system/etc/bootintent.xml; disabling the launcher gives a black screen on boot
+#    (sys.boot_completed never set). Changing it means editing those two files under /system,
+#    which needs root, so this list keeps the stock launcher: open other launchers from My Apps.
 # 3. Do not touch persist.service.homepage.* props. Setting persist.service.homepage.switch 0 stopped
 #    adbd from starting after reboot on the reporter's unit.
+# 4. ADB has to be switched on again after every reboot on this firmware: adbd is a `disabled` service
+#    in /init.usb.rc, so nothing starts it at boot. That is normal, not a debloat casualty.
+# 5. If an accessibility helper is on, apps with a text field can crash: this firmware has no clipboard
+#    service and Android 8's TextView.canPaste() does not null-check it. It shows up as "the app reloads
+#    its home page" when you open search. Nothing in this list causes it; turn the helper off.
 #
 # Boot ad (not a package, run once over ADB, survives reboot):
 #   tools/tv.py 'setprop persist.sys.bootvideo.time 1'
@@ -50,3 +59,13 @@ com.coocaa.theme.child     # Children's mode theme
 com.icoolme.tv.weather     # Weather preload
 com.skyworth.blockchain    # Blockchain preload
 com.skyworth.smarthome_tv  # Smart home dashboard
+
+# Optional additions, tested on one unit with a reboot in between. Not in the default list because
+# each one takes a feature away; uncomment only if you accept the cost.
+#
+# com.tianci.de            # ~70 MB in two processes. About / device info / factory menu still work on
+#                          # their own. Never enable this line and touch ccapi/dataprovider in one batch.
+# Keep com.skyworth.tv: it owns live TV and the tuner (its tvserver re-tuning is Trap 6 in the docs note).
+#
+# com.coocaa.tvmanager has no launcher entry of its own (it resolves to the system chooser), so it is a
+# dead tile on a home screen, but disabling it is harmless.

@@ -70,6 +70,7 @@ updated. Add-ons with custom shell installers still need Bash; this native Windo
 | `aerial/` | Inspired by Apple TV's Aerial screensavers: ten photos NASA astronauts took from the International Space Station (aurora over Scandinavia, sunrise over northern Europe, an orbital sunset, the Nile at night, Moscow under the Moon), shuffled every 15 minutes with the place and expedition under the buttons, on pure black with a frosted-glass dock and round icon-only buttons. Back on Home opens the clock over the photo, as Menu does on an Apple TV, and so do three idle minutes. The photos are public domain, not MIT: see `aerial/CREDITS.md` | <img src="aerial/screenshot.jpg" width="320" alt="aerial theme"> |
 | `twilight/` | Three original anime landscape wallpapers in `wallpapers/` (Mount Fuji twilight, seaside coastal train, ancient stone arch), rotating with caption under the buttons; frosted-glass dock at 60% opacity, ambient glow disabled so the artwork stays calm. See `twilight/CREDITS.md` | <img src="twilight/screenshot.jpg" width="320" alt="twilight theme"> |
 | `onyx/` | Deep `#0E0F12` OLED dark canvas with no wallpaper, greeting, or ambient glow; a 5-column dock with no band or title, rim-only focus highlight (`glass_style: rim`), no focus overshoot, icon-only top buttons, and the app library enabled. By [@socmarin](https://github.com/socmarin) | <img src="onyx/screenshot.jpg" width="320" alt="onyx theme"> |
+| `orba/` | The look of [Orba](https://github.com/btalal/orba), an OLED-friendly launcher: a midnight-blue wallpaper with cyan-to-violet light waves along the bottom edge, drawn in code, five floating tiles with no dock band, title or greeting, the focus glowing in each app's own colour with a soft halo and no overshoot, icon-only top buttons, rows that fade under the clock, and the clock over the waves after ten idle minutes | <img src="orba/screenshot.jpg" width="320" alt="orba theme"> |
 
 Every theme folder has a `screenshot.jpg` of Home with that theme on a real TV. `tools/theme.sh` never
 pushes it; it is only here so you can see a theme before you try it.
@@ -82,7 +83,9 @@ it whether its pictures are MIT or, say, CC BY-SA.
 ## Keys
 
 Every key is optional; a missing key keeps the value from `config.xml`, an unknown or wrongly typed key
-is ignored, and a file that doesn't parse is ignored as a whole, so a theme can never break Home.
+is ignored, and a file that doesn't parse is ignored as a whole, so a theme can never break Home. A file
+larger than 64 KB is ignored as a whole too, which is why `tools/theme.sh` refuses one instead of pushing
+it: the launcher would drop the theme and go back to its built-in config.
 
 Each key has (or is waiting for) a screenshot of it on a real TV in [`docs/switches.md`](../docs/switches.md).
 A new key needs one there in the same pull request.

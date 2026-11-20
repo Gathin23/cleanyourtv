@@ -11,7 +11,8 @@
 # Home did not restart after it - the files are on the set by then, so the next Home start picks them up; 2 the
 # run stopped before the theme was up and nothing was sent - the command line is not one theme folder or
 # --reset (a word that starts with a dash is not a folder name, -h and --help included), the folder has no
-# config.json or one the launcher would drop, a wallpaper name b64push.py refuses, TV_HOST is unset or empty,
+# config.json or one the launcher would drop (not JSON, not a JSON object, or over its 64 KB read limit),
+# a wallpaper name b64push.py refuses, TV_HOST is unset or empty,
 # the checkout has no tools/venv, or tv.py could not reach the TV before the first file went out (its own
 # message says which). 1 is a run that reached the push, so a theme this script cannot read before it sends
 # anything is not one: it answers 2 with the sentence every one of those refusals ends with.
@@ -196,6 +197,18 @@ case "$(theme_json_kind "$THEME/config.json")" in
   *) echo "$THEME/config.json is not valid JSON, so there is no theme to push (themes/README.md says what the" \
     "file holds). Nothing was sent to the TV." >&2; exit 2 ;;
 esac
+# The launcher's other limit on the same file: Config.read() answers "no overlay" for a config.json over 64 KB
+# (`file.length() > 64 * 1024`), so a larger one replaces the theme the set had with the built-in config, the
+# same way an array does - and the push would still end "is on the TV". tools/manage.py set and
+# tools/race_calendar.py refuse to write one that would cross it; this is the one of the three that pushes a
+# file somebody wrote by hand. `wc -c` with LC_ALL=C is the byte count that check takes.
+CONFIG_BYTES=$(wc -c < "$THEME/config.json" | tr -d '[:space:]')
+if [ "$CONFIG_BYTES" -gt 65536 ]; then
+  echo "$THEME/config.json is $CONFIG_BYTES bytes, and the launcher ignores a config.json larger than 64 KB" \
+    "(65536 bytes) as a whole, so it would put the TV back on its built-in config instead of this theme" \
+    "(themes/README.md). Nothing was sent to the TV." >&2
+  exit 2
+fi
 # Every collection name is checked before anything changes on the TV: a name refused halfway through the push
 # left the new config.json and part of the collection behind. b64push.py refuses a path with '..' in it, so
 # such a name (sunset..jpg) is refused here too. The names that pass have no spaces, so NAMES splits on them.

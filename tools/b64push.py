@@ -53,6 +53,12 @@ def q(path):
 
 
 def main():
+    # The verified copy is already on the TV when its success line includes the rename refusal.
+    # A console that cannot encode that text must not turn a completed upload into a failed run.
+    try:
+        sys.stdout.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
     args = sys.argv[1:]
     # -h/--help is a reader asking for this note, not an argument the run cannot use: tv.py, check.py,
     # theme_restart.py, blocky_wallpapers.py and scenes_wallpapers.py answer it at 0 with the note on

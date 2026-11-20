@@ -1,0 +1,6 @@
+{
+  "tv": "Epson EF-21 laser projector (SDMC, HB35, himalaya, MediaTek m7332)",
+  "os": "Google TV 14",
+  "brand": "Epson",
+  "notes": "Same SDMC himalaya board as the BenQ GV32: Android ad services, Google feedback, partner setup, disclaimer screen, Play Games, Assistant/Gemini, Chromecast, ambient screensaver, calendar sync, TalkBack, Google TTS (YouTube, YouTube Music and Netflix commented out); setupwraith owned the setup Wi-Fi (forget and re-join first); `com.sdmc.kt` (focus/keystone), remote pairing, `fusion.android.tv.demo` (Input key) and Epson's firmware updater kept; USB media player skipped by the TV-input guard; Settings button (scancode 249, unmapped) brought back by a keyboard-layout overlay with no key helper, so held-key repeat stays ([Settings key note](../docs/devices/epson-ef21-settings-key.md)); port 5555 with USB debugging alone; config.json dock; reboot-checked"
+}

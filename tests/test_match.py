@@ -61,6 +61,21 @@ class ReadPackagesTest(MatchCase):
         path.write_bytes(b"\xef\xbb\xbfcom.example.first\r\n  com.example.second  \r\n")
         self.assertEqual(["com.example.first", "com.example.second"], match.read_packages(path))
 
+    def test_the_framework_package_is_read_even_though_it_has_no_dot(self):
+        # `pm list packages` prints the framework package as `package:android`, and -f as
+        # `package:/system/framework/framework-res.apk=android`; it is the one core package whose name
+        # has no dot, so skipping it would drop the `never` row the tool promises for every core package.
+        path = self.write("p.txt", "package:android\npackage:com.example.app\n")
+        self.assertEqual(["android", "com.example.app"], match.read_packages(path))
+        f_form = self.write("f.txt", "package:/system/framework/framework-res.apk=android\n")
+        self.assertEqual(["android"], match.read_packages(f_form))
+
+    def test_a_word_that_is_not_a_core_package_still_needs_a_dot(self):
+        # The bare-name allowance is the core list, not any word: a header a reader pasted in stays out.
+        path = self.write("p.txt", "Total packages: 3\nnot_a_package\npackages:\n"
+                                   "package:com.example.ok\n")
+        self.assertEqual(["com.example.ok"], match.read_packages(path))
+
     def test_utf16_package_files_with_a_bom_are_read(self):
         text = ("package:com.example.second\r\n"
                 "package:/system/app/Foo/base.apk=com.example.first\r\n"
@@ -236,6 +251,17 @@ class MainTest(MatchCase):
         self.assertEqual(["never"], rows["com.android.packageinstaller"])
         self.assertEqual(["1", "0"], rows["com.example.ads"])
         self.assertEqual(["0", "0"], rows["com.android.providers.calendar"])
+
+    def test_the_framework_package_prints_as_never_in_the_table(self):
+        # The bare name is where the table used to go silent: the row was not shown at all, so a reader
+        # could not see that `android` is one of the packages disable.sh refuses.
+        self.add_list("a", "com.example.ads\n")
+        packages = self.write("p.txt", "package:android\npackage:com.example.ads\n")
+        code, out, err = self.run_main(str(packages), "--examples", str(self.examples))
+        self.assertEqual(0, code, err)
+        rows = {line.split()[0]: line.split()[1:] for line in out.splitlines()[1:]}
+        self.assertEqual(["never"], rows["android"])
+        self.assertIn("2 packages, counted over 1 lists", err)
 
     def test_columns_line_up_with_the_longest_name(self):
         self.add_list("a", "com.example.a\n")

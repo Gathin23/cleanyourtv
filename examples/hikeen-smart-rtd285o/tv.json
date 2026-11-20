@@ -2,5 +2,5 @@
   "tv": "Hikeen smart TV (\"Smart\"/SmartTV, Realtek RTD285O, Zeasn)",
   "os": "Android TV 9",
   "brand": "Hikeen",
-  "notes": "Zeasn ads, device portal and recommendation rows; Hikeen cleaner, hotel menu and setup wizard; casting (EShare/AirPlay/Miracast) and voice search off by choice; settings app is com.hikeen.settings with no leanback entry (dock via library_apps in config.json); screencap returns empty on this firmware"
+  "notes": "Zeasn ads, device portal and recommendation rows; Hikeen cleaner, hotel menu and setup wizard; casting (EShare/AirPlay/Miracast) and voice search off by choice; settings app is com.hikeen.settings with no leanback entry (dock via library_apps in config.json); screencap returns empty on this firmware; also badged JVC LT-58N785 (second list `debloat-jvc-lt-58n785.txt`, one session and a day of use: screencap works there, Developer options hidden until Build is pressed 7 times, cold start resumes the last input)"
 }

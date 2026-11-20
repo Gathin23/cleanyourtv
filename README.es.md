@@ -219,7 +219,7 @@ Una pantalla de inicio nativa y muy ligera para Android TV: **unos 572 KB**, pro
 |---|---|
 | **Configuración** | Orden del dock, aplicaciones ocultas, app de TV en directo, de 4 a 7 elementos por fila y animaciones reducidas. Todo definido en [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Ajustes en el televisor** | Mantén OK pulsado en Ajustes para acceder a las opciones del launcher. Opcionalmente, `launcher_settings_button` permite que una pulsación simple las abra directamente; la configuración del televisor continúa accesible desde la propia página de ajustes y mediante el icono correspondiente. |
-| **Temas** | Fondo, fondo de pantalla y diseño definidos en un `config.json` enviado por Wi-Fi, sin recompilar. 32 temas están incluidos en [`themes/`](themes/), incluyendo el `default/` integrado. |
+| **Temas** | Fondo, fondo de pantalla y diseño definidos en un `config.json` enviado por Wi-Fi, sin recompilar. 33 temas están incluidos en [`themes/`](themes/), incluyendo el `default/` integrado. |
 | **31 idiomas** | Sigue el idioma del televisor, con un diseño totalmente reflejado de derecha a izquierda en hebreo. |
 | **Biblioteca de aplicaciones** | Opcional: permite explorar todas las aplicaciones instaladas y agregar o retirar accesos directos de la pantalla de inicio. Consulta [la guía de la biblioteca de aplicaciones](docs/app-library.md). |
 | **Menú contextual de elementos** | Habilitado por defecto (`tile_menu`): mantén OK pulsado sobre un elemento para acceder a Mover, Quitar de la pantalla de inicio e Información de la app. Si se desactiva, mantener OK pulsado abre Información de la app directamente. |
@@ -376,7 +376,7 @@ Compílalo con el script de una sola línea indicado en [Hacerlo manualmente](#h
 
 El 17 de octubre de 2026 publiqué [una comparativa de antes y después](https://x.com/gathint/status/2111379569030939102) del televisor de mis padres, optimizado con Claude Code a través de Wi-Fi. La publicación alcanzó 8,6 millones de visualizaciones, otros usuarios comenzaron a realizar lo mismo en sus propios televisores y sus respuestas dieron origen a las listas de este repositorio: más de 170 modelos de televisor, aportados por más de 200 colaboradores, en los primeros cuatro días. Hasta el 19 de octubre el repositorio se denominó tv-vibehack; los enlaces antiguos continúan redirigiendo correctamente.
 
-Dos semanas más tarde, el proyecto se convirtió en el repositorio n.º 1 en tendencias en GitHub durante la semana del 19 al 25 de octubre, sumando más de 46 000 estrellas y 5 700 forks, así como 1,4 millones de visualizaciones y 260 000 clones en 14 días. A 14 de noviembre suma 57 000 estrellas y 7 400 forks. Las listas ahora abarcan 489 modelos de TV de 132 marcas. La repercusión: 546 artículos de 57 países y 674 vídeos en YouTube y Bilibili, todos recopilados en [docs/PRESS.md](docs/PRESS.md) (datos del 14 de noviembre de 2026).
+Dos semanas más tarde, el proyecto se convirtió en el repositorio n.º 1 en tendencias en GitHub durante la semana del 19 al 25 de octubre, sumando más de 46 000 estrellas y 5 700 forks, así como 1,4 millones de visualizaciones y 260 000 clones en 14 días. A 20 de noviembre suma 59 000 estrellas y 7 800 forks. Las listas ahora abarcan 504 modelos de TV de 138 marcas. La repercusión: 546 artículos de 57 países y 674 vídeos en YouTube y Bilibili, todos recopilados en [docs/PRESS.md](docs/PRESS.md) (datos del 14 de noviembre de 2026).
 
 ## Cómo contribuir
 
@@ -386,7 +386,7 @@ La contribución más valiosa es la lista de limpieza de aplicaciones de tu tele
 |---|---|
 | **Lista de limpieza de tu televisor** | Es la colaboración más útil: la próxima persona con ese modelo se ahorrará toda la etapa de identificación. |
 | **Launcher y prompt** | Las mejoras en el launcher y los refinamientos para que el prompt resulte más claro son igualmente bienvenidos. |
-| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 262 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
+| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 268 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
 
 Las personas cuyo trabajo forma parte de este repositorio:
 

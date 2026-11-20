@@ -40,6 +40,28 @@ class IdleCpuTest(TestCase):
             with self.subTest(before=before, after=after):
                 self.assertIsNone(self.launcher_measure(before, after))
 
+    def test_launcher_cpu_follows_the_final_comm_parenthesis(self):
+        def sample(comm, user, system, uptime, busy, idle):
+            # The kernel prints comm verbatim inside parentheses, then state and numeric fields.
+            process = f"42 ({comm}) " + " ".join(["S"] + ["0"] * 10 + [str(user), str(system)])
+            return f"cpu  {busy} 0 0 {idle} 0\n{process}\n{uptime}.00 300.00\n"
+
+        for before_name, after_name in (("UI worker", "UI worker"), ("UI)", "UI)"),
+                                        ("UI) worker", "UI) worker"), ("(UI) main", "(UI) main"),
+                                        ("UI)) worker", "UI)) worker"), ("UI) a b", "UI) a b"),
+                                        ("UI worker", "UI) worker"), ("UI) worker", "UI worker")):
+            with self.subTest(before=before_name, after=after_name):
+                tv = mock.Mock()
+                tv.shell.side_effect = [sample(before_name, 100, 50, 100, 100, 1000),
+                                        sample(after_name, 200, 100, 110, 200, 1900)]
+                with mock.patch.object(bench, "launcher_pid", return_value="42"), \
+                        mock.patch.object(bench.time, "sleep"):
+                    device, launcher = bench.idle_cpu(tv, "com.gathin.tvhome", 5)
+                # 150 user+system ticks / (100 ticks per second * 10 device seconds).
+                self.assertAlmostEqual(15.0, launcher)
+                self.assertAlmostEqual(10.0, device)
+                self.assertEqual(2, tv.shell.call_count)
+
     def measure(self, before, after):
         tv = mock.Mock()
         tv.shell.side_effect = [before, after]

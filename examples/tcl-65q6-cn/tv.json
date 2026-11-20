@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65Q6 (China, 2019, sugarcane, MStar MS848)",
+  "os": "Android TV 8.0",
+  "brand": "TCL",
+  "notes": "23 packages: TCL analytics/ACR, boot-ad downloader, push popups, preloads, education/karaoke, test leftovers; HOME apks are refused by TCL's launcher signature gate and there is no InstallConfig row, so debloat only with cyberui kept; TCL store and OTA UI off by choice, firmware updater, voice, casting and built-in content kept; reboot-checked twice"
+}

@@ -24,3 +24,28 @@ apps, casting and voice - are commented out for a reader to choose.
 Undo:
 
     TV_HOST=<tv ip> tools/restore.sh examples/hikeen-smart-rtd285o/debloat.txt com.zeasn.oriontv.open.launcher
+
+## JVC LT-58N785 (second list)
+
+The same firmware (`PTT1.190222.001`, Realtek `rtd285o`) sold as a JVC LT-58N785 (`SmartTV-D58A212`).
+Its list is `examples/hikeen-smart-rtd285o/debloat-jvc-lt-58n785.txt`: the first list's lines that apply,
+plus ten Android leftovers, with the photo screensaver kept. It was applied in one session and then used
+for a day (Netflix, YouTube and Prime Video, with nothing re-enabled), with reboots and several cold power cycles.
+
+- **Screenshots work** on this unit in apps and the new launcher; only the stock Zeasn Home came back empty.
+- **Developer options is hidden** even while ADB is on from the factory, and it hides again after a cold
+  power cycle. In Android TV Settings (the launcher's Settings pill), Device Preferences → About → press
+  Build 7 times brings it back under Device Preferences; the Hikeen SettingCenter app has no such entry.
+  `tools/tv.py 'settings put global development_settings_enabled 1'` shows it too, until the next cold start.
+  USB debugging off there plus a cold power cycle closed port 5555.
+- **A cold power cycle starts on the last TV input** (AV1 on the tested unit), not on Home: about 1.4 s
+  after Home is up, the firmware starts `com.android.tv/.MainActivity` on the last input. A reboot over ADB
+  does not do this. No menu setting changes it. `power_on_home_always` alone fires too early, and
+  `HomeKeyService` with `key_filter` on stops a held Volume key from repeating. What worked on this unit:
+  `power_on_home` and `power_on_home_always` true, `key_filter` false and `HOME_KEY_SERVICE=1`, with the
+  launcher fix in #4176 (without it, every input picked from the Inputs menu in the first 3 minutes went
+  back to Home).
+
+Undo:
+
+    TV_HOST=<tv ip> tools/restore.sh examples/hikeen-smart-rtd285o/debloat-jvc-lt-58n785.txt com.zeasn.oriontv.open.launcher

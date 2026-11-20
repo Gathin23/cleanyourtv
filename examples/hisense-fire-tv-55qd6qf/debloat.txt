@@ -33,6 +33,14 @@
 #   55QD6QF (US, same RS8180.3746N build) on 2026-11-09 by re-enabling packages in halves; re-enabling only this
 #   one brings the mic back. The Alexa core (vizzini and its media players, aca) stayed enabled on that unit.
 #
+# Second unit in this folder: the 43-inch US 43QD65QFC carries the same AFTOLCBC82 model code on the same
+# RS8180.3746N build, so it has its own list beside this one, debloat-43qd65qfc.txt, applied by @rabbit718 on
+# 2026-11-07 (#3523) with 0 drift read back after a reboot. That list is one name shorter than this one: it does
+# not send com.tubitv.ott, a user-installed app there rather than a preload, and its
+# com.amazon.providers.contentsupport line is commented out with the voice-typing reason above, though that
+# owner did disable it. On that unit com.amazon.vizzini stayed disabled across the reboot, where this one
+# returns at every boot.
+#
 # For launcher authors (what Fire OS 8 reserves to Amazon here, read from the APKs' manifests):
 # - Switching to an HDMI input: com.amazon.tv.inputpreference.service's PassthroughPlayerActivity needs
 #   com.amazon.tv.permission.TUNE_INPUT, InputTabActivity and StartAmazonInputActivity LAUNCH_INPUTS,

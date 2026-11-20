@@ -6,6 +6,17 @@
 # disabled (wfdsinkhelperservice, milinkservice, smartshare, mitvplus, videos, youtube.tvmusic,
 # mediaexplorer, videoplayer) with Netflix/YouTube/VieON still playing afterwards.
 #
+# Also applied on firmware QTG3.200305.006.3487 (Latin American retail unit, Spanish UI), one session on
+# 2026-11-19, not a several-day report. Every active entry here that is installed on this build was disabled
+# in five batches with a screenshot after each (jio, tvqs, aha, handbook and youtube.tvkids are not installed;
+# alexa and tvlock were already off). By the owner's choice katniss, wfdsinkhelperservice and smartshare from
+# the optional block went off too; Netflix, Prime Video, YouTube Music, Play Movies, Chromecast, Mi Cast, the
+# updater and the USB players stayed on. The stock launcher went through launcher/build-and-install.sh. The
+# screensaver was pointed at the launcher's ClockDream before com.mitv.dream went off. All 29 disabled
+# packages were still disabled after two reboots, and the TV powered on into the new launcher, not Live TV.
+# com.google.android.tungsten.setupwraith is installed and owned one saved Wi-Fi network
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so it was left enabled; on this build it does not claim HOME.
+#
 # ---- The remote's Input/Source button (#243, #1368) ----
 # It sends KEYCODE_MEDIA_RECORD (130, kernel KEY_RECORD), not KEYCODE_TV, so after the handover it does
 # nothing until the launcher is told to answer it. Either of these, in config.xml or a theme's config.json:
@@ -19,6 +30,16 @@
 # shows it, `pm enable com.mediatek.hotkey.dispatcher`. Other app buttons (Netflix, Prime Video) are mapped
 # the same way, as "<keycode>:<package>" in app_keys; `getevent -l` shows what a button sends. Test with the
 # real remote: `input keyevent` skips the key helpers.
+#
+# On firmware 3487 the button reads KEY_RECORD in `getevent -lt`, but Android sees it as 178
+# (KEYCODE_TV_INPUT): WindowManager logs `interceptKeyTq keycode=178`. The partnercustomizer's
+# GlobalKeyReceiver then starts VIEW_INPUTS by explicit component,
+# cmp=com.google.android.tvlauncher/.inputs.InputsPanelActivity, and logs `GlobalKey: ActivityNotFound`
+# once the stock launcher is disabled. handle_view_inputs alone did not help, since that intent names the
+# stock launcher. INPUT_KEY_SERVICE=1 (which handles 178 with no input_key_keycodes entry) together with
+# "volume_pauses_filter" true brought the button back, inside apps as well. Checked with the real remote:
+# held volume up and down still repeated, the Netflix and Prime Video buttons still opened their apps, and
+# the service was still bound after a reboot.
 #
 # ---- Android TV 11 variant: Xiaomi Mi TV P1 43" (MiTV-MOOQ0, croods, EU) ----
 # Firmware RTM4.220307.164.8835 (2026-10). The selected subset was applied and the TV remained

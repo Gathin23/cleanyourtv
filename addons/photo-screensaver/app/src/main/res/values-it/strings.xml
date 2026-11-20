@@ -7,7 +7,9 @@
     <string name="empty_body">Metti le foto in questa cartella sulla TV con sync.sh o sync.ps1:</string>
     <string name="settings_title">Salvaschermo con foto</string>
     <string name="option_clock">Mostra ora e data</string>
+    <string name="option_clock_fades">Mostra l\'ora brevemente a ogni foto</string>
     <string name="option_dates">Mostra quando è stata scattata una foto (mese e anno)</string>
+    <string name="option_animation">Animazione Ken Burns (zoom e movimento)</string>
     <string name="option_prints">Tre stampe invece dello schermo intero (senza mollette)</string>
     <string name="option_sky">Cielo che segue l’ora del giorno dietro le stampe</string>
     <string name="option_weather">Mostra il meteo (serve la posizione della TV)</string>
@@ -17,4 +19,6 @@
     <string name="weather_ok">La posizione è attiva. Il meteo si aggiorna ogni 30 minuti.</string>
     <string name="open_location_settings">Apri le impostazioni della posizione</string>
     <string name="preview">Anteprima</string>
+    <string name="seconds_per_picture">Tempo per foto: %d secondi</string>
+    <string name="idle_minutes">Avvia screensaver dopo: %d minuti</string>
 </resources>

@@ -42,7 +42,7 @@
 #   disable it again: the receiver keeps the credentials until it restarts, so that is needed after every
 #   reboot and whenever the receiver restarts (crash, force-stop, update). Cast Fix (SHOWCASE.md) does it
 #   at boot; it ran on every reboot during the trial and phone casting worked each time. Details in
-#   docs/TROUBLESHOOTING.md ("Casting from a phone fails with Untrusted device", issue #361).
+#   docs/TROUBLESHOOTING.md#connecting (the "Untrusted device" bullet after setupwraith is disabled, issue #361).
 #   Cast Fix 1.0 (thayford/castfix) was verified on a second boreal unit, 2026-10-23: paired with the
 #   PairReceiver broadcast, `adb_allowed_connection_time` set to 0, and the boot run logged
 #   "Cast credentials loaded" -> "Casting ready."; the cast log showed

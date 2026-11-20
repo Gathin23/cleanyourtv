@@ -1,0 +1,6 @@
+{
+  "tv": "Element E450AD65G (65\" 4K Google TV, kaitak, MTC/MediaTek), US",
+  "os": "Google TV 14",
+  "brand": "Element",
+  "notes": "Anoki ACR, Privacy Sandbox ad services, feedback, retail demo, partner rows, e-manual; 13 streaming apps listed commented out; Assistant, Chromecast and Miracast off by choice; setupwraith claims Home (FORCE_SETUPWRAITH=1 on Ethernet with no saved Wi-Fi); Prime Video button is KEYCODE_TV_INPUT_COMPONENT_2 and needs HOME_KEY_SERVICE=1, which stops held volume ramping; 5555 closed only with Developer options off; one session, not days"
+}

@@ -14,12 +14,38 @@ A URL or a page opened at the address is refused by name: give the IP (or IP:por
 It listens on 127.0.0.1 only, never on the network. Read tools/relay.md first.
 """
 import argparse
+import ipaddress
 import os
 import socket
 import sys
 import threading
 
 LISTEN = "127.0.0.1"   # loopback only: the relay must never put the TV's ADB port on the network
+
+
+def this_computer(host):
+    """127.0.0.1, localhost or another loopback address: where a relay listens, never the TV.
+
+    Every way the socket API takes to write it counts, as in tools/adb-closed.py: localhost in any case or
+    with the root's trailing dot, the short IPv4 forms (127.1, 2130706433, 0x7f000001), ::1 and an
+    IPv4-mapped ::ffff:127.0.0.1, and 0.0.0.0 or ::, which connect to this computer as well.
+    """
+    name = host.lower()
+    if name.endswith("."):
+        name = name[:-1]
+    if name == "localhost" or name.endswith(".localhost"):
+        return True
+    try:
+        address = ipaddress.ip_address(name.split("%", 1)[0])
+    except ValueError:
+        try:
+            address = ipaddress.IPv4Address(socket.inet_aton(name))
+        except (OSError, ValueError):
+            return False
+    # Before Python 3.13 an IPv4-mapped loopback is not is_loopback.
+    if getattr(address, "ipv4_mapped", None):
+        address = address.ipv4_mapped
+    return address.is_loopback or address.is_unspecified
 
 
 def split_host_port(endpoint):
@@ -139,23 +165,31 @@ def main():
     # TV_HOST=127.0.0.1 TV_PORT=15555 exported for the tools, then the relay started in that same terminal: that
     # TV_PORT is a relay's (this one's, or the one TV_HOST points at), not the TV's, and with the TV's IP given
     # the relay would forward to IP:15555.
-    loopback = ("127.0.0.1", "localhost")
     env_host = split_host_port(os.environ.get("TV_HOST", ""))[0]
-    if port_from_env and (args.tv_port == args.port or (env_host in loopback and args.tv_host not in loopback)):
+    local = this_computer(args.tv_host)
+    if port_from_env and (args.tv_port == args.port or (this_computer(env_host) and not local)):
         p.error(f"TV_PORT={args.tv_port} is a relay's port, set for the tools: unset TV_HOST TV_PORT in this "
                 "terminal, or give the TV's port, e.g.  tools/venv/bin/python -I tools/relay.py 192.168.1.50:5555")
-    if args.tv_host in loopback and args.tv_port == args.port:
+    if local and args.tv_port == args.port:
         p.error("that is the relay itself: give the TV's IP address")
 
-    srv = socket.socket()
-    # On Windows SO_REUSEADDR lets a second socket bind a port that is in use; POSIX needs it for a quick restart.
-    if os.name == "nt":
-        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
-            srv.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
-    else:
-        srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    def open_listener(listen_port):
+        sock = socket.socket()
+        # On Windows SO_REUSEADDR lets a second socket bind a port that is in use; POSIX needs it for a quick restart.
+        if os.name == "nt":
+            if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        else:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind((LISTEN, listen_port))
+        return sock
+
     try:
-        srv.bind((LISTEN, args.port))
+        srv = open_listener(args.port)
+        if local and args.port == 0 and srv.getsockname()[1] == args.tv_port:
+            replacement = open_listener(0)
+            srv.close()
+            srv = replacement
     except OSError as e:
         sys.exit(f"cannot listen on {LISTEN}:{args.port}: {e}. Is a relay already running? Pick another --port.")
     srv.listen(8)

@@ -7,7 +7,9 @@
     <string name="empty_body">Put pictures in this folder on the TV with sync.sh or sync.ps1:</string>
     <string name="settings_title">Photo screensaver</string>
     <string name="option_clock">Show the time and date</string>
+    <string name="option_clock_fades">Show the time briefly with each picture</string>
     <string name="option_dates">Show when a picture was taken (month and year)</string>
+    <string name="option_animation">Ken Burns animation (zoom and drift)</string>
     <string name="option_prints">Three prints instead of full screen (no clips)</string>
     <string name="option_sky">Sky that follows the time of day behind the prints</string>
     <string name="option_weather">Show the weather (needs the TV\'s location)</string>
@@ -17,4 +19,6 @@
     <string name="weather_ok">Location is on. The weather is updated every 30 minutes.</string>
     <string name="open_location_settings">Open location settings</string>
     <string name="preview">Preview</string>
+    <string name="seconds_per_picture">Time per picture: %d seconds</string>
+    <string name="idle_minutes">Start screensaver after: %d minutes</string>
 </resources>

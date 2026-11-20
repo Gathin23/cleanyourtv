@@ -1,0 +1,116 @@
+# TCL 55C805 (device G08, product G08_4K_GB, model "Smart TV Pro", MediaTek tcl9618), EU firmware (region FR).
+# The C805 is the C755 under its European name: in other markets this set is the 55C755.
+# Google TV 14 (SDK 34), build UTT2.250416.001 AU04, software V8-T653T01-LF1V670. The third unit of this
+# folder, with a list of its own: README.md in this folder has its notes. Applied on 2026-11-13 and lived with
+# since, through restarts and standby, with this repo's launcher as Home.
+# Starting points: this folder's debloat.txt and the EU unit in
+# examples/tcl-65c7k-google-tv/debloat-75t8c-eu.txt (same firmware family), whose DO NOT DISABLE list
+# is kept here: com.tcl.interactive, com.tcl.suspension, com.tcl.autopair, com.tcl.gamebar, com.tpa.kb,
+# com.tcl.eva, com.tcl.hearaid, com.mediatek.network. Five more from it (com.tcl.ttvs, com.tcl.channelplus,
+# com.tcl.waterfall.overseas, com.tcl.guard, com.tcl.dashboard) were tested on this unit and are off there:
+# Batch 7. ttvs, which holds the firmware updater, is a comment in this list (see Firmware updaters).
+# Also kept: com.tcl.tv, com.tcl.tvinput, keyboards, Play Store/Services, com.google.android.tv.remote.service
+# (the remote's mic), com.tcl.webview (not in any tested list).
+#
+# Kept on here, though this folder's debloat.txt turns them off:
+#   com.tcl.interactive    TCL's TIAS. Switched off on this unit for a test: on Live TV, the TV app and
+#                          vendor.tcl.tvinput.extend-service then logged a failed lookup of tcl_tias_tbrowser
+#                          about 35 times a second, without end (about 1-3% of one core), as on the EU 75T8C.
+#                          This folder's AU02 unit saw only a few seconds of it each time the TV player started.
+#   com.tcl.gamebar        Game mode for consoles, kept by the owner (a PS5 on HDMI). With Batch 7 off, Game Master
+#                          still turned on for the PS5 (ALLM) and the game bar opened over it.
+#
+# Owner keeps: Chromecast, AirPlay, Miracast, Google Assistant, YouTube, Stremio, Nuvio. So these, off in
+# debloat.txt by its first owner's choice, stay on here: com.google.android.apps.mediashell (Chromecast),
+# com.tcl.airplay2, com.mediatek.AirplayAPK and com.mediatek.airplaydaemon (AirPlay), and com.tcl.miracast.
+# Samsung's Smart View mirrors through com.tcl.miracast (its SinkActivity,
+# over Wi-Fi Direct): switched off for a test, the TV was gone from Smart View, and Google Home's "Cast my screen"
+# did not mirror instead.
+# Already off on this unit before the list, and not in it: com.netflix.ninja (Netflix),
+# com.amazon.amazonvideo.livingroom (Prime Video), com.tcl.magiconnectfree, com.tcl.ocean.instructions.
+# Not installed on this unit: com.tcl.hotelmenu, au.com.stan.and (Stan).
+# The other way round, com.tcl.t_solo (Bluetooth "listen alone"), which debloat.txt keeps, is off here by the
+# owner's choice.
+#
+# Firmware updaters: com.tcl.ttvs (Batch 7) is the TV's own, and com.tcl.UpdatePeripheral (Batch 4) updates the
+# remote's and TCL soundbars' firmware. This set has both off, by the owner's choice (ttvs also carries TCL's
+# analytics and tracking), but they are comments here, so the list keeps updates working; uncomment them to match
+# this set. With ttvs off, Settings > System > About > System update does nothing, for an update from a USB stick
+# too, and Settings > Apps, where ttvs is called "TCSCore", offers no Enable for it: switch it on over ADB
+# (pm enable com.tcl.ttvs) before an update, then re-apply the list.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-c755-google-tv/debloat-55c805.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-c755-google-tv/debloat-55c805.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled.
+
+# Batch 1: telemetry and log upload
+com.tcl.logkit                         # TCL log capture and upload
+com.mediatek.backgrounddetection       # MediaTek telemetry
+com.google.android.feedback            # bug-report / feedback sender
+com.android.tv.feedbackconsent
+com.tcl.usercenter                     # TCL account sign-in nags
+
+# Batch 2: TCL promos, pushed content and retail demo
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.exhibit                        # store demo mode
+com.tcl.esticker                       # retail-demo sticker
+com.tcl.repairguide
+
+# Batch 3: silent installers and unused leftovers
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.tcl.smartlink.core                 # TCL CustomInstallService (silent partner-app installer, starts at boot)
+com.google.android.partnersetup        # partner attribution
+com.mediatek.support.webview           # duplicate webview; com.google.android.webview is the active one
+com.android.printspooler
+com.google.android.syncadapters.calendar
+
+# Batch 4: off by the owner's choice
+com.tcl.smartalexa                     # Alexa
+# com.tcl.UpdatePeripheral             # remote / TCL soundbar firmware updates: off on this set (see Firmware updaters)
+# tv.wuaki.apptv                       # Rakuten TV: on this unit only installed for user 10, a dormant Google TV
+                                       #   profile created during setup, so there was nothing to disable for user 0;
+                                       #   uncomment it where user 0 has it
+com.google.android.play.games
+com.tcl.ui_mediaCenter                 # USB media player
+com.tcl.gallery                        # USB photo gallery (not the screensaver: Google's is dreamx, Batch 6)
+com.tcl.t_solo                         # Bluetooth "listen alone"
+com.google.android.youtube.tvmusic     # YouTube Music, as in debloat.txt: on this firmware it only opened the YouTube
+                                       #   app's Music tab
+# com.tcl.browser                      # TCL's browser, the TV's only one: off on this unit, left as a comment here
+                                       #   (apps' own web pages use Google's WebView, which stays)
+
+# Batch 5: for the new launcher. setupwraith's RecoveryActivity claims HOME once launcherx is gone.
+# It owned the saved 2.4 GHz network; that network was forgotten first (cmd wifi forget-network <id>),
+# the 5 GHz one the TV uses belongs to android.uid.system. launcherx is disabled by
+# launcher/build-and-install.sh.
+com.google.android.tungsten.setupwraith
+
+# Batch 6: Google's ambient screensaver, after screensaver_components and screensaver_default_component were
+# set to another screensaver (both were com.google.android.apps.tv.dreamx/.service.Backdrop): on this unit the
+# launcher's com.gathin.tvhome/.ClockDream first, now the koi-pond add-on (io.github.nottoobright.koipond/.PondDream).
+# Leave it enabled if Google's screensaver stays the one in use.
+com.google.android.apps.tv.dreamx
+
+# Batch 7: five of the EU list's DO NOT DISABLE packages, tested one at a time on Live TV with the log watched
+# (2026-11-17), then through three restarts: antenna, guide, HDMI, remote buttons, casting and the screensaver.
+# All five are off on this set; ttvs is a comment here, as it holds the firmware updater.
+com.tcl.channelplus                    # TCL Channel: free internet channels with ads, a source in Live TV. Off, that
+                                       #   source is gone; the antenna and HDMI are not affected
+com.tcl.waterfall.overseas             # TCL's film and show browser, with its own web video player
+# com.tcl.ttvs                         # TCL analytics, usage statistics, tracking data, device identifiers, messages,
+                                       #   T-Cast, Alexa's core, Samba TV's ACR (not running on this unit) and the
+                                       #   TV's firmware updater: off on this set (see Firmware updaters). Off, the TV
+                                       #   app still starts com.tcl.interactive itself, and no TIAS errors were logged
+com.tcl.guard                          # TCL "Safety Guard": cleaner (it force-stops apps), app manager, auto-start and
+                                       #   permission screens. It holds no right to grant or revoke permissions
+com.tcl.dashboard                      # TCL Home: messages, promos, account and smart-home controls; this folder's
+                                       #   debloat.txt keeps it. Off, the remote's TCL Home button does nothing; the
+                                       #   Input key's source panel (com.tcl.suspension, kept), gear, Home and Back work
+# With all of this batch off, as on this set, TCL's boot control (TclAppBoot, in system_server) refused to start a
+# screensaver add-on and an add-on's Bluetooth and boot receivers ("callee_does't_have_OP_AUTO_START_permission" in
+# the log); guard on again and a restart did not change that, so ttvs is the likely cause. The fix is the one
+# launcher/build-and-install.sh makes for the launcher itself:
+# TV_HOST=<tv ip> tools/tv.py 'appops set <package> AUTO_START allow', then
+# 'appops write-settings'. See which apps are refused: tools/tv.py 'logcat -d' | grep TclAppBootInfo

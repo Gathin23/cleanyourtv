@@ -1,6 +1,6 @@
 {
-  "tv": "TCL C755 QD-Mini LED, 2024, Australia and UAE (G08, MediaTek tcl9618)",
+  "tv": "TCL C755 QD-Mini LED, 2024, Australia and UAE; C805 in Europe (G08, MediaTek tcl9618)",
   "os": "Google TV 14",
   "brand": "TCL",
-  "notes": "Samba TV ACR (ttvs), TCL Live, store/hotel demo, Stan; casting and mirroring off by choice; keep `tv.remote.service` (it carries the remote's mic)"
+  "notes": "Samba TV ACR (ttvs), TCL Live, store/hotel demo, Stan; casting and mirroring off by choice; keep `tv.remote.service` (it carries the remote's mic); a [55C805](tcl-c755-google-tv/), the C755's European name, on AU04 has a list of its own, `debloat-55c805.txt`: Channel+, TCL's film browser, guard and TCL Home off after tests on the set, ttvs (the firmware updater) off there but a comment in the list, TIAS (interactive) and casting left on, and a screensaver add-on needs TCL's AUTO_START once ttvs is off"
 }

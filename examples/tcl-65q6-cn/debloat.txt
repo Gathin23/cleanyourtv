@@ -1,0 +1,96 @@
+# TCL 65Q6 (China, 2019 retail model), device/model code "sugarcane", MStar MS848, 2 GB RAM,
+# firmware V8-S48CT05-LF1V142 (TV+OS 4.0 / T-UI 4.0), Android 8.0.0 (SDK 26), arm64-v8a,
+# ro.adb.secure=1. Applied by @duanshian-rgb on a real unit on 4-5 November 2026, one
+# `pm disable-user --user 0` per package, and checked after two reboots: Home, the remote, voice,
+# Wi-Fi, HDMI and casting all still work, MemAvailable ~675 MB of 1.86 GB.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65q6-cn/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65q6-cn/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.tcl.cyberui. It is NOT in this list, and a third-party launcher cannot be
+# installed on this firmware at all, so this folder is debloat only (see "LAUNCHER GATE" below).
+# Live TV / HDMI: com.tcl.tv (it owns DTV and HDMI playback, and the remote's source key).
+# Keep com.tcl.settings (the set's own settings and source panel), com.tcl.sourcemananger,
+# com.tcl.guard (电视卫士, also the on-screen APK installer for a USB stick),
+# com.tcl.packageinstaller.service.renew (the USB install screen 应用安装 - re-enable it if you
+# turned it off), com.tcl.usercenter, com.iflytek.* / com.tcl.walleve (voice),
+# MultiScreenInteraction_TV (casting, see the ad note below), and com.tcl.vod with TCL's
+# waterfall, convergehome, wholenetsearch and tliveplay content apps: they are the built-in
+# content the owner of this set watches, off only if you decide you do not.
+# com.snm.upgrade is the firmware updater and stays; the OTA user interface (versionUpdateApp)
+# and the TCL store (appmarket2) are off here because the owner chose to, and each line says so.
+#
+# ADB on this generation takes two doors, and the auth dialog only appears after the second:
+#   1. Factory menu starts adbd: 信源 (Source) -> 模拟接收 (Analog TV) -> MENU -> 设置 -> 显示 ->
+#      专业设定 -> put the cursor on 对比度 (Contrast) -> press 1 9 5 0 -> Other -> ADB = ON.
+#      Does not survive a reboot.
+#   2. The Device Info page enables the authorization dialog: Settings -> About -> Device Info,
+#      press UP DOWN LEFT RIGHT (under a second apart, repeat 2-3 rounds) -> the hidden 商场/更多
+#      groups appear -> 更多 -> ADB on. Do NOT press OK on 商场模式: focus lands there first and
+#      that is the retail demo loop.
+#   adbd quirks (a hand-rolled client fails where stock `adb` works): CNXN must carry an EMPTY
+#   payload, since any banner string gets the connection dropped; the answer to the RSA challenge
+#   is accepted and the connection then closes silently, every time. platform-tools 37 works:
+#   the first connect shows `unauthorized`, you exit the factory menu to the normal launcher (the
+#   dialog cannot draw over the factory OSD), reconnect and accept on the TV.
+#
+# BOOT AD IS A FILE, NOT A PACKAGE. com.tcl.bootadservice is only the downloader; the ad itself is
+# played by an init service (bootanim / strbootvideo) before the framework, from
+# /data/local/bootvideo/bootvideo.ts (H264/AAC, ts.ini DURATION=15) and, for a standby resume,
+# /data/local/strbootvideo/bootvideo.ts. Disabling the downloader below stops it coming back; the
+# owner pulled both directories to a PC first and then deleted the .ts, .zip and ts.ini files, and
+# the directories were still empty after a reboot. There is no persist.sys.bootvideo.time here.
+# Deleting those files is outside this list: restore.sh does not bring them back, so keep the PC copy.
+#
+# LAUNCHER GATE: any APK declaring android.intent.category.HOME is refused with
+# INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES ("disable install launcher app not signature by
+# tcl"), which is TCL's launcher signature check rather than a real certificate problem. Unlike the
+# Android 14 China sets there is no InstallConfig row to read at all on this firmware
+# (content://com.tcl.providers.config/all holds 20 rows, all of them perf/freeze policies), so
+# there is no allowlist to consult either. com.tcl.cyberui is the only HOME handler and stays.
+#
+# Ad domains the kept cast app (MultiScreenInteraction_TV, which embeds the Hpplay SDK) talks to, if
+# you block at the router: adeng.hpplay.cn, adeng.lebo.com.cn, ads-api-o.api.leiniao.com,
+# ads-o.res.leiniao.com, monitor.ads.huan.tv.
+#
+# Not in this list, and not measured on this set: the Google apps and the input method (the report
+# names neither, so neither was checked), Bluetooth pairing, and anything under /data the owner did
+# not touch. One day of use after the two reboots, not a week - re-enable a line if something you
+# use stops working.
+
+# TCL analytics, reporting and popups
+com.tcl.bi                              # analytics/behaviour reporting, holds a silent-install permission
+com.tcl.usagestats                      # usage statistics
+com.tcl.recognize.service               # ACR content recognition
+com.tcl.c2dm.client                     # TCL push channel
+com.android.tcl.messagebox              # image-message popup receiver
+com.tcl.tvhealthcheck                   # diagnostics uploader
+com.tcl.xian.StartandroidService        # background reporting service
+com.tcl.m                               # MenuHelp
+
+# Boot ad downloader (the clip itself is a file, see the header)
+com.tcl.bootadservice                   # downloads the boot advertisement
+
+# Preloads, shopping and TCL's own media apps
+com.tcl.weixin                          # TV WeChat
+com.tcl.gamecenter                      # game center
+com.tcl.ffkaraoke                       # karaoke preload
+com.tcl.ffeducation                     # education preload
+com.huan.edu.lexue.frontend             # education preload
+com.tcl.tshop                           # TV shopping
+com.kugou.tv                            # Kugou music preload
+com.tcl.tclmusic                        # TCL music
+com.vcinema.client.tv                   # cinema preload
+com.tcl.qiyiguo                         # iQiyi-linked preload
+jd.video.basecomponent                  # JD video
+com.tcl.appreciate.art                  # art promo (the stock screensaver)
+
+# Left by a test run, not by the retail firmware
+com.example.tvcapture                   # capture test leftover
+com.iflytek.mictest                     # microphone test leftover
+
+# The owner's choice: the store and the OTA user interface, with the firmware updater kept
+# This set has these two off by the owner's choice; uncomment to do the same.
+#com.tcl.versionUpdateApp                # OTA user interface; com.snm.upgrade (the updater) stays
+#com.tcl.appmarket2                      # TCL app store; 当贝市场 installed instead

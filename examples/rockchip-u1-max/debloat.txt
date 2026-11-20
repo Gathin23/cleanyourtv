@@ -1,0 +1,58 @@
+# U1 Max (Rockchip rk3328, Android 9, SDK 28), firmware rk3328-user 9 PQ2A.190205.003 140731 (build 2019-06-22), 4 GB RAM
+# Generic box: ro.product.brand is "Android" and the fingerprint is spoofed as a Google Pixel (google/sailfish).
+#
+# PROVISIONAL: tried for about two hours by someone helping on a box that is not theirs, so it was never lived
+# with for days. Applied in three batches, one reboot afterwards: Home, ADB and Wi-Fi came back, and the list
+# below was still disabled. Treat it as a starting point until an owner has used it for a few days.
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/rockchip-u1-max/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/rockchip-u1-max/debloat.txt com.droidlogic.mboxlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# A box with no HDMI-in or tuner: leave live_tv_package empty in config.xml.
+# Stock launcher: com.droidlogic.mboxlauncher (build-and-install.sh asks for STOCK_LAUNCHER=com.droidlogic.mboxlauncher,
+# because Home resolves to it and it is not one of the launchers the script knows). It is the only app that
+# claims HOME, and the saved Wi-Fi network belongs to android.uid.system, so disabling it did not drop Wi-Fi.
+#
+# Kept on purpose: android.rockchip.update.service (firmware updater), the remote-mouse USB dongle's input services,
+# Play Store and Play Services, com.android.tv.settings, com.cyx.setupwizard, com.hkw.simplelauncher, the LED apps
+# (com.gaoee.led, com.example.changeled) and eu.chainfire.supersu (this firmware ships SuperSU; left alone).
+# The voice assistant, DLNA and AirPlay receivers were off in the checklist, so they are disabled below.
+#
+# Notes:
+# - ro.adb.secure=0 on this firmware: network ADB on 5555 takes any device on the LAN with no prompt. Turn
+#   USB debugging off when done and reboot.
+# - Most apps people install here are phone apps with no leanback entry. Add them to library_apps in
+#   launcher/app/src/main/res/values/config.xml (with app_library true) or they will not show on Home.
+# - Mali-450 (OpenGL ES 2.0) GPU: WebView-based apps (Vavoo measured at about 9 fps in its menus) are slow
+#   whatever is disabled. Stopping background apps and shortening animations changed nothing measurable.
+
+# Backup, sync and print services nobody uses on a box
+com.google.android.partnersetup
+com.google.android.backuptransport
+com.google.android.syncadapters.contacts
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.printspooler
+com.android.bookmarkprovider
+com.android.companiondevicemanager
+
+# Voice assistant / Google search
+com.google.android.googlequicksearchbox
+
+# Casting receivers
+com.rockchips.dlna
+com.waxrain.airplaydmr  # third-party AirPlay receiver
+
+# Test and preloaded extras (disabled only, never started)
+com.cghs.stresstest
+com.rockchip.devicetest
+com.example.a  # ProductTest
+cyx.browser
+com.android.htmlviewer
+com.android.camera2
+com.android.dreams.basic
+
+# Chinese keyboards (the Latin keyboard stays)
+com.android.inputmethod.pinyin
+jp.co.omronsoft.openwnn

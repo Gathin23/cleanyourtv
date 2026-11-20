@@ -107,6 +107,19 @@ class ScenarioTest(unittest.TestCase):
         self.assertEqual(trace.recording_ms(["input keyevent KEYCODE_HOME", "sleep 4"]),
                          (trace.START_MARGIN_S + 4 + trace.END_MARGIN_S) * 1000)
 
+    def test_recording_counts_literal_sleep_spellings(self):
+        for command, milliseconds in (("sleep  \t4", 4000), ("sleep .5", 500),
+                                      ("sleep 4.", 4000), ("sleep '+4e0'", 4000),
+                                      ('sleep "4s" # wait', 4000), ("sleep .5m", 30000),
+                                      ("sleep .5h", 1800000), ("sleep .5d", 43200000),
+                                      ("sleep 0", 0)):
+            with self.subTest(command=command):
+                self.assertEqual(trace.recording_ms([command]), 5000 + milliseconds)
+
+    def test_recording_rounds_up_to_cover_fractional_milliseconds(self):
+        self.assertEqual(trace.recording_ms(["sleep .0001"]), 5001)
+        self.assertEqual(trace.recording_ms(["sleep 0.35"] * 24), 13400)
+
     def test_config_traces_the_launcher_for_that_long(self):
         self.assertEqual(trace.perfetto_config("com.gathin.tvhome", 9000), CONFIG_9000)
 
@@ -354,6 +367,32 @@ class RecordTest(unittest.TestCase):
         self.assertFalse(any(c[1].startswith("sleep") for c in device.calls if c[0] == "shell"))
         self.assertIn(mock.call(2.0), sleep.call_args_list)
         self.assertIn(mock.call(1.5), sleep.call_args_list)
+
+    def test_formatted_sleeps_send_the_full_config_and_wait_on_the_host(self):
+        for steps in (["sleep  \t4"], ["sleep .5"] * 8,
+                      ["sleep '.5s' # wait"] * 8, ["sleep 4e0"]):
+            with self.subTest(steps=steps):
+                device = FakeDevice()
+                size, sleep = self.record(device, [], steps)
+                commands = [c[1] for c in device.calls if c[0] == "shell"]
+                start = next(c for c in commands if "| perfetto " in c)
+                encoded = re.search(r"echo (\S+) \| base64 -d", start).group(1)
+                self.assertEqual(base64.b64decode(encoded), CONFIG_9000)
+                self.assertFalse(any(step in commands for step in steps))
+                delay = 0.5 if len(steps) == 8 else 4.0
+                self.assertEqual(sleep.call_args_list,
+                                 [mock.call(3), *[mock.call(delay) for _ in steps], mock.call(2)])
+                self.assertEqual(size, len(b"trace"))
+
+    def test_nonliteral_and_compound_commands_are_forwarded_unchanged(self):
+        for command in ("echo 'sleep 99'", "sleep .5; echo done", "sleep $WAIT",
+                        "sleep", "sleep invalid", "sleep 'unterminated", "sleep inf",
+                        "sleep 1#note; echo done", "sleep\n1", "sleep 1 # comment\necho done"):
+            with self.subTest(command=command), mock.patch.object(trace.time, "sleep") as sleep:
+                remote = mock.Mock()
+                trace._run(remote, command)
+                remote.assert_called_once_with(command)
+                sleep.assert_not_called()
 
     def test_waits_on_the_pid_perfetto_reports(self):
         device = FakeDevice("1234\n")

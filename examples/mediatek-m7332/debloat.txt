@@ -1,0 +1,73 @@
+# MediaTek m7332 Android TV board (Chinese "RP" firmware), Android 11 (SDK 30)
+# Build RP1A.200720.011 / m7332_eu-userdebug 11 RP1A.200720.011 eng.nobody.20220906.224559 test-keys,
+# 1920x1080 panel, 32-bit only (armeabi-v7a), ~1.8 GB RAM with ro.config.low_ram=true.
+# The firmware is a userdebug build signed with test-keys and answers `adb root`; this list needs none
+# of that, only ADB debugging.
+# The quickest way to tell whether this list fits: the vendor apps are com.rp.* (instroduce, uhd,
+# memoryclean, rpfactory), the cast hub is com.mphotool.apiservice + com.android.toofifi, and the stock
+# launcher is com.rp.launcher.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/mediatek-m7332/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/mediatek-m7332/debloat.txt com.rp.launcher
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Status: applied 2026-11-19 on a living-room unit; Home was handed to a sideloaded launcher first
+# (Projectivy) and com.rp.launcher disabled only after the new one answered HOME.
+# Worked after the list: Wi-Fi, the vendor Settings app, com.mediatek.wwtv.tvcenter (live TV and inputs),
+# IPTV apps, screenshots over ADB, and a reboot. Not exercised: the factory menus (left enabled),
+# the whiteboard and "Control Center" apps (user-installed, left alone), Bluetooth remote pairing.
+#
+# Kept on purpose:
+# - com.rp.settings (the vendor Settings app), com.android.tv.settings, com.mediatek.wwtv.tvcenter
+#   (live TV, HDMI and AV inputs) and com.mediatek.wwtv.setupwizard, which still owns the saved Wi-Fi
+#   network on this firmware.
+# - The factory and self-test packages: com.rp.factorytest, com.rp.rpfactory, com.rp.hardwaredetect and
+#   mediatek.factorymenu.ui. They are commented out then, not listed as disabled, and a service visit
+#   may want them.
+# - The keyboard, the input/source packages and every com.android.providers.* package other than the
+#   calendar provider below.
+#
+# Firmware quirks worth knowing before you start:
+# - Disabling the cast hub (com.android.toofifi with com.mphotool.apiservice) closes its LAN ports and
+#   stops AirPlay, Chromecast and DLNA from phones. Re-enable both if you cast to this TV.
+# - com.rp.uhd is a 4K demo app with a persistent service that crash-loops on this firmware: the system
+#   restarts it every few hundred milliseconds, which is why the box stayed at a load average of 60+ on
+#   four cores. `am force-stop` does not stop it; only disabling the package does.
+# - The vendor launcher hides sideloaded apps from its own menu. Apps installed after this list appear in
+#   the TV launcher's app library (or in Settings -> Apps), not in the vendor grid.
+# - A 2.4 GHz USB remote dongle can lose its input event nodes when developer options are switched on.
+#   That is a kernel-side wedge: move the dongle to another USB port and power-cycle at the wall.
+
+# Vendor apps: onboarding, demo, cleaners and utilities this firmware preloads
+com.rp.instroduce                      # vendor intro slides, run once and never again
+com.rp.uhd                             # 4K demo app; its service crash-loops (see the header)
+com.rp.memoryclean                     # "memory cleaner": kills apps in the background
+com.rp.calculator
+com.rp.calendar
+com.rp.writenumbertool                 # factory serial-number writer, no use outside the line
+
+# Cast middleware
+com.android.toofifi                    # cast receiver hub: AirPlay, Chromecast and DLNA from phones
+com.mphotool.apiservice                # the service behind it, phones home and holds LAN ports open
+
+# Preloaded junk
+com.fqcx.welcome                       # full-screen welcome/promo app at boot
+com.fqcx.wb                            # vendor helper that opens a promo page
+
+# AOSP extras a TV does not need
+com.android.printspooler
+com.mediatek.android.leanbacklauncher.partnercustomizer   # partner rows for the stock launcher
+fusion.android.tv.demo                 # retail demo mode
+com.mstar.android.tv.disclaimercustomization              # disclaimer screen, first-run only
+com.android.providers.calendar
+com.android.dreams.basic               # stock "colors" screensaver
+com.android.wallpaperbackup
+
+# The stock launcher: disable only after another launcher owns HOME
+com.rp.launcher
+
+# Factory menus, kept (see the header)
+# com.rp.factorytest
+# com.rp.rpfactory
+# com.rp.hardwaredetect
+# mediatek.factorymenu.ui

@@ -52,6 +52,24 @@
 #   com.mediatek.wwtv.tvcenter to whatever input it last remembered (Composite, on this unit), since
 #   live_tv_input_id only matches TYPE_TUNER inputs, never TYPE_HDMI. Fixed with launch_actions' "input:<id>"
 #   prefix (#2159): com.mediatek.wwtv.tvcenter=input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW5 here.
+#
+# Haier 32 Smart TV S2 Pro (product code DH1U6MD0402; ro.product.model Haier Android TV DVB2K, product
+# HaierATVT56DVB, device broadway), Android TV 11 (API 30), firmware RTM9.241015.181 (#3936; one retail set):
+# - Same board as above on an older build. 16 packages were still disabled after a reboot: this list's
+#   tv.anoki.acr.controller, fusion.android.tv.demo, com.haierubic.usmartdevice, com.haier.yudee.tv,
+#   com.haier.sharetv.webview, com.haier.apps, com.haier.launcher.haiermatrix, com.haier.tvhousekeeper,
+#   com.cvte.haier.tv.appmanager, com.google.android.feedback and android.autoinstalls.config.haier.hanyang,
+#   plus the four listed as already disabled above (com.google.android.marvin.talkback, com.cltv.fast,
+#   com.google.android.youtube.tvmusic, com.google.android.play.games) and Prime Video
+#   (com.amazon.amazonvideo.livingroom), which the list above leaves installed.
+# - com.google.android.tvrecommendations and com.netflix.ninja were enabled again after the reboot, as
+#   tvrecommendations was on the CANDY unit above.
+# - Choosing CleanYourTV as Home left the physical Home button opening the stock Google launcher. With
+#   HomeKeyService, stock_home_redirect com.google.android.tvlauncher and key_filter true, Home showed the
+#   Google launcher briefly before CleanYourTV opened (how the redirect works on firmware that keeps its own
+#   Home), and held volume stopped repeating; "volume_pauses_filter": true (3.5) pauses the filter for 4 s
+#   after a volume press so a held key ramps again. The owner went back to the stock Home and turned the
+#   helper off, so the launcher was not kept on this unit.
 
 # Content recognition and retail demo
 tv.anoki.acr.controller                          # Anoki ACR

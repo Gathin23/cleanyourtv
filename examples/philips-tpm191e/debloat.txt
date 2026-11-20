@@ -54,7 +54,7 @@
 # - Checked the same day; the set has not been restarted since, so persistence across a reboot is
 #   not confirmed for this unit.
 #
-# Fourth unit: Philips 55OLED854/12 (OLED, not LED like the other three units here), Poland, on
+# Fourth unit: Philips 55OLED854/12 (OLED, not LED like the three units above it), Poland, on
 # Ethernet. Same firmware as the lead unit above: STT2.230526.001, security patch 2025-11-01,
 # fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. A
 # single session, not a several-day test. Like the lead unit, only an owner-selected subset of the

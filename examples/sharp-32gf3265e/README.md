@@ -7,13 +7,22 @@ Tested on one Sharp 32GF3265E ("SHARP 2K Smart TV", device umeda, Skyworth board
 
 ## Apply
 
-1. Debloat: TV_HOST=<tv ip> tools/disable.sh examples/sharp-32gf3265e/debloat.txt
-2. Install the repo launcher as Home (the script disables the stock launcher itself once the new one owns Home):
-   TV_HOST=<tv ip> HOME_KEY_SERVICE=1 INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
-3. Push this folder's config (dock, glass band, gear key, power-on Home):
-   TV_HOST=<tv ip> tools/theme.sh examples/sharp-32gf3265e
+Run these from the repository root:
 
-Undo: TV_HOST=<tv ip> tools/restore.sh examples/sharp-32gf3265e/debloat.txt com.google.android.apps.tv.launcherx
+```bash
+TV_HOST=<tv ip> tools/disable.sh examples/sharp-32gf3265e/debloat.txt
+TV_HOST=<tv ip> HOME_KEY_SERVICE=1 INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
+TV_HOST=<tv ip> tools/theme.sh examples/sharp-32gf3265e
+```
+
+The second line installs the repo launcher as Home (the script disables the stock launcher itself once the
+new one owns Home); the third pushes this folder's config (dock, glass band, gear key, power-on Home).
+
+Undo:
+
+```bash
+TV_HOST=<tv ip> tools/restore.sh examples/sharp-32gf3265e/debloat.txt com.google.android.apps.tv.launcherx
+```
 (the stock launcher stays disabled; the repo launcher is Home)
 
 ## Notes

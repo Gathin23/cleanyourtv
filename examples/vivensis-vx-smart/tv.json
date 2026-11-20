@@ -1,0 +1,6 @@
+{
+  "tv": "Vivensis VX Smart (`HYR2B-Vivensis`, SkyworthDigital, Realtek)",
+  "os": "Android TV 12",
+  "brand": "Vivensis",
+  "notes": "Google feedback, Skyworth `com.sdt.producttest` disabled, Play Games, TalkBack, TTS, Camera, Gallery, Music and Print Spooler off (11 packages); `com.vivensis.launcher` kept (runs the satellite DTV tuner) behind `stock_home_redirect` with `HOME_KEY_SERVICE=1`, and moved from adopted USB storage to internal flash so reboot keeps Home; OTA, Assistant, Ambient Mode and streaming apps kept"
+}
