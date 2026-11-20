@@ -1,0 +1,66 @@
+# Hotack D08-series projector (Allwinner board, reports ADT-3/adt3/adt3; the Magcubic HY300/HY320
+# family), Android 11 (SDK 30), 1280x720 panel, density 240.
+# The com.htc.* packages are Hotack's OEM stack, not HTC Corp. The stock launcher is
+# com.htc.htclauncherhighenglishd08 and the projector's own settings live in com.htc.htcsettings.
+# The #1576 report did not capture the firmware build string, so match on those two, the 720p panel
+# and the package set; do not go by the ADT-3 name, which several different sets report.
+# Same Allwinner/HTC firmware family as examples/portronics-beem-470/ (Android 11, 1080p, the same
+# stock launcher, which that folder also disables), examples/magcubic-hy300-pro/ (Android 11, 720p,
+# the same stock launcher, left enabled there) and examples/alwtniet-hy320-mini/ (Android 11, 720p,
+# older build); examples/hotack-l018/ is Hotack's LuminaOS cousin (com.htc.luminaos, not this
+# launcher). Each is its own folder because the retail sets and builds differ.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/hotack-d08/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/hotack-d08/debloat.txt com.htc.htclauncherhighenglishd08
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Status: from the #1576 report - all 20 packages below were disabled with pm disable-user and were
+# still disabled after reboots, with no firmware re-enable observed. The report does not date the
+# session or claim days of use. The stock launcher was disabled for the Home handover (the Undo
+# line brings it back).
+#
+# Kept on purpose (from the report):
+# - com.htc.htcsettings and com.htc.expandsdk: the projector's own settings (keystone, focus, zoom,
+#   projection mode). com.htc.htcsettings is also the lname owner of the saved Wi-Fi (dumpsys wifi
+#   showed cname=android.uid.system:1000), so disabling the stock launcher does not take the set
+#   off Wi-Fi.
+# - com.htc.closedialog: the remote's power-off / standby dialog.
+# - com.softwinner.vis, com.softwinner.tvvolume, com.softwinner.awsource, com.softwinner.awlivetv:
+#   the HDMI and CVBS inputs and the audio/video pipeline (see config.json for the Inputs setup).
+# - com.android.inputmethod.latin.hdibzi: the stock on-screen keyboard.
+# - No setupwraith on this firmware: Android's FallbackHome
+#   (com.android.tv.settings/.system.FallbackHome) is the only other Home claimant.
+#
+# Home handover (worked on the first attempt, mFocusedApp checked):
+#   pm disable-user --user 0 com.htc.htclauncherhighenglishd08
+#   cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity
+# or let the install script do it: STOCK_LAUNCHER=com.htc.htclauncherhighenglishd08.
+#
+# The factory and test suites below were disabled, never launched. Keeping them enabled instead, as
+# the HY300 Pro and Beem 470 folders do, is also fine: comment those five lines out.
+
+# ---- Manufacturer telemetry and debug loggers ----
+com.htc.eventuploadservice                       # Hotack event upload
+com.softwinner.awlogsettings                     # Allwinner debug logger
+
+# ---- Factory and hardware test suites (never launch them) ----
+com.softwinner.dragonbox
+com.softwinner.agingdragonbox
+com.softwinner.dragonatt
+com.htc.hyk_test
+com.hotack.writesn                               # factory serial-number writer
+
+# ---- OEM store and preloaded bloat ----
+com.htc.storeos                                  # Hotack app store
+com.mobisystems.office                           # Office suite
+com.android.calculator2
+com.android.printspooler
+com.android.printservice.recommendation
+com.android.bips                                 # Default Print Service
+com.android.cellbroadcastreceiver                # no modem here; cell broadcast is dead weight
+com.android.cellbroadcastservice
+com.android.egg
+com.softwinner.TvdFileManager
+com.softwinner.TvdVideo                          # stock USB video player; re-enable for USB media
+com.softwinner.ImageParser
+com.android.music
