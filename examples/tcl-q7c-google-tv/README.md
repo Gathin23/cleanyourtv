@@ -746,3 +746,56 @@ launcher was Home. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` for every saved 
   disabled package stayed disabled; the OS re-enabled none.
 - One set, one week of use. Casting, AirPlay, Miracast and voice were turned off by choice, so they were not tested
   after the list.
+
+## Eleventh unit: 85QM8B (Italy, Wi-Fi)
+
+One owner's session from 2026-10-29 on the same build (AU02), so the list above is the one that ran, with the deltas
+below. Packages were disabled by hand, one `pm disable-user --user 0` call each, in seven batches with a screenshot
+after each: 45 of them plus launcherx, which `build-and-install.sh` did afterwards. A reboot brought none back. The
+set has no antenna and is used almost only on HDMI 1, with an Apple TV.
+
+| Retail model | `85QM8B`, supplied by the owner; the firmware calls the model "Smart TV Pro" |
+| `ro.product.device` / `ro.product.name` | `G08` / `G08_4K_GB` |
+| SoC | MediaTek `tcl9618` |
+| Firmware | `UTT2.250416.001 AU02`, `ro.software.version_id` `V8-T653T01-LF1V643`, security patch `2025-12-05` |
+| Connecting | Wi-Fi; USB debugging alone opened 5555, Wireless debugging not needed |
+
+### What differed from this list
+
+- **35 of the 46 are lines here**, launcherx and setupwraith among them.
+- **Three are commented out here** and that owner turned them off: `com.tcl.browser`, Chromecast
+  (`com.google.android.apps.mediashell`) and YouTube Music (`com.google.android.youtube.tvmusic`). Uncomment them to
+  match this set; check the Web key first, since the browser is its target on this firmware.
+- **Eight were apps installed on that set**, off by choice: Apple TV, CBS, Discovery+, Disney+, Infinity TV, RaiNet,
+  TIMvision and Rakuten TV. They are the commented block at the end of `debloat.txt`.
+- **Two active lines were not on that set's disabled list:** Prime Video (named among the apps kept) and the Assistant,
+  `com.google.android.katniss`, which the report does not mention. Comment those two lines out to match.
+- **Kept, as here:** Plex, YouTube, the Play Store, `com.tcl.tv`, `com.tcl.tvinput` and the TCL keyboard.
+
+### A dock tile that opens HDMI 1
+
+The first dock tile is `com.tcl.tv` with `launch_actions` `com.tcl.tv=input:com.tcl.tvinput/.TvPassThroughService/HW15`
+and `app_labels` "Apple TV" over the Apple TV app's banner, so a press on OK goes straight to HDMI 1; the owner
+confirmed it opens HDMI 1. The input id comes from `dumpsys tv_input` and differs per set, so read it there rather
+than copying this one. Five columns, and the gear key needed the launcher's help:
+
+### The gear key over HDMI
+
+Keycode 83 still reached `com.tcl.tv`'s `TVActivity`, which ignores it, so once launcherx was off the button did
+nothing while HDMI was in front. `HOME_KEY_SERVICE=1` with `settings_key_panel` fixed it. Holding Volume+ still
+repeats normally on this set: the 65Q7D Pro's one-step cost did not appear here, and `key_filter` was not needed.
+
+### Screenshots of HDMI are black
+
+The report adds what this list's notes only say for empty screenshots: `screenrecord` and captures of the HDMI input
+come back black, so an on-TV ambilight grabber (Hyperion) cannot see what the TV is showing on HDMI.
+
+### Test limits
+
+- One set, one session on 2026-10-29: a reboot brought none of the 46 back, but this is a day-one record, not a soak
+  test, and no OTA cycle was run.
+- Not recorded: the `dumpsys wifi | grep -o 'cname=[^ ]*'` check the header asks for before setupwraith goes. The
+  session ran over Wi-Fi and records no network trouble after the reboot.
+- Checked by the owner: HDMI 1 from the dock tile, the gear key, a held Volume+, and the reboot. Casting, AirPlay,
+  voice and the tuner were off or absent, so they were not tested.
+- Reported by @bozzomasterflash in [#2613](https://github.com/Gathin23/cleanyourtv/issues/2613).

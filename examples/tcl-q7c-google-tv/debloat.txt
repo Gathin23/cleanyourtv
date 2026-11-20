@@ -40,6 +40,10 @@
 # Tenth unit: TCL 55T8C (Smart TV Pro, G08_4K_GB), same build (AU02), on Wi-Fi, from 26 October 2026 to
 # 1 November 2026: this list minus Netflix (ninja, tokenmanager) and Prime Video (kept), plus mediashell and
 # com.google.android.youtube.tvmusic; launcherx and setupwraith off for the launcher. Reboot-checked. See README.
+# Eleventh unit: TCL 85QM8B ("Smart TV Pro", G08_4K_GB), Italy, same build (AU02), on Wi-Fi, from 29 October 2026:
+# 46 off - 35 of this list (launcherx through build-and-install.sh), the browser, Chromecast and YouTube Music from
+# the commented groups, and eight apps the owner had installed (its own commented block at the end). None came back
+# after a reboot; Prime Video and the Assistant stayed on. Its set, and the gear key over HDMI, are in the README.
 #
 # Apply:   FORCE_SETUPWRAITH=1 TV_HOST=<tv ip> tools/disable.sh examples/tcl-q7c-google-tv/debloat.txt
 #          FORCE_SETUPWRAITH=1 only on Ethernet with no saved Wi-Fi: disable.sh otherwise skips setupwraith because
@@ -212,3 +216,14 @@ com.google.android.tungsten.setupwraith
 # com.android.uwb.resources              # no UWB radio
 # com.android.cameraextensions           # no camera
 # com.android.wallpaperbackup
+
+# Eleventh unit: the eight apps installed on that set (TCL 85QM8B, Italy), off by the owner's choice on
+# 29 October 2026. They are downloads, not preloads, so they stay commented here: uncomment the ones you have.
+# com.apple.atve.androidtv.appletv
+# com.cbs.ca
+# com.discovery.dplay
+# com.disney.disneyplus
+# it.mediaset.infinitytv
+# it.rainet.androidtv
+# it.telecomitalia.cubovision
+# tv.wuaki.apptv
