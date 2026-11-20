@@ -279,13 +279,14 @@ sent once produced no reply. That matches the NU7405 and diverges from the AU800
 was sent, so an unicast or repeated-match retry is untested. Polling 8001 is the reliable way to
 find this set.
 
-Across the four sets on this page, the Q67BA adds two data points:
+Across the sets on this page that read 9080, the Q67BA adds two data points:
 
 - **9080** is now observed open on a 2021 unit (AU8000) and on this 2022 unit, and closed on the
-  2018 and 2024 units. The service remains unidentified, and four observations are too few to read
-  a generational rule from.
-- **`firmwareVersion: Unknown`** is now confirmed across four TV years and three regions, which
-  looks like a Samsung API behaviour rather than a per-model defect.
+  2018 and 2024 units. The service remains unidentified, and the readings are too few, and too far
+  apart in year, to read a generational rule from.
+- **`firmwareVersion: Unknown`** is now confirmed on every set here whose firmware version was read,
+  from a 2017 unit to a 2024 one, which looks like a Samsung API behaviour rather than a per-model
+  defect.
 
 What carries over unchanged: no ADB, no shell on retail firmware, and with `developerMode: 0` no
 `sdb`, so the developer-mode path (signed custom app, debug install, Web Inspector) was neither
