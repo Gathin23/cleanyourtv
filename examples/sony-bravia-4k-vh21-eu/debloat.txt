@@ -8,6 +8,7 @@
 # Same device and build as sony-bravia-4k-vh21 (Australia); the EU firmware differs in its preloads
 # (ARD, All 4, ITV, My5, iPlayer launchers, YouView, HD+, YouTube Music: all already disabled at the factory
 # on this set, so not in this list) and has no AU broadcaster apps.
+# Second unit: an XR-77A80K on the same build, Netherlands, has its own list in debloat-xr-77a80k.txt.
 # Stock launcher: com.google.android.apps.tv.launcherx (Google TV). build-and-install disables it.
 # Live TV / tuner app: com.sony.dtv.tvx. Keep the com.sony.dtv.tvinput.* services, tvapi, sonysystemservice,
 # sonyvendorservice, imeproxy, settingsprovider, systemupdate/update, braviasync* and all com.mediatek.*:
