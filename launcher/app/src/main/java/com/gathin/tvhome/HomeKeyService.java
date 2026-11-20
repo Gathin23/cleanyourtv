@@ -352,7 +352,9 @@ public class HomeKeyService extends AccessibilityService {
             // Google TV shows voice search results in launcherx's HomeActivity, reached through the Assistant and
             // launcherx's own LauncherDeepLink; sending that back here lost the results. Such a window stays.
             boolean onPurpose = deepLinked(now, stockDeepLinkUntil);
-            stockDeepLinkUntil = 0;
+            // launcherx reports HomeActivity two or three times as the results page settles; the whole burst stays,
+            // and a later one (Home pressed on the results page) is sent back as usual.
+            if (onPurpose) stockDeepLinkUntil = Math.min(stockDeepLinkUntil, now + DEEP_LINK_BURST_MS);
             handler.removeCallbacks(stockHomeBack);
             // Not at once: the Assistant can bring the stock home up a few ms before the app it was asked to open
             // (YouTube), and Home started then would cover that app. Any other window in between cancels it.
@@ -376,6 +378,8 @@ public class HomeKeyService extends AccessibilityService {
     static final String ASSISTANT_PACKAGE = "com.google.android.katniss";
     /** How long after the Assistant or a stock launcher deep link its home window still counts as opened on purpose. */
     static final long DEEP_LINK_WINDOW_MS = 5_000L;
+    /** After the first stock home window opened on purpose, how long its repeats still count as the same opening. */
+    static final long DEEP_LINK_BURST_MS = 1_500L;
 
     /** A window from the Assistant, or a non-home activity of a stock launcher (its deep link trampoline). */
     static boolean opensStockHome(String pkg, Set<String> stockHomePackages) {
