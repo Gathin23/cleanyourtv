@@ -87,6 +87,12 @@ is ignored, and a file that doesn't parse is ignored as a whole, so a theme can 
 larger than 64 KB is ignored as a whole too, which is why `tools/theme.sh` refuses one instead of pushing
 it: the launcher would drop the theme and go back to its built-in config.
 
+One thing is not dropped as a whole: inside a list, `Config.stringList()` keeps the entries that are
+non-empty strings and skips the rest one at a time - so a `dock_apps` hand-written with a number or an
+empty entry in it applies without that app, and nothing on the TV says so. Every row whose Type is
+`list of package names` is read that way, and `tools/manage.py`'s `set` refuses such a list before
+writing it.
+
 Each key has (or is waiting for) a screenshot of it on a real TV in [`docs/switches.md`](../docs/switches.md).
 A new key needs one there in the same pull request.
 
