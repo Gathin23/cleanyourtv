@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Weather</string>
 
     <string name="feels_like">Feels like %1$d°</string>
@@ -8,6 +8,10 @@
     <string name="wind_mph">Wind %1$d mph</string>
     <string name="other_unit_c">%1$d°C</string>
     <string name="other_unit_f">%1$d°F</string>
+    <!-- NowProvider's line, for the launcher's Home under the clock: "48°  ☁  Cloudy  ·  H 55°  L 38°" -->
+    <string name="home_line" tools:ignore="MissingTranslation">%1$s°  %2$s  %3$s  ·  H %4$d°  L %5$d°</string>
+    <!-- The same before today's high and low are known. -->
+    <string name="home_line_now" tools:ignore="MissingTranslation">%1$s°  %2$s  %3$s</string>
     <string name="high_low">%1$d° / %2$d°</string>
     <string name="aqi_line">Air quality %1$d · %2$s</string>
     <string name="updated">Updated %1$s · Open-Meteo</string>

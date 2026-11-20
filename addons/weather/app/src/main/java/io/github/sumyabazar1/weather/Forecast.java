@@ -64,8 +64,11 @@ final class Forecast {
         final int aqi;
         final int humidity;
         final int windKmh;
+        /** Today as a forecast day (the day's code, high and low), or null when the reply had no values for it. */
+        final Day today;
 
-        Report(double tempC, double feelsC, int code, boolean day, List<Day> days, int aqi, int humidity, int windKmh) {
+        Report(double tempC, double feelsC, int code, boolean day, List<Day> days, int aqi, int humidity, int windKmh,
+               Day today) {
             this.tempC = tempC;
             this.feelsC = feelsC;
             this.code = code;
@@ -74,6 +77,7 @@ final class Forecast {
             this.aqi = aqi;
             this.humidity = humidity;
             this.windKmh = windKmh;
+            this.today = today;
         }
     }
 
@@ -130,10 +134,11 @@ final class Forecast {
         double temp = current.getDouble("temperature_2m");
         double humidity = current.getDouble("relative_humidity_2m");
         int code = snowIfCold(current.getInt("weather_code"), temp, humidity);
+        JSONObject daily = reply.getJSONObject("daily");
         return new Report(temp, current.getDouble("apparent_temperature"),
                 code, current.getInt("is_day") == 1,
-                days(reply.getJSONObject("daily")), aqiOrUnknown(where),
-                (int) Math.round(humidity), (int) Math.round(current.optDouble("wind_speed_10m", 0)));
+                days(daily), aqiOrUnknown(where),
+                (int) Math.round(humidity), (int) Math.round(current.optDouble("wind_speed_10m", 0)), day(daily, 0));
     }
 
     /**
@@ -161,19 +166,26 @@ final class Forecast {
     /** Tomorrow and the days after it; today (index 0) is the current reading. */
     private static List<Day> days(JSONObject daily) throws JSONException {
         JSONArray dates = daily.getJSONArray("time");
-        JSONArray codes = daily.getJSONArray("weather_code");
-        JSONArray max = daily.getJSONArray("temperature_2m_max");
-        JSONArray min = daily.getJSONArray("temperature_2m_min");
         List<Day> out = new ArrayList<>();
         for (int i = 1; i < dates.length(); i++) {
             // With forecast_days 7 the last day can come back without values: stop there instead of failing the page.
-            if (codes.isNull(i) || max.isNull(i) || min.isNull(i)) break;
-            // A day whose high stays near freezing gets the same rain-to-snow correction, with the high and
-            // saturated air, which is the warm end of the day's precipitation.
-            out.add(new Day(LocalDate.parse(dates.getString(i)), snowIfCold(codes.getInt(i), max.getDouble(i), 100),
-                    max.getDouble(i), min.getDouble(i)));
+            Day d = day(daily, i);
+            if (d == null) break;
+            out.add(d);
         }
         return out;
+    }
+
+    /** Day i of the reply (0 is today), or null when it came back without values. */
+    private static Day day(JSONObject daily, int i) throws JSONException {
+        JSONArray codes = daily.getJSONArray("weather_code");
+        JSONArray max = daily.getJSONArray("temperature_2m_max");
+        JSONArray min = daily.getJSONArray("temperature_2m_min");
+        if (i >= codes.length() || codes.isNull(i) || max.isNull(i) || min.isNull(i)) return null;
+        // A day whose high stays near freezing gets the same rain-to-snow correction, with the high and
+        // saturated air, which is the warm end of the day's precipitation.
+        return new Day(LocalDate.parse(daily.getJSONArray("time").getString(i)),
+                snowIfCold(codes.getInt(i), max.getDouble(i), 100), max.getDouble(i), min.getDouble(i));
     }
 
     private static int aqiOrUnknown(String where) {
@@ -234,6 +246,16 @@ final class Forecast {
             case 85: case 86: return R.string.sky_snow_showers;
             default: return code >= 95 ? R.string.sky_thunderstorm : R.string.sky_cloudy;
         }
+    }
+
+    /** A plain symbol for a WMO weather code, from characters every TV font has, for {@link NowProvider}'s line. */
+    static String symbol(int code, boolean day) {
+        if (code == 0 || code == 1) return day ? "\u2600" : "\u263E";   // sun, moon
+        if (code == 2) return "\u26C5";                                  // sun behind cloud
+        if (code == 3 || code == 45 || code == 48) return "\u2601";      // cloud (fog too)
+        if (code >= 71 && code <= 77 || code == 85 || code == 86) return "\u2744";   // snow
+        if (code >= 95) return "\u26A1";                                 // thunder
+        return "\u2602";                                                 // drizzle, rain, showers
     }
 
     /** US AQI bands: upper bound, words, pill colour. */
