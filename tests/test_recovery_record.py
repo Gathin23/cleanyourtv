@@ -7,6 +7,7 @@ only the ADB transport is simulated.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -298,6 +299,42 @@ class RecoveryRecordTest(unittest.TestCase):
         result = self.run_script("restore.sh", str(copy))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("no recovery record", result.stderr)
+
+    def spelling_record_name(self, list_path):
+        """The record file one spelling of the list is given: recovery.py's list_digest hashes the path
+        as typed, so the fixture can write the record a second spelling wrote before the same-file
+        lookup existed. 192.168.1.50 is the address the harness runs at."""
+        digest = hashlib.sha1(str(Path(list_path).resolve()).encode()).hexdigest()[:8]
+        return self.home / ".cleanyourtv" / f"recovery-192.168.1.50-{digest}.json"
+
+    def test_two_records_for_one_file_under_two_spellings_stop_before_the_tv(self):
+        """A list reached by two paths wrote a record under each digest before the same-file lookup
+        existed, and the two can disagree about what was on before cleanup. Reading the first sorted
+        match printed a batch from whichever record that happened to be, with no mention of the other."""
+        self.tv()
+        self.assertEqual(self.run_script("disable.sh", str(self.list_path)).returncode, 0)
+        taken = next((self.home / ".cleanyourtv").glob("recovery-*.json"))
+        second_read = json.loads(taken.read_text())
+        # The same file at two other spellings: a hard link stands in for the case-insensitive disk,
+        # and the run below comes from a third path so no exact-name record answers for it.
+        second = self.other_path_to_the_list(os.link)
+        third = self.base / "third" / "debloat.txt"
+        third.parent.mkdir()
+        os.link(self.list_path, third)
+        second_read["list"] = str(second.resolve())
+        second_read["packages"]["com.example.enabled"] = "disabled"
+        also_taken = self.spelling_record_name(second)
+        also_taken.write_text(json.dumps(second_read))
+
+        for script in ("restore.sh", "disable.sh"):
+            with self.subTest(script=script):
+                self.clear_sent()
+                result = self.run_script(script, str(third))
+                self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn("two recovery records", result.stderr)
+                for path in (taken, also_taken):
+                    self.assertIn(str(path), result.stderr, "both records are named, neither is chosen")
+                self.assertEqual(self.sent(), [], "nothing is changed on the TV")
 
     def test_edited_list_leaves_new_names_alone(self):
         self.tv()
