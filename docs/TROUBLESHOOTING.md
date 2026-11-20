@@ -2622,3 +2622,49 @@ always reports `mPlugType=1` (`BatteryManager.BATTERY_PLUGGED_AC` in `dumpsys po
 ```sh
 tools/tv.py 'settings put global stay_on_while_plugged_in 0'
 ```
+
+## The TV boots to a blank Home: no launcher answers, and FallbackHome draws nothing
+
+**Seen on:** a Next NEK7 (MECOOL/Amlogic, Android TV 9, SDK 28, `V9.20221214.151020`).
+
+With the enabled Home disabled or unable to start, Android hands Home to
+`com.android.tv.settings/.system.FallbackHome`. On this firmware that activity draws nothing: the screen stayed a
+plain dark panel, `uiautomator dump` returned an empty `FrameLayout` with no children, and no key brought
+anything up. ADB kept working, which is the way back.
+
+Ask the TV which apps answer Home, and check whether the stock fallback is a real launcher or a stub:
+
+```sh
+tools/tv.py 'cmd package query-activities -a android.intent.action.MAIN -c android.intent.category.HOME'
+tools/tv.py 'dumpsys package com.google.android.leanbacklauncher | grep -E "User 0:|enabled="'
+```
+
+A stock launcher that stays out of that list can still be installed and enabled. On the NEK7 the
+`LeanbackLauncher.apk` in `/system/priv-app` is 604 KB with no activities at all: `pm enable` answers
+`new state: enabled` and `dumpsys package` says `enabled=1`, and Home still never goes there. Pull the APK and
+count the activities:
+
+```sh
+adb pull /system/priv-app/LeanbackLauncher/LeanbackLauncher.apk
+$ANDROID_HOME/build-tools/34.0.0/aapt2 dump xmltree --file AndroidManifest.xml LeanbackLauncher.apk | grep -c 'E: activity'
+# 0
+$ANDROID_HOME/build-tools/34.0.0/aapt dump badging LeanbackLauncher.apk | head -1
+# package: name='com.google.android.leanbacklauncher' versionCode='1901105100' ... with no launchable-activity
+```
+
+Recovery, with no reboot needed:
+
+```sh
+tools/tv.py 'pm enable --user 0 <launcher package>'
+tools/tv.py 'am start -a android.intent.action.MAIN -c android.intent.category.HOME'
+```
+
+FallbackHome finishes itself within seconds of a real Home being enabled, and the stored Home preference
+survives a disable/enable cycle, so the launcher answers the next Home press and comes back as default after a
+reboot. A launcher that only crashed needs none of this: Android restarts it on its own (`kill -9` left a new
+pid with the same Home focused seconds later).
+
+Keep one working Home enabled. `tools/disable.sh` already refuses to disable Home's owner while nothing else
+can answer Home, but the guard judges by the apps that answer Home, so a launcher and a stub that never answers
+look the same there: a second launcher installed and enabled, without being the default, is the cheap safety
+net (`pm enable` alone brings the real one back).
