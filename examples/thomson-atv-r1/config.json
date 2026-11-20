@@ -1,0 +1,21 @@
+{
+  "columns": 4,
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "org.mozilla.firefox",
+    "de.ozerov.fully",
+    "com.alfainventor.filemanager"
+  ],
+  "fill_dock": true,
+  "app_library": true,
+  "hidden_apps": [
+    "com.rtk.engmenu",
+    "com.apps.factory.ui",
+    "com.realtek.factorytools"
+  ],
+  "library_excluded_apps": [
+    "com.rtk.engmenu",
+    "com.apps.factory.ui",
+    "com.realtek.factorytools"
+  ]
+}
