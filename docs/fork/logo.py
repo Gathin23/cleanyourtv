@@ -28,7 +28,7 @@ def sparkle(d, cx, cy, r, color, k=0.28):
     d.polygon(pts, fill=color)
 
 # Glyphs draw inside a square (x, y, s).
-def glyph_sparkle(d, x, y, s, fg, accent):
+def glyph_sparkle(d, x, y, s, fg, accent, star=None):
     sw = s * 0.075; w, h = s * 0.80, s * 0.56
     l, t = x + (s - w) / 2, y + s * 0.14
     d.rounded_rectangle([l, t, l + w, t + h], radius=s * 0.11, outline=fg, width=round(sw))
@@ -38,22 +38,22 @@ def glyph_sparkle(d, x, y, s, fg, accent):
     sparkle(d, cx + s * .20, t + h * .27, s * .065, accent)
     sparkle(d, cx - s * .20, t + h * .70, s * .045, fg)
 
-def glyph_antenna(d, x, y, s, fg, accent):
+def glyph_antenna(d, x, y, s, fg, accent, star=None):
     sw = s * 0.07; w, h = s * 0.78, s * 0.52
     l, t = x + (s - w) / 2, y + s * 0.30
     cx = x + s / 2
     for dx in (-1, 1):
-        d.line([cx + dx * s * .05, t, cx + dx * s * .20, t - s * .19], fill=fg, width=round(sw * .8))
-        r = s * .045; ex, ey = cx + dx * s * .20, t - s * .19
+        d.line([cx + dx * s * .045, t, cx + dx * s * .17, t - s * .17], fill=fg, width=round(sw * .85))
+        r = s * .045; ex, ey = cx + dx * s * .17, t - s * .17
         d.ellipse([ex - r, ey - r, ex + r, ey + r], fill=fg)
     d.rounded_rectangle([l, t, l + w, t + h], radius=s * .13, fill=fg)
     p = s * .075
     d.rounded_rectangle([l + p, t + p, l + w - p, t + h - p], radius=s * .07, fill=accent)
-    sparkle(d, cx, t + h / 2, s * .14, fg)
+    sparkle(d, cx, t + h / 2, s * .15, star or fg)
     for dx in (-1, 1):
         d.rounded_rectangle([cx + dx * s * .2 - s * .06, t + h + s * .02, cx + dx * s * .2 + s * .06, t + h + s * .07], radius=s * .025, fill=fg)
 
-def glyph_check(d, x, y, s, fg, accent):
+def glyph_check(d, x, y, s, fg, accent, star=None):
     sw = s * 0.08; w, h = s * 0.80, s * 0.58
     l, t = x + (s - w) / 2, y + s * 0.13
     d.rounded_rectangle([l, t, l + w, t + h], radius=s * .12, outline=fg, width=round(sw))
@@ -64,7 +64,7 @@ def glyph_check(d, x, y, s, fg, accent):
     for px_, py_ in (pts[0], pts[2]):
         r = s * .0425; d.ellipse([px_ - r, py_ - r, px_ + r, py_ + r], fill=accent)
 
-def glyph_play(d, x, y, s, fg, accent):
+def glyph_play(d, x, y, s, fg, accent, star=None):
     # Rounded screen filled with accent, a play-like broom sweep: three bars of decreasing length.
     w, h = s * 0.80, s * 0.58
     l, t = x + (s - w) / 2, y + s * 0.13
@@ -86,17 +86,18 @@ STYLES = {
 
 def icon(st, size):
     S = size * SS; im = gradient(S, S, st["top"], st["bottom"]); d = ImageDraw.Draw(im)
-    st["glyph"](d, S * .12, S * .10, S * .76, st["fg"], st["accent"] if st["glyph"] is not glyph_antenna else st["accent"])
+    st["glyph"](d, S * .12, S * .10, S * .76, st["fg"], st["accent"], star=st.get("star"))
     return im.resize((size, size), Image.LANCZOS)
 
 def banner(st, w, h):
     W, H = w * SS, h * SS; im = gradient(W, H, st["top"], st["bottom"]); d = ImageDraw.Draw(im)
-    g = H * .62; st["glyph"](d, W * .055, (H - g) / 2, g, st["fg"], st["accent"])
-    f = font(round(H * .215), 600); a, b = "Clean", "YourTV"
+    g = H * .58; st["glyph"](d, W * .055, (H - g) / 2, g, st["fg"], st["accent"], star=st.get("star"))
+    size = H * st.get("word_scale", .215)
+    f = font(round(size), 600); a, b = "Clean", "YourTV"
     tx = W * .055 + g + W * .035; avail = W * .95 - tx
     wa, wb = d.textlength(a, font=f), d.textlength(b, font=f)
     if wa + wb > avail:
-        f = font(round(H * .215 * avail / (wa + wb)), 600); wa = d.textlength(a, font=f)
+        f = font(round(size * avail / (wa + wb)), 600); wa = d.textlength(a, font=f)
     asc, desc = f.getmetrics(); ty = (H - (asc + desc)) / 2 + desc * .25
     d.text((tx, ty), a, font=f, fill=st["word"][0]); d.text((tx + wa, ty), b, font=f, fill=st["word"][1])
     return im.resize((w, h), Image.LANCZOS)
