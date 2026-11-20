@@ -39,9 +39,10 @@
 # answers the remote's mic button - the same finding as examples/thomson-43rt1055). Their lines
 # below are commented out with this note.
 #
-# Firmware updaters com.apps.ota and com.apps.authota ARE disabled at the owner's explicit request,
-# who weighed losing automatic updates against a stick that phones no one at night. Re-enabling them
-# is one pm enable --user 0 each.
+# Firmware updaters com.apps.ota and com.apps.authota ship commented out below: they stay enabled
+# in this shared list, so no one loses automatic updates by surprise. The owner's unit has both
+# disabled, who weighed losing updates against a stick that phones no one at night; pm enable
+# --user 0 com.apps.ota (and .authota) undoes it there.
 #
 # Applied and checked on a real unit on 2026-11-20, in six small batches with a screenshot after
 # each, then rebooted: no package came back, Home boots to com.gathin.tvhome, YouTube plays, the
@@ -104,9 +105,10 @@ com.android.htmlviewer                         # internal HTML viewer
 com.android.settings.intelligence              # Settings search box; menus keep working
 com.android.se                                 # Secure Element (eSIM/NFC): nothing here has one
 
-# OTA updaters, off at the owner's explicit request (see header)
-com.apps.ota                                   # system OTA updater
-com.apps.authota                               # Auth OTA updater
+# OTA updaters: kept enabled in this shared list; comment both in only if you want the stick to
+# never update itself (the owner's unit has them off, see header).
+# com.apps.ota                                 # system OTA updater, off on the owner's unit
+# com.apps.authota                             # Auth OTA updater, off on the owner's unit
 
 # Stock launcher and its rows - LAST, only after launcher/build-and-install.sh moved Home.
 com.google.android.tvrecommendations           # recommendation rows for the stock launcher
