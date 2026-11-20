@@ -1,0 +1,6 @@
+{
+  "tv": "Haier L55F5 (LRM9633_ALI7H_A)",
+  "os": "Android 13 (AliOS-family firmware)",
+  "brand": "Haier",
+  "notes": "China retail set, no GMS, Youku Taitan is the visible stock home; AliOS ads/push/telemetry/IoT off, the AliOS firmware updater kept on in this list and off on that set, the Haier app updater off, 57 Youku inner services off, CEC, casting, USB popup and Youku itself kept (the stock installer UI runs inside it); Home key needs the launcher's accessibility guard - the firmware opens Youku's home by component and never falls back; 19 packages disabled"
+}
