@@ -130,6 +130,31 @@ Home slot at all:
   by the same hook: the process is alive, the window is invisible, and the focus request answers
   `NOT_VISIBLE`.
 
+## What each key on the remote actually sends
+
+Recorded once with `getevent -lt` on the BLE receiver (`JMGO Controller`, 0508:0111) and again from
+`WindowManager: interceptKeyTq` for the same presses, so the keycode and the window it raises are the same
+event. This remote has no input-source key at all; the nearest equivalents are 设置 (settings) and 菜单 (menu),
+which is why those two are the ones measured here:
+
+| Key | Keycode | What happens |
+|---|---|---|
+| 桌面 (home) | 706, which the policy rewrites to 3 (`KEYCODE_HOME`) | stock `HomeActivity`, replacement back in front 90 ms later |
+| 设置 (settings) | 605 | `com.jmgo.setting.x` raises its dashboard panel over the launcher |
+| 菜单 (menu) | 82 (`KEYCODE_MENU`) | the replacement's own menu, nothing vendor-side |
+| 返回 (back) | 4 (`KEYCODE_BACK`) | nothing, this is a root activity |
+
+- 桌面 (home) is not `KEYCODE_HOME` on the wire. The remote sends `BTN_8`, the policy turns that into keycode
+  706 and only then into 3, so nothing watching for HOME at the input layer ever sees it. That is enough to
+  explain why an injected `input keyevent 3` and a real press behave differently on this unit.
+- 设置 (settings) is an overlay, not an activity: `input_focus` moves to `com.jmgo.setting.x` and back while
+  `com.gathin.tvhome.MainActivity` is never paused, so the guard has nothing to correct. The next 桌面
+  (home) press dismisses it - `input_cancel` on the panel window at the moment the key is consumed, then its
+  input channel is disposed.
+- None of the four interrupts anything else: the launcher process kept its pid across all four presses, the
+  accessibility service stayed bound, and no `Force stopping` appeared. The 菜单 (menu) popup is the
+  replacement's, `MainActivity` handles `KEYCODE_MENU` itself.
+
 ## Standby survives; a full power-off does not
 
 The power menu has four entries: 关机 (power off), 重启 (restart), 休眠 (standby) and 关闭光源 (light source
@@ -261,9 +286,8 @@ comes back within ten seconds - so do not reach for them.
 - A cold boot after 重启 (restart) with the replacement launcher and the guard both in place: five out of five
   landed on the replacement, guard bound by 44 s. A cold boot after 关机 (power off) is the case that fails; it
   fails because the guard was already unbound when the boot started, not because the boot itself differs.
-- The remote's own Input and Settings keys. Injected keys are not the same test (the repository says so, and
-  this unit demonstrated it: an injected Home press goes through the hook while a filtered one never reaches
-  the service), so those two still want a human with the remote.
+- The remote's voice and volume keys, which were not pressed. The settings and menu keys are in the key table
+  above; this remote has no input-source key, so that part of the request has no equivalent on this unit.
 
 ## ADB
 
