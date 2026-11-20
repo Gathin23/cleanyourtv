@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Home</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Ingressi</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Impostazioni</string>
@@ -72,6 +72,7 @@
     <string name="on">Sì</string>
     <string name="off">No</string>
     <string name="enable">Attiva</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Apre il selettore degli ingressi quando si preme il tasto Input del telecomando.</string>
     <string name="home_key_name">Tasto Home</string>
     <string name="home_key_description">Fa aprire questo launcher dal tasto Home del telecomando.</string>

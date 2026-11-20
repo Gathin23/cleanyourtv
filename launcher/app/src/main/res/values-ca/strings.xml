@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Inici</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Entrades</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Configuració</string>
@@ -79,6 +79,7 @@
     <string name="quick_network">Xarxa</string>
     <string name="quick_apps">Aplicacions</string>
     <string name="quick_apps_hint">Reactiva</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Obre el selector d\'entrades quan prems el botó Input del comandament.</string>
     <string name="home_key_name">Botó d\'inici</string>
     <string name="home_key_description">Fa que el botó d\'inici del comandament obri aquest llançador.</string>

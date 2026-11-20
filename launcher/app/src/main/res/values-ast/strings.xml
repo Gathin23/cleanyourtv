@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Aniciu</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Entraes</string>
     <string name="settings">Axustes</string>
     <string name="choose_input">Entraes</string>
@@ -55,6 +55,7 @@
     <string name="on">Sí</string>
     <string name="off">Non</string>
     <string name="enable">Activar</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Abre\'l seleutor d\'entraes al calcar el botón d\'Entrada del mandu.</string>
     <string name="home_key_name">Botón d\'Aniciu</string>
     <string name="home_key_description">Fai que\'l botón d\'Aniciu del mandu abra esti llanzador.</string>

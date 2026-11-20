@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Home</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Inputs</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Settings</string>
@@ -74,9 +74,10 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="enable">Enable</string>
-    <string name="input_key_service_description">Opens the input switcher when the remote\'s Input button is pressed.</string>
-    <string name="home_key_name">Home button</string>
-    <string name="home_key_description">Makes the remote\'s Home button open this launcher.</string>
+    <string name="input_key_name">CleanYourTV Input button</string>
+    <string name="input_key_service_description">Only for the remote\'s Input button: opens the input switcher. Not needed for the home screen.</string>
+    <string name="home_key_name">CleanYourTV Home</string>
+    <string name="home_key_description">Home opens CleanYourTV. Turn this off to get the Google TV home screen back.</string>
     <string name="card_prompt_title">New card from %1$s</string>
     <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
     <string name="card_prompt_names">The card is named \'%1$s\'. The app is \'%2$s\'.</string>

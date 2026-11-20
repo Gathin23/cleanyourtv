@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">الرئيسية</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">المدخلات</string>
     <string name="wifi">واي فاي</string>
     <string name="settings">الإعدادات</string>
@@ -28,6 +28,7 @@
     <string name="vpn_off">VPN متوقف</string>
     <string name="home_settings">الشاشة الرئيسية الافتراضية</string>
     <string name="home_settings_help">اختر الشاشة الرئيسية الأصلية لإيقاف استخدام CleanYourTV افتراضيًا، أو اختر CleanYourTV للعودة. يجب أن يكون المشغّل الأصلي مفعّلًا وأن يدعم التلفاز اختيار الشاشة الرئيسية. إذا عُطّل، استخدم برنامج الاستعادة أولًا.</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">يفتح قائمة المدخلات عند الضغط على زر المدخلات في جهاز التحكم.</string>
     <string name="home_key_name">زر الرئيسية</string>
     <string name="home_key_description">يجعل زر الرئيسية في جهاز التحكم يفتح هذه الشاشة.</string>

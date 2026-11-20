@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Beranda</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Input</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Setelan</string>
@@ -53,6 +53,7 @@
     <string name="on">Aktif</string>
     <string name="off">Mati</string>
     <string name="enable">Aktifkan</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Membuka pengalih input saat tombol Input pada remote ditekan.</string>
     <string name="home_key_name">Tombol beranda</string>
     <string name="home_key_description">Membuat tombol Beranda pada remote membuka antarmuka ini.</string>

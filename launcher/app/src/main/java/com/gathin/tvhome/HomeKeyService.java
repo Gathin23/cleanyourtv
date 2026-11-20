@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,10 +69,12 @@ public class HomeKeyService extends AccessibilityService {
 
     /** Waits for the user to unlock when Android binds this service at boot; null once the config is read. */
     private BroadcastReceiver unlockReceiver;
-    /** The stock launcher's HOME activities (stock_home_redirect), disabled ones included. */
+    /** The stock launchers' HOME activities (stock_home_redirect) as "package/class", disabled ones included. */
     private final Set<String> stockHome = new HashSet<>();
-    /** stock_home_redirect, the stock launcher's package. */
-    private String stockHomePackage = "";
+    /** stock_home_redirect, the stock launcher packages (a comma-separated list; ones not installed add nothing). */
+    private final Set<String> stockHomePackages = new HashSet<>();
+    /** Until this uptime a stock home window is one opened on purpose (voice search results), not a revived home. */
+    private long stockDeepLinkUntil;
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -202,11 +205,14 @@ public class HomeKeyService extends AccessibilityService {
         frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
         boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
         stockHome.clear();
-        stockHomePackage = config.stockHomeRedirect;
-        if (!config.stockHomeRedirect.isEmpty()) {
-            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(config.stockHomeRedirect);
+        stockHomePackages.clear();
+        for (String pkg : stockHomeList(config.stockHomeRedirect)) {
+            // This launcher is never its own stock home, even if a theme lists it.
+            if (pkg.equals(getPackageName())) continue;
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg);
             for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
-                stockHome.add(ri.activityInfo.name);
+                stockHome.add(ri.activityInfo.packageName + '/' + ri.activityInfo.name);
+                stockHomePackages.add(ri.activityInfo.packageName);
             }
         }
         // power_on_home, off by default. Not with boot_to_live_tv, or with Live TV picked as the Open on start app:
@@ -338,8 +344,59 @@ public class HomeKeyService extends AccessibilityService {
             return;
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
-        CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+        CharSequence pkg = event.getPackageName(), cls = event.getClassName();
+        if (stockHome.isEmpty() || pkg == null || cls == null) return;
+        long now = SystemClock.elapsedRealtime();
+        String window = pkg.toString();
+        if (stockHome.contains(window + "/" + cls)) {
+            // Google TV shows voice search results in launcherx's HomeActivity, reached through the Assistant and
+            // launcherx's own LauncherDeepLink; sending that back here lost the results. Such a window stays.
+            boolean onPurpose = deepLinked(now, stockDeepLinkUntil);
+            // launcherx reports HomeActivity two or three times as the results page settles; the whole burst stays,
+            // and a later one (Home pressed on the results page) is sent back as usual.
+            if (onPurpose) stockDeepLinkUntil = Math.min(stockDeepLinkUntil, now + DEEP_LINK_BURST_MS);
+            handler.removeCallbacks(stockHomeBack);
+            // Not at once: the Assistant can bring the stock home up a few ms before the app it was asked to open
+            // (YouTube), and Home started then would cover that app. Any other window in between cancels it.
+            if (!onPurpose) handler.postDelayed(stockHomeBack, STOCK_HOME_DELAY_MS);
+        } else if (opensStockHome(window, stockHomePackages)
+                && (ASSISTANT_PACKAGE.equals(window) || isActivity(pkg, cls))) {
+            stockDeepLinkUntil = now + DEEP_LINK_WINDOW_MS;
+            handler.removeCallbacks(stockHomeBack);
+        } else if (!stockHomePackages.contains(window) && isActivity(pkg, cls)) {
+            // Only another app's screen cancels it. Panels and dialogs closing do not: TV Settings sends a
+            // window event for its last pane about 100 ms after the stock home is already up.
+            handler.removeCallbacks(stockHomeBack);
+        }
+    }
+
+    /** stock_home_redirect after STOCK_HOME_DELAY_MS, unless another window came up meanwhile. */
+    private final Runnable stockHomeBack = this::openHome;
+    static final long STOCK_HOME_DELAY_MS = 150L;
+
+    /** The Google TV Assistant (voice search), which hands its results to the stock launcher. */
+    static final String ASSISTANT_PACKAGE = "com.google.android.katniss";
+    /** How long after the Assistant or a stock launcher deep link its home window still counts as opened on purpose. */
+    static final long DEEP_LINK_WINDOW_MS = 5_000L;
+    /** After the first stock home window opened on purpose, how long its repeats still count as the same opening. */
+    static final long DEEP_LINK_BURST_MS = 1_500L;
+
+    /** A window from the Assistant, or a non-home activity of a stock launcher (its deep link trampoline). */
+    static boolean opensStockHome(String pkg, Set<String> stockHomePackages) {
+        return ASSISTANT_PACKAGE.equals(pkg) || stockHomePackages.contains(pkg);
+    }
+
+    static boolean deepLinked(long now, long deepLinkUntil) {
+        return now < deepLinkUntil;
+    }
+
+    private boolean isActivity(CharSequence pkg, CharSequence cls) {
+        try {
+            getPackageManager().getActivityInfo(new ComponentName(pkg.toString(), cls.toString()), 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException notAnActivity) {
+            return false;
+        }
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
@@ -458,7 +515,18 @@ public class HomeKeyService extends AccessibilityService {
         if (stockHome.isEmpty() || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         ResolveInfo home = getPackageManager().resolveActivity(
                 new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY);
-        return home != null && stockHomePackage.equals(home.activityInfo.packageName);
+        return home != null && stockHomePackages.contains(home.activityInfo.packageName);
+    }
+
+    /** stock_home_redirect as a list: one package, or several separated by commas (blanks and repeats dropped). */
+    static Set<String> stockHomeList(String value) {
+        Set<String> packages = new LinkedHashSet<>();
+        if (value == null) return packages;
+        for (String part : value.split(",")) {
+            String pkg = part.trim();
+            if (!pkg.isEmpty()) packages.add(pkg);
+        }
+        return packages;
     }
 
     @Override

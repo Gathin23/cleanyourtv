@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Головний екран</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Джерела</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Налаштування</string>
@@ -72,6 +72,7 @@
     <string name="on">Увімк.</string>
     <string name="off">Вимк.</string>
     <string name="enable">Увімкнути</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Відкриває перемикач джерел під час натискання кнопки Input на пульті.</string>
     <string name="home_key_name">Кнопка Home</string>
     <string name="home_key_description">Кнопка Home на пульті відкриває цей лаунчер.</string>

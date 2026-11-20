@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Početni ekran</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Ulazi</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Podešavanja</string>
@@ -28,6 +28,7 @@
     <string name="vpn_off">VPN isključen</string>
     <string name="home_settings">Podrazumevani početni ekran</string>
     <string name="home_settings_help">Izaberite originalni početni ekran da CleanYourTV više ne bude podrazumevan ili izaberite CleanYourTV da se vratite. Originalni pokretač mora biti omogućen, a TV mora podržavati izbor početnog ekrana. Ako je isključen, prvo koristite skriptu za vraćanje.</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Otvara izbor ulaza kada se na daljinskom pritisne dugme Input.</string>
     <string name="home_key_name">Dugme Home</string>
     <string name="home_key_description">Dugme Home na daljinskom otvara ovaj početni ekran.</string>

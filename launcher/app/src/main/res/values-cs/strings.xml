@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Domů</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Vstupy</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Nastavení</string>
@@ -47,6 +47,7 @@
     <string name="on">Zapnuto</string>
     <string name="off">Vypnuto</string>
     <string name="enable">Zapnout</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Po stisknutí tlačítka Input na ovladači otevře výběr vstupu.</string>
     <string name="home_key_name">Tlačítko Domů</string>
     <string name="home_key_description">Tlačítko Domů na ovladači otevře tuto domovskou obrazovku.</string>

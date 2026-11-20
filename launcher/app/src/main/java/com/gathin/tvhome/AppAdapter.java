@@ -220,6 +220,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean uniformTiles;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
+    /** Apps with no banner get the uniform_tiles card while bannered apps keep their art (config.xml bannerless_card_tiles). */
+    private final boolean bannerlessCards;
+    /** Packages drawn as a uniform_tiles card even though they ship a banner (config.xml card_tiles). */
+    private final Set<String> cardTiles;
     private final List<Entry> items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -248,6 +252,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         this.uniformTiles = cfg.uniformTiles;
+        this.bannerlessCards = ctx.getResources().getBoolean(R.bool.bannerless_card_tiles);
+        this.cardTiles = new HashSet<>(Arrays.asList(ctx.getResources().getStringArray(R.array.card_tiles)));
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -298,7 +304,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (!seen.add(pkg + '\n' + label)) continue;
             Drawable banner = null;
             // uniform_tiles draws the icon, so an app's banner is never loaded. A module card keeps its banner.
-            if (!(uniformTiles && card == null)) {
+            if (!(uniformTiles && card == null) && !(card == null && bannerlessCards && cardTiles.contains(pkg))) {
                 banner = bundledBanner(appBanners.get(pkg));
                 if (banner == null) banner = iconTiles.contains(pkg) ? iconBanner(ri.loadIcon(pm)) : loadBanner(pm, ri);
             }
@@ -452,6 +458,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
+        if (bannerlessCards && !uniformTiles) {
+            // Remember the plain icon size and the card size, so onBindViewHolder can switch per app.
+            View icon = v.findViewById(R.id.icon);
+            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
+            icon.setTag(R.id.icon, new int[] {iconLp.width, iconLp.bottomMargin, Math.round(h * ICON_SHARE)});
+        }
         return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
     }
 
@@ -491,7 +503,18 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
-        if (uniformTiles && e.banner == null) {
+        if (bannerlessCards && !uniformTiles && h.icon.getTag(R.id.icon) instanceof int[]) {
+            int[] sizes = (int[]) h.icon.getTag(R.id.icon);
+            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
+            boolean big = cardStyle(e);
+            int side = big ? sizes[2] : sizes[0], bottom = big ? 0 : sizes[1];
+            if (iconLp.width != side || iconLp.bottomMargin != bottom) {
+                iconLp.width = iconLp.height = side;
+                iconLp.bottomMargin = bottom;
+                h.icon.setLayoutParams(iconLp);
+            }
+        }
+        if (cardStyle(e)) {
             if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
             h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
         }
@@ -507,7 +530,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.icon.setImageDrawable(e.icon);
             h.icon.setVisibility(View.VISIBLE);
             h.label.setText(e.label);
-            h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
+            h.label.setVisibility(cardStyle(e) ? View.GONE : View.VISIBLE);
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
@@ -685,9 +708,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (position < 0 || position >= items.size()) return 0xFF444444;
         Entry e = items.get(position);
         if (e.ambient == 0) {
-            e.ambient = uniformTiles && e.banner == null ? dominantColor(e.icon) : vividColor(e.banner != null ? e.banner : e.icon);
+            e.ambient = cardStyle(e) ? dominantColor(e.icon) : vividColor(e.banner != null ? e.banner : e.icon);
         }
         return e.ambient;
+    }
+
+    /** A tile drawn as a uniform_tiles card: every tile with no banner under uniform_tiles or bannerless_card_tiles. */
+    private boolean cardStyle(Entry e) {
+        return e.banner == null && e.icon != null && (uniformTiles || bannerlessCards);
     }
 
     /** Share of the tile height the icon takes in uniform_tiles mode (onCreateViewHolder). */

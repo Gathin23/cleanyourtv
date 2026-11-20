@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">主畫面</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">輸入來源</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">設定</string>
@@ -44,6 +44,7 @@
     <string name="on">開</string>
     <string name="off">關</string>
     <string name="enable">啟用</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">按下遙控器的輸入鍵時開啟輸入來源選單。</string>
     <string name="home_key_name">主畫面鍵</string>
     <string name="home_key_description">讓遙控器的主畫面鍵開啟這個桌面。</string>

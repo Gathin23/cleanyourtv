@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">בית</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">כניסות</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">הגדרות</string>
@@ -62,6 +62,7 @@
     <string name="on">פעיל</string>
     <string name="off">כבוי</string>
     <string name="enable">הפעלה</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">פותח את בורר הכניסות בלחיצה על כפתור הכניסות בשלט.</string>
     <string name="home_key_name">כפתור הבית</string>
     <string name="home_key_description">גורם לכפתור הבית בשלט לפתוח את מסך הבית הזה.</string>
