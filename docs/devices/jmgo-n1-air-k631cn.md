@@ -15,7 +15,7 @@ the screensaver all differ.
 
 | Field | Value |
 |---|---|
-| Retail name | JMGO N1 Air 超亮版 (坚果 N1 Air), `ro.product.model` `K631CN` |
+| Retail name | JMGO N1 Air 超亮版 (Ultra Bright Edition; 坚果 N1 Air on the box), `ro.product.model` `K631CN` |
 | Maker | `ro.product.manufacturer` and `ro.product.brand` are both the generic `MediaTek`; device and board `K631CN` |
 | Android | 13 (SDK 33), `TP1A.220624.021.A1`, vendor build `LunaOS 1.1.31.9`, UI `7.6.4.032` |
 | Fingerprint | `MediaTek/K631CN/K631CN:13/TP1A.220624.021.A1/1.1.31.9:userdebug/dev-keys` |
@@ -52,7 +52,7 @@ enough to disabled for the purpose, but it is not the same state:
 - `tools/restore.sh` sends `pm enable`, which is a no-op on a suspended package. Undo per package with
   `cmd package unsuspend --user 0 <pkg>`.
 - A suspended package that the system keeps trying to bring up pops `SuspendedAppActivity`
-  ("应用已暂停") rather than being skipped quietly. Here that was the screensaver, below.
+  ("应用已暂停", app suspended) rather than being skipped quietly. Here that was the screensaver, below.
 
 Suspended and left suspended on this unit, by the owner's choice:
 
@@ -133,18 +133,18 @@ Home slot at all:
 ## Standby survives; a full power-off does not
 
 The power menu has four entries: 关机 (power off), 重启 (restart), 休眠 (standby) and 关闭光源 (light source
-off). The two standby entries never reach Android; 关机 is the only one that breaks the guard:
+off). The two standby entries never reach Android; 关机 (power off) is the only one that breaks the guard:
 
 | Action | What Android sees | Guard afterwards |
 |---|---|---|
-| 休眠 | nothing: `mLastSleepTime=0`, `/proc/uptime` unbroken | still bound, launcher still in front |
-| 关闭光源 | nothing, same readings | still bound |
-| 重启 | a full boot | rebinds during boot, launcher in front by 44 s |
-| 关机 | shutdown, then a cold boot | **stays unbound** |
+| 休眠 (standby) | nothing: `mLastSleepTime=0`, `/proc/uptime` unbroken | still bound, launcher still in front |
+| 关闭光源 (light source off) | nothing, same readings | still bound |
+| 重启 (restart) | a full boot | rebinds during boot, launcher in front by 44 s |
+| 关机 (power off) | shutdown, then a cold boot | **stays unbound** |
 
-Measured with the remote: two minutes in 休眠, woken, the replacement launcher was still in front, no ADB
-involved; 关闭光源 reads the same way, light engine off and Android untouched. The power-off case breaks in
-two steps.
+Measured with the remote: two minutes in 休眠 (standby), woken, the replacement launcher was still in front,
+no ADB involved; 关闭光源 (light source off) reads the same way, light engine off and Android untouched. The
+power-off case breaks in two steps.
 
 ### 1. The vendor's process cleaner stops the launcher on the way down
 
@@ -180,8 +180,9 @@ Two things do bring the guard back, and both work because they cause a re-read r
 - a reboot - AMS reads the list on the way up, and
 - reinstalling the APK - `PACKAGE_REPLACED` is the one package event this AMS acts on.
 
-Practical rule for this unit: use 休眠 or 关闭光源 for daily standby. If 关机 is pressed by mistake, one
-重启 brings the launcher back in about 40 s; nothing shorter does.
+Practical rule for this unit: use 休眠 (standby) or 关闭光源 (light source off) for daily standby. If 关机
+(power off) is pressed by mistake, one 重启 (restart) brings the launcher back in about 40 s; nothing shorter
+does.
 
 ## Screensaver: the vendor's full-screen promo
 
@@ -218,7 +219,8 @@ attitude data steering one geometry means it gets corrected back and forth, whic
 like.
 
 Letting `com.jmgo.autokeystone` reload once cleared it - the owner toggled the projector's own
-"实时梯形校正" switch off and on - and after that the feature can be left on without the drift coming back.
+"实时梯形校正" (real-time keystone correction) switch off and on - and after that the feature can be left on
+without the drift coming back.
 Checked afterwards: one `com.jmgo.autokeystone` process, one `TofRealTimeKeystone` connection in
 `dumpsys sensorservice`. Also checked along the way and ruled out: `dynamic_black_enabled=0`,
 `smart_illuminate_enabled=0`, `picture_pixel_shift=0`, auto brightness off (`screen_brightness_mode=0`), the
@@ -228,7 +230,8 @@ autofocus motor was not breathing.
 Two traps on the way:
 
 - **Do not start `com.jmgo.autokeystone/.tof.ui.MainActivity` from ADB.** It is the factory calibration page
-  (it shares the `TofRealTimeKeystone` registration), and it carries "正面零位校准" and "复位光机顶点", which
+  (it shares the `TofRealTimeKeystone` registration), and it carries "正面零位校准" (front zero calibration)
+  and "复位光机顶点" (reset the optical engine's corner points), which
   overwrite the optical calibration. This session opened it by mistake, pressed nothing, and left; the drift
   above is what followed. Nothing in this repository needs that page.
 - `settings get system jmgo_low_latency_before` holds `{"keystone_realtime":1,...}`: entering the
@@ -255,9 +258,9 @@ comes back within ten seconds - so do not reach for them.
 ## What was not checked
 
 - Several days of use, and whether any suspended package is missed: these are same-day reports.
-- A cold boot after 重启 with the replacement launcher and the guard both in place: five out of five landed
-  on the replacement, guard bound by 44 s. A cold boot after 关机 is the case that fails; it fails because
-  the guard was already unbound when the boot started, not because the boot itself differs.
+- A cold boot after 重启 (restart) with the replacement launcher and the guard both in place: five out of five
+  landed on the replacement, guard bound by 44 s. A cold boot after 关机 (power off) is the case that fails; it
+  fails because the guard was already unbound when the boot started, not because the boot itself differs.
 - The remote's own Input and Settings keys. Injected keys are not the same test (the repository says so, and
   this unit demonstrated it: an injected Home press goes through the hook while a filtered one never reaches
   the service), so those two still want a human with the remote.
