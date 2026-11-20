@@ -1,0 +1,6 @@
+{
+  "tv": "Glofiish iX 40 Smart 40\" (RealtekATV, Android TV 7.1.1)",
+  "os": "Android TV 7.1.1",
+  "brand": "Glofiish",
+  "notes": "Hikeen/Zeasn firmware: Adups FOTA, Leanback partner customizers and setup pages, screensaver, AOSP gallery, Google backup/sync/telemetry off; 24 packages disabled, 29 in the list; YouTube TV, Chrome and Miracast off by the owner's choice are comments a reader can take; stock home com.hikeen.transfer kept (the launcher needs Android 8, this set is API 25, so a third-party launcher took Home); port 5555 comes back by itself after a reboot"
+}

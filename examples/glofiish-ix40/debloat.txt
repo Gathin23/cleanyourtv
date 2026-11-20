@@ -1,0 +1,84 @@
+# Glofiish iX 40 Smart 40" (RealtekATV, Android TV 7.1.1 / API 25), build
+# NMF26Q eng.qdl.20190715.094233 test-keys (userdebug), 1 GB RAM / 8 GB storage.
+# Reported by @neviranalyangela (#4252), who disabled these on his own set on 2026-11-16.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/glofiish-ix40/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/glofiish-ix40/debloat.txt com.hikeen.transfer
+# Everything is DISABLED (pm disable-user --user 0), never uninstalled. Comment out a line to keep it.
+#
+# Stock launcher: com.hikeen.transfer (HOME priority 99). It is NOT in this list: disable it only once a
+# replacement Home is installed and proven. The reference launcher needs Android 8 (minSdk 26) and this
+# set is API 25, so the tested unit runs ATV Launcher Pro (ca.dstudio.atvlauncher.pro) as Home - the
+# launcher half of the prompt does not apply here, the list does.
+#
+# Held on purpose, none of them in this list: com.rtk.mediabrowser (the USB media browser),
+# com.hikeen.scrollhelper and com.zeasn.deviceportal.asdprovider.hikeen - the last two run under the
+# system uid with privileged permissions. The same Zeasn device portal is on an active line in
+# examples/hikeen-smart-rtd285o/debloat.txt, an Android 9 build of this OEM's firmware; this owner held
+# it and the list records his set, not that one.
+#
+# This board is the Hikeen/Zeasn firmware family: the same "eng.qdl." build host as the JVC LT-58N785
+# in examples/hikeen-smart-rtd285o/ and the same com.hikeen.* packages, at Android 7.1.1 instead of 9
+# and with com.hikeen.transfer where that build has the Zeasn "orion" launcher - a different product
+# code, firmware and home, so a folder of its own.
+#
+# Notes from this TV:
+# - ADB over network (port 5555) comes back by itself after a reboot on this firmware, so turning
+#   debugging off once is not the end of it: check with tools/adb-closed.py <tv ip> after the reboot too.
+#   The build is userdebug with test-keys.
+# - Off on the tested unit by the owner's choice, and left as comments here for a reader to take:
+#   com.google.android.youtube.tv (SmartTube is used instead), com.android.chrome (v65) and
+#   com.rtk.android.miracast. Streaming, casting and browser apps are the family's, not the list's.
+# - com.adups.fota and com.adups.fota.sysoper are this board's OTA channel. They were off on the tested
+#   unit and the TV worked; they are commented out here, as examples/hikeen-smart-rtd285o/debloat.txt
+#   does with its own copy, so a reader keeps the vendor update check unless they uncomment them.
+# - Of the 29 packages in this list, 18 are in the Universal Android Debloater's own lists (4
+#   Recommended, 11 Advanced, 3 Expert); the other 11 are this maker's. UAD is a second opinion, not a
+#   measurement of this TV.
+# - Session: all 29 applied in one run, then a reboot, with ATV Launcher Pro as Home and Lampa,
+#   SmartTube and VLC/MX Player launched and played. That is one session, not the few days of use this
+#   repo asks for: report anything that breaks and re-enable it with `pm enable <package>`.
+
+# FOTA updater (Adups, this board's OTA channel): off on the tested unit, kept on in this list so
+# updates still arrive for everyone else. Uncomment to turn it off.
+# com.adups.fota
+# com.adups.fota.sysoper
+
+# Test shims and the stock screensaver
+com.android.cts.ctsshim           # CTS test shim
+com.android.cts.priv.ctsshim      # CTS test shim, privileged half
+com.android.dreams.phototable     # photo-table screensaver
+
+# Stock gallery, live wallpapers and wallpaper backup
+com.android.gallery3d             # AOSP gallery
+com.android.wallpaper.livepicker  # live-wallpaper picker
+com.android.wallpaperbackup       # wallpaper backup service
+
+# Google backup, feedback, sync and telemetry
+com.google.android.apps.turbo     # Device Health Services
+com.google.android.backuptransport
+com.google.android.feedback
+com.google.android.instantapps.supervisor
+com.google.android.printservice.recommendation
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.google.android.tv.bugreportsender
+
+# Maker Leanback and setup customisation
+com.google.android.leanbacklauncher.partnercustomizer   # partner customiser for the Leanback home
+com.google.android.leanbacklauncher.partnerwidget
+com.google.android.tvsetup.partnercustomizer            # setup wizard partner pages
+com.hikeen.guide
+
+# Preloaded apps the owner does not use
+com.accuweather.android
+com.likhtar.home
+com.realtek.media.player          # Realtek's media player
+com.svox.pico                     # Pico text-to-speech engine
+org.xwalk.core                    # Crosswalk runtime
+yo.app
+
+# Off on the tested unit by the owner's choice - uncomment the ones you use
+# com.android.chrome              # Chrome 65
+# com.google.android.youtube.tv   # YouTube TV; the owner watches YouTube in SmartTube
+# com.rtk.android.miracast        # Miracast screen mirroring
