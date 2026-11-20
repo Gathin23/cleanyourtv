@@ -17,6 +17,12 @@ any key to return.
 None. No network access (no `INTERNET` permission): nothing leaves the TV. No background service: it runs only
 while the screensaver or the card's screen is showing.
 
+## Font licence
+
+The bundled `Outfit` typeface (`app/src/main/res/font/outfit.ttf`) is copyright The Outfit Project Authors
+([Outfit-Fonts](https://github.com/Outfitio/Outfit-Fonts)) and licensed under the SIL Open Font License 1.1; see
+[`FONT-LICENSE-OFL.txt`](FONT-LICENSE-OFL.txt).
+
 ## Build and install
 
 JDK 17 and Android SDK 34, as for the launcher. From the repo root:
