@@ -62,6 +62,29 @@
 # - The real Home button returned to the launcher with HOME_KEY_SERVICE=1.
 # - Closing ADB: revoking the USB debugging authorisations, switching off the Developer options master switch and
 #   rebooting closed 5555 (tools/adb-closed.py: refused), as on the third set.
+#
+# Fifth verified set (PI.1727 unit, one session on 19 Nov 2026, reboot-checked but not yet in daily use, reported
+# in #4194): the 39 packages it sent are all lines this list already carries, except the four kept commented out
+# below that the owner turned off by choice - voice (katniss, pumpkin), Chromecast (mediashell) and Mi Cast
+# (milinkservice). No line below was added or re-enabled for this set. Notes from that unit:
+# - Not installed on PI.1727: com.dazn, Google Duo, Red Bull TV and the TCL browser, the same four missing on
+#   PI.1241 (the fourth set); tools/disable.sh reports those lines and goes on.
+# - Left enabled: setupwraith (it owned the saved Wi-Fi network, as on the fourth set), com.google.android.tv
+#   (tools/disable.sh found the TV-input intent handlers and skipped it; no HANDLERS_ALLOW override), mitv.service
+#   (that set's settings app is Google's, so the #1310 freeze was not seen there) and partnercustomizer, which is
+#   commented out here by default.
+# - The three stock screensavers were disabled only after selecting the launcher's ClockDream and setting
+#   screensaver_enabled=1. The clock choice was confirmed; an idle screensaver session was not.
+# - Removing the recommendation and voice packages left the stock Home black for a moment; it came back on its
+#   own and the owner confirmed the normal screen. No restart was needed.
+# - HOME_KEY_SERVICE=1 was used and the physical Home button returned to the launcher, before and after a reboot.
+#   That remote's keycode was not captured, so this set says nothing about ALL_APPS versus HOME.
+# - After a sync, a 40 s wait (the fourth set's advice) and a reboot, tools/check.py found all 39 still disabled
+#   and Home resolving to com.gathin.tvhome/.MainActivity.
+# - Closing ADB: revoking the USB-debugging authorisations, switching off USB debugging and the Developer options
+#   master switch, then rebooting, left 5555 refusing (tools/adb-closed.py), as on the third set.
+# The reporter calls this an initial variant report and plans a persistence check after several days of use, so
+# the 39 are a one-session readback rather than a soak test, and no OTA cycle was run (the updater stayed on).
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
