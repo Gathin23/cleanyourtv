@@ -1,0 +1,62 @@
+# Epson EF-21 laser projector (SDMC-built, model HB35, device himalaya, MediaTek m7332), 1.8 GB RAM,
+# Google TV 14 (API 34), firmware UKNV.260904.001, UI at 1920x1080 (no display override).
+# Fingerprint: EPSON/SMFR3/himalaya:14/UKNV.260904.001/16266903:user/release-keys
+# Same SDMC himalaya board as examples/benq-gv32; this list starts from that one.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/epson-ef21/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/epson-ef21/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. HOME claimants on stock: launcherx,
+# com.google.android.tungsten.setupwraith/.RecoveryActivity and com.android.tv.settings/.system.FallbackHome.
+#
+# KEEP, even though some names look like bloat (roles as on the BenQ GV32, same board):
+# - com.sdmc.kt: auto focus, keystone, zoom, rotation.
+# - com.sdmc.btservice: Bluetooth remote pairing. com.sdmc.remotecontrolservice: the remote's input method.
+#   com.sdmc.service: power events and global buttons.
+# - fusion.android.tv.demo ("retail display"): handles the remote's Input key.
+# - com.mediatek.wwtv.setupwizard, com.mediatek.tvinput, com.mediatek.tv.service, com.google.android.tv.inputplayer.
+# - com.sdmc.implayer (USB media player): asks for TV_INPUT_HARDWARE, so disable.sh skips it.
+# - Factory/test packages: com.dangs.factorytest, com.sdmc.sdmcfactory, com.sdmc.keyburn, mediatek.factorymenu.ui.
+#   Never launch them, not even to look.
+# - com.epson.projector.update: Epson's firmware updater, left enabled.
+# - com.ref.devicedataexport: shares the system uid; one activity (launcher entry and the TV Settings action
+#   com.android.tv.settings.action.DEVICE_DATA_EXPORT), no service, no boot receiver, found stopped.
+#   An on-demand export tool, left alone.
+#
+# Notes from this unit:
+# - Network ADB on port 5555 opened with USB debugging alone; no pairing needed.
+# - Launcher: HOME takeover works once setupwraith is disabled; power-on lands on com.gathin.tvhome.
+# - Remote: Home, Back, volume, D-pad, Input and the Prime Video button keep working without launcherx.
+#   The Settings (gear) button goes dead with launcherx; Settings stays reachable from the launcher's
+#   Settings pill. HOME_KEY_SERVICE was left off to keep held-key repeat (see examples/benq-gv32).
+#   docs/devices/epson-ef21-settings-key.md brings the gear back without a key helper.
+#   The YouTube and Netflix buttons do nothing if you uncomment those apps below.
+# - Reboot-checked: everything listed stays disabled, Home survives, Wi-Fi stays connected.
+
+# Batch 1: telemetry, ads and partner plumbing
+com.android.adservices.api              # Android ad services (Topics, attribution)
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup         # Google partner attribution pings
+com.mstar.android.tv.disclaimercustomization   # setup-only disclaimer screen
+
+# Batch 2: preloaded apps and features (owner's choice: no voice assistant, no casting)
+com.google.android.play.games
+# This set has YouTube, YouTube Music and Netflix off; uncomment them if you don't use them.
+# com.google.android.youtube.tv         # owner uses another YouTube client
+# com.google.android.youtube.tvmusic
+# com.netflix.ninja
+com.google.android.katniss              # Google Assistant / Gemini, voice search
+com.google.android.apps.mediashell      # Chromecast built-in
+com.google.android.apps.tv.dreamx       # Google ambient screensaver; the launcher's Clock screensaver replaces it
+
+# Batch 3: Google extras not needed on this projector
+com.google.android.syncadapters.calendar   # Google Calendar sync
+com.google.android.marvin.talkback      # screen reader; comment out if you need it
+com.google.android.tts                  # Google text-to-speech, used by TalkBack and voice
+
+# Batch 4: launcher handover. setupwraith's RecoveryActivity claims HOME behind launcherx and would take Home
+# once launcherx is off. Forget the Wi-Fi network and join it again in Settings first (owner becomes
+# android.uid.system), or disabling it deletes the network.
+com.google.android.tungsten.setupwraith
