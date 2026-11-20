@@ -109,7 +109,8 @@ final class WallpaperPlayer {
         File first = WallpaperRotation.find(playable, previous);
         if (first == null) first = WallpaperRotation.pick(playable, previous, order, random);
         while (first != null) {
-            Bitmap bitmap = decode(first);
+            boolean[] broken = {false};
+            Bitmap bitmap = decode(first, broken);
             if (bitmap != null) {
                 show(bitmap);
                 // The picture covers the whole screen: the root's plain colour under it is overdraw.
@@ -122,6 +123,9 @@ final class WallpaperPlayer {
                 }
                 return;
             }
+            // Out of memory for now (Home rebuilt behind a busy app): keep every picture, show the plain colour, and
+            // let update() try again when Home is on screen. Only a file that can never show leaves the rotation.
+            if (!broken[0]) return;
             files.remove(first);   // unreadable or over 4K: try another, or keep the plain colour
             playable = playable();
             first = WallpaperRotation.pick(playable, previous, order, random);
@@ -179,7 +183,8 @@ final class WallpaperPlayer {
         File next = selected;
         loading = true;
         decoder.execute(() -> {
-            Bitmap bitmap = decode(next);
+            boolean[] broken = {false};
+            Bitmap bitmap = decode(next, broken);
             root.post(() -> {
                 loading = false;
                 if (closed || !active) {
@@ -187,6 +192,13 @@ final class WallpaperPlayer {
                     return;
                 }
                 if (bitmap == null) {
+                    if (!broken[0]) {
+                        // Short of memory, not a bad file: keep it, and the next update() (Home's return, the
+                        // minute tick) tries again. Dropping it here emptied the rotation for good, leaving Home
+                        // black until the launcher restarted.
+                        Log.w("TvHome.Wallpaper", "Could not decode " + next.getName() + " now; will retry");
+                        return;
+                    }
                     files.remove(next);
                     Log.w("TvHome.Wallpaper", "Skipping unreadable image: " + next.getName());
                     update();
@@ -275,15 +287,22 @@ final class WallpaperPlayer {
         if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
     }
 
-    private Bitmap decode(File file) {
+    /** The picture at screen size, or null; {@code broken[0]} is set when the file itself can never show. */
+    private Bitmap decode(File file, boolean[] broken) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(file.getPath(), options);
             int width = options.outWidth, height = options.outHeight;
-            if (width <= 0 || height <= 0) return null;
+            if (width <= 0 || height <= 0 || !file.isFile()) {
+                broken[0] = true;
+                return null;
+            }
             int sample = WallpaperSize.sampleSize(width, height, this.width, this.height);
-            if (!WallpaperSize.accepted(width / sample, height / sample)) return null;
+            if (!WallpaperSize.accepted(width / sample, height / sample)) {
+                broken[0] = true;
+                return null;
+            }
             options.inJustDecodeBounds = false;
             options.inSampleSize = sample;
             int[] scale = WallpaperSize.coverScale(width / sample, height / sample, this.width, this.height);
