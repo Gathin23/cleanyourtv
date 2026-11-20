@@ -29,6 +29,11 @@
 #   (commented out below as optional choices).
 # - 12 additional candidate packages tested on this unit are commented out at the bottom
 #   (ttvs is the updater on some TCL sets, so left commented out for second-unit users).
+# - Remote key helpers (such as HOME_KEY_SERVICE=1): the TV firmware applies the volume key before
+#   the accessibility filter. With consume_volume_keys=false (the default), the key helper passes
+#   the key back unconsumed and Android processes it a second time (double volume step on every tap).
+#   Setting "consume_volume_keys": true in config.xml or a theme's config.json resolves this by
+#   swallowing the duplicate event while preserving smooth held repeat.
 #
 # --- The critical entry: TCL re-enables promo packages on reboot
 com.tcl.overseasappshow                 # factory promo/app-show service, re-enables partner packages
