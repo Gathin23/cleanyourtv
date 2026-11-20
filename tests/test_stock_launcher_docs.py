@@ -1,8 +1,8 @@
 """The README names every stock launcher the install scripts will disable.
 
 `launcher/build-and-install.sh` and its PowerShell twin only disable a stock launcher they recognise:
-`KNOWN_STOCK_LAUNCHERS` holds four packages (Android TV's `tvlauncher`, Google TV's `launcherx`, the
-older `leanbacklauncher` and Xiaomi's PatchWall `com.mitv.tvhome`). Anything else stops the script and
+`KNOWN_STOCK_LAUNCHERS` holds five packages (Android TV's `tvlauncher`, Google TV's `launcherx`, the
+older `leanbacklauncher`, Xiaomi's PatchWall `com.mitv.tvhome` and Amlogic's `com.droidlogic.mboxlauncher`). Anything else stops the script and
 asks for `STOCK_LAUNCHER=<package>`, which is what the README's "How the scripts protect Home" block
 tells an owner to expect.
 
