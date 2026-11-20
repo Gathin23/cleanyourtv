@@ -734,6 +734,14 @@ def value_as(key, item, text):
         # stringList() trims every entry it keeps, so the file holds what the TV reads.
         return [entry.strip() for entry in parsed or []]
     cell = (item.get("type") or "").strip()
+    if cell == "list of package names":
+        # Config.stringList() drops non-strings and strings empty after Java trim().
+        # Refuse before writing or pushing, rather than reporting a partly applied list.
+        # Java trim() removes only characters up to U+0020, unlike Python str.strip().
+        for index, entry in enumerate(parsed, 1):
+            if not isinstance(entry, str) or not entry.strip("".join(map(chr, range(33)))):
+                sys.exit(f"{key} takes {cell}, but entry {index} is not a non-empty string. "
+                         f"Config.stringList() would drop it. Nothing was written or pushed.")
     if cell.startswith(PAIR_CELLS):
         problem = package_pair_problem(parsed)
         if problem:
