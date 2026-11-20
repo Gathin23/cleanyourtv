@@ -36,9 +36,10 @@ TV_HOST=<tv ip> tools/tv.py 'appops set <package> AUTO_START allow; appops write
 TV_HOST=<tv ip> tools/tv.py 'logcat -d' | grep TclAppBootInfo     # which apps were refused, and why
 ```
 
-The owner also keeps Chromecast, AirPlay, Miracast, YouTube Music and the game bar (`com.tcl.gamebar`, for a PS5:
-with the six above as in the table, Game Master still turned on for the PS5 and the game bar opened over it), which
-`debloat.txt` turns off by its first owner's choice. Samsung's Smart View mirrors through Miracast
+The owner also keeps Chromecast, AirPlay, Miracast and the game bar (`com.tcl.gamebar`, for a PS5: with the six
+above as in the table, Game Master still turned on for the PS5 and the game bar opened over it), which `debloat.txt`
+turns off by its first owner's choice. YouTube Music is off here too: on this firmware it only opened the YouTube
+app's Music tab. Samsung's Smart View mirrors through Miracast
 (`com.tcl.miracast`): switched off for a test, the TV was gone from Smart View, and Google Home's "Cast my screen"
 did not mirror instead. Beyond `debloat.txt`, this list turns off MediaTek's telemetry
 (`com.mediatek.backgrounddetection`), TCL's silent partner-app installer (`com.tcl.smartlink.core`), MediaTek's
