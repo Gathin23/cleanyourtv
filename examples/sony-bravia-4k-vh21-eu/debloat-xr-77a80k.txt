@@ -1,0 +1,85 @@
+# Sony BRAVIA 4K VH21 (XR-77A80K, 2022 OLED, device BRAVIA_VH21, MediaTek mt5895), EU firmware, Netherlands
+# Android 12 (Google TV, API 31), build BRAVIA_VH21_EU-user 12 STT2.230505.001.S136 682241, 3 GB RAM
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh21-eu/debloat-xr-77a80k.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh21-eu/debloat-xr-77a80k.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# A second unit of the same device and build as debloat.txt (XR-55A80K): everything in debloat.txt's header
+# about what to keep, the stock launcher, the Live TV app and setupwraith's Wi-Fi network holds here too.
+# This list differs by choice: it keeps the Google Assistant, DLNA, text-to-speech and Prime Video, and goes
+# further into Sony's own extras (support, promos, the B2B / hotel-mode stack) and a few Google leftovers.
+# The factory-disabled EU preloads (ARD, All 4, ITV, My5, iPlayer, YouView, HD+, Sounds) are not listed.
+# Kept on purpose: com.sony.dtv.sonybugreportsys (another BRAVIA list found that disabling it breaks USB
+# Ethernet, #3608), and com.sony.dtv.webapi.core for Home Assistant's Sony Bravia integration.
+# Chromecast built-in and the default media receiver tested OK with setupwraith disabled.
+#
+# Remote: confirms debloat.txt's note. The Disney+ button (scancode 491) was remapped for a while with
+# app_keys scan:491:<package> and HOME_KEY_SERVICE=1, and worked; held volume still ramps as stock. Once,
+# right after HomeKeyService was first enabled, the real remote's volume (a soundbar over HDMI-CEC eARC)
+# stopped responding; switching the service off and on again fixed it and it has not come back since.
+# If volume dies with the helper on, try that first.
+#
+# Applied in two batches, 5 and 14 November 2026, each reboot-checked (Home, Inputs, casting, the remote's
+# app buttons, the Sony web API). In daily use since with launcher 3.4 to 3.6. If something breaks,
+# `pm enable <package>` and please report it.
+
+# ACR viewing tracker
+tv.samba.ssm                      # Samba TV fingerprints what's on screen
+tv.samba.ssm.ui
+
+# telemetry and remote support
+com.sonyericsson.idd.agent        # Sony IDD usage-data agent
+com.sony.dtv.usercontext          # user context providers, boot receiver only
+com.qterics.da.product            # Qterics device agent
+com.sony.dtv.da.service           # remote-support session service
+com.sony.dtv.customersupport      # Sony support app
+com.google.android.feedback
+
+# Sony ads, recommendations and silent installs
+com.sony.dtv.sonyselect           # Sony Select app recommendations
+com.sony.dtv.promos               # promotional tiles
+com.sony.dtv.sonytab              # Sony's own tab in the Google TV launcher
+android.autoinstalls.config.sony.bravia  # pushes partner apps onto the set
+
+# demo / shop mode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# B2B / hotel mode (unused on a home set; softap and vendorprotocol came disabled from the factory)
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntimeextension.bpk
+com.sony.dtv.b2b.noderuntimeextension.node_20_11_1
+
+# Google leftovers
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.android.printspooler          # no printing on a TV; no CEC side effect here with a soundbar on eARC (cf. #3504)
+
+# preloaded apps (off by choice)
+com.google.android.videos         # Google TV movies (loses access to purchases in it)
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.apple.atve.sony.appletv
+com.sonypicturescore              # Sony Pictures Core
+com.vewd.core.service             # Vewd
+com.vewd.core.integration.dia
+nl.rtl.videoland.v2               # Dutch preload
+com.kpn.kpnandroidtv              # Dutch preload, KPN TV
+# nl.nos.app                      # Dutch preload; disabled once, found enabled again later, left on
+# com.disney.disneyplus           # disabled at first, re-enabled by choice
+
+# features not used (off by choice)
+com.sony.dtv.hbbtvplayer          # HbbTV / red button
+com.uei.quicksetsdk.sony          # UEI QuickSet: IR control of cable boxes/soundbars; HDMI-CEC unaffected
+com.sony.dtv.gestureapp           # BRAVIA CAM gestures (no camera attached)
+
+# Google TV setup wizard: with launcherx disabled its RecoveryActivity takes Home. Re-enable before a
+# factory reset. Forget and re-join the setup Wi-Fi first (see debloat.txt).
+com.google.android.tungsten.setupwraith
