@@ -154,8 +154,17 @@ printf '%s\n' \
   "pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted" \
   "cmd package compile -m speed -f com.gathin.tvhome" \
   "$DISABLE_STOCK" \
-  "cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity" \
   | "$PY" -I ../tools/tv.py --batch
+
+# set-home-activity on its own, so its result is read: our launcher is a HOME candidate whenever it
+# is installed, so the chooser check below cannot tell a successful switch from a failed one on its
+# own (#4068). `cmd package set-home-activity` prints "Success" when the preference took; anything
+# else (a SecurityException, "Failure", an empty answer from a dropped link) means it did not.
+SET_HOME_OUT=$("$PY" -I ../tools/tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>/dev/null || true)
+case "$SET_HOME_OUT" in
+  *Success*) SET_HOME_OK=yes ;;
+  *) SET_HOME_OK=no ;;
+esac
 
 # Home's owner, or an empty string when the TV cannot be reached (pipefail would otherwise make a
 # lost connection abort the script with no explanation).
@@ -197,6 +206,22 @@ rollback_home() {
 # system_server (see examples/xiaomi-tv-a-pro-2026). So check where Home ended up, and put the
 # stock launcher back if it is not ours.
 HOME_NOW=$(query_home)
+# A second launcher (e.g. Projectivy at HOME priority 0) can keep claiming Home, so with no user
+# default resolve-activity answers with Android's chooser ("android") even though set-home-activity
+# succeeded. That is a correct handover, not a failure, as long as our launcher is a HOME claimant;
+# rolling back there undid a good state on a Haier MatrixTV EE (#4068). But our launcher is a HOME
+# candidate whenever it is installed, so "ours is a claimant" alone would also accept a chooser left
+# by a set-home-activity that did not take. Keep the handover only when set-home-activity answered
+# Success (SET_HOME_OK above) and our launcher is among the claimants; otherwise fall through to the
+# rollback below.
+if [ "$HOME_NOW" = android ] && [ "$SET_HOME_OK" = yes ]; then
+  CLAIMANTS=$("$PY" -I ../tools/tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
+    | tr -d '\r' | grep -o '[A-Za-z0-9_.]*/' | tr -d / | sort -u)
+  if printf '%s\n' "$CLAIMANTS" | grep -qx com.gathin.tvhome; then
+    HOME_NOW=com.gathin.tvhome/chooser
+    echo "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
+  fi
+fi
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
   *)

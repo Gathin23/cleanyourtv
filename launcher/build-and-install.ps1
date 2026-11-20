@@ -111,12 +111,18 @@ if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m
 @(
     'pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted',
     'cmd package compile -m speed -f com.gathin.tvhome',
-    $disableStock,
-    'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
+    $disableStock
 ) | & $py -I ..\tools\tv.py --batch
 # A failed batch is not fatal here: the stock launcher may already be disabled, so fall through to the
 # Home check, which rolls back when Home is not ours.
 if ($LASTEXITCODE -ne 0) { Write-Warning "tv.py --batch failed (exit code $LASTEXITCODE); checking where Home ended up" }
+
+# set-home-activity on its own, so its result is read (build-and-install.sh does the same): our
+# launcher is a HOME candidate whenever it is installed, so the chooser check below cannot tell a
+# switch that took from one that did not on its own (#4068). It prints "Success" when the preference
+# took; anything else means it did not.
+$setHomeOut = (& $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>$null) -join "`n"
+$setHomeOk = ($LASTEXITCODE -eq 0 -and $setHomeOut -match 'Success')
 
 $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 # Home's owner, or '' when the TV cannot be reached: $null.Trim() would throw past the rollback.
@@ -160,6 +166,16 @@ function Undo-Handover {
 # Order matters, see build-and-install.sh: start the new launcher, disable the stock one, set the
 # preference last, then check where Home ended up and put the stock launcher back if it is not ours.
 $homeNow = Get-HomeNow
+# A second launcher (e.g. Projectivy) can keep claiming Home, so resolve-activity answers with the
+# chooser ("android") even though set-home-activity took. Keep the handover only when set-home-activity
+# reported Success and our launcher is among the claimants; otherwise fall through to the rollback (#4068).
+if ($homeNow -eq 'android' -and $setHomeOk) {
+    $claimants = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
+    if ($claimants -match 'com\.gathin\.tvhome/') {
+        $homeNow = 'com.gathin.tvhome/chooser'
+        Write-Host "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
+    }
+}
 if ($homeNow -notlike 'com.gathin.tvhome/*') {
     $reason = if ($homeNow) { "Home resolves to '$homeNow', not to the new launcher" } else { 'the TV stopped answering while Home was being switched, so the outcome is unknown' }
     $restored = Undo-Handover
