@@ -14,10 +14,12 @@
 3. Push it to a real TV with `TV_HOST=<tv ip> tools/theme.sh themes/<name>` and take `screenshot.jpg` of
    Home with the focus on the dock: a JPEG at 1280x720 (16:9), at most 300 KB. Not a mock-up, not an
    emulator. `tests/test_themes.py` fails without it.
-4. Add a row to the table in `themes/README.md` showing the screenshot, like the others. Two sentences the
-   neighbours' rows carry are read back by `tests/test_theme_row_claims.py`: a rotation ("a new one every
-   20 minutes") against that theme's `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT")
-   against its `CREDITS.md`, which the folder then has to ship.
+4. Add a row to the table in `themes/README.md` showing the screenshot, like the others. Three things the
+   neighbours' rows carry are read back by `tests/test_theme_row_claims.py`: a column count and the grid
+   rows under the dock ("six columns", "no grid rows below") against that theme's `columns` and
+   `rows_below_dock`, a rotation ("a new one every 20 minutes") against its
+   `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT") against its `CREDITS.md`, which the
+   folder then has to ship.
 5. Bump the count in the Themes feature row of every front page that states it: today `README.md` ("`N ship
    in themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`,
    `README.he.md`, `README.uz.md`, `README.fr.md` and `README.es.md` (the last six in digits), each in its own words; the ten are
