@@ -87,6 +87,17 @@ def fake_pillow():
 
 
 class HighlightTest(unittest.TestCase):
+    def test_unnamed_slices_keep_their_time_and_nested_highlight_accounting(self):
+        q = fake_trace()
+        q("update slice set name = NULL where id = 2")
+        rows = flamechart.lanes(q, PKG, ["main"], 0, 2000 * MS)[0][1]
+        # TrackEvent's name is optional: Perfetto exposes an omitted name as SQL NULL.
+        self.assertEqual([row["id"] for row in rows], [1, 2, 3, 4, 5])
+        total, hit = flamechart.highlighted(rows, re.compile("^inflate$"), 0, 2000 * MS)
+        self.assertEqual((total, hit), (10, {3}))
+        total, hit = flamechart.highlighted(rows, re.compile(".*"), 0, 2000 * MS)
+        self.assertEqual((total, hit), (55, {1, 2, 3, 4, 5}))
+
     def test_nested_work_is_counted_once_and_drawn_magenta(self):
         q = fake_trace()
         rows = flamechart.lanes(q, PKG, ["main"], 0, 2000 * MS)[0][1]
@@ -591,6 +602,20 @@ class InputPanelsTest(unittest.TestCase):
 
 @unittest.skipUnless(importlib.util.find_spec("PIL"), "drawing needs Pillow (tools/requirements-perf.txt)")
 class DrawTest(unittest.TestCase):
+    def test_draws_a_trace_with_an_unnamed_slice_as_well_as_named_work(self):
+        from PIL import Image
+        q = fake_trace()
+        q("update slice set name = NULL where id = 2")
+        panel = {"label": "Run", "note": "", "t0": 1000 * MS, "t1": 1065 * MS,
+                 "lanes": flamechart.lanes(q, PKG, ["main", "RenderThread"], 1000 * MS, 1065 * MS)}
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp, "chart.png")
+            size = flamechart.draw([panel], re.compile("^inflate$"), "t", "s", out)
+            with Image.open(out) as image:
+                self.assertEqual(image.size, size)
+                self.assertEqual(image.format, "PNG")
+                image.verify()
+
     def test_main_reports_a_written_unicode_path_on_limited_and_utf8_consoles(self):
         from PIL import Image
         with tempfile.TemporaryDirectory() as tmp:
