@@ -54,28 +54,38 @@ if [ -n "${HOST_KEY_DIR:-}" ]; then
   KEY_DIR=/key
 fi
 
-# Always x86-64, on an Apple Silicon Mac or an ARM board too: the Linux AAPT2 the Android Gradle plugin downloads
-# is published for x86-64 only, so an arm64 image stops at :app:mergeReleaseResources minutes in (#2941). Docker
-# Desktop runs it under Rosetta or QEMU; on an x86-64 computer the flag changes nothing.
-PLATFORM=linux/amd64
-if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
-  echo "Building the $IMAGE image once (JDK 17, Android SDK 34, build-tools 34.0.0; a few minutes)..."
-  docker build --platform "$PLATFORM" -t "$IMAGE" "$ROOT/tools/docker"
-fi
-
 # Git Bash on Windows rewrites /paths in arguments and gives POSIX paths Docker can't mount.
 SRC="$ROOT"
 USER_ARGS=()
 case "$(uname -s)" in
-  MINGW* | MSYS* | CYGWIN*)
+  MINGW* | MSYS*)
     export MSYS_NO_PATHCONV=1
     SRC="$(cd "$ROOT" && pwd -W)"
+    ;;
+  CYGWIN*)
+    # Cygwin's Bash has no pwd -W. Convert every host path passed to native Docker,
+    # including the first build's context and an optional native signing-key folder.
+    SRC="$(cygpath -m "$ROOT")"
+    if [ -n "${HOST_KEY_DIR:-}" ]; then
+      KEY_SOURCE="$(cygpath -m "$HOST_KEY_DIR")"
+      KEY_ARGS=(-v "$KEY_SOURCE:/key")
+    fi
     ;;
   *)
     # The caller's uid, so the build output is not owned by root.
     USER_ARGS=(--user "$(id -u):$(id -g)")
     ;;
 esac
+
+# Always x86-64, on an Apple Silicon Mac or an ARM board too: the Linux AAPT2 the Android Gradle plugin downloads
+# is published for x86-64 only, so an arm64 image stops at :app:mergeReleaseResources minutes in (#2941). Docker
+# Desktop runs it under Rosetta or QEMU; on an x86-64 computer the flag changes nothing.
+PLATFORM=linux/amd64
+if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  echo "Building the $IMAGE image once (JDK 17, Android SDK 34, build-tools 34.0.0; a few minutes)..."
+  docker build --platform "$PLATFORM" -t "$IMAGE" "$SRC/tools/docker"
+fi
+
 # The whole repository is mounted: an add-on's gradlew may call ../../launcher/gradlew.
 docker run --rm --platform "$PLATFORM" ${USER_ARGS[@]+"${USER_ARGS[@]}"} ${KEY_ARGS[@]+"${KEY_ARGS[@]}"} \
   -v "$SRC:/repo" -v "$GRADLE_VOLUME:/gradle" -w "/repo/$PROJECT" \
