@@ -4,7 +4,10 @@
 
 1. Add a row `| Outlet | [Headline](<url>) | Date |` to the right country section of `docs/PRESS.md`, in the
    headline's own language. The link must open and show the article: no syndicated copies, no auto-generated
-   listings, nothing that cannot be checked.
+   listings, nothing that cannot be checked. One row per article: an outlet often publishes its own short link
+   to an article it already lists (`?p=<id>` on WordPress sites, `?cod=<id>`, `/article<id>.html`), and a second
+   row for that address counts one article twice - a short link redirects to the permalink, so put the
+   permalink in the row that is already there.
 2. Update the counts in every place `tests/test_press_counts.py` checks: the `docs/PRESS.md` intro line, its
    index line, the card's alt text in every `README*.md` that shows `docs/card.jpg` - today `README.md` ("and N
    more: N articles from N countries"), the Dutch `README.nl.md` ("nog N media: N artikelen uit N landen") and
