@@ -2,7 +2,7 @@
 
 Bu sayfa, bu fork'un GitHub Releases sayfasındaki hazır APK'yı bilgisayar ve ADB kullanmadan bir Android TV veya Google TV'ye kurmayı anlatır. Tek APK tüm bu cihazlar için aynıdır.
 
-Uygulama TV'de **Ana Ekran** adıyla görünür (TV İngilizceyse **Home**). Paket adı `com.gathin.tvhome`.
+Uygulama TV'de **CleanYourTV** adıyla görünür. Paket adı `com.gathin.tvhome`. Erişilebilirlik ayarlarındaki yardımcının adı **Ana ekran tuşu**'dur (TV İngilizceyse **Home button**).
 
 ## Önce bilmen gerekenler
 
@@ -44,8 +44,8 @@ Kurulum bitince bu izni tekrar kapatabilirsin.
 ### Klasik Android TV (Sony, Philips, Mi Box, çoğu Android TV)
 
 1. Kumandada Home tuşuna bas.
-2. Hangi ana ekranın kullanılacağı sorulursa **Ana Ekran**'ı seç, sonra **Her zaman**'a bas.
-3. Soru gelmezse: Ayarlar > Uygulamalar > Varsayılan uygulamalar > Ana ekran uygulaması (menü adı markaya göre değişir) > Ana Ekran.
+2. Hangi ana ekranın kullanılacağı sorulursa **CleanYourTV**'yi seç, sonra **Her zaman**'a bas.
+3. Soru gelmezse: Ayarlar > Uygulamalar > Varsayılan uygulamalar > Ana ekran uygulaması (menü adı markaya göre değişir) > CleanYourTV.
 4. Stok ana ekran yine de geri geliyorsa aşağıdaki Google TV adımındaki erişilebilirlik ayarını da aç.
 
 ### Google TV (Google TV Streamer, Chromecast with Google TV, Google TV'li televizyonlar)
@@ -69,7 +69,7 @@ Google TV ana ekran seçtirmez. Bunun yerine uygulamanın erişilebilirlik yard�
 
 1. Ayarlar > Erişilebilirlik > **Ana ekran tuşu**'nu kapat (açtıysan).
 2. Klasik Android TV'de: Ayarlar > Uygulamalar > Varsayılan uygulamalar > Ana ekran uygulaması > stok ana ekranı seç.
-3. Ayarlar > Uygulamalar > **Ana Ekran** > Kaldır.
+3. Ayarlar > Uygulamalar > **CleanYourTV** > Kaldır.
 
 Home tuşu hemen eski ana ekrana döner. Başka hiçbir şey değişmemiş olur.
 
