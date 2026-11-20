@@ -113,6 +113,24 @@
 #   Alexa (installed on this unit), Chromecast, Miracast, MagiConnect and the firmware updater. Long-term use
 #   was not tested.
 #
+# Reported 2026-11-17 for a TCL 55P61B in Spain (product G07_4K_GB_NF, board rtd2851a, Android 11 / SDK 30,
+# build RP1A.200622.001 incremental AR07, software V8-R51AT01-LF1V138, security patch 2025-12-05, 2 GB, es-ES
+# and Europe/Madrid, #2519). The owner applied their own 43-package
+# selection rather than this file, so this is a record of the model, not a list to run:
+# - 27 of the 43 are lines this file already carries, and com.tcl.suspension is one it keeps on purpose.
+# - Three more are in the DO NOT DISABLE block below: com.tcl.initsetup, com.tcl.keyhelp and
+#   com.tcl.factory.view. The report does not say whether the Input key's source panel or the remote's key
+#   help still worked with them off.
+# - The rest are not in this file: six AOSP extras (talkback, printspooler, wallpaper.livepicker, deskclock,
+#   providers.calendar, providers.contacts), the two this file leaves enabled as unclear (com.tcl.micmanager,
+#   com.google.android.apps.nbu.smartconnect.tv), the three it records as already off at the factory on other
+#   units (au.com.stan.and, tv.wuaki.apptv, com.tcl.smartalexa) and launcherx, which the install script
+#   disables itself. The report does not name the launcher that was Home on that set.
+# - One app was uninstalled for user 0 (tv.easyplay.android) rather than disabled. Nothing here uninstalls:
+#   tools/restore.sh enables what a list disabled, so an uninstall is outside what its Undo can put back.
+# - The set had a 23-day uptime, 72 boots in total, so nothing here says the packages survived a reboot: the
+#   AR07 units above were re-enabled at boot for com.tcl.notereminder and com.tcl.usercenter.
+#
 # DO NOT DISABLE: com.tcl.tv (Live TV, HDMI playback), com.tcl.tvinput (tuner, HDMI and AV inputs),
 # com.tcl.suspension (Quick Panel, also the Input key's source panel), com.tcl.keyhelp (remote virtual keys),
 # com.tcl.autopair, com.google.android.tv.remote.service, com.tcl.inputmethod.international (the keyboard),
