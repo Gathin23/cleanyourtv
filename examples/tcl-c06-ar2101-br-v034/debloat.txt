@@ -1,0 +1,59 @@
+# TCL C06 / "Smart TV" / TCL-LA-MT9221-01 (TV+ OS), Brazil.
+# Android TV 11 (SDK 30), build AR2101, software V8-T221T01-LF1V034.000077,
+# TV+ OS V5.2.0 (V8-2203260-MF1V520), MediaTek MT9221, 1280x720, ~940 MB RAM.
+#
+# Apply:   TV_HOST=192.168.0.6 tools/disable.sh examples/tcl-c06-ar2101-br-v034/debloat.txt
+# Undo:    TV_HOST=192.168.0.6 tools/restore.sh examples/tcl-c06-ar2101-br-v034/debloat.txt
+# Everything is DISABLED with pm disable-user --user 0, never uninstalled.
+#
+# Kept on purpose (do not add): com.tcl.tv, com.tcl.tvinput, com.tcl.autopair,
+# com.tcl.tcl_bt_rcu_service, com.tcl.keyhelp, com.tcl.suspension, com.tcl.t_solo,
+# com.tcl.system.server, com.tcl.factory.view (the last two are PERSISTENT),
+# com.tcl.guard (PERSISTENT on this unit), com.tcl.settings, com.tcl.providers.config,
+# com.tcl.initsetup, com.tcl.dashboard, com.tcl.messagebox, com.tcl.partnercustomizer
+# (TKey button), com.tcl.rc.ota, com.tcl.ui_mediaCenter + the three TCL media players,
+# com.google.android.apps.mediashell (Chromecast), com.google.android.gms/gsf,
+# com.google.android.tv.remote.service and com.google.android.tungsten.setupwraith
+# (owns the saved Wi-Fi network), plus the owner's apps: SmartTube, Downloader, CORE,
+# YouTube. com.google.android.tvlauncher is kept enabled through this list and disabled
+# by launcher/build-and-install.sh only after the new Home is running.
+#
+# com.tcl.ttvs is the firmware updater on this platform and is KEPT by owner choice.
+# com.tcl.usercenter and com.tcl.smartalexa are re-enabled at boot on this firmware;
+# they are listed because they do get disabled, but they come back after a reboot.
+# com.google.android.tvrecommendations is already disabled at the factory (Leanback
+# Core Services on this chipset - do not re-enable or touch).
+#
+# Applied in three waves with screenshots and a Chromecast check (port 8009, mediashell
+# and gms alive) after each, then sync, 60 s wait and one reboot. One session of a few
+# hours, not a several-day test. After the reboot 27 of these 29 packages stayed off:
+# usercenter and smartalexa came back, as on the Brazilian unit in tcl-40s5400a.
+# esticker was re-disabled after a sideload test re-enabled it.
+#
+# The built-in Wi-Fi is damaged (water), so all work ran over built-in Ethernet.
+# A USB Wi-Fi dongle was tested dead on a PC; the TV did not enumerate it either.
+# Private DNS (dns.adguard-dns.com, hostname mode) was enabled as an extra.
+# Neither power_on_home nor power_on_home_always could keep Home in front at boot;
+# the firmware opens com.tcl.tv a couple of seconds later. The owner chose to accept
+# that and press Home. The launcher theme hides the TCL and Alexa tiles. See README.md.
+
+# --- Batch 1: TCL account, promos and content
+com.tcl.usercenter
+com.tcl.waterfall.overseas
+com.tcl.esticker
+com.tcl.useragreement
+com.tcl.copydatatotv
+android.autoinstalls.config.tcl.device
+
+# --- Batch 2: voice (owner does not use it)
+com.tcl.micmanager
+com.tcl.smartalexa
+com.google.android.tv.assistant
+
+# --- Batch 3: Google extras and duplicate WebView
+# com.google.android.feedback  # already disabled at the factory; left as-is
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.tcl.android.webview
+com.google.android.apps.nbu.smartconnect.tv

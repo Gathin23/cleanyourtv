@@ -1,0 +1,5 @@
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.tcl.android.webview
+com.google.android.apps.nbu.smartconnect.tv
