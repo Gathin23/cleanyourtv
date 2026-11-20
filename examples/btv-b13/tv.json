@@ -1,0 +1,6 @@
+{
+  "tv": "BTV B13 (ohm, Amlogic/Droidlogic), streaming box",
+  "os": "Android 11",
+  "brand": "BTV",
+  "notes": "ADB on port 5188; `com.live.evo` disabled, and the vendor installer `com.bb.ota` puts it back when removed (kept on here); voice search kept; 3 packages"
+}
