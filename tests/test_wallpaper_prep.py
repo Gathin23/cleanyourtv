@@ -3,6 +3,7 @@ import importlib.util
 import contextlib
 import io
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -19,9 +20,117 @@ try:
 except ImportError:  # the tool needs Pillow; the rest of the repo does not
     Image = None
 
+try:
+    from PIL import ImageCms, features
+    HAVE_CMS = features.check("littlecms2")
+except ImportError:
+    HAVE_CMS = False
+
 
 def make_photo(path, size=(400, 300), colour=(220, 200, 180)):
     Image.new("RGB", size, colour).save(path)
+
+
+def swapped_primaries_profile():
+    """An RGB test profile that describes red samples as blue, generated without a profile asset."""
+    profile = bytearray(ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes())
+    tags = {}
+    for index in range(int.from_bytes(profile[128:132], "big")):
+        entry = 132 + 12 * index
+        tags[bytes(profile[entry:entry + 4])] = (
+            int.from_bytes(profile[entry + 4:entry + 8], "big"),
+            int.from_bytes(profile[entry + 8:entry + 12], "big"))
+    # Matrix RGB profiles store each primary in an XYZ tag. Exchanging the two complete
+    # tags makes the expected colour change unambiguous while leaving a valid ICC profile.
+    red, red_size = tags[b"rXYZ"]
+    blue, blue_size = tags[b"bXYZ"]
+    assert red_size == blue_size
+    profile[red:red + red_size], profile[blue:blue + blue_size] = (
+        profile[blue:blue + blue_size], profile[red:red + red_size])
+    return bytes(profile)
+
+
+@unittest.skipUnless(HAVE_CMS, "Pillow with LittleCMS is needed for colour profiles")
+class ColourProfileTest(unittest.TestCase):
+    def test_missing_colour_management_warns_and_still_writes_the_photo(self):
+        script = ROOT / "tools" / "wallpaper_prep.py"
+        # ImageCms can import successfully without its native core and defer ImportError
+        # until profile parsing, so exercise both missing-module shapes in fresh processes.
+        for missing in ("PIL.ImageCms", "PIL._imagingcms"):
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as tmp:
+                source, output = Path(tmp, "photos"), Path(tmp, "out")
+                source.mkdir()
+                photo = source / "a.png"
+                Image.new("RGB", (64, 36), (220, 40, 20)).save(
+                    photo, icc_profile=swapped_primaries_profile())
+                original = photo.read_bytes()
+                code = ("import runpy,sys; missing,tool=sys.argv[1:3]; "
+                        "sys.modules[missing]=None; sys.argv=sys.argv[2:]; "
+                        "runpy.run_path(tool,run_name='__main__')")
+                result = subprocess.run([sys.executable, "-c", code, missing, str(script), str(source),
+                                         str(output), "--size", "64x36", "--brightness", "1", "--gradient", "0"],
+                                        capture_output=True, text=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+                self.assertIn("1 of 1 pictures written", result.stdout)
+                self.assertIn("warning:", result.stderr)
+                self.assertIn("LittleCMS", result.stderr)
+                with Image.open(output / "01.jpg") as image:
+                    red, green, blue = image.getpixel((32, 18))
+                self.assertGreater(red, 200)
+                self.assertLess(blue, 30)
+                self.assertEqual(photo.read_bytes(), original)
+
+    def test_embedded_rgb_profiles_are_applied_before_darkening(self):
+        for mode, suffix in (("RGB", ".png"), ("RGBA", ".png"), ("P", ".png"), ("RGB", ".jpg")):
+            with self.subTest(mode=mode, suffix=suffix), tempfile.TemporaryDirectory() as tmp:
+                source, output = Path(tmp, "photo" + suffix), Path(tmp, "wallpaper.jpg")
+                photo = Image.new("RGB", (64, 36), (220, 40, 20))
+                # Keep the exact sample in palette mode, rather than quantizing to the web palette.
+                photo = photo.quantize(colors=1) if mode == "P" else photo.convert(mode)
+                photo.save(source, icc_profile=swapped_primaries_profile())
+                original = source.read_bytes()
+                prep.prepare(str(source), str(output), (64, 36), 0.5, 0, 95, 300)
+                with Image.open(output) as image:
+                    red, green, blue = image.getpixel((32, 18))
+                    self.assertEqual((image.format, image.size), ("JPEG", (64, 36)))
+                # The profile swaps red/blue; brightness then halves those sRGB values.
+                for actual, expected in zip((red, green, blue), (10, 20, 110)):
+                    self.assertAlmostEqual(actual, expected, delta=3)
+                self.assertEqual(source.read_bytes(), original)
+
+    def test_profile_conversion_keeps_the_exif_rotation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source, output = Path(tmp, "photo.png"), Path(tmp, "wallpaper.jpg")
+            image = Image.new("RGB", (40, 60), (220, 40, 20))
+            image.paste((20, 220, 40), (0, 30, 40, 60))
+            exif = image.getexif()
+            exif[274] = 6  # 90 degrees clockwise: green on the left, profiled blue on the right.
+            image.save(source, exif=exif, icc_profile=swapped_primaries_profile())
+            prep.prepare(str(source), str(output), (60, 40), 1, 0, 95, 300)
+            with Image.open(output) as result:
+                left, right = result.getpixel((10, 20)), result.getpixel((50, 20))
+            self.assertGreater(left[1], 200)
+            self.assertGreater(right[2], 200)
+            self.assertLess(right[0], 30)
+
+    def test_a_bad_profile_preserves_an_earlier_wallpaper_and_does_not_stop_other_photos(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source, output = Path(tmp, "photos"), Path(tmp, "out")
+            source.mkdir()
+            output.mkdir()
+            make_photo(source / "b.png")
+            Image.new("RGB", (64, 36), "red").save(source / "a.png", icc_profile=b"not an ICC profile")
+            old = output / "01.jpg"
+            old.write_bytes(b"previous wallpaper")
+            log = io.StringIO()
+            with contextlib.redirect_stdout(log):
+                self.assertEqual(prep.main([str(source), str(output), "--size", "64x36"]), 0)
+            self.assertEqual(old.read_bytes(), b"previous wallpaper")
+            with Image.open(output / "02.jpg") as result:
+                self.assertEqual(result.size, (64, 36))
+            self.assertIn("skipped a.png:", log.getvalue())
+            self.assertIn("1 of 2 pictures written", log.getvalue())
+            self.assertEqual(sorted(p.name for p in output.iterdir()), ["01.jpg", "02.jpg"])
 
 
 class ParseSizeTest(unittest.TestCase):
