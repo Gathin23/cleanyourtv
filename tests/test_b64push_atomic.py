@@ -53,7 +53,7 @@ class Device:
             command = "echo 'QUJD' >>" + command.split(">>", 1)[1]
         # SELinux refusing rename(2) in /data/local/tmp while cp works, in toybox's words (#1588).
         if os.environ.get("FAKE_NO_RENAME") and command.startswith("mv "):
-            return "mv: bad '%s': Permission denied\n" % on_tv.split("'")[1]
+            return os.environ.get("FAKE_MOVE_REFUSAL") or "mv: bad '%s': Permission denied\n" % on_tv.split("'")[1]
         if os.environ.get("FAKE_NO_COPY") and command.startswith("cp "):
             return "cp: %s: Permission denied\n" % on_tv.split("'")[3]
         # A connection that drops while cp is writing: the target is cut short, then the transport raises.
@@ -223,6 +223,24 @@ class B64PushTest(TempDirTest):
         self.assertEqual(self.read("empty.txt"), b"")
         self.assertIn(hashlib.md5(b"").hexdigest(), result.stdout)
         self.assertEqual(sorted(p.name for p in self.remote_dir.iterdir()), ["empty.txt"])
+
+    def test_a_verified_copy_stays_successful_when_the_console_cannot_print_the_move_refusal(self):
+        data = b"the complete verified upload"
+        target = self.on_the_tv("file.apk")
+        refusal = "mv: \u62d2\u7edd\u8bbf\u95ee\n"
+        for encoding in ("utf-8:strict", "cp1252:strict", "ascii:strict"):
+            with self.subTest(encoding=encoding):
+                self.log.unlink(missing_ok=True)
+                result = self.push(str(self.local(data)), target, FAKE_NO_RENAME="1",
+                                   FAKE_MOVE_REFUSAL=refusal, PYTHONIOENCODING=encoding)
+                self.assertEqual(data, self.read("file.apk"))
+                self.assertEqual(["file.apk"], sorted(p.name for p in self.remote_dir.iterdir()))
+                self.assertTrue(any(c.startswith("cp -f ") for c in self.commands()))
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                self.assertIn(hashlib.md5(data).hexdigest(), result.stdout)
+                self.assertNotIn("Traceback", result.stderr)
+                if encoding == "utf-8:strict":
+                    self.assertIn(refusal.strip(), result.stdout)
 
     def test_a_refused_move_copies_the_verified_file_and_checks_it_again(self):
         # TCL ak30a5 on 20250610 refuses mv in /data/local/tmp, while cp works there (#1588).
