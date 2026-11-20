@@ -19,6 +19,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint edge = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rect = new RectF();
+    /** mac_dock: the small dot under the focused icon. */
+    private final Paint dot = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     /** Extra band below the tiles for their names (always_show_names), in px. */
     private final float namesRoom;
@@ -34,6 +36,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final boolean singleRow;
     /** dock_band_all: in a single row, the band runs behind every app instead of the dock apps only. */
     private final boolean bandAll;
+    /** mac_dock: the icons packed in the middle of the row, the band only around them. */
+    private final boolean mac;
 
     /**
      * @param translucent the cinematic shelf's band: the artwork and the glow show through it.
@@ -46,8 +50,9 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
      * @param bandAll     with singleRow, the band runs behind every app in the row (dock_band_all).
      */
     DockDecoration(int dockSize, float density, boolean translucent, boolean names, int opacity, boolean lightGlass,
-                   boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll) {
+                   boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll, boolean mac) {
         this.dockSize = dockSize;
+        this.mac = mac && !singleRow;
         this.singleRow = singleRow;
         this.bandAll = singleRow && bandAll;
         this.density = density;
@@ -56,6 +61,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.evenPadding = evenPadding;
         this.bandVisible = bandVisible;
         band.setColor(translucent ? 0x8C121014 : (Math.round(opacity * 2.55f) << 24) | 0x141416);
+        dot.setColor(0xE6FFFFFF);
         edge.setStyle(Paint.Style.STROKE);
         edge.setStrokeWidth(density);
         edge.setColor(lightGlass ? 0x38FFFFFF : translucent ? 0x26FFFFFF : 0x1FFFFFFF);
@@ -82,6 +88,14 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         if (pos >= 0 && (singleRow || pos < dockSize)) {
             outRect.top = (int) (6 * density);
             outRect.bottom = (int) (12 * density);
+            if (mac && pos < dockSize) {
+                // Shift the item sideways within its cell; the right inset cancels the left so its width stays a cell's.
+                int inner = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+                int side = view.findViewById(R.id.card).getLayoutParams().width;
+                int shift = MacDock.shiftPx(pos, dockSize, inner / (float) dockSize, MacDock.pitchPx(side));
+                outRect.left = shift;
+                outRect.right = -shift;
+            }
         }
     }
 
@@ -90,6 +104,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         if (!bandVisible) return;
         boolean any = false;
         int cardWidth = 0;
+        float dotX = Float.NaN;
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             int pos = parent.getChildAdapterPosition(child);
@@ -102,6 +117,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             float r = l + card.getWidth();
             float b = t + card.getHeight();
             cardWidth = card.getWidth();
+            if (mac && card.isFocused()) dotX = (l + r) / 2f;
             if (!any) {
                 rect.set(l, t, r, b);
                 any = true;
@@ -119,7 +135,12 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         float sidePad = 22 * density;
         float side = Math.max(0f, Math.min(sidePad, Math.min(rect.left, parent.getWidth() - rect.right) - density));
         float radius = AppAdapter.cornerRadius(cardWidth, density);
-        if (evenPadding) {
+        if (mac) {
+            // Snug around the icons, with corners concentric with theirs.
+            float even = cardWidth * 0.2f;
+            rect.inset(-even, -even);
+            radius = MacDock.radiusPx(cardWidth) + even;
+        } else if (evenPadding) {
             // The same padding on all four sides, so the band's corners are concentric with the tiles' everywhere.
             int inner = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
             // A single row's tiles can run off the screen, so only its top limits the padding; its ends are clamped below.
@@ -148,5 +169,9 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         }
         c.drawRoundRect(rect, radius, radius, band);
         c.drawRoundRect(rect, radius, radius, edge);
+        if (mac && !Float.isNaN(dotX)) {
+            // Halfway between the icons' bottom and the band's, as the macOS dock marks an app.
+            c.drawCircle(dotX, rect.bottom - cardWidth * 0.1f, 2.5f * density, dot);
+        }
     }
 }

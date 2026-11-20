@@ -30,6 +30,54 @@
         android:layout_height="match_parent"
         android:alpha="0" />
 
+    <!-- desktop: a lock-screen clock, the date over a large time, centred near the top. Hidden otherwise. -->
+    <LinearLayout
+        android:id="@+id/deskClock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="44dp"
+        android:visibility="gone">
+
+        <TextClock
+            android:id="@+id/deskDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="EEEE d MMMM"
+            android:format24Hour="EEEE d MMMM"
+            android:textColor="#E6FFFFFF"
+            android:textSize="22sp"
+            android:fontFamily="@string/font_medium"
+            android:shadowColor="#40000000"
+            android:shadowRadius="12" />
+
+        <TextClock
+            android:id="@+id/deskTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="h:mm"
+            android:format24Hour="HH:mm"
+            android:textColor="#F0F4F7F5"
+            android:textSize="150sp"
+            android:fontFamily="@string/font_medium"
+            android:letterSpacing="-0.01"
+            android:fontFeatureSettings="tnum"
+            android:includeFontPadding="false"
+            android:shadowColor="#59000000"
+            android:shadowRadius="36" />
+    </LinearLayout>
+
+    <!-- desktop: the wallpaper's foreground (a theme's depth.png), over the clock as on a phone's lock screen. -->
+    <ImageView
+        android:id="@+id/deskDepth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
     <!-- Race-weekend panel (a theme's race_calendar, see RaceWeekend): in the free space under the clock,
          shown only from shortly before a weekend's first session until the race is over. Updated once a
          minute with the clock, never animated. -->
@@ -371,6 +419,15 @@
                     android:visibility="gone"
                     android:contentDescription="@string/app_library"
                     android:drawableStart="@drawable/ic_apps_pill"
+                    android:nextFocusDown="@+id/grid" />
+
+                <!-- desktop: OK shows another wallpaper at random, hold OK lists them all to pick one. -->
+                <TextView
+                    android:id="@+id/btnWallpaper"
+                    style="@style/TopButtonIcon"
+                    android:visibility="gone"
+                    android:contentDescription="@string/wallpaper_label"
+                    android:drawableStart="@drawable/ic_wallpaper"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView

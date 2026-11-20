@@ -66,7 +66,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static final class Entry {
-        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3;
+        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3, ALL_APPS = 4;
 
         final int kind;
         final String label;
@@ -218,6 +218,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Map<String, String> appLabels, appBanners;
     /** Every app tile is its icon on a card tinted from that icon, never its banner (config.xml, uniform_tiles). */
     private final boolean uniformTiles;
+    /** config.xml mac_dock: the dock as square icons in a compact band, see MacDock. */
+    private final boolean macDock;
+    /** config.xml desktop: Home holds the dock apps alone, then an All apps icon. */
+    private final boolean desktop;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     private final List<Entry> items = new ArrayList<>();
@@ -248,6 +252,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         this.uniformTiles = cfg.uniformTiles;
+        this.macDock = cfg.macDock;
+        this.desktop = cfg.desktop;
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -304,7 +310,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             // The icon is only drawn (and sampled for the glow) when there is no banner, so a tile with a
             // banner skips loading and decoding it.
-            Drawable icon = banner == null ? ri.loadIcon(pm) : null;
+            Drawable icon = banner == null || macDock ? ri.loadIcon(pm) : null;
             if (card != null) {
                 fresh.add(new Entry(Entry.CARD, label, component, banner, icon, card.caption, card.accent));
             } else {
@@ -333,9 +339,18 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
                     ctx.getDrawable(R.drawable.ic_home_settings), null, 0));
         }
+        if (desktop) {
+            // The desktop shows the dock apps alone; every other app is in All apps, the dock's last icon.
+            fresh.removeIf(x -> !favourites.contains(x.pkg));
+            while (fresh.size() > dockSize - 1) fresh.remove(fresh.size() - 1);
+            Entry all = new Entry(Entry.ALL_APPS, ctx.getString(R.string.app_library),
+                    new ComponentName(ctx, "all-apps"), null, ctx.getDrawable(R.drawable.ic_all_apps), null, 0xFF8E8E93);
+            all.backdrop = new int[]{0xFF4A4E57, 0xFF26282E};
+            fresh.add(all);
+        }
         docked = 0;
         while (docked < fresh.size() && isDocked(fresh.get(docked))) docked++;
-        emptySlots = dockRow && !reordering ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
+        emptySlots = dockRow && !reordering && !desktop ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
         for (int i = 0; i < emptySlots; i++) {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
@@ -452,7 +467,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        Holder holder = new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        holder.baseW = w;
+        holder.baseH = h;
+        holder.baseNameTop = nameLp.topMargin;
+        ViewGroup.LayoutParams iconLp = holder.icon.getLayoutParams();
+        holder.baseIcon = iconLp.width;
+        holder.baseIconBottom = ((FrameLayout.LayoutParams) iconLp).bottomMargin;
+        return holder;
     }
 
     @Override
@@ -478,24 +500,28 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
         // In a single row every tile is the dock's kind: the big title above names it.
         boolean dockKind = DockSlots.inDockRow(dockRow, singleRow, position, dockSize);
-        h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
+        boolean mac = macDock && dockKind;
+        h.name.setVisibility(dockKind && restNameAlpha == 0f && !mac ? View.INVISIBLE : View.VISIBLE);
         h.inDock = dockKind;
+        h.mac = mac;
+        sizeTile(h, mac);
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
-        h.name.setAlpha(focused ? 1f : restNameAlpha);
-        h.card.setScaleX(focused && animations ? focusScale() : 1f);
-        h.card.setScaleY(focused && animations ? focusScale() : 1f);
+        h.name.setAlpha(focused ? 1f : mac ? 0f : restNameAlpha);
+        float fs = focused && animations && !mac ? focusScale() : 1f;
+        h.card.setScaleX(fs);
+        h.card.setScaleY(fs);
         h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
-        h.card.setTranslationZ(focused && advancedEffects ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
+        h.card.setTranslationZ(focused && advancedEffects && !mac ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
         h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
         h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
         // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
-        if (uniformTiles && e.banner == null) {
+        if ((uniformTiles || mac) && (e.banner == null || mac)) {
             if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
             h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
         }
-        if (e.banner != null) {
+        if (e.banner != null && !mac) {
             h.icon.setImageDrawable(null);
             h.banner.setImageDrawable(e.banner);
             h.banner.setVisibility(View.VISIBLE);
@@ -507,7 +533,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.icon.setImageDrawable(e.icon);
             h.icon.setVisibility(View.VISIBLE);
             h.label.setText(e.label);
-            h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
+            h.label.setVisibility(uniformTiles || mac ? View.GONE : View.VISIBLE);
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
@@ -526,9 +552,41 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
+    /**
+     * mac_dock: a dock tile becomes a square icon with its name in a small label above it; any other tile (a recycled
+     * dock view included) gets back the size it was created with.
+     */
+    private void sizeTile(Holder h, boolean mac) {
+        if (!macDock) return;
+        float density = ctx.getResources().getDisplayMetrics().density;
+        int side = MacDock.iconPx(h.baseW);
+        ViewGroup.LayoutParams cl = h.card.getLayoutParams();
+        cl.width = mac ? side : h.baseW;
+        cl.height = mac ? side : h.baseH;
+        h.card.setLayoutParams(cl);
+        FrameLayout.LayoutParams il = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
+        il.width = il.height = mac ? Math.round(side * ICON_SHARE) : h.baseIcon;
+        il.bottomMargin = mac ? 0 : h.baseIconBottom;
+        h.icon.setLayoutParams(il);
+        ViewGroup.MarginLayoutParams nl = (ViewGroup.MarginLayoutParams) h.name.getLayoutParams();
+        nl.width = mac ? ViewGroup.LayoutParams.WRAP_CONTENT : h.baseW;
+        // A small label just above the icon, clear of the band's top edge, as the macOS dock names an app.
+        nl.topMargin = mac ? -Math.round(38 * density) : h.baseNameTop;
+        h.name.setLayoutParams(nl);
+        int pad = mac ? Math.round(10 * density) : 0;
+        h.name.setPadding(pad, 0, pad, 0);
+        h.name.setBackgroundResource(mac ? R.drawable.pill_bg : 0);
+        if (mac) h.name.setTranslationY(0f);
+        h.card.invalidateOutline();
+    }
+
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
     @SuppressWarnings("deprecation")
     private void launch(Entry e) {
+        if (e.kind == Entry.ALL_APPS) {
+            listener.onLibraryRequested();
+            return;
+        }
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -697,7 +755,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * The colour covering most of an icon, for a card that should read as that app: a small saturated badge
      * (a red "new" corner on a blue icon) must not win, as it can with {@link #vividColor}. Grey if none.
      */
-    private static int dominantColor(Drawable live) {
+    static int dominantColor(Drawable live) {
         if (live == null) return 0xFF6E6E73;
         Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
         Rect saved = new Rect(d.getBounds());
@@ -742,7 +800,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * square), the card takes that colour, so the mark reads as filling the tile as on tvOS. Otherwise a
      * gradient of the icon's main colour, deepened so the mark stands out. The card clips the corners.
      */
-    private static int[] backdrop(Drawable live, int fallback) {
+    static int[] backdrop(Drawable live, int fallback) {
         int[] plate = iconPlate(live);
         if (plate != null) return plate;
         float[] hsv = new float[3];
@@ -916,6 +974,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final boolean overshoot;
         /** A dock tile: it grows in place without advanced_effects' lift, which reads as off-centre in the band (#2135). */
         boolean inDock;
+        /** mac_dock: this tile is a dock icon, marked by a dot and a label instead of a zoom. */
+        boolean mac;
+        /** The sizes the tile was created with, restored when a mac_dock icon view is recycled into the grid. */
+        int baseW, baseH, baseNameTop, baseIcon, baseIconBottom;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
                boolean reducedMotion, float restNameAlpha, boolean overshoot) {
@@ -937,7 +999,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void getOutline(View view, Outline outline) {
                     // 16dp at the design width, scaled down with the tile so small tiles keep the same shape.
-                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(),
+                            mac ? MacDock.radiusPx(view.getWidth()) : cornerRadius(view.getWidth(), density));
                 }
             });
             card.setClipToOutline(true);
@@ -956,7 +1019,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 name.animate().cancel();
                 float scale = !animations ? 1f : advancedEffects ? 1.12f : 1.10f;
                 float s = focused ? scale : 1f;
-                if (!animations) {
+                if (mac) {
+                    // Nothing moves: the label shows over the icon and DockDecoration draws the dot under it.
+                    View rv = (View) itemView.getParent();
+                    if (rv != null) rv.invalidate();
+                    if (animations && !reducedMotion) name.animate().alpha(focused ? 1f : 0f).setDuration(160).start();
+                    else name.setAlpha(focused ? 1f : 0f);
+                } else if (!animations) {
                     view.setScaleX(1f);
                     view.setScaleY(1f);
                     view.setTranslationY(0f);

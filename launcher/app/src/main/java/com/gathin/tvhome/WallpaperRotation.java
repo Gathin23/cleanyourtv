@@ -40,6 +40,15 @@ final class WallpaperRotation {
         return null;
     }
 
+    /** A choice that rotates through one category of the collection: "category:ocean" keeps ocean--*.jpg. */
+    static final String CHOICE_CATEGORY = "category:";
+
+    /** The category a collection picture belongs to, from its name: "ocean--golden-coast.jpg" is "ocean"; "" if none. */
+    static String category(String fileName) {
+        int sep = fileName.indexOf("--");
+        return sep > 0 ? fileName.substring(0, sep) : "";
+    }
+
     /** The on-TV choice (Launcher settings, Wallpaper) that turns the wallpaper off. */
     static final String CHOICE_NONE = "none";
 
@@ -51,6 +60,12 @@ final class WallpaperRotation {
     static List<File> chosen(List<File> collection, File single, String choice) {
         if (choice == null) return null;
         if (CHOICE_NONE.equals(choice)) return Collections.emptyList();
+        if (choice.startsWith(CHOICE_CATEGORY)) {
+            String wanted = choice.substring(CHOICE_CATEGORY.length());
+            List<File> inCategory = new ArrayList<>();
+            for (File image : collection) if (category(image.getName()).equals(wanted)) inCategory.add(image);
+            return inCategory.isEmpty() ? null : inCategory;
+        }
         File picked = find(collection, choice);
         if (picked == null && single != null && choice.equals(single.getName())) picked = single;
         return picked == null ? null : Collections.singletonList(picked);

@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 /** Displays and rotates a theme's local wallpaper images while Home is visible. */
 final class WallpaperPlayer {
@@ -52,6 +53,9 @@ final class WallpaperPlayer {
     private boolean closed;
     private boolean loading;
     private String displayed = "";
+    /** The picture on screen (null while none is), and who wants to know when it changes (desktop's depth layer). */
+    private File shownFile;
+    private Consumer<File> onShown;
     /** wallpaper_captions: the shown picture's name from wallpapers/captions.txt; null when off or there are none. */
     private final TextView caption;
     private final Map<String, String> names;
@@ -115,6 +119,7 @@ final class WallpaperPlayer {
                 // The picture covers the whole screen: the root's plain colour under it is overdraw.
                 root.setBackground(null);
                 displayed = first.getName();
+                shown(first);
                 showCaption(false);
                 if (!displayed.equals(previous)) {
                     preferences.edit().putString("image", displayed)
@@ -145,6 +150,7 @@ final class WallpaperPlayer {
         // let Android reclaim its native buffer after rendering releases it instead of recycling it mid-frame.
         current = null;
         displayed = "";
+        shown(null);
         root.setBackgroundColor(backgroundColor);
     }
 
@@ -194,6 +200,7 @@ final class WallpaperPlayer {
                 }
                 show(bitmap);
                 displayed = next.getName();
+                shown(next);
                 showCaption(true);
                 if (!displayed.equals(previous) || changed == 0) {
                     preferences.edit().putString("image", displayed)
@@ -263,6 +270,25 @@ final class WallpaperPlayer {
         StringBuilder key = new StringBuilder();
         for (File file : images) key.append(file.getName()).append(':').append(file.length()).append(';');
         return key.toString();
+    }
+
+    /** desktop's wallpaper button: another picture from the collection now; the rotation carries on from it. */
+    boolean shuffle() {
+        if (files.size() < 2) return false;
+        preferences.edit().putLong("changed", 0).apply();
+        update();
+        return true;
+    }
+
+    /** Called with the picture now on screen at once, and again each time it changes (null: none). */
+    void setOnShown(Consumer<File> listener) {
+        onShown = listener;
+        if (listener != null) listener.accept(shownFile);
+    }
+
+    private void shown(File file) {
+        shownFile = file;
+        if (onShown != null) onShown.accept(file);
     }
 
     /** Puts a picture on screen and releases the previous one after a frame has drawn the new one. */

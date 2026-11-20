@@ -18,6 +18,7 @@ import android.content.pm.ChangedPackages;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -69,6 +70,7 @@ import android.widget.RelativeLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
@@ -178,6 +180,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ValueAnimator ambientAnimator;
     /** config.xml glow_snap: the glow takes a new colour in one frame instead of the dip-and-fade. */
     private boolean glowSnap;
+    /** config.xml mac_dock: the dock's icons magnify instead of taking the glass highlight. */
+    private boolean macDock;
+    /** config.xml desktop: centred clock, dock apps alone, All apps opens AppsOverlay. */
+    private boolean desktop;
+    private Set<String> desktopHidden;
+    private AppsOverlay appsOverlay;
     private boolean heroShown;
     private boolean animations;
     private boolean advancedEffects;
@@ -524,6 +532,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambient.forceHasOverlappingRendering(false);
         ambientGlow = cfg.ambientGlow;
         glowSnap = cfg.glowSnap;
+        macDock = cfg.macDock;
         appGlow = cfg.appGlow;
         if (!ambientGlow) ambient.setVisibility(View.GONE);
         heroName = findViewById(R.id.heroName);
@@ -689,7 +698,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
         if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
-                singleRow, cfg.dockBandAll));
+                singleRow, cfg.dockBandAll, cfg.macDock));
         if (cfg.fadeRows) TopFade.attach(grid, 48 * density);
         // Reduced motion: the tiles are simply there, with no entrance (reloadApps skips it there too).
         if (animations && !reducedMotion) {
@@ -726,6 +735,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // A single row never shows the names under its tiles (the title above the row names the app), so the
             // 7dp gap and 22dp label item_app.xml keeps for them would only lift the row: sit it that much lower.
             if (singleRow && !cfg.alwaysShowNames) want += (int) (29 * density);
+            // desktop: the dock's names sit above its icons, so the room kept for them below goes to the dock instead.
+            if (cfg.desktop) want += (int) (30 * density);
             if (grid.getPaddingTop() != want) {
                 grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
                 // A vertical grid parks the dock on the new padding line by scrolling (onTileFocused); a sideways
@@ -897,6 +908,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return true;
         });
 
+        if (cfg.desktop) applyDesktop(cfg);
+
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
@@ -1055,6 +1068,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (appsOverlay != null && intent != null && intent.hasCategory(Intent.CATEGORY_HOME)) appsOverlay.close();
         if (openLauncherSettingsIfAsked(intent)) return;
         if (openLibraryIfAsked(intent)) return;
         if (openInputsIfAsked(intent)) return;
@@ -1774,6 +1788,178 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
     }
 
+    /**
+     * desktop: the left header (greeting, clock, date) gives way to the centred lock-screen clock, the theme's
+     * depth.png goes over it, and the top-bar buttons shrink into the top-right corner.
+     */
+    private void applyDesktop(Config cfg) {
+        desktop = true;
+        desktopHidden = new HashSet<>(cfg.hiddenApps);
+        clockBlock.setVisibility(View.GONE);
+        findViewById(R.id.deskClock).setVisibility(View.VISIBLE);
+        if (wallpaperPlayer != null) wallpaperPlayer.setOnShown(this::showDepth);
+        View buttons = findViewById(R.id.topButtons);
+        View column = (View) buttons.getParent().getParent();
+        int side = Math.round(28 * density);
+        column.setPadding(side, Math.round(14 * density), side, column.getPaddingBottom());
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) buttons.getLayoutParams();
+        lp.removeRule(RelativeLayout.ALIGN_BOTTOM);
+        lp.removeRule(RelativeLayout.ALIGN_TOP);
+        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        lp.bottomMargin = 0;
+        buttons.setLayoutParams(lp);
+        buttons.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            v.setPivotX(r - l);
+            v.setPivotY(0);
+        });
+        buttons.setScaleX(0.78f);
+        buttons.setScaleY(0.78f);
+        View wallpaperButton = findViewById(R.id.btnWallpaper);
+        wallpaperButton.setVisibility(View.VISIBLE);
+        // A pinned picture leaves nothing to shuffle through: OK then opens the list, where Rotate undoes the pin.
+        wallpaperButton.setOnClickListener(v -> {
+            if (wallpaperPlayer == null || !wallpaperPlayer.shuffle()) showWallpaperList();
+        });
+        wallpaperButton.setOnLongClickListener(v -> {
+            showWallpaperList();
+            return true;
+        });
+        // Back from a pick in the list (recreate): focus returns to this button once Home has placed its own.
+        if (getIntent().getBooleanExtra(EXTRA_FOCUS_WALLPAPER, false)) {
+            getIntent().removeExtra(EXTRA_FOCUS_WALLPAPER);
+            wallpaperButton.postDelayed(wallpaperButton::requestFocus, 600);
+        }
+    }
+
+    private static final String EXTRA_FOCUS_WALLPAPER = "com.gathin.tvhome.extra.FOCUS_WALLPAPER";
+
+    /**
+     * desktop: the wallpaper list, by category first. The collection's files are named category--name.jpg; Rotate
+     * through all, or a category with its count, which opens that category's pictures.
+     */
+    private void showWallpaperList() {
+        File dir = Config.dir(this);
+        List<File> images = WallpaperRotation.images(dir == null ? null : new File(dir, "wallpapers"));
+        if (images.isEmpty()) return;
+        SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        String current = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
+        List<String> categories = new ArrayList<>();
+        Map<String, Integer> counts = new HashMap<>();
+        for (File image : images) {
+            String category = WallpaperRotation.category(image.getName());
+            if (!counts.containsKey(category)) categories.add(category);
+            counts.merge(category, 1, Integer::sum);
+        }
+        String currentCategory = current == null ? null : current.startsWith(WallpaperRotation.CHOICE_CATEGORY)
+                ? current.substring(WallpaperRotation.CHOICE_CATEGORY.length()) : WallpaperRotation.category(current);
+        String[] labels = new String[categories.size() + 1];
+        labels[0] = getString(R.string.wallpaper_rotate_all);
+        int checked = 0;
+        for (int i = 0; i < categories.size(); i++) {
+            String category = categories.get(i);
+            labels[i + 1] = title(category.isEmpty() ? "more" : category) + "  \u00B7  " + counts.get(category);
+            if (category.equals(currentCategory)) checked = i + 1;
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle(R.string.wallpaper_label)
+                .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                    dialog.dismiss();
+                    if (which == 0) applyWallpaperChoice(null);
+                    else showWallpaperCategory(images, categories.get(which - 1), current);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    /** One category's pictures, after Rotate through that category; Back returns to the categories. */
+    private void showWallpaperCategory(List<File> images, String category, String current) {
+        List<File> inCategory = new ArrayList<>();
+        for (File image : images) if (WallpaperRotation.category(image.getName()).equals(category)) inCategory.add(image);
+        String name = title(category.isEmpty() ? "more" : category);
+        String[] labels = new String[inCategory.size() + 1];
+        labels[0] = getString(R.string.wallpaper_rotate_category, name);
+        int checked = (WallpaperRotation.CHOICE_CATEGORY + category).equals(current) ? 0 : -1;
+        for (int i = 0; i < inCategory.size(); i++) {
+            String file = inCategory.get(i).getName();
+            if (file.equals(current)) checked = i + 1;
+            String plain = file.replaceFirst("\\.[^.]+$", "");
+            labels[i + 1] = title(category.isEmpty() ? plain : plain.substring(category.length() + 2));
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle(name)
+                .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                    dialog.dismiss();
+                    applyWallpaperChoice(which == 0 ? WallpaperRotation.CHOICE_CATEGORY + category
+                            : inCategory.get(which - 1).getName());
+                })
+                .setNegativeButton(R.string.desk_back, (dialog, which) -> showWallpaperList())
+                .show();
+    }
+
+    /** null rotates through everything; otherwise one picture's name or a category: choice. Home starts again with it. */
+    private void applyWallpaperChoice(String choice) {
+        SharedPreferences.Editor edit = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE).edit();
+        if (choice == null) edit.remove(Config.WALLPAPER_CHOICE_KEY);
+        else edit.putString(Config.WALLPAPER_CHOICE_KEY, choice);
+        edit.apply();
+        getIntent().putExtra(EXTRA_FOCUS_WALLPAPER, true);
+        recreate();
+    }
+
+    /** "misty-morning" as "Misty morning". */
+    private static String title(String slug) {
+        String plain = slug.replace('-', ' ').replace('_', ' ').trim();
+        return plain.isEmpty() ? slug : Character.toUpperCase(plain.charAt(0)) + plain.substring(1);
+    }
+
+    /**
+     * desktop: the foreground of the wallpaper now on screen, drawn over the clock. A collection picture uses
+     * depth/<its name>.png and a single wallpaper.jpg uses depth.png; a picture without one shows no layer. Decoded off
+     * the main thread, as the wallpaper's own changes are.
+     */
+    private void showDepth(File wallpaper) {
+        ImageView view = findViewById(R.id.deskDepth);
+        File dir = Config.dir(this);
+        File depth = null;
+        if (wallpaper != null && dir != null) {
+            String name = wallpaper.getName();
+            int dot = name.lastIndexOf('.');
+            depth = Config.WALLPAPER_NAME.equals(name) ? new File(dir, "depth.png")
+                    : new File(new File(dir, "depth"), (dot > 0 ? name.substring(0, dot) : name) + ".png");
+        }
+        if (depth == null || !depth.isFile()) {
+            view.setImageDrawable(null);
+            view.setVisibility(View.GONE);
+            return;
+        }
+        File file = depth;
+        new Thread(() -> {
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+            runOnUiThread(() -> {
+                if (isDestroyed()) return;
+                view.setImageBitmap(bitmap);
+                view.setVisibility(bitmap != null ? View.VISIBLE : View.GONE);
+            });
+        }, "desk-depth").start();
+    }
+
+    private void openAppsOverlay() {
+        if (appsOverlay != null) return;
+        View back = getCurrentFocus();
+        // Like a desktop's app launcher: the clock, dock and buttons step back and only the wallpaper stays behind.
+        View[] desk = {findViewById(R.id.deskClock), findViewById(R.id.deskDepth),
+                (View) findViewById(R.id.topButtons).getParent().getParent()};
+        for (View v : desk) v.animate().alpha(0f).setDuration(160).start();
+        appsOverlay = new AppsOverlay(this, desktopHidden, () -> {
+            appsOverlay = null;
+            for (View v : desk) v.animate().alpha(1f).setDuration(160).start();
+            if (back != null && back.isAttachedToWindow()) back.requestFocus();
+        });
+        root.addView(appsOverlay, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        appsOverlay.show();
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
@@ -1785,6 +1971,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onLibraryRequested() {
+        if (desktop) {
+            openAppsOverlay();
+            return;
+        }
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
         libraryFocusPending = false;
@@ -1875,6 +2065,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             springX.animateToFinalPosition(x - glassScrollShiftX);
             springY.animateToFinalPosition(y - glassScrollShift);
+        }
+        if (macDock && position < COLUMNS) {
+            // mac_dock: the magnified icon is the focus; no glass slab over the dock.
+            glass.animate().cancel();
+            glass.setAlpha(0f);
+            glassShown = false;
         }
         View item = (View) card.getParent();
         if (dockRow && (singleRow || position < COLUMNS)) {
@@ -2729,7 +2925,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void updateClockVisibility() {
         boolean valid = System.currentTimeMillis() >= TIME_VALID_AFTER_MS;
-        clockBlock.setVisibility(valid ? View.VISIBLE : View.INVISIBLE);
+        // desktop: the centred clock is the one that waits for a valid time; the header block stays gone.
+        clockBlock.setVisibility(desktop ? View.GONE : valid ? View.VISIBLE : View.INVISIBLE);
+        if (desktop) findViewById(R.id.deskClock).setVisibility(valid ? View.VISIBLE : View.INVISIBLE);
         handler.removeCallbacks(clockCheck);
         if (valid) {
             updateGreeting();
