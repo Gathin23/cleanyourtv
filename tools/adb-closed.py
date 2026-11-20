@@ -26,16 +26,81 @@ keeps services of its own open whatever the debugging toggles say, the JointSpac
 (1926, or 1925 on older sets), casting and a web page among them. For those an open port says nothing
 about ADB, so the message names the port it checked and, to finish the step, the command that checks
 5555 itself.
+
+An open port is then asked whether it is ADB: the check sends ADB's opening CNXN message and reads the
+reply's header. adbd always answers one, with CNXN (this computer is already allowed), AUTH (it asks for a
+key) or STLS (the Wireless debugging port, before its TLS handshake), so any of those is network ADB on
+whatever port it was. A port that answers with anything else, or hangs up, is open but not ADB, and the
+message says so and names the check for 5555; it still exits 1, as any open port does, because only the TV's
+own refusal shows a port closed. A port that says nothing within the time, or that the greeting cannot reach,
+is judged by its number as before, since silence proves nothing either way. The check sends only the greeting,
+never a key, so it cannot bring up the TV's "Allow USB debugging?" prompt (#3890).
 """
 import errno
 import ipaddress
 import os
 import socket
+import struct
 import sys
 
 TIMEOUT_S = 3.0
 RELAY_PORT = 15555   # relay.py's default --port, the TV_PORT it tells the tools to use
 ADB_PORT = 5555      # where adbd listens by default: an open one of these is network ADB
+HANDSHAKE_S = 3.0    # how long an open port has to answer ADB's greeting
+
+# ADB's wire format: a 24-byte little-endian header (command, arg0, arg1, payload length, payload checksum,
+# command ^ 0xffffffff) and the payload. adbd answers a CNXN with one of these three, and only adbd does.
+A_CNXN, A_AUTH, A_STLS = 0x4E584E43, 0x48545541, 0x534C5453
+ADB_ANSWERS = {A_CNXN: "CNXN", A_AUTH: "AUTH", A_STLS: "STLS"}
+
+
+def greeting():
+    """The CNXN a host sends first: protocol version 1.0.0.1, 256 KiB max payload, banner host::."""
+    payload = b"host::\0"
+    return struct.pack("<6I", A_CNXN, 0x01000001, 256 * 1024, len(payload), sum(payload) & 0xFFFFFFFF,
+                       A_CNXN ^ 0xFFFFFFFF) + payload
+
+
+def adb_answer(header):
+    """The ADB command a 24-byte header carries (CNXN, AUTH or STLS), or None when it is not ADB's."""
+    if len(header) != 24:
+        return None
+    command, _, _, _, _, magic = struct.unpack("<6I", header)
+    if command in ADB_ANSWERS and magic == command ^ 0xFFFFFFFF:
+        return ADB_ANSWERS[command]
+    return None
+
+
+def ask_adb(sock):
+    """Greet an open port: ("adb", command), ("not adb", why) or ("unknown", why).
+
+    Silence is "unknown", not "not adb": a port that waits for more than this greeting could still be
+    anything, and a stand-in or a half-open socket that cannot send says nothing about the TV either.
+    """
+    header = b""
+    try:
+        sock.getpeername()   # a socket with no peer (a test's stand-in) has nothing to greet
+    except OSError as e:
+        return "unknown", f"the greeting could not be sent ({e})"
+    try:
+        sock.settimeout(HANDSHAKE_S)
+        sock.sendall(greeting())
+        while len(header) < 24:
+            chunk = sock.recv(24 - len(header))
+            if not chunk:
+                break
+            header += chunk
+    except socket.timeout:
+        return ("not adb", "it answered with something that is not ADB") if header else (
+            "unknown", f"it said nothing within {HANDSHAKE_S:.0f} s")
+    except OSError as e:
+        return "unknown", f"the greeting could not be sent ({e})"
+    command = adb_answer(header)
+    if command:
+        return "adb", command
+    if not header:
+        return "not adb", "it hung up on ADB's greeting"
+    return "not adb", "it answered with something that is not ADB"
 
 
 def this_computer(host):
@@ -178,9 +243,9 @@ def main():
     except (OSError, ValueError):
         pass
 
+    sock = None
     try:
-        with socket.create_connection((connect_host, port), timeout=TIMEOUT_S):
-            pass
+        sock = socket.create_connection((connect_host, port), timeout=TIMEOUT_S)
     except ConnectionRefusedError:
         if local:
             sys.stderr.write(f"could not check {host}:{port}: nothing listens there, which says nothing about "
@@ -231,6 +296,24 @@ def main():
     # belongs to a service the toggles do not touch: a Philips keeps its JointSpace API open on 1926 and
     # 1925 whatever they say (tools/philips-api.py reads it there), so saying "network ADB is on" for it
     # sent the owner of a 58PUS7304 hunting a setting that was already off (#3890).
+    # Then ask it. On this computer a relay answers for itself, so the answer is not the TV's: keep the
+    # relay's message there. Elsewhere an ADB reply settles "network ADB is on" for any port, and a reply
+    # that is not ADB says the port belongs to something else, so an owner whose TV keeps a service open is
+    # told so instead of hunting a setting that is already off (#3890). The exit code stays the open port's:
+    # only a refusal shows a port closed.
+    verdict, detail = ("unknown", "") if local else ask_adb(sock)
+    sock.close()
+    if verdict == "adb":
+        sys.stderr.write(f"{host}:{port} is still open, and it is network ADB: it answered ADB's greeting with "
+                         f"{detail}.\nOn the TV, turn USB debugging, Network/ADB debugging and Wireless debugging "
+                         "off and check again,\nthen reboot it and check 5555 once more.\n")
+        return 1
+    if verdict == "not adb":
+        sys.stderr.write(f"{host}:{port} is still open, but it is not ADB: {detail}. Network ADB is not on this "
+                         "port.\n")
+        if port != ADB_PORT:
+            sys.stderr.write(f"5555 is the ADB port: check it with  tools/adb-closed.py {host} 5555\n")
+        return 1
     sys.stderr.write(open_port_message(host, port, relay))
     return 1
 
