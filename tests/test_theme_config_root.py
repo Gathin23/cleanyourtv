@@ -6,6 +6,12 @@ a number, a string, `true`, `null` all throw there and the overlay is dropped, w
 config.json of that shape therefore replaces the theme the TV had with a file the launcher ignores, so the
 set goes back to its built-in config and the push ends "Theme X is on the TV. Undo with: theme.sh --reset".
 
+The same read has a second limit, and it was missing from both scripts as well: `file.length() > 64 * 1024`
+answers "no overlay" too. A theme of 70 KB - a long `app_labels` list, or `race_calendar` after a season of
+races, written by `tools/manage.py set` before #4174 taught it to refuse one - was pushed and reported as on
+the TV while Home kept the built-in config. `tools/manage.py` and `tools/race_calendar.py` now refuse to write
+past the limit; these tests hold the two scripts that push a hand-written file to the same number.
+
 These tests run the real tools/theme.sh against a stub tools/tv.py that records every call, so "nothing was
 sent to the TV" is what the stub not being called means.
 """
@@ -32,6 +38,12 @@ with open(os.environ["FAKE_LOG"], "a") as log:
 sys.stderr.write("stub tv.py: there is no TV in this test\n")
 sys.exit(1)
 '''
+
+
+def config_of_size(size):
+    """A config.json of exactly `size` bytes that is a JSON object the launcher would read."""
+    head, tail = '{"background_color": "#101418", "pad": "', '"}\n'
+    return head + "x" * (size - len(head) - len(tail)) + tail
 
 
 class ThemeConfigRootTest(unittest.TestCase):
@@ -99,7 +111,7 @@ class ThemeConfigRootTest(unittest.TestCase):
                 result = self.run_theme()
                 self.assertEqual(2, result.returncode, result.stdout + result.stderr)
                 self.assertIn("is not valid JSON", result.stderr, result.stderr)
-                self.assertNotIn("is not a JSON object", result.stderr)
+                self.assertNotIn("is not a JSON object", result.stderr, result.stderr)
                 self.assertEqual([], self.tv_calls())
 
     def test_an_empty_object_is_still_a_theme(self):
@@ -138,6 +150,44 @@ class ThemeConfigRootTest(unittest.TestCase):
         self.assertIn("themes/README.md", source)
         self.assertLess(source.index("is not a JSON object"), source.index("--push"),
                         "the Windows twin judges the file before it pushes it too")
+
+    def test_a_config_json_over_the_launchers_read_limit_is_refused(self):
+        """The other way Config.read() answers "no overlay": `file.length() > 64 * 1024`.
+
+        A 70 KB config.json is a valid object, so both scripts pushed it and answered "is on the TV" - while
+        the launcher logged "ignoring ...: larger than 64 KB" and the TV went back to its built-in config.
+        """
+        self.theme_with(config_of_size(65537))
+        result = self.run_theme()
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertIn("64 KB", result.stderr, result.stderr)
+        self.assertIn("65537", result.stderr, "the message names the size it measured, so the author can trim it")
+        self.assertIn(str(self.theme / "config.json"), result.stderr, "and the file it refused")
+        self.assertIn("themes/README.md", result.stderr, "and the page that says what a theme holds")
+        self.assertIn("Nothing was sent to the TV.", result.stderr)
+        self.assertEqual([], self.tv_calls(), "a file the launcher would ignore must not be pushed")
+        self.assertNotIn("is on the TV", result.stdout, "and it must not read as applied")
+
+    def test_a_config_json_of_exactly_64_kb_is_still_a_theme(self):
+        """The boundary the launcher keeps: `> 64 * 1024` is the refusal, so 65536 bytes still reads."""
+        self.theme_with(config_of_size(65536))
+        result = self.run_theme()
+        self.assertNotEqual(2, result.returncode, "64 KB exactly is a config the launcher reads, not a refusal")
+        self.assertNotIn("64 KB", result.stderr)
+        self.assertTrue(self.tv_calls(), "the theme is pushed")
+
+    def test_the_size_limit_is_the_launchers_own(self):
+        """Both scripts' 65536 has to be the number in Config.read(), or the tools refuse what Home reads."""
+        source = (ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome"
+                  / "Config.java").read_text(encoding="utf-8")
+        read = source[source.index("private static JSONObject read(File file)"):]
+        self.assertIn("if (file.length() > 64 * 1024) {", read,
+                      "Config.read() refuses a file over 64 KB; the tools' limit is this number")
+        for name in ("theme.sh", "theme.ps1"):
+            text = (TOOLS / name).read_text(encoding="utf-8")
+            self.assertIn("65536", text, f"{name} checks the launcher's 64 KB limit")
+            self.assertLess(text.index("65536"), text.index("--push"),
+                            f"{name} refuses the file before it pushes it")
 
 
 if __name__ == "__main__":
