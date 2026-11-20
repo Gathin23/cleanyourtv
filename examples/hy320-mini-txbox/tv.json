@@ -1,0 +1,6 @@
+{
+  "tv": "HY320 Mini projector (device rk3326_sgo, TXBox/Rockchip firmware), 1 GB, 720p",
+  "os": "Android 12",
+  "brand": "HY320",
+  "notes": "TXBox/Rockchip build of the HY320 Mini, not the Google-certified examples/hy320/ or the Allwinner/HTC examples/alwtniet-hy320-mini/: the TXBox store, OTA updater, ad-carrying voice UI, burn-in and factory test apps, a Brazilian IPTV portal, an owner-installed Chrome 79 and AOSP cruft off; `com.shzhtxcz.txbox` kept (settings suite; it reinstalls two of the disabled packages at boot, which is why the list disables rather than uninstalls); adbd runs on port 3268 with no Allow prompt from the first boot, so TV_PORT=3268 with every tool; `wm density 213` re-applied after each reboot; 19 packages; [notes](hy320-mini-txbox/README.md)"
+}
