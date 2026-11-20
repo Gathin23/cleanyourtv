@@ -28,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import manage  # noqa: E402
+import tables  # noqa: E402  the cell reader manage.show reads the switches page's screenshots with
 
 
 def pictures(item):
@@ -39,18 +40,18 @@ class ImgSrcsTest(unittest.TestCase):
     def test_it_reads_every_picture_of_a_row_in_the_order_the_page_draws_them(self):
         cell = ('<img src="switches/vpn_pill.jpg" width="320"> '
                 '<img src="switches/vpn_pill_rest.jpg" width="320">')
-        self.assertEqual(["switches/vpn_pill.jpg", "switches/vpn_pill_rest.jpg"], manage.img_srcs(cell))
+        self.assertEqual(["switches/vpn_pill.jpg", "switches/vpn_pill_rest.jpg"], tables.img_srcs(cell))
 
     def test_one_picture_reads_as_one(self):
-        self.assertEqual(["switches/dock_band.jpg"], manage.img_srcs('<img src="switches/dock_band.jpg">'))
+        self.assertEqual(["switches/dock_band.jpg"], tables.img_srcs('<img src="switches/dock_band.jpg">'))
 
     def test_an_img_without_a_src_keeps_its_place(self):
         cell = '<img src="switches/dock_band.jpg"> <img alt="no source">'
-        self.assertEqual(["switches/dock_band.jpg", ""], manage.img_srcs(cell))
+        self.assertEqual(["switches/dock_band.jpg", ""], tables.img_srcs(cell))
 
     def test_a_cell_with_no_picture_reads_as_none(self):
-        self.assertEqual([], manage.img_srcs("no picture here"))
-        self.assertEqual([], manage.img_srcs(""))
+        self.assertEqual([], tables.img_srcs("no picture here"))
+        self.assertEqual([], tables.img_srcs(""))
 
 
 class StandInTreeTest(unittest.TestCase):
@@ -124,7 +125,7 @@ class ShippedPageTest(unittest.TestCase):
             if len(cells) < 2:
                 continue
             keys = re.findall(r"`([a-z_]+)`", cells[0])
-            srcs = [s for s in manage.img_srcs(cells[1]) if s]
+            srcs = [s for s in tables.img_srcs(cells[1]) if s]
             for key in keys:
                 for src in srcs:
                     pairs.append((key, src))

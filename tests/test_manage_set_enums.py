@@ -24,6 +24,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import manage  # noqa: E402
+import tables  # noqa: E402  the one Markdown-table reader in the repo, which manage.py imports
 
 JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome"
 CONFIG_JAVA = JAVA / "Config.java"
@@ -48,9 +49,9 @@ def constants(source, prefix):
 def keys_row(key):
     """The Keys-table row of a key in themes/README.md, as (type cell, meaning cell)."""
     text = README.read_text(encoding="utf-8")
-    for row in manage.table_rows(text[text.index("## Keys"):], "| Key |"):
+    for row in tables.table_rows(text[text.index("## Keys"):], "| Key |"):
         if key in re.findall(r"`([a-z_]+)`", row[0]):
-            return (manage.plain(row[1]), manage.plain(row[2]))
+            return (tables.plain(row[1]), tables.plain(row[2]))
     return None
 
 
