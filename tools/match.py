@@ -35,7 +35,10 @@ def read_packages(path):
     """The package names in a saved `pm list packages` answer, sorted and without repeats.
 
     `package:<name>` lines are what pm prints; with -f the line is `package:<apk path>=<name>`. A bare
-    name on its own line is taken too, so a hand-trimmed file works.
+    name on its own line is taken too, so a hand-trimmed file works. `android` itself is the one name
+    that needs that: it is a package with no dot (the framework package, `package:android`), so the
+    name test below would not take it and its row - the `never` this tool promises for every core
+    package - would be missing from the table.
     """
     try:
         data = Path(path).read_bytes()
@@ -49,7 +52,9 @@ def read_packages(path):
         line = line.strip()
         if line.startswith("package:"):
             line = line[len("package:"):].rsplit("=", 1)[-1].strip()
-        if recovery.PACKAGE_RE.fullmatch(line):
+        # A name without a dot is taken only when disable.sh would refuse it anyway (the one such name
+        # in CORE_RE is `android`), so a stray word such as `Total` or `not_a_package` is still skipped.
+        if recovery.PACKAGE_RE.fullmatch(line) or recovery.CORE_RE.match(line):
             names.add(line)
     if not names:
         raise SystemExit(f"{path}: no package names in it: pass a saved `pm list packages`")
