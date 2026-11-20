@@ -44,7 +44,6 @@ final class ClockScene {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private View content;
-    private boolean floatingClock;
     private final ClockRefresh clockRefresh;
     private final ImageView ambient;
     private final GradientDrawable glow;
@@ -71,7 +70,7 @@ final class ClockScene {
     private final Runnable tick = new Runnable() {
         @Override
         public void run() {
-            if (!floatingClock) moveClock();
+            if (!(content instanceof FloatingClockView)) moveClock();
             shiftGlow();
             advanceWallpaper();
             handler.postDelayed(this, MOVE_MS);
@@ -100,7 +99,7 @@ final class ClockScene {
         });
         handler.removeCallbacks(tick);
         handler.postDelayed(tick, MOVE_MS);
-        if (!floatingClock) clockRefresh.start();
+        clockRefresh.start();
         if (wallpaperFile != null && !wallpaperShown) loadWallpaper();
     }
 
@@ -129,8 +128,7 @@ final class ClockScene {
         glowOff = !cfg.clockGlow;
         if (glowOff) ambient.setBackground(null);
         // floating_clock: replace the static TextClock layout with the full-screen floating digital clock.
-        if (cfg.floatingClock && !floatingClock) {
-            floatingClock = true;
+        if (cfg.floatingClock) {
             content.setVisibility(View.GONE);
             FloatingClockView view = new FloatingClockView(ctx);
             ((ViewGroup) content.getParent()).addView(view, -1, -1);
@@ -244,10 +242,6 @@ final class ClockScene {
 
     /** A random spot that keeps the whole clock on screen, with the glow centred behind it. */
     private void placeClock() {
-        if (floatingClock) {
-            glow.setGradientCenter(0.5f, 0.5f);
-            return;
-        }
         View parent = (View) content.getParent();
         int maxX = Math.max(0, parent.getWidth() - content.getWidth());
         int maxY = Math.max(0, parent.getHeight() - content.getHeight());
