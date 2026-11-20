@@ -1,6 +1,6 @@
 {
-  "tv": "TCL Smart TV Pro (G09, G09_4K_GB, Amlogic T5M, 2 GB), UK firmware, Brazil",
+  "tv": "TCL Smart TV Pro (G09, G09_4K_GB, Amlogic T5M, 2 GB), UK firmware, Brazil; also TCL 50P7K, Brazil (AS23)",
   "os": "Google TV 12",
   "brand": "TCL",
-  "notes": "TCL BI analytics, log upload, TIAS, TGuard, waterfall, TCL Live FAST channels, home-screen pushes, messages, store demo, hotel mode, partner auto-installs; Chromecast and USB media player off by choice; firmware updates come through Play Services, so ttvs can go; launcherx, setupwraith and dreamx off, reboot-checked; Input key works without InputKeyService; config.json has the dock"
+  "notes": "TCL BI analytics, log upload, TIAS, TGuard, waterfall, TCL Live FAST channels, home-screen pushes, messages, store demo, hotel mode, partner auto-installs; Chromecast and USB media player off by choice; firmware updates come through Play Services, so ttvs can go; launcherx, setupwraith and dreamx off, reboot-checked; Input key works without InputKeyService; config.json has the dock; `debloat-50p7k.txt` is a 50P7K on AS23 that keeps ttvs (its firmware updater there), with the gear mapped and volume_pauses_filter for a held-volume ramp"
 }
