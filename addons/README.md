@@ -117,7 +117,7 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install weather
 ## Rules
 
 - **Its own app.** One folder per add-on, `addons/<name>/`, with its own Gradle project
-  (`settings.gradle`, `app/`), its own package name and its own README.
+  (`settings.gradle` or `settings.gradle.kts`, `app/`), its own package name and its own README.
 - **Only through the module-card spec.** An add-on never edits anything under `launcher/`, and
   `launcher/` never references `addons/`. If your idea needs a change inside the launcher, it isn't
   an add-on. Open an issue first instead.
