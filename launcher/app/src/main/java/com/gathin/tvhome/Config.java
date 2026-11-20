@@ -682,8 +682,7 @@ final class Config {
         if (chosenRows >= 0 && chosenRows <= 3) rowsBelow = chosenRows;
         animations = choices.getBoolean("animations", animations);
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
-        File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
-        if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
+        File wallpaper = keptWallpaper(ctx.getFilesDir(), dir != null ? new File(dir, WALLPAPER_NAME) : null, mounted);
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
         if (!wallpaperEnabled) wallpaper = null;
@@ -803,6 +802,43 @@ final class Config {
         } catch (Exception ignored) {
             return "absent";
         }
+    }
+
+    /**
+     * wallpaper.jpg, or before external storage is mounted, the copy kept from the last time it was readable.
+     * Home can start before the card is mounted (MiTV-MZTU0: about 9 s before it, at every boot), and without the
+     * copy Home came up on the plain background colour until the launcher restarted, while the screensaver,
+     * started later, showed the picture. As with readOverlay, a missing file on mounted storage means no
+     * wallpaper, and the copy goes with it.
+     */
+    static File keptWallpaper(File privateDir, File external, boolean mounted) {
+        File copy = new File(privateDir, WALLPAPER_NAME);
+        if (!mounted) return nonEmptyFile(copy) ? copy : null;
+        if (external == null || !nonEmptyFile(external)) {
+            copy.delete();
+            return null;
+        }
+        if (copy.length() == external.length() && copy.lastModified() == external.lastModified()) return external;
+        File part = new File(privateDir, WALLPAPER_NAME + ".part");
+        try (InputStream in = new FileInputStream(external); FileOutputStream out = new FileOutputStream(part)) {
+            byte[] buffer = new byte[64 * 1024];
+            for (int n; (n = in.read(buffer)) > 0; ) out.write(buffer, 0, n);
+        } catch (IOException e) {
+            part.delete();
+            Log.w(TAG, "could not keep a copy of " + external + ": " + e.getMessage());
+            return external;
+        }
+        if (!part.renameTo(copy)) {
+            part.delete();
+            Log.w(TAG, "could not keep a copy of " + external);
+        } else if (!copy.setLastModified(external.lastModified())) {
+            Log.w(TAG, "could not date the copy of " + external + "; it is copied again at the next start");
+        }
+        return external;
+    }
+
+    private static boolean nonEmptyFile(File file) {
+        return file.isFile() && file.length() > 0;
     }
 
     /** Reads and parses the overlay; any problem means "no overlay", never a crash on the home screen. */

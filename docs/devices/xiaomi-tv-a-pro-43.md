@@ -149,6 +149,7 @@ microphone, Chromecast and the Play Store stayed enabled.
 - **Storage:** system apps live on the read-only part, so disabling them frees nothing. Clearing speech data
   and trimming caches took `/data` free from 2.3 GB to 2.6 GB.
 - **Wallpaper after a reboot:** Home showed no wallpaper until the theme was pushed again. Home starts before
-  shared storage is mounted, so the launcher finds no wallpaper files at that moment.
+  shared storage is mounted (about 9 s before it on another unit), so the launcher finds no wallpaper files at that
+  moment. The launcher now keeps a copy of `wallpaper.jpg` in its own files and shows it until storage is mounted.
 - **Factory reset:** not tried. As a precaution, run `tools/restore.sh` first, with launcherx named too, so
   that the setup wizard and the stock launcher are on when the reset starts.
