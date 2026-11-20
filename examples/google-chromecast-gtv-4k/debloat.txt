@@ -39,7 +39,7 @@
 #   launcherx and setupwraith enabled), or re-enable setupwraith after each boot, wait a minute for
 #   "Created singleton instance of ClientAuthSigner" in logcat, then disable it again - the receiver
 #   holds the credentials in memory, so casting works until the next reboot
-#   (docs/TROUBLESHOOTING.md, "Casting fails with Untrusted device").
+#   (docs/TROUBLESHOOTING.md#connecting, the "Untrusted device" bullet after setupwraith is disabled).
 #   Seen again after a reboot: re-enabling setupwraith brought no ClientAuthSigner line within 3 minutes
 #   and phones did not list the device at all. Restart the receiver while setupwraith is enabled:
 #     pm enable com.google.android.tungsten.setupwraith
