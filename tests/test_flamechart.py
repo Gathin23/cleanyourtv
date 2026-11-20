@@ -488,7 +488,7 @@ class InputPanelsTest(unittest.TestCase):
         q = first_frame_trace(int(Path(path).read_text(encoding="utf-8")))
         return q, q.close
 
-    def run_chart(self, inputs):
+    def run_chart(self, inputs, *extra):
         self.opened.clear()
         with mock.patch.dict(sys.modules, {"PIL": mock.MagicMock()}), \
                 mock.patch.object(flamechart.trace_report, "opener", return_value=self.open_trace) as opener, \
@@ -496,8 +496,55 @@ class InputPanelsTest(unittest.TestCase):
                 mock.patch.object(flamechart, "lanes", return_value=[]), \
                 mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw, \
                 contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            code = flamechart.main([*map(str, inputs), "--out", str(self.folder / "chart.png")])
+            code = flamechart.main([*map(str, inputs), "--out", str(self.folder / "chart.png"), *extra])
         return code, draw.call_args.args[0], opener
+
+    def assert_family_refused(self, inputs):
+        out = self.folder / "chart.png"
+        out.write_bytes(b"previous chart")
+        with mock.patch.dict(sys.modules, {"PIL": mock.MagicMock()}), \
+                mock.patch.object(flamechart.trace_report, "opener", return_value=self.open_trace) as opener, \
+                mock.patch.object(flamechart, "window", return_value=(0, MS)), \
+                mock.patch.object(flamechart, "lanes", return_value=[]), \
+                mock.patch.object(flamechart, "draw") as draw, \
+                contextlib.redirect_stdout(io.StringIO()), \
+                self.assertRaisesRegex(SystemExit, "nav.*start.*separately"):
+            flamechart.main([*map(str, inputs), "--out", str(out)])
+        opener.assert_not_called()
+        draw.assert_not_called()
+        self.assertEqual(out.read_bytes(), b"previous chart")
+
+    def test_nav_and_start_panels_are_refused_in_both_orders(self):
+        nav = self.folder / "nav-1.pftrace"
+        nav.write_text("100", encoding="utf-8")
+        start = self.before / "home-1.pftrace"
+        for inputs in ((start, nav), (nav, start), (self.before, nav), (nav, self.before)):
+            with self.subTest(inputs=inputs):
+                self.assert_family_refused(inputs)
+
+    def test_a_mixed_folder_is_refused_before_selecting_its_median(self):
+        nav = self.before / "nav-4.pftrace"
+        nav.write_text("100", encoding="utf-8")
+        self.assert_family_refused([self.before])
+
+    def test_a_sidecar_can_make_a_folder_mixed_despite_matching_names(self):
+        (self.before / "home-2.json").write_text('{"scenario":"nav"}', encoding="utf-8")
+        self.assert_family_refused([self.before])
+
+    def test_a_sidecar_can_make_different_names_valid_start_panels(self):
+        renamed = self.folder / "nav-copied.pftrace"
+        renamed.write_text("100", encoding="utf-8")
+        renamed.with_suffix(".json").write_text('{"scenario":"cold"}', encoding="utf-8")
+        code, panels, _ = self.run_chart([self.before, renamed])
+        self.assertIsNone(code)
+        self.assertEqual(len(panels), 2)
+
+    def test_mixed_panels_can_explicitly_draw_whole_recordings(self):
+        nav = self.folder / "nav-1.pftrace"
+        nav.write_text("100", encoding="utf-8")
+        code, panels, _ = self.run_chart([self.before, nav], "--window", "all")
+        self.assertIsNone(code)
+        self.assertEqual(len(panels), 2)
 
     def alias_in_folder(self, kind):
         original = self.before / "home-2.pftrace"
