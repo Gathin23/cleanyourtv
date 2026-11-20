@@ -805,6 +805,29 @@ class MainTest(unittest.TestCase):
                 report.main(argv)
             opener.assert_not_called()
 
+    def test_completed_reports_print_on_limited_consoles(self):
+        for codec in ("ascii", "cp1252", "utf-8"):
+            for name in ("home-1", "home-电视"):
+                for markdown in (False, True):
+                    with self.subTest(codec=codec, name=name, markdown=markdown), tempfile.TemporaryDirectory() as tmp:
+                        path = self.trace(tmp, name)
+                        raw = io.BytesIO()
+                        console = io.TextIOWrapper(raw, encoding=codec, newline="")
+                        q = fake_trace(frames=[16])
+                        close = mock.Mock(side_effect=q.close)
+                        try:
+                            with mock.patch.object(report, "opener", return_value=lambda path: (q, close)), \
+                                    contextlib.redirect_stdout(console):
+                                report.main([path, *(["--markdown"] if markdown else [])])
+                            console.flush()
+                            text = raw.getvalue().decode(codec)
+                            self.assertIn(name.encode(codec, errors="replace").decode(codec), text)
+                            row = next(line for line in text.splitlines() if "start to first frame drawn" in line)
+                            self.assertEqual(row.count("65"), 4)  # run, median, and both ends of the range
+                            close.assert_called_once_with()
+                        finally:
+                            console.detach()
+
     def test_mixed_folder_is_rejected_in_either_input_set(self):
         with tempfile.TemporaryDirectory() as tmp:
             mixed, starts = Path(tmp, "mixed"), Path(tmp, "starts")
