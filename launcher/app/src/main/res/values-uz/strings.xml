@@ -54,6 +54,7 @@
     <string name="on">Yoqilgan</string>
     <string name="off">Oʻchiq</string>
     <string name="enable">Yoqish</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Pultdagi Input tugmasi bosilganda manbalar menyusini ochadi.</string>
     <string name="home_key_name">Home tugmasi</string>
     <string name="home_key_description">Pultdagi Home tugmasi shu launcherni ochadigan qiladi.</string>

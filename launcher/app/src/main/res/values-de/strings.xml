@@ -26,6 +26,7 @@
     <string name="stats_memory">Speicher %1$d / %2$d MB</string>
     <string name="stats_storage">Speicherplatz %1$s frei</string>
     <string name="dream_name">Uhr</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Öffnet die Quellenauswahl, wenn die Input-Taste der Fernbedienung gedrückt wird.</string>
     <string name="launcher_settings">Launcher-Einstellungen</string>
     <string name="native_settings">Herstellereinstellungen</string>

@@ -46,6 +46,7 @@
     <string name="vpn_off">VPN отключён</string>
     <string name="home_settings">Главный экран по умолчанию</string>
     <string name="home_settings_help">Выберите исходный главный экран, чтобы перестать использовать CleanYourTV по умолчанию, или CleanYourTV, чтобы вернуться. Исходный экран должен быть включён, а телевизор должен поддерживать выбор главного экрана. Если он отключён, сначала запустите скрипт восстановления.</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Открывает список источников при нажатии кнопки выбора источника на пульте.</string>
     <string name="home_key_name">Кнопка «Домой»</string>
     <string name="home_key_description">Кнопка «Домой» на пульте открывает этот главный экран.</string>

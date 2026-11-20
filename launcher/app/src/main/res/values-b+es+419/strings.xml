@@ -73,6 +73,7 @@
     <string name="on">Activado</string>
     <string name="off">Desactivado</string>
     <string name="enable">Activar</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Abre el selector de entradas al presionar el botón Entrada del control remoto.</string>
     <string name="home_key_name">Botón Inicio</string>
     <string name="home_key_description">Hace que el botón Inicio del control remoto abra este launcher.</string>

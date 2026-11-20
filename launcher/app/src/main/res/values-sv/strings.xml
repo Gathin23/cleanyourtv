@@ -58,6 +58,7 @@
     <string name="on">På</string>
     <string name="off">Av</string>
     <string name="enable">Aktivera</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Öppnar ingångsväljaren när du trycker på fjärrkontrollens Input-knapp.</string>
     <string name="home_key_name">Hemknapp</string>
     <string name="home_key_description">Låter fjärrkontrollens hemknapp öppna den här startskärmen.</string>

@@ -28,6 +28,7 @@
     <string name="vpn_off">VPN wyłączony</string>
     <string name="home_settings">Domyślny ekran główny</string>
     <string name="home_settings_help">Wybierz oryginalny ekran główny, aby przestać używać CleanYourTV jako domyślnego, albo wybierz CleanYourTV, aby wrócić. Oryginalny launcher musi być włączony, a telewizor musi udostępniać wybór ekranu głównego. Jeśli został wyłączony, najpierw użyj skryptu przywracania.</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Otwiera wybór wejścia po naciśnięciu przycisku Input na pilocie.</string>
     <string name="home_key_name">Przycisk Home</string>
     <string name="home_key_description">Sprawia, że przycisk Home na pilocie otwiera ten ekran główny.</string>

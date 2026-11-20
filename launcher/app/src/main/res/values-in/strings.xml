@@ -53,6 +53,7 @@
     <string name="on">Aktif</string>
     <string name="off">Mati</string>
     <string name="enable">Aktifkan</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Membuka pengalih input saat tombol Input pada remote ditekan.</string>
     <string name="home_key_name">Tombol beranda</string>
     <string name="home_key_description">Membuat tombol Beranda pada remote membuka antarmuka ini.</string>

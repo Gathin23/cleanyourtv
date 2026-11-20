@@ -47,6 +47,7 @@
     <string name="on">Zapnuto</string>
     <string name="off">Vypnuto</string>
     <string name="enable">Zapnout</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Po stisknutí tlačítka Input na ovladači otevře výběr vstupu.</string>
     <string name="home_key_name">Tlačítko Domů</string>
     <string name="home_key_description">Tlačítko Domů na ovladači otevře tuto domovskou obrazovku.</string>

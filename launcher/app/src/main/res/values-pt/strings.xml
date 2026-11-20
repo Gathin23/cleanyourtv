@@ -46,6 +46,7 @@
     <string name="vpn_off">VPN desligada</string>
     <string name="home_settings">Tela inicial padrão</string>
     <string name="home_settings_help">Escolha a tela inicial original para deixar de usar o CleanYourTV, ou o CleanYourTV para voltar a ele. O launcher original precisa estar ativado e a TV precisa ter um seletor de tela inicial; se ele foi desativado, rode antes o script de restauração.</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Abre o seletor de entradas quando o botão Input do controle é pressionado.</string>
     <string name="home_key_name">Botão Home</string>
     <string name="home_key_description">Faz o botão Home do controle abrir este launcher.</string>

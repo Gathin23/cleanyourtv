@@ -71,6 +71,7 @@
     <string name="on">Увімк.</string>
     <string name="off">Вимк.</string>
     <string name="enable">Увімкнути</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Відкриває перемикач джерел під час натискання кнопки Input на пульті.</string>
     <string name="home_key_name">Кнопка Home</string>
     <string name="home_key_description">Кнопка Home на пульті відкриває цей лаунчер.</string>

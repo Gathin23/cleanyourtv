@@ -47,6 +47,7 @@
     <string name="on">Bật</string>
     <string name="off">Tắt</string>
     <string name="enable">Bật</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Mở bảng chọn nguồn vào khi bấm nút Input trên remote.</string>
     <string name="home_key_name">Nút Home</string>
     <string name="home_key_description">Cho nút Home trên remote mở launcher này.</string>

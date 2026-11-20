@@ -46,6 +46,7 @@
     <string name="on">Päällä</string>
     <string name="off">Pois</string>
     <string name="enable">Ota käyttöön</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Avaa lähteen valinnan, kun kaukosäätimen lähdepainiketta painetaan.</string>
     <string name="home_key_name">Koti-painike</string>
     <string name="home_key_description">Kaukosäätimen Koti-painike avaa tämän käynnistimen.</string>

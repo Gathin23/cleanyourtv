@@ -49,6 +49,7 @@
     <string name="on">চালু</string>
     <string name="off">বন্ধ</string>
     <string name="enable">চালু করুন</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">রিমোটের ইনপুট বোতাম চাপলে ইনপুট বদলানোর তালিকা খোলে।</string>
     <string name="home_key_name">হোম বোতাম</string>
     <string name="home_key_description">রিমোটের হোম বোতাম দিয়ে এই লঞ্চার খোলে।</string>

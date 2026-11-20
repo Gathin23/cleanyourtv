@@ -71,6 +71,7 @@
     <string name="on">켜짐</string>
     <string name="off">꺼짐</string>
     <string name="enable">활성화</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">리모컨의 입력 버튼을 누르면 입력 전환 화면을 엽니다.</string>
     <string name="home_key_name">홈 버튼</string>
     <string name="home_key_description">리모컨의 홈 버튼을 누르면 이 런처를 엽니다.</string>

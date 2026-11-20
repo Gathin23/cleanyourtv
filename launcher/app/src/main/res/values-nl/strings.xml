@@ -54,6 +54,7 @@
     <string name="on">Aan</string>
     <string name="off">Uit</string>
     <string name="enable">Inschakelen</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Opent de ingangskeuze als je op de Input-knop van de afstandsbediening drukt.</string>
     <string name="home_key_name">Home-knop</string>
     <string name="home_key_description">Laat de Home-knop van de afstandsbediening deze launcher openen.</string>

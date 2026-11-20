@@ -28,6 +28,7 @@
     <string name="vpn_off">VPN désactivé</string>
     <string name="home_settings">Accueil par défaut</string>
     <string name="home_settings_help">Choisissez un écran d\'accueil dans les paramètres système, puis appuyez sur Accueil.</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Le bouton Source de la télécommande ouvre le choix des sources.</string>
     <string name="home_key_name">Bouton Accueil</string>
     <string name="home_key_description">Le bouton Accueil de la télécommande ouvre ce launcher.</string>

@@ -54,6 +54,7 @@
     <string name="on">På</string>
     <string name="off">Av</string>
     <string name="enable">Aktiver</string>
+    <string name="input_key_name">CleanYourTV Input</string>
     <string name="input_key_service_description">Åpner inngangsvelgeren når du trykker på kildeknappen på fjernkontrollen.</string>
     <string name="home_key_name">Hjem-knapp</string>
     <string name="home_key_description">Lar Hjem-knappen på fjernkontrollen åpne denne startskjermen.</string>

@@ -53,7 +53,7 @@ Kurulum bitince bu izni tekrar kapatabilirsin.
 Google TV ana ekran seçtirmez. Bunun yerine uygulamanın erişilebilirlik yardımcısı Home tuşunu ve stok ana ekranı CleanYourTV'ye yönlendirir:
 
 1. Ayarlar > Sistem > Erişilebilirlik (bazı cihazlarda doğrudan Ayarlar > Erişilebilirlik).
-2. **CleanYourTV ana ekranı**'nı bul ve aç. Android "cihazın tam kontrolü" diye bir uyarı gösterir. Bu, Home tuşunu izleyebilmek için gereken standart erişilebilirlik uyarısıdır. Onayla.
+2. **CleanYourTV ana ekranı**'nı bul ve aç. Listedeki **CleanYourTV giriş tuşu** başka bir yardımcıdır, ana ekran için onu açma. Android "cihazın tam kontrolü" diye bir uyarı gösterir. Bu, Home tuşunu izleyebilmek için gereken standart erişilebilirlik uyarısıdır. Onayla.
 3. Home tuşuna bas: Google TV ana ekranı bir an görünür, sonra CleanYourTV gelir. ADB'siz kurulumda bu kısa geçiş normaldir. Yeniden başlatınca da aynısı olur.
 
 ## Bilinen sınırlar

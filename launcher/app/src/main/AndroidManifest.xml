@@ -243,7 +243,7 @@
         <service
             android:name=".InputKeyService"
             android:exported="false"
-            android:label="@string/app_name"
+            android:label="@string/input_key_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
