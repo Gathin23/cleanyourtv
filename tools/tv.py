@@ -719,13 +719,16 @@ def pull(dev, remote, local, announce=True):
 
     `announce=False` is for a caller that prints its own line about the file, as a capture does; a
     failure is reported either way, because it is the run's answer rather than a note about it."""
-    folder, name = os.path.split(os.path.abspath(local))
+    # open(local, "wb") follows a file symlink. Stage beside its target and replace that target,
+    # rather than replacing the link and leaving the file the reader meant unchanged.
+    destination = os.path.realpath(local) if os.path.islink(local) else local
+    folder, name = os.path.split(os.path.abspath(destination))
     part = os.path.join(folder, f".{name}.{os.getpid()}.part")
     try:
         dev.pull(remote, part, transport_timeout_s=300.0, read_timeout_s=300.0)
-        if os.path.exists(local):
-            shutil.copymode(local, part)
-        os.replace(part, local)
+        if os.path.exists(destination):
+            shutil.copymode(destination, part)
+        os.replace(part, destination)
     except Exception as e:
         try:
             os.remove(part)
