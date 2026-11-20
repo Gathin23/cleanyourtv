@@ -1,0 +1,116 @@
+# Thomson ATV R1 TV stick, Russia, built by SCBC (ro.product.model "ATV R1", ro.product.device R1,
+# ro.product.manufacturer SCBC), Realtek, Android TV 9 (API 28), build PTT1.210114.001.
+# Wi-Fi only: no USB host (dumpsys usb reads host_connected=false) and no eth0.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/thomson-atv-r1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/thomson-atv-r1/debloat.txt
+#          (run from the repository root; everything is disabled, never uninstalled).
+# Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (plain Android TV, not Google TV; restore.sh and
+# build-and-install.sh defaults work). The only other HOME claimants are com.realtek.tv.settings' and
+# com.android.tv.settings' FallbackHome. setupwraith is installed but does not claim HOME, so no
+# RecoveryActivity handover trap. This firmware answers cmd package set-home-activity with Success
+# while still resolving Home to the stock launcher; Home only moves after tvlauncher is disabled
+# (com.gathin.tvhome then answers HOME and survives a reboot - launcher/build-and-install.sh's order
+# covers this, since it disables the stock launcher only once the new one is installed and enabled).
+# Live TV: the inputs and tuners come from com.realtek.dtv, com.realtek.tv.atv, com.realtek.tv.atsc,
+# com.realtek.tv.isdb and com.realtek.tv.passthrough; the source menu is com.realtek.tv.settings.
+#
+# Kept on purpose, do not disable:
+# - com.google.android.tungsten.setupwraith: the saved Wi-Fi network belongs to it (dumpsys wifi
+#   shows cname=com.google.android.tungsten.setupwraith); disabling it deletes the network and takes
+#   the stick off Wi-Fi and ADB. Forget the network in Settings, re-join it, then it can go.
+# - com.google.android.videos (Play Movies): not asked about on this unit.
+# - com.google.android.apps.mediashell (Chromecast built-in) and com.creative.fastscreen.tv
+#   (Miracast/FastCast): the owner uses both.
+# - com.realtek.keyinterceptserver, com.apps.virtualkey, com.apps.fivekey, com.apps.smartkey,
+#   com.apps.sys, com.apps.bluetoothremote, com.functions.autopair,
+#   com.google.android.presetup.bluetoothpair: remote keys and Bluetooth pairing.
+# - Factory packages, never launched and never touched: com.apps.factory.ui,
+#   com.realtek.factorytools, com.rtk.engmenu. EngMenu answers nothing safe and opens the factory
+#   menu, and the stock App library offers it as a plain tile; the shipped config.json hides it and
+#   its two siblings from the launcher through library_excluded_apps. On CVTE-family boards opening
+#   a factory menu flips a flag adb cannot undo; the same care fits this SCBC board.
+#
+# Re-enabled after the first pass, at the owner's request: com.google.android.katniss,
+# com.google.android.speech.pumpkin, com.google.android.tts and com.google.android.tv.remote.service
+# (voice search kept; on this Realtek build remote.service holds AtvSearchAssistantService, which
+# answers the remote's mic button - the same finding as examples/thomson-43rt1055). Their lines
+# below are commented out with this note.
+#
+# Firmware updaters com.apps.ota and com.apps.authota ARE disabled at the owner's explicit request,
+# who weighed losing automatic updates against a stick that phones no one at night. Re-enabling them
+# is one pm enable --user 0 each.
+#
+# Applied and checked on a real unit on 2026-11-20, in six small batches with a screenshot after
+# each, then rebooted: no package came back, Home boots to com.gathin.tvhome, YouTube plays, the
+# remote's D-pad works, and the library no longer offers EngMenu. Network ADB on port 5555 closes
+# by itself once debugging is switched off in Developer options and the stick reboots.
+
+# SCBC/Realtek preload junk
+com.apps.channels                              # "S-Channel" content rows on Home
+com.apps.clear                                 # "TV Booster" cleaner
+com.apps.esticker                              # ShowService demo sticker overlay
+com.apps.function.gdpr                         # SCBC data-consent agent
+com.apps.networkspeed                          # speed-test preload
+com.apps.puresound                             # "sound effect" app: SYSTEM_ALERT_WINDOW + install-referrer hooks
+com.apps.timeclock                             # WorldClock preload
+com.apps.wifihotspot                           # stick as a Wi-Fi hotspot
+
+# Partner plumbing and promo stores
+android.autoinstalls.config.scbc.device        # Play auto-installs of partner apps
+com.google.android.partnersetup                # partner-app attribution
+com.google.android.onetimeinitializer          # one-time setup leftovers
+com.vewd.core.service                          # Vewd app-store/HbbTV engine, asks CAMERA + RECORD_AUDIO
+com.google.android.apps.nbu.smartconnect.tv    # Google data-saver VPN preload
+
+# Google telemetry and extras
+com.google.android.feedback                    # Market Feedback Agent
+com.google.android.tv.bugreportsender          # bug report uploader
+com.google.android.backuptransport             # Google cloud backup transport
+com.google.android.syncadapters.calendar       # calendar sync, no calendar app on a stick
+com.google.android.play.games                  # Play Games
+com.google.android.backdrop                    # Google ambient screensaver; the launcher ships its own clock
+com.google.android.marvin.talkback             # TalkBack screen reader
+# com.google.android.katniss                   # RE-ENABLED: voice search kept (see header)
+# com.google.android.speech.pumpkin            # RE-ENABLED with katniss: offline speech recognition
+# com.google.android.tts                       # RE-ENABLED: the assistant speaks its answers
+# com.google.android.tv.remote.service         # RE-ENABLED: its AtvSearchAssistantService answers the mic button
+
+# Apps the owner does not use
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom              # Prime Video
+ru.rt.video.app.tv                             # Wink / Rostelecom
+tv.okko.androidtv                              # Okko
+com.google.android.youtube.tvmusic             # YouTube Music preload
+com.tcl.browser                                # TCL browser preload
+
+# Android parts a TV stick does not need
+com.android.cts.ctsshim                        # Android test shim
+com.android.cts.priv.ctsshim                   # Android test shim
+com.android.printspooler                       # printing
+com.android.gallery3d                          # legacy photo viewer (File Manager + USB player kept)
+com.android.dreams.basic                       # stock "colors" screensaver
+com.android.wallpaperbackup
+com.android.wallpaper.livepicker
+com.android.sharedstoragebackup
+com.android.providers.calendar                 # provider only, no calendar client
+com.android.providers.contacts                 # provider only, no contacts client
+com.android.providers.userdictionary
+com.android.companiondevicemanager             # companion-device pairing dialogs
+com.android.backupconfirm
+com.android.htmlviewer                         # internal HTML viewer
+com.android.settings.intelligence              # Settings search box; menus keep working
+com.android.se                                 # Secure Element (eSIM/NFC): nothing here has one
+
+# OTA updaters, off at the owner's explicit request (see header)
+com.apps.ota                                   # system OTA updater
+com.apps.authota                               # Auth OTA updater
+
+# Stock launcher and its rows - LAST, only after launcher/build-and-install.sh moved Home.
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher            # old launcher, no HOME activity on this build
+com.realtek.leanbacklauncher.partnercustomizer # partner config injecting apps/rows into Home
+com.google.android.tvlauncher                  # the stock Home itself
