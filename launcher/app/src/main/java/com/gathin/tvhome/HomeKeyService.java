@@ -72,6 +72,8 @@ public class HomeKeyService extends AccessibilityService {
     private final Set<String> stockHome = new HashSet<>();
     /** stock_home_redirect, the stock launcher's package. */
     private String stockHomePackage = "";
+    /** Until this uptime a stock home window is one opened on purpose (voice search results), not a revived home. */
+    private long stockDeepLinkUntil;
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -338,8 +340,57 @@ public class HomeKeyService extends AccessibilityService {
             return;
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
-        CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+        CharSequence pkg = event.getPackageName(), cls = event.getClassName();
+        if (stockHome.isEmpty() || pkg == null || cls == null) return;
+        long now = SystemClock.elapsedRealtime();
+        String window = pkg.toString();
+        if (stockHome.contains(cls.toString())) {
+            // Google TV shows voice search results in launcherx's HomeActivity, reached through the Assistant and
+            // launcherx's own LauncherDeepLink; sending that back here lost the results. Such a window stays.
+            boolean onPurpose = deepLinked(now, stockDeepLinkUntil);
+            // launcherx reports HomeActivity two or three times as the results page settles; the whole burst stays,
+            // and a later one (Home pressed on the results page) is sent back as usual.
+            if (onPurpose) stockDeepLinkUntil = Math.min(stockDeepLinkUntil, now + DEEP_LINK_BURST_MS);
+            handler.removeCallbacks(stockHomeBack);
+            // Not at once: the Assistant can bring the stock home up a few ms before the app it was asked to open
+            // (YouTube), and Home started then would cover that app. Another app's screen in between cancels it.
+            if (!onPurpose) handler.postDelayed(stockHomeBack, STOCK_HOME_DELAY_MS);
+        } else if (opensStockHome(window, stockHomePackage) && (ASSISTANT_PACKAGE.equals(window) || isActivity(pkg, cls))) {
+            stockDeepLinkUntil = now + DEEP_LINK_WINDOW_MS;
+            handler.removeCallbacks(stockHomeBack);
+        } else if (!stockHomePackage.equals(window) && isActivity(pkg, cls)) {
+            // Only another app's screen cancels it. Panels closing do not: TV Settings sends a window event for its
+            // last pane about 100 ms after the stock home is already up.
+            handler.removeCallbacks(stockHomeBack);
+        }
+    }
+
+    /** stock_home_redirect after STOCK_HOME_DELAY_MS, unless another app's screen came up meanwhile. */
+    private final Runnable stockHomeBack = this::openHome;
+    static final long STOCK_HOME_DELAY_MS = 150L;
+    /** The Google TV Assistant (voice search), which hands its results to the stock launcher. */
+    static final String ASSISTANT_PACKAGE = "com.google.android.katniss";
+    /** How long after the Assistant or a stock launcher deep link its home window still counts as opened on purpose. */
+    static final long DEEP_LINK_WINDOW_MS = 5_000L;
+    /** After the first stock home window opened on purpose, how long its repeats still count as the same opening. */
+    static final long DEEP_LINK_BURST_MS = 1_500L;
+
+    /** A window from the Assistant, or from the stock launcher itself (its deep link trampoline). */
+    static boolean opensStockHome(String pkg, String stockHomePackage) {
+        return ASSISTANT_PACKAGE.equals(pkg) || stockHomePackage.equals(pkg);
+    }
+
+    static boolean deepLinked(long now, long deepLinkUntil) {
+        return now < deepLinkUntil;
+    }
+
+    private boolean isActivity(CharSequence pkg, CharSequence cls) {
+        try {
+            getPackageManager().getActivityInfo(new ComponentName(pkg.toString(), cls.toString()), 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException notAnActivity) {
+            return false;
+        }
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
