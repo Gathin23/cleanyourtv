@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,10 +69,10 @@ public class HomeKeyService extends AccessibilityService {
 
     /** Waits for the user to unlock when Android binds this service at boot; null once the config is read. */
     private BroadcastReceiver unlockReceiver;
-    /** The stock launcher's HOME activities (stock_home_redirect), disabled ones included. */
+    /** The stock launchers' HOME activities (stock_home_redirect), disabled ones included. */
     private final Set<String> stockHome = new HashSet<>();
-    /** stock_home_redirect, the stock launcher's package. */
-    private String stockHomePackage = "";
+    /** stock_home_redirect, the stock launcher packages: one, or several separated by commas. */
+    private final Set<String> stockHomePackages = new HashSet<>();
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -202,9 +203,12 @@ public class HomeKeyService extends AccessibilityService {
         frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
         boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
         stockHome.clear();
-        stockHomePackage = config.stockHomeRedirect;
-        if (!config.stockHomeRedirect.isEmpty()) {
-            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(config.stockHomeRedirect);
+        stockHomePackages.clear();
+        // One theme can then serve several TVs: a package that is not installed adds nothing.
+        for (String pkg : stockHomeList(config.stockHomeRedirect)) {
+            if (pkg.equals(getPackageName())) continue;
+            stockHomePackages.add(pkg);
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(pkg);
             for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
                 stockHome.add(ri.activityInfo.name);
             }
@@ -458,7 +462,18 @@ public class HomeKeyService extends AccessibilityService {
         if (stockHome.isEmpty() || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         ResolveInfo home = getPackageManager().resolveActivity(
                 new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY);
-        return home != null && stockHomePackage.equals(home.activityInfo.packageName);
+        return home != null && stockHomePackages.contains(home.activityInfo.packageName);
+    }
+
+    /** stock_home_redirect as a list: one package, or several separated by commas (blanks and repeats dropped). */
+    static Set<String> stockHomeList(String value) {
+        Set<String> packages = new LinkedHashSet<>();
+        if (value == null) return packages;
+        for (String part : value.split(",")) {
+            String pkg = part.trim();
+            if (!pkg.isEmpty()) packages.add(pkg);
+        }
+        return packages;
     }
 
     @Override
