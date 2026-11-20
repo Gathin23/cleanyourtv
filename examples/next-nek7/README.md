@@ -15,13 +15,12 @@ TV_HOST=<box ip> tools/disable.sh examples/next-nek7/debloat.txt
 TV_HOST=<box ip> launcher/build-and-install.sh
 ```
 
-The second command needs `STOCK_LAUNCHER=com.droidlogic.mboxlauncher`: `com.droidlogic.mboxlauncher` is not
-one of the four stock launchers `launcher/build-and-install.sh` recognises by name, so without it the script
-stops before installing anything and asks for the package instead of guessing.
-
 ```bash
-TV_HOST=<box ip> STOCK_LAUNCHER=com.droidlogic.mboxlauncher launcher/build-and-install.sh
+TV_HOST=<box ip> launcher/build-and-install.sh
 ```
+
+`com.droidlogic.mboxlauncher` is one of the stock launchers the script recognises by name, so this box's Home
+is disabled without being named; `STOCK_LAUNCHER=<package>` still overrides what it would pick.
 
 Home was confirmed twice over: `dumpsys window | grep mCurrentFocus` named the new launcher, and after one
 reboot `pm list packages -d` still held the same packages and Home was still the new one.
