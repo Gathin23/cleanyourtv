@@ -361,7 +361,9 @@ public class HomeKeyService extends AccessibilityService {
                 && (ASSISTANT_PACKAGE.equals(window) || isActivity(pkg, cls))) {
             stockDeepLinkUntil = now + DEEP_LINK_WINDOW_MS;
             handler.removeCallbacks(stockHomeBack);
-        } else if (!stockHomePackages.contains(window)) {
+        } else if (!stockHomePackages.contains(window) && isActivity(pkg, cls)) {
+            // Only another app's screen cancels it. Panels and dialogs closing do not: TV Settings sends a
+            // window event for its last pane about 100 ms after the stock home is already up.
             handler.removeCallbacks(stockHomeBack);
         }
     }
