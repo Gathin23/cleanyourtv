@@ -26,6 +26,12 @@ writes, and each page's row is read out of the page. The row carries the number 
 pages today, which is what `docs/workflows/translation.md` step 9 asks for; a page that writes it as a
 word is refused by name rather than read as no claim at all.
 
+One row is written in more than one form. `tools/gen_tables.py` states the Ukrainian count as
+`мова`, `мови` or `мов` according to the number - `31 мова` on main, `32 мови` the moment a
+language is added - so the label is one claim in the form the language asks for, not three.
+This file reads a page's spellings through `forms()`, which takes them out of the generator's
+own TRANSLATIONS map, so the plural is read rather than refused as no row at all.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
@@ -74,11 +80,31 @@ def rows(text):
 
 
 def claimed(text, word):
-    """The number the page states in its `<word>` row, or None when it states none."""
+    """The number the page states in its `<word>` row, or None when it states none.
+
+    `word` is one spelling or several. A label a page states in more than one form - the Ukrainian
+    `мова` / `мови` / `мов` - is one claim written in the form its number calls for, and `forms()`
+    below is what collects the spellings a page may use.
+    """
+    words = {word} if isinstance(word, str) else set(word)
     for number, label in rows(text):
-        if label == word:
+        if label in words:
             return number
     return None
+
+
+def forms(page, word):
+    """Every spelling `page` may state its language count in, its own word first.
+
+    Taken from `tools/gen_tables.py`'s TRANSLATIONS map rather than written here, so the spellings
+    cannot drift from the ones the generator actually writes. The five pages in that map have it;
+    the hand-kept pages state one word each and get it back unchanged.
+    """
+    words = gen_tables.TRANSLATIONS.get(page)
+    if not words:
+        return {word}
+    language = words[2]
+    return {word} | (set(language) if isinstance(language, tuple) else {language})
 
 
 def languages(root=ROOT):
@@ -94,7 +120,7 @@ class LanguageCountTest(unittest.TestCase):
             with self.subTest(page=name):
                 self.assertTrue(page.is_file(), f"{name} is gone from the front pages")
                 text = page.read_text(encoding="utf-8")
-                stated = claimed(text, word)
+                stated = claimed(text, forms(name, word))
                 # Named in the failure so whoever adds a language knows which line to change.
                 self.assertIsNotNone(
                     stated,
@@ -114,14 +140,19 @@ class LanguageCountTest(unittest.TestCase):
         writes the count in a word this file does not carry (a new translation's own, as README.uz.md's
         `til` was beside the Turkish `dil`) is out of its reach, and that word is the line to add here.
         """
-        words = set(LANG_ROW.values())
+        # Every spelling of every page's word, so a page that states its count in the plural - as
+        # README.uk.md does once the count leaves the ones - is still read here rather than skipped
+        # as a word this file does not carry. Read per page, not as a word-to-page map: `idiomas` is
+        # the word on both README.es.md and README.pt-BR.md and one map would pick only the last.
+        known = {spelling for name, word in LANG_ROW.items() for spelling in forms(name, word)}
         for page in front_pages():
+            stated = forms(page.name, LANG_ROW[page.name]) if page.name in LANG_ROW else set()
             for number, label in rows(page.read_text(encoding="utf-8")):
-                if label not in words:
+                if label not in known:
                     continue
                 with self.subTest(page=page.name, word=label):
-                    self.assertEqual(
-                        LANG_ROW.get(page.name), label,
+                    self.assertIn(
+                        label, stated,
                         f"{page.name} states the language count as `{label}` and is not in this "
                         f"file's table, so nothing reads its {number}")
 
@@ -164,6 +195,14 @@ class TheReader(unittest.TestCase):
                 "oʻngdan chapga joylashuv |")
         self.assertEqual(31, claimed(text, "til"))
         self.assertIsNone(claimed(text, "dil"))
+
+    def test_the_ukrainian_row_is_read_in_the_form_its_number_calls_for(self):
+        """`31 мова` on main, `32 мови` once a language is added: one claim, in the form Ukrainian
+        asks for at that number. The singular alone is what refused the page - pinned last."""
+        singular = forms("README.uk.md", "мова")
+        self.assertEqual(31, claimed("| **31 мова** | Дотримується мови телевізора |", singular))
+        self.assertEqual(32, claimed("| **32 мови** | Дотримується мови телевізора |", singular))
+        self.assertIsNone(claimed("| **32 мови** | Дотримується мови телевізора |", "мова"))
 
     def test_a_step_row_is_not_a_language_row(self):
         text = "| **1. On the TV** | Settings → About → press OK on **Build** seven times |"
