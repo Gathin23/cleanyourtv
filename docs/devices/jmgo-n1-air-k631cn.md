@@ -1,6 +1,6 @@
 # JMGO N1 Air projector (K631CN, China LunaOS): `pm disable-user` is refused, and Home is re-granted by a hook inside `system_server`
 
-Two sessions, 2026-11-19 and 2026-11-20. Same-day results only, which is why this is recorded here and not
+Two sessions, 2026-11-19 and 2026-11-20. Two days of results, which is why this is recorded here and not
 in `examples/`: CONTRIBUTING asks for a few days of living with a list. Two further reasons: this firmware
 refuses every disable path, so the packages below are **suspended**, not disabled, and `tools/restore.sh`
 does not undo a suspended package - the undo is in this note.
@@ -151,7 +151,7 @@ which is why those two are the ones measured here:
   `com.gathin.tvhome.MainActivity` is never paused, so the guard has nothing to correct. The next 桌面
   (home) press dismisses it - `input_cancel` on the panel window at the moment the key is consumed, then its
   input channel is disposed.
-- None of the four interrupts anything else: the launcher process kept its pid across all four presses, the
+- None of them interrupts anything else: the launcher process kept its pid across every press, the
   accessibility service stayed bound, and no `Force stopping` appeared. The 菜单 (menu) popup is the
   replacement's, `MainActivity` handles `KEYCODE_MENU` itself.
 
@@ -208,6 +208,10 @@ Two things do bring the guard back, and both work because they cause a re-read r
 Practical rule for this unit: use 休眠 (standby) or 关闭光源 (light source off) for daily standby. If 关机
 (power off) is pressed by mistake, one 重启 (restart) brings the launcher back in about 40 s; nothing shorter
 does.
+
+A cold boot after 重启 (restart), with both the replacement launcher and the guard in place, landed on the
+replacement five out of five, guard bound by 44 s. The boot after 关机 (power off) is not a different
+boot - the guard was already unbound before it started, which is why nothing recovers on the way up.
 
 ## Screensaver: the vendor's full-screen promo
 
@@ -282,17 +286,15 @@ comes back within ten seconds - so do not reach for them.
 
 ## What was not checked
 
-- Several days of use, and whether any suspended package is missed: these are same-day reports.
-- A cold boot after 重启 (restart) with the replacement launcher and the guard both in place: five out of five
-  landed on the replacement, guard bound by 44 s. A cold boot after 关机 (power off) is the case that fails; it
-  fails because the guard was already unbound when the boot started, not because the boot itself differs.
+- Several days of use, and whether any suspended package is missed: this covers two sittings, not the days
+  CONTRIBUTING asks for.
 - The remote's voice and volume keys, which were not pressed. The settings and menu keys are in the key table
-  above; this remote has no input-source key, so that part of the request has no equivalent on this unit.
+  above; this remote has no input-source key, so there is nothing to press for it on this unit.
 
 ## ADB
 
 **Switch both debug switches back off in the projector's own Settings when the session ends**: with
 `ro.adb.secure=0` and `persist.adb.tcp.port=5555`, anything on the LAN that reaches port 5555 gets a shell
-with no prompt. Both were turned off on this unit at the end of the session, and
+with no prompt. Both were on throughout this session, which is how the note was taken.
 `tools/venv/bin/python -I tools/adb-closed.py <tv ip>` is the check that the port is closed rather than the
 switch merely being off.
