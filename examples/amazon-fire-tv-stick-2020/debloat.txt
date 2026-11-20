@@ -31,6 +31,12 @@
 # What the list cannot remove: the hero rotator ads and the Prime Video promo rows come from the launcher's own feed,
 # and the Live icon stays in the top menu (its channel rows go). Privacy Settings and Featured Content autoplay
 # toggles are by hand on the remote, as the Stick Lite list describes.
+#
+# Optional: ask Android to reclaim eligible app cache files even when storage is not low (does not clear app data or sign-ins):
+#   TV_HOST=<stick ip> tools/venv/bin/python -I tools/tv.py 'pm trim-caches 999G'
+#   $env:TV_HOST='<stick ip>'; tools\venv\Scripts\python.exe -I tools\tv.py 'pm trim-caches 999G'
+# This frees storage, not a guaranteed amount of RAM or speed; apps may rebuild caches and load more slowly at first.
+# Do not use `pm clear`: that erases the app's data and can remove sign-ins and settings.
 
 # Amazon telemetry, metrics, logs, usage reporting
 com.amazon.client.metrics.api
