@@ -443,7 +443,7 @@ ihren eigenen Fernsehern gemacht, und ihre Antworten wurden zu den Listen hier: 
 ersten vier Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionieren.
 
 Zwei Wochen später war es das Repository auf Platz 1 der GitHub-Trends in der Woche vom 19. bis 25. Oktober, mit über 46.000 Sternen
-und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Am 14. November waren es 57.000 Sterne und 7.400 Forks. Die Listen umfassen jetzt 504 TV-Modelle von 138 Marken.
+und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Am 20. November waren es 59.000 Sterne und 7.800 Forks. Die Listen umfassen jetzt 504 TV-Modelle von 138 Marken.
 Die Berichterstattung: 546 Artikel aus 57 Ländern und 674 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 14. November 2026).
 
 ## Mitmachen
