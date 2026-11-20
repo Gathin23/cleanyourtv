@@ -1,0 +1,6 @@
+{
+  "tv": "Aurzen BOOM Air portable projector (SDMC, AURZEN_BOOMAIR, himalaya, MediaTek m7332)",
+  "os": "Google TV 11",
+  "brand": "Aurzen",
+  "notes": "Short list on an Android 11 projector: Google feedback, partner setup, Play Games and TalkBack; same SDMC himalaya board as `benq-gv32` (Google TV 14) and `lumio-arc-5`; focus and keystone (`com.sdmc.kt`), the Bluetooth speaker, the remote service and the MediaTek input services kept; the disclaimer screen was refused by disable.sh and stays enabled; setupwraith owned the setup Wi-Fi (forget and re-join first); USB debugging only, and the menu reads on after adb_enabled was cleared (#2642); no tuner, HDMI listed; one session, reboot-checked"
+}

@@ -1,0 +1,69 @@
+# Aurzen BOOM Air portable projector (SDMC-built, product AURZEN_BOOMAIR, device himalaya, board m7332),
+# about 1.7 GB RAM, Wi-Fi only. Google TV on Android 11 (SDK 30), firmware RTMA.250416.043, security patch
+# 2025-06-01.
+# Fingerprint: AURZEN/AURZEN_BOOMAIR/himalaya:11/RTMA.250416.043/13549864:user/release-keys
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/aurzen-boom-air/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/aurzen-boom-air/debloat.txt com.google.android.apps.tv.launcherx
+# Check:   TV_HOST=<projector ip> tools/venv/bin/python -I tools/check.py examples/aurzen-boom-air/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same SDMC himalaya board as examples/benq-gv32 (Google TV 14) and examples/lumio-arc-5, so those two lists
+# are the closest ones here; this unit is Android 11, and the two packages it does not carry (at the bottom of
+# this header) are the difference that matters when copying a line from them.
+#
+# Reported by @nixfred, 30 October 2026: one unit, one session, reboot-checked, and tools/check.py reports no
+# drift afterwards. It is a short list because the owner disabled little and everything else below was kept on
+# purpose; the two projects it was tried with are the debloat and the launcher in this repository.
+#
+# KEEP, even though some names look like bloat:
+# - com.sdmc.kt: auto focus and keystone correction, and its FocusActivity runs at power-on, so it comes up
+#   after Home on every boot.
+# - com.sdmc.service (power and global buttons), com.sdmc.remotecontrolservice (the remote's input method),
+#   com.sdmc.bluetoothconnect and com.sdmc.bluetoothspeaker (pairing and the set's Bluetooth speaker mode).
+# - com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter and com.mediatek.wwtv.setupwizard:
+#   the input framework and setup. The framework lists an HDMI input
+#   (com.mediatek.tvinput/.hdmi.HDMIInputService/HW4) and the launcher's Inputs pill shows it. No tuner.
+# - fusion.android.tv.demo ("retail display"): the Input-key handler, as on examples/benq-gv32.
+# - com.sdmc.implayer: the USB media player. It asks for android.permission.TV_INPUT_HARDWARE, so
+#   tools/disable.sh would skip it; nothing here sends it either.
+# - com.mediatek.tv.freeviewplay, left alone. The 15 uk.co.freeview.* apps on this firmware arrive off.
+# - Factory/test packages: com.dangs.factorytest, com.sdmc.sdmcfactory, com.sdmc.keyburn and
+#   mediatek.factorymenu.ui. Never launch them, not even to look.
+# - com.mstar.android.tv.disclaimercustomization: the setup-only disclaimer screen. tools/disable.sh refused
+#   it on this unit ("neither a requested nor a granted permission block"), so it is still enabled; its line
+#   is commented out at the bottom rather than dropped, so the reason stays with the list.
+#
+# Notes from this unit:
+# - ADB: Developer options has no Wireless debugging entry, USB debugging only, ro.adb.secure=1. Port 5555 was
+#   already listening and came back after a restart while USB debugging was on. Sideloading works (no
+#   INSTALL_FAILED_VERIFICATION_FAILURE) and SDK 30 is above the launcher's minSdk 26. A menu that reads "on"
+#   after adb_enabled was cleared is the trap docs/TROUBLESHOOTING.md records (#2642): toggle USB debugging
+#   off and on and restart before believing it, or tools/adb-closed.py will disagree with the screen.
+# - Launcher: HOME claimants on stock were launcherx (priority 2), setupwraith/.RecoveryActivity (1) and
+#   com.android.tv.settings/.system.FallbackHome (-1000), as on the BenQ GV32. setupwraith owned the saved
+#   Wi-Fi network, so the owner forgot the network and joined it again in Settings first; after that every
+#   entry read com.android.tv.settings, and disabling setupwraith kept the projector on Wi-Fi. The APK was
+#   built with tools/docker-build.sh (574,273 B, under the gate) and installed with SKIP_BUILD=1
+#   launcher/build-and-install.sh: launcherx and setupwraith are disabled by that script, not by this list.
+# - Home resolves to com.gathin.tvhome after the install and after a reboot; at boot FallbackHome, then the
+#   launcher about 5 s later, then com.sdmc.kt's FocusActivity, then Home again.
+# - Remote and theme: the real remote's buttons work without launcherx, and no key-helper service,
+#   app_keys or scancode mapping was needed. The theme used dock_apps (7 apps), columns 7 and
+#   live_tv_package "" - there is no tuner on this set.
+# - Private DNS was already set on this unit and kept resolving; apps resolved after the debloat too.
+#   Nothing here sets it up (AGENTS.md keeps DNS setup out of a list folder).
+# - Android 11 on this build has no com.android.adservices.api and no com.android.tv.feedbackconsent, so
+#   those two lines of the BenQ GV32 list have nothing to disable here.
+
+# Batch 1: telemetry and partner plumbing
+com.google.android.feedback
+com.google.android.partnersetup              # Google partner attribution pings
+
+# Batch 2: the owner's choice
+com.google.android.play.games
+com.google.android.marvin.talkback           # TalkBack screen reader: keep it if anyone uses it
+
+# Commented out, not dropped: tools/disable.sh refused this one on this unit (see the header), so the
+# disclaimer screen is still there. It is an active line on examples/benq-gv32.
+# com.mstar.android.tv.disclaimercustomization
