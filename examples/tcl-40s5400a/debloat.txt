@@ -101,6 +101,35 @@
 #   Restart from the power menu; it refused only after the TV was unplugged for 30 s
 #   (tools/adb-closed.py).
 #
+# Czech EU unit, 2026-11-20: same model "Smart TV", product C06_2K_GB, build AR2101 / AR21,
+# Android TV 11 (SDK 30), persist.tcl.client_type TCL-EU-MT9221-01, TCL software
+# V8-T221T05-LF1V361.000823, security patch 2025-03-05, about 918 MB RAM (low_ram=true).
+# Remote: TCL_RC902V_U1 (Bluetooth LE with mic, some keys over IR). One evening and five reboots,
+# not a several-day test.
+# - Applied in batches with tools/disable.sh: the TCL block without usercenter, the Google extras,
+#   then by choice Prime Video, partnersetup, voice (katniss, tv.assistant, micmanager), TTS,
+#   backdrop (screensaver switched off first) and the four TCL USB players. Kept: tv.remote.service
+#   (phone remote), Chromecast (mediashell), ttvs. setupwraith kept: four saved-network entries had
+#   cname=com.google.android.tungsten.setupwraith.
+# - launcher/ (tools/docker-build.sh) is Home and stayed Home after reboots. On the real remote with
+#   no key helper enabled: Home, Input (source picker) and Settings work, also with
+#   com.tcl.partnercustomizer disabled.
+# - The remote's TV key is IR KEY_EPG (scan 0x0fe5), TCL key code 4001. TclPhoneWindowManager starts
+#   com.tcl.tv/.service.GlobalKeyService, which opens the guide only while Live TV is in front, so
+#   from launcher/ the key does nothing (logcat: "startEpg: ... current is not Freeview Play").
+# - The media key (HID 0x0C/0x58, KEY_BATTERY, TCL_USB_MEDIA, key code 4057) opens the TCL USB media
+#   center; with the USB players disabled it does nothing.
+# - lmkd logs "/proc/zoneinfo parse error" all the time and does not kill; TGuard did. With
+#   com.tcl.guard disabled, MemAvailable stayed about 200-300 MB and oom_kill 0 that evening.
+# - TCL's FreezeManager freezes background processes about 20 s after they leave the screen unless
+#   they are on its skip list (stock tvlauncher is, launcher/ is not), and TclAppBoot refuses
+#   startForeground for third-party apps, so an AirPlay receiver (jqssun/android-airplay-server)
+#   stayed advertised but never answered. `dumpsys activity freeze-switch freeze-off` sets
+#   persist.sys.freeze=false, which survives a reboot (undo: `freeze-on`, then reboot); after it,
+#   nothing was frozen and AirPlay worked.
+# - persist.sys.timezone was a fixed GMT+02:00, an hour ahead in winter; picking Prague in
+#   Date & time fixes it.
+#
 # Known quirks on this firmware:
 # - The stock launcher declares HOME priority 2, so `cmd package set-home-activity` alone does not
 #   take Home while it is enabled (Home still opens it). Disabling it, as build-and-install.sh
