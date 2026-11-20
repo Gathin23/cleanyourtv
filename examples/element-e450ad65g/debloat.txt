@@ -57,19 +57,20 @@ com.mtc.emanual                               # on-screen manual (the FAV key op
 com.mtc.emanual.overlay.ok
 
 # --- Apps the owner does not use (off by choice; all still installed) ---
-com.google.android.youtube.tvmusic
-com.google.android.youtube.tvunplugged        # YouTube TV
-com.google.android.videos                     # Google TV movies and shows
-com.apple.atve.androidtv.appletv
-com.wbd.stream                                # Max
-com.sling
-com.philo.philo.google
-com.tubitv
-com.xumo.xumo.tv
-com.roku.web.trc                              # The Roku Channel
-com.plexapp.android
-com.spotify.tv.android
-com.google.android.play.games
+# This set has these off by the owner's choice; uncomment the ones you don't use.
+#com.google.android.youtube.tvmusic
+#com.google.android.youtube.tvunplugged        # YouTube TV
+#com.google.android.videos                     # Google TV movies and shows
+#com.apple.atve.androidtv.appletv
+#com.wbd.stream                                # Max
+#com.sling
+#com.philo.philo.google
+#com.tubitv
+#com.xumo.xumo.tv
+#com.roku.web.trc                              # The Roku Channel
+#com.plexapp.android
+#com.spotify.tv.android
+#com.google.android.play.games
 
 # --- Voice, Chromecast and Miracast (off by choice) ---
 com.google.android.katniss                    # Google Assistant / voice search

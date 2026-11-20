@@ -78,6 +78,7 @@ com.google.android.play.games
 # Personal choice: comment out what you use
 com.google.android.katniss              # Google Assistant (the mic button stops working)
 
+# Disabling setupwraith gives Home back but can cost casting (Chromecast built-in); keep it if you cast.
 # Disable only after the saved network no longer says cname=com.google.android.tungsten.setupwraith;
 # see the note above.
 com.google.android.tungsten.setupwraith

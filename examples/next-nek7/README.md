@@ -38,8 +38,6 @@ Network debugging is the only transport, on port 5555, and it survives reboots. 
 there is no "Allow USB debugging?" prompt: any device on the same network gets a shell from this box while
 debugging is on, so switch it off when the work is done.
 
-`persist.adb.tcp.port` is 5555 here, so the port comes back by itself after a reboot.
-
 ## screencap returns 0 bytes on this firmware
 
 `tools/tv.py --screenshot` writes an empty PNG on this box, on every screen, including Settings and the new
@@ -66,12 +64,12 @@ from Settings and from YouTube.
 
 ## What the list turns off
 
-22 packages: the factory test and burn-in test apps, a vendor "TVOptimizer" shipped as
+21 packages: the factory test and burn-in test apps, a vendor "TVOptimizer" shipped as
 `com.android.core.process` with a `BOOT_COMPLETED` receiver, an ad consent SDK shipped as an app, an eco-saver
 daemon, the Play auto-install list, feedback and bug-report senders, two recommendation services, three
 screensavers, `printspooler`, `camera2` and the stock music player, the two Google sync adapters, the discontinued
-Play Music, Next's own IPTV app, and the preloaded "MoviePlayer" / Film Oynatıcı app while MX Player stays. The
-owner's own streaming apps, D-Smart Go and the YouTube app, are in the list commented out with "this set has them
+Play Music, and the preloaded "MoviePlayer" / Film Oynatıcı app while MX Player stays. The
+owner's own streaming apps, D-Smart Go, the YouTube app and Next's own IPTV app, are in the list commented out with "this set has them
 off; uncomment to disable": they were off on this box, but a shared list leaves the next owner's own apps alone. One receiver the owner does not use goes as well:
 AirPin PRO (`com.waxrain.airplaydmr`), which starts at boot, holds `INSTALL_PACKAGES` and `DELETE_PACKAGES` and
 listened on 49153, 5000, 7000, 7100, 7700 and 8888. Miracast (`com.droidlogic.miracast`) is left on, so screen

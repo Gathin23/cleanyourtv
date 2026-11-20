@@ -40,7 +40,8 @@ org.droidtv.demome                        # retail demo mode
 com.google.android.play.games             # Play Games, not used on a TV
 
 # --- services for other countries --------------------------------------------
-tv.mopa.ginga                             # Ginga, Brazilian interactive TV
+# Ginga is TV middleware, left on in shared lists; uncomment only if you never use broadcast TV.
+#tv.mopa.ginga                             # Ginga, Brazilian interactive TV
 org.droidtv.astrahdplus                   # HD+ (German satellite operator) pages; not used in France
 
 # --- unused home and audio integrations --------------------------------------
@@ -53,5 +54,6 @@ com.phorus.playfi.tv                      # DTS Play-Fi multi-room audio
 com.phorus.playfi.softap                  # its soft access point
 
 # --- owner's choice on this unit ---------------------------------------------
-org.droidtv.aurora                        # Aurora ambient display (art and clock when the TV is idle)
-org.droidtv.sunrise                       # Sunrise alarm (Ambilight wake-up light)
+# This set has these off (owner's choice); uncomment to do the same.
+#org.droidtv.aurora                        # Aurora ambient display (art and clock when the TV is idle)
+#org.droidtv.sunrise                       # Sunrise alarm (Ambilight wake-up light)

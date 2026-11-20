@@ -65,10 +65,7 @@ com.skyworth.smarthome_tv  # Smart home dashboard
 #
 # com.tianci.de            # ~70 MB in two processes. About / device info / factory menu still work on
 #                          # their own. Never enable this line and touch ccapi/dataprovider in one batch.
-# com.skyworth.tv          # ~53 MB, and the only way to stop tvserver re-tuning every ~60 s, which
-#                          # keeps the video plane and makes third-party players show tuner noise while
-#                          # audio keeps playing. Costs live TV, picture settings and the accessibility
-#                          # toggle that live in the TV app.
+# Keep com.skyworth.tv: it owns live TV and the tuner (its tvserver re-tuning is Trap 6 in the docs note).
 #
 # com.coocaa.tvmanager has no launcher entry of its own (it resolves to the system chooser), so it is a
 # dead tile on a home screen, but disabling it is harmless.

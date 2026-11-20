@@ -16,8 +16,7 @@ All commands run from the repo root.
 
 1. Point Home at a launcher you like. The vendor launcher hides sideloaded apps and holds about 150 MB,
    so a lighter one is worth it; `launcher/build-and-install.sh` builds and installs the Clean Your TV
-   launcher and does the handover itself. Projectivy (`com.spocky.projengmenu`, about 11 MB) and
-   tvhome-zh (`com.gathin.tvhome`, an Apple TV-style fork of this repo's launcher) both work here.
+   launcher and does the handover itself. Projectivy (`com.spocky.projengmenu`, about 11 MB) also works here.
 2. Disable the list:
    `TV_HOST=<tv ip> tools/disable.sh examples/mediatek-m7332/debloat.txt`
    Run it after step 1: the vendor launcher's line is only disabled once another launcher answers HOME.

@@ -38,7 +38,8 @@ com.skyworth.performance.monitors   # Background performance/telemetry monitor
 com.skyworth.testtime               # Factory test timer
 com.skyworthdigital.stb.dataprovider # Diagnostics data provider
 com.skyworth.microphone             # Karaoke / external microphone companion; com.loostone.tuning keeps system audio
-com.coocaa.guide                    # Boot guide and EPG program guide / push receiver; not used without broadcast TV
+# EPG guide, TV middleware: commented out for everyone; this set has it off.
+#com.coocaa.guide                    # Boot guide and EPG program guide / push receiver; not used without broadcast TV
 
 # --- Optional, kept on the tested unit: uncomment to disable ---
 # com.tianci.appstore               # Built-in app store. Disabling it leaves no way to install apps without a sideload.

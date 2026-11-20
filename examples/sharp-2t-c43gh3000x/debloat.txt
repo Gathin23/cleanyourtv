@@ -8,7 +8,8 @@
 # Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it once the new
 # launcher owns Home). Setup wizard: com.google.android.tungsten.setupwraith (claims HOME).
 # Live TV and inputs: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput.
-# Port 5555 was open out of the box (Network debugging), no Wireless debugging pairing needed.
+# Port 5555 was open out of the box (Network debugging), no Wireless debugging pairing needed; turn
+# Network debugging off in Developer options when you are done.
 #
 # Kept on purpose: the HDMI/tuner stack (com.mediatek.*), com.smartdevice.global.service and
 # com.smartdevice.dailyshortcut (global keys), com.smartdevice.bleconnectservice (remote pairing and battery),
@@ -47,8 +48,9 @@ com.android.printspooler                     # printing
 com.android.cts.ctsshim                      # Android test shim
 com.android.cts.priv.ctsshim                 # Android test shim
 com.android.settings.intelligence            # suggestions in Settings
-com.google.android.youtube.tvmusic           # YouTube Music, off by choice
-com.google.android.play.games                # Play Games, off by choice
+# Off on this set by the owner's choice; uncomment if you don't use them.
+#com.google.android.youtube.tvmusic           # YouTube Music, off by choice
+#com.google.android.play.games                # Play Games, off by choice
 
 # --- After the new launcher is Home ---
 # dreamx: set the screensaver to the launcher's clock first:

@@ -33,8 +33,8 @@
 # ADB quirk on this firmware (ro.adb.secure=1): the "Allow USB debugging?" popup only renders when a
 # fresh client challenges right after adbd restarts. If a connection sits at unauthorized, start the
 # client and toggle ADB debugging off and on; adbd serves one client, so kill other adb clients first.
-# "Always allow from this computer" persists across reboots, and the ADB debugging switch itself stayed
-# on across the reboot.
+# "Always allow from this computer" persists across reboots. Turn ADB debugging off in Developer options
+# when you are done.
 
 # Amazon data collection and telemetry (the silent background uploaders)
 com.amazon.ceviche                     # data collection pipelines

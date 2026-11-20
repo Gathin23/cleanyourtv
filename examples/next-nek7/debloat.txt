@@ -63,7 +63,7 @@ com.google.android.syncadapters.contacts
 # com.google.android.youtube.tv            # owner watches with SmartTube, so this belongs to that owner
 com.google.android.music                   # Play Music, discontinued by Google
 com.droidlogic.videoplayer                 # "MoviePlayer" / Film Oynatıcı, the preloaded player; MX Player stays
-com.next.iptv                              # Next IPTV, preloaded and not used by this owner
+#com.next.iptv                              # Next IPTV, preloaded and not used by this owner
 
 # Receivers the owner does not use
 com.waxrain.airplaydmr                    # AirPin PRO: AirPlay/DLNA sink, starts at boot, holds INSTALL_PACKAGES

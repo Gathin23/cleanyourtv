@@ -48,25 +48,26 @@ com.tcl.UpdatePeripheral               # TCL soundbar updater; keep it with a TC
 com.google.android.apps.tv.dreamx      # Ambient screensaver; the launcher's Clock (ClockDream) replaces it
 # com.tcl.repairguide is in debloat.txt but not installed on this unit
 
-# Off by the owner's choice: comment out what you use
-com.disney.disneyplus
-com.cbs.ca                             # Paramount+
-com.crunchyroll.crunchyroid
-com.globo.globotv                      # Globoplay
-br.com.claro.now.smarttvclient         # Claro tv+
-com.google.android.videos              # Google TV / Play Movies
-com.google.android.play.games
-com.google.android.katniss             # Google Assistant: the remote's mic button does nothing without it
-com.tcl.smartalexa                     # Alexa
-com.google.android.tv.remote.service   # Google TV phone-remote app (and the mic bridge, see debloat.txt)
-com.tcl.miracast                       # Miracast screen mirroring; Chromecast and AirPlay still cast
-com.tcl.magiconnectfree                # T-Cast / MagiConnect phone app
+# This 50P7K has these off by the owner's choice; uncomment what you don't use
+#com.disney.disneyplus
+#com.cbs.ca                             # Paramount+
+#com.crunchyroll.crunchyroid
+#com.globo.globotv                      # Globoplay
+#br.com.claro.now.smarttvclient         # Claro tv+
+#com.google.android.videos              # Google TV / Play Movies
+#com.google.android.play.games
+#com.google.android.katniss             # Google Assistant: the remote's mic button does nothing without it
+#com.tcl.smartalexa                     # Alexa
+#com.google.android.tv.remote.service   # Google TV phone-remote app (and the mic bridge, see debloat.txt)
+#com.tcl.miracast                       # Miracast screen mirroring; Chromecast and AirPlay still cast
+#com.tcl.magiconnectfree                # T-Cast / MagiConnect phone app
 
-# No antenna or cable on this unit
-com.tcl.initsetup                      # TCL first-run setup and channel installation; re-enable before a scan
-com.mirakulo.astrotv.service           # Ginga, the ISDB-Tb broadcast interactive-TV engine
+# No antenna or cable on this unit, so this 50P7K has these off; uncomment only without broadcast TV
+#com.tcl.initsetup                      # TCL first-run setup and channel installation; re-enable before a scan
+#com.mirakulo.astrotv.service           # Ginga, the ISDB-Tb broadcast interactive-TV engine
 
 # Second Home claimant: disable it while Google TV's home is still Home, then install the launcher.
+# Disabling setupwraith gives Home back but can cost casting.
 # On this unit it owned the saved Wi-Fi network: forget the network and join it again in Settings first
 # (tools/disable.sh refuses until then).
 com.google.android.tungsten.setupwraith

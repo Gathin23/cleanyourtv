@@ -63,7 +63,8 @@ persist.service.model.name = OfficeMode
 
 7 packages disabled, all verified to survive a cold boot (`pm list packages -d` unchanged after a power
 cycle): `com.tianci.ad`, `com.tianci.de`, `com.skyworth.performance.monitors`, `com.skyworth.testtime`,
-`com.skyworthdigital.stb.dataprovider`, `com.skyworth.microphone`, `com.coocaa.guide`.
+`com.skyworthdigital.stb.dataprovider`, `com.skyworth.microphone`, `com.coocaa.guide` (the EPG guide, which the
+shared list keeps as a comment).
 
 Measured on this unit, from the home screen's own readout:
 

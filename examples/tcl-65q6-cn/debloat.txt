@@ -41,6 +41,7 @@
 # /data/local/strbootvideo/bootvideo.ts. Disabling the downloader below stops it coming back; the
 # owner pulled both directories to a PC first and then deleted the .ts, .zip and ts.ini files, and
 # the directories were still empty after a reboot. There is no persist.sys.bootvideo.time here.
+# Deleting those files is outside this list: restore.sh does not bring them back, so keep the PC copy.
 #
 # LAUNCHER GATE: any APK declaring android.intent.category.HOME is refused with
 # INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES ("disable install launcher app not signature by
@@ -90,5 +91,6 @@ com.example.tvcapture                   # capture test leftover
 com.iflytek.mictest                     # microphone test leftover
 
 # The owner's choice: the store and the OTA user interface, with the firmware updater kept
-com.tcl.versionUpdateApp                # OTA user interface; com.snm.upgrade (the updater) stays
-com.tcl.appmarket2                      # TCL app store; 当贝市场 installed instead
+# This set has these two off by the owner's choice; uncomment to do the same.
+#com.tcl.versionUpdateApp                # OTA user interface; com.snm.upgrade (the updater) stays
+#com.tcl.appmarket2                      # TCL app store; 当贝市场 installed instead

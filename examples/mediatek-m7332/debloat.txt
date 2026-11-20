@@ -2,7 +2,7 @@
 # Build RP1A.200720.011 / m7332_eu-userdebug 11 RP1A.200720.011 eng.nobody.20220906.224559 test-keys,
 # 1920x1080 panel, 32-bit only (armeabi-v7a), ~1.8 GB RAM with ro.config.low_ram=true.
 # The firmware is a userdebug build signed with test-keys and answers `adb root`; this list needs none
-# of that, only USB debugging on port 5555.
+# of that, only ADB debugging.
 # The quickest way to tell whether this list fits: the vendor apps are com.rp.* (instroduce, uhd,
 # memoryclean, rpfactory), the cast hub is com.mphotool.apiservice + com.android.toofifi, and the stock
 # launcher is com.rp.launcher.
@@ -12,7 +12,7 @@
 # Everything is DISABLED, not uninstalled. Comment out anything you use.
 #
 # Status: applied 2026-11-19 on a living-room unit; Home was handed to a sideloaded launcher first
-# (Projectivy, then tvhome-zh) and com.rp.launcher disabled only after the new one answered HOME.
+# (Projectivy) and com.rp.launcher disabled only after the new one answered HOME.
 # Worked after the list: Wi-Fi, the vendor Settings app, com.mediatek.wwtv.tvcenter (live TV and inputs),
 # IPTV apps, screenshots over ADB, and a reboot. Not exercised: the factory menus (left enabled),
 # the whiteboard and "Control Center" apps (user-installed, left alone), Bluetooth remote pairing.

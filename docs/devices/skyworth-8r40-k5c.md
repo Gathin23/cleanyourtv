@@ -122,9 +122,9 @@ Turning 单键开关 off in the factory menu takes effect immediately without a 
 | `third.get.facSingleKeyEnable` | `true` | `false` |
 
 That stops the automatic boot into live TV, but not the tuner itself: the system restarts `com.skyworth.tv`
-within seconds, and `com.skyworth.tv.provider` keeps `tvserver` tuning. Only `pm disable-user com.skyworth.tv`
-stops it — at the cost of live TV, and possibly of picture settings and the accessibility toggle that live in
-the TV app. Do that only on a set that never uses an aerial or cable feed.
+within seconds, and `com.skyworth.tv.provider` keeps `tvserver` tuning. `com.skyworth.tv` stays enabled: it owns
+live TV and the tuner, and picture settings and the accessibility toggle live in it too, so this list never
+disables it.
 
 ### Trap 7 (omitted)
 
@@ -170,7 +170,6 @@ The first six (`ad`, `push`, `appstore`, `user`, `ipc`, `autoinstaller`) are alr
 Two optional additions, both reboot-checked, with the costs stated:
 
 - `com.tianci.de` — ~70 MB in two processes. Safe **alone**; see Trap 1 for the batch rule.
-- `com.skyworth.tv` — ~53 MB, and the only way to stop `tvserver` re-tuning (Trap 6). Costs live TV.
 - `com.coocaa.tvmanager` has no launcher entry of its own (it resolves to the system chooser), so it is a dead
   tile if placed on a home screen, but disabling it is harmless.
 
@@ -197,10 +196,7 @@ Do not copy either list onto the other TV. Packages that appear only in the #417
    `com.skyworth.broadcast.homepage.switch`, or hotel mode `persist.sky.hotel_switch`? Untested — the props are
    rewritten and `/system/etc/bootintent.xml` is re-read at boot, both from read-only `/system`, so it looks
    unlikely.
-2. Root on RTD285x with kernel 4.4.3: CVE-2019-2215 PoCs are arm64 and need a 4 GB mmap; the arm32 port needs
-   kernel symbol offsets that require the boot image.
-3. `com.skyworth.tv.provider` keeps `tvserver` re-tuning after `com.skyworth.tv` is disabled (Trap 6). Which
-   component of the provider owns that loop is still unidentified; disabling the provider itself was not tried,
-   since the TV app is in the must-keep list.
-4. Whether the missing clipboard service can be brought back by installing a third-party provider, instead of
+2. Which component of `com.skyworth.tv.provider` keeps `tvserver` re-tuning (Trap 6) is still unidentified;
+   disabling the provider was not tried, since the TV app is in the must-keep list.
+3. Whether the missing clipboard service can be brought back by installing a third-party provider, instead of
    giving up accessibility. Not tried.

@@ -120,7 +120,9 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   cable is also what opened the port on a Kodak 55CA0909, a different set that reports the same
   `PTT1.181130.001` build ([its header](../examples/kodak-55ca0909/debloat.txt); plugged into the
   computer directly, since a hub there reset the TV's USB configuration). So try one before concluding
-  that a firmware offers no way in; the port scan above is the check after that, and with neither route
+  that a firmware offers no way in (an A-to-A cable joins two USB power supplies: plug it straight into the
+  computer, no hub, and unplug it if no prompt appears; the port `adb tcpip 5555` opens lasts until the TV
+  reboots, so reboot it when you are done); the port scan above is the check after that, and with neither route
   there is nothing to disable on that set. Every step here goes through the ADB port, so a set is
   unchanged by these checks and no list is applied until `tools/tv.py --probe` answers.
 - **USB devices go dead while USB debugging is on**, seen on the Xiaomi Mi Box S and the Xiaomi TV
