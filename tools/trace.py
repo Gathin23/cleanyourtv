@@ -39,6 +39,7 @@ Scenarios (setup runs before the recording starts, so it stays out of the trace)
 """
 import argparse
 import base64
+import contextlib
 import errno
 import importlib.util
 import json
@@ -228,6 +229,28 @@ def parse(argv):
     return args
 
 
+@contextlib.contextmanager
+def trace_output(path):
+    """Stage a trace or its metadata, then publish it before removing the staging folder."""
+    folder, name = os.path.split(os.path.abspath(path))
+    published = False
+    try:
+        with tempfile.TemporaryDirectory(prefix=".trace-", dir=folder) as staging:
+            part = os.path.join(staging, name)
+            yield part
+            if os.path.isfile(path):
+                shutil.copymode(path, part)
+            os.replace(part, path)
+            published = True
+    except OSError as error:
+        if not published:
+            raise
+        # The complete file is already in place. A local cleanup failure must not stop metadata
+        # or later recordings, or make this successful recording read as a failed download.
+        print(f"warning: {path} was written, but its staging folder could not be removed "
+              f"({error.strerror or error}).", file=sys.stderr)
+
+
 def record_one(dev, setup, steps, package, out_path, run_shell=None):
     """Run the setup, record while the steps run, then pull the trace to out_path."""
     run_shell = run_shell or (lambda cmd: dev.shell(cmd, read_timeout_s=120.0))
@@ -253,17 +276,12 @@ def record_one(dev, setup, steps, package, out_path, run_shell=None):
         raise RuntimeError("perfetto is still running after the completion wait; no trace was pulled")
     # A failed or empty pull must not truncate an earlier recording. Stage on the same filesystem so
     # the completed trace replaces it only after the download and remote cleanup both succeed.
-    folder, name = os.path.split(os.path.abspath(out_path))
-    with tempfile.TemporaryDirectory(prefix=".trace-", dir=folder) as staging:
-        part = os.path.join(staging, name)
+    with trace_output(out_path) as part:
         dev.pull(REMOTE, part, transport_timeout_s=300.0, read_timeout_s=300.0)
         run_shell(f"rm -f {REMOTE}")
         size = os.path.getsize(part)
         if size == 0:
             raise RuntimeError("perfetto wrote an empty trace; run with --runs 1 and see tools/trace.md")
-        if os.path.isfile(out_path):
-            shutil.copymode(out_path, part)
-        os.replace(part, out_path)
     return size
 
 
@@ -404,15 +422,11 @@ def main(argv=None):
                 path = os.path.join(args.out, f"{args.scenario}-{run}.pftrace")
                 size = record_one(dev, setup, steps, args.package, path, shell)
                 sidecar = path[:-len(".pftrace")] + ".json"
-                with tempfile.TemporaryDirectory(prefix=".trace-", dir=os.path.dirname(path)) as staging:
-                    part = os.path.join(staging, os.path.basename(sidecar))
+                with trace_output(sidecar) as part:
                     with open(part, "w") as f:
                         json.dump({"scenario": args.scenario, "run": run, "package": args.package,
                                    "launcher": launcher, "other_app": other, "setup": setup, "steps": steps,
                                    "tv": about, "recorded": time.strftime("%Y-%m-%dT%H:%M:%S")}, f, indent=1)
-                    if os.path.isfile(sidecar):
-                        shutil.copymode(sidecar, part)
-                    os.replace(part, sidecar)
                 print(f"{path}: {size} bytes")
         finally:
             if helpers:
