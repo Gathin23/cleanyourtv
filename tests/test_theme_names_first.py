@@ -88,8 +88,9 @@ class ThemeNamesFirstTest(unittest.TestCase):
         if os.name != "posix":
             raise unittest.SkipTest("the clear runs in the TV's shell; this test needs /bin/sh")
         script = (TOOLS / "theme.ps1").read_text(encoding="utf-8")
-        line = next(line for line in script.splitlines() if line.startswith("$clearWallpapers = "))
-        clear = line[len('$clearWallpapers = "'):-1]
+        line = next(line for line in script.splitlines()
+                    if line.strip().startswith("$script:clearWallpapers = "))
+        clear = line.strip()[len('$script:clearWallpapers = "'):-1]
         self.assertNotIn("`", clear, "PowerShell escapes would make this differ from what the TV runs")
         base = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, base, ignore_errors=True)
