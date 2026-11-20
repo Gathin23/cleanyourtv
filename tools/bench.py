@@ -612,7 +612,9 @@ def idle_cpu(tv, package, seconds):
         prefix = f"{pid} ("
         for line in lines:
             if line.startswith(prefix):
-                parts = line[line.index(")") + 2:].split()
+                # comm is printed verbatim inside parentheses and may itself contain ')'.
+                # The last ')' ends it; state and the numeric counters follow.
+                parts = line[line.rindex(")") + 2:].split()
                 if len(parts) > 12:
                     return int(parts[11]) + int(parts[12])
         return None
