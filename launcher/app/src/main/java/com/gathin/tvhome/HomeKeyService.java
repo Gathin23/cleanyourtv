@@ -372,7 +372,7 @@ public class HomeKeyService extends AccessibilityService {
 
     /** stock_home_redirect after STOCK_HOME_DELAY_MS, unless another window came up meanwhile. */
     private final Runnable stockHomeBack = this::openHome;
-    static final long STOCK_HOME_DELAY_MS = 400L;
+    static final long STOCK_HOME_DELAY_MS = 150L;
 
     /** The Google TV Assistant (voice search), which hands its results to the stock launcher. */
     static final String ASSISTANT_PACKAGE = "com.google.android.katniss";

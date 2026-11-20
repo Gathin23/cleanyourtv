@@ -2,7 +2,7 @@
 
 Bu sayfa, bu fork'un GitHub Releases sayfasındaki hazır APK'yı bilgisayar ve ADB kullanmadan bir Android TV veya Google TV'ye kurmayı anlatır. Tek APK tüm bu cihazlar için aynıdır.
 
-Uygulama TV'de **CleanYourTV** adıyla görünür. Paket adı `com.gathin.tvhome`. Erişilebilirlik ayarlarındaki yardımcının adı **Ana ekran tuşu**'dur (TV İngilizceyse **Home button**).
+Uygulama TV'de **CleanYourTV** adıyla görünür. Paket adı `com.gathin.tvhome`. Erişilebilirlik ayarlarındaki yardımcının adı **CleanYourTV ana ekranı**'dır (TV İngilizceyse **CleanYourTV Home**).
 
 ## Önce bilmen gerekenler
 
@@ -53,12 +53,12 @@ Kurulum bitince bu izni tekrar kapatabilirsin.
 Google TV ana ekran seçtirmez. Bunun yerine uygulamanın erişilebilirlik yardımcısı Home tuşunu ve stok ana ekranı CleanYourTV'ye yönlendirir:
 
 1. Ayarlar > Sistem > Erişilebilirlik (bazı cihazlarda doğrudan Ayarlar > Erişilebilirlik).
-2. **Ana ekran tuşu**'nu bul ve aç. Uyarıyı onayla.
-3. Home tuşuna bas: CleanYourTV gelmeli. TV'yi yeniden başlatınca da açılışta stok ekran bir an görünüp CleanYourTV'ye geçer.
+2. **CleanYourTV ana ekranı**'nı bul ve aç. Android "cihazın tam kontrolü" diye bir uyarı gösterir. Bu, Home tuşunu izleyebilmek için gereken standart erişilebilirlik uyarısıdır. Onayla.
+3. Home tuşuna bas: Google TV ana ekranı bir an görünür, sonra CleanYourTV gelir. ADB'siz kurulumda bu kısa geçiş normaldir. Yeniden başlatınca da aynısı olur.
 
 ## Bilinen sınırlar
 
-- **Vestel tabanlı TV'ler (tvlauncher):** Denenen bir cihazda varsayılan ana ekran ayarı, tvlauncher ADB ile kapatılana kadar tutmadı. ADB'siz çözüm yukarıdaki erişilebilirlik ayarı (Ana ekran tuşu).
+- **Vestel tabanlı TV'ler (tvlauncher):** Denenen bir cihazda varsayılan ana ekran ayarı, tvlauncher ADB ile kapatılana kadar tutmadı. ADB'siz çözüm yukarıdaki erişilebilirlik ayarı (CleanYourTV ana ekranı).
 - **Bazı Çin pazarı TCL yazılımları** üçüncü parti ana ekranı hiç kabul etmez.
 - **Kumandadaki uygulama tuşları** (YouTube, Netflix vb.) bu APK'da yeniden atanmaz. Bu sürüm, basılı tutulan ses tuşunun tekrar etmesi için tuş filtrelemeyi kapalı tutar (`key_filter=false`). Google TV'de bu tuşları stok ana ekran karşılamaya devam eder.
 - Stok ana ekran zaten açıkken Home'a basılırsa (ör. yeniden başlatmadan hemen sonra) birkaç saniye stok ekranda kalabilir. Başka bir uygulama açılıp kapanınca veya tekrar Home'a basınca düzelir.
@@ -67,7 +67,7 @@ Google TV ana ekran seçtirmez. Bunun yerine uygulamanın erişilebilirlik yard�
 
 ## Geri alma
 
-1. Ayarlar > Erişilebilirlik > **Ana ekran tuşu**'nu kapat (açtıysan).
+1. Ayarlar > Erişilebilirlik > **CleanYourTV ana ekranı**'nı kapat (açtıysan).
 2. Klasik Android TV'de: Ayarlar > Uygulamalar > Varsayılan uygulamalar > Ana ekran uygulaması > stok ana ekranı seç.
 3. Ayarlar > Uygulamalar > **CleanYourTV** > Kaldır.
 
