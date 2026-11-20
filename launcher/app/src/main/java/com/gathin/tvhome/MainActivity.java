@@ -250,6 +250,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static int lastFocused = 0;
     /** App of the last focused tile, so focus follows it when the app list changes. */
     private static String lastFocusedKey;
+    /** The app HomeKeyService saw in front, to focus its tile even when it was not opened from Home. */
+    private String pendingFocusPackage;
     private float density;
     /** Module cards (res/values/config.xml, module_cards): discovered on resume, shown only after the owner's Show. */
     private boolean moduleCards;
@@ -460,6 +462,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
+        pendingFocusPackage = getIntent().getStringExtra(HomeKeyService.EXTRA_FOCUS_PACKAGE);
+        if (pendingFocusPackage != null) getIntent().removeExtra(HomeKeyService.EXTRA_FOCUS_PACKAGE);
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
@@ -1048,9 +1052,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /**
-     * Home pressed while Home is already in front: singleTask delivers it here, then onResume runs.
-     * Back to the top with the first dock tile focused, like the stock launcher. Back from an app
-     * never comes this way, so returning to the app you left from is unchanged (#118).
+     * A HOME intent while Home is in front rewinds to the first tile. One that arrives after an app comes
+     * before onResume, so stopped is still true, and keeps the tile HomeKeyService saw.
      */
     @Override
     protected void onNewIntent(Intent intent) {
@@ -1060,22 +1063,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openInputsIfAsked(intent)) return;
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
         if (gameDay != null && !stopped) gameDay.read();
-        grid.scrollToPosition(0);
-        lastFocused = 0;
-        lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
-        if (stopped) {
+        boolean homeAgain = intent.getBooleanExtra(HomeKeyService.EXTRA_HOME_AGAIN, false);
+        String focusPackage = intent.getStringExtra(HomeKeyService.EXTRA_FOCUS_PACKAGE);
+        boolean hasFocusPackage = focusPackage != null && !focusPackage.isEmpty();
+        boolean rewind = rewindsToFirstTile(stopped, homeAgain, hasFocusPackage);
+        pendingFocusPackage = rewind ? null : focusPackage;
+        intent.removeExtra(HomeKeyService.EXTRA_FOCUS_PACKAGE);
+        if (!rewind) {
             tileRefresh.onHomeAgain();
         } else {
             // Still on screen (the quick panel was over it, or Home was already in front): the tiles are current,
             // so only go back to the first one; rebuilding would replay the entrance animation for nothing.
+            grid.scrollToPosition(0);
+            lastFocused = 0;
+            lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
             grid.post(() -> focusTile(0));
         }
+    }
+
+    /** A HOME intent rewinds unless it is the return to Home from an app; HomeKeyService tags a press on Home. */
+    static boolean rewindsToFirstTile(boolean stopped, boolean homeAgain, boolean hasFocusPackage) {
+        return homeAgain || (!stopped && !hasFocusPackage);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        stopped = false;
         started = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(timeReceiver, timeFilter, Context.RECEIVER_NOT_EXPORTED);
@@ -1091,6 +1104,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        stopped = false;
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
@@ -1281,8 +1295,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final boolean returnToLibrary = libraryFocusPending;
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
+        final String focusPackage = pendingFocusPackage;
+        pendingFocusPackage = null;
         grid.post(() -> {
-            int pos = adapter.positionOf(returnKey);
+            int pos = adapter.positionOfPackage(focusPackage);
+            if (pos < 0) pos = adapter.positionOf(returnKey);
             if (returnToLibrary || libraryFocusPending) focusLibrary();
             else focusTile(pos >= 0 ? pos : returnSlot);
             tilesReady = true;
