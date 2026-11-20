@@ -43,6 +43,7 @@ NETOSCOPE = "com.google.android.apps.tv.netoscope"
 CONSENT = "com.android.tv.feedbackconsent"
 PARTNER = "com.google.android.partnersetup"
 FEEDBACK = "com.google.android.feedback"
+LOGKIT = "com.tcl.logkit"
 NEW = [LOGGING, NETOSCOPE, CONSENT, PARTNER]
 # The four as that Chromecast prints them: their own appId and part of what they request. None of
 # them asks for RECORD_AUDIO; feedbackconsent is in the system UID, which holds it.
@@ -64,6 +65,18 @@ def disabled_by_folder():
     for path in sorted((ROOT / "examples").glob("*/*.txt")):
         folders.setdefault(path.parent.name, set()).update(recovery.read_list(path))
     return folders
+
+
+def brands(examples=None):
+    """examples/<folder> -> the brand its tv.json names, for the folders that ship one.
+
+    A note that counts "TCL lists" is counting folders, so the brand a folder's own tv.json
+    carries is what decides one, not the folder's name: examples/semp-tcl-50p8m is a TCL set.
+    """
+    known = {}
+    for path in sorted((Path(examples) if examples else ROOT / "examples").glob("*/tv.json")):
+        known[path.parent.name] = json.loads(path.read_text()).get("brand")
+    return known
 
 
 class AuditTest(unittest.TestCase):
@@ -167,6 +180,49 @@ class CatalogueTest(unittest.TestCase):
         self.assertTrue(0.15 <= both / total <= 0.25, f"{both} of {total} lists")
         self.assertIn("about a third of the lists", privacy.CATALOGUE[PARTNER][1])
         self.assertTrue(0.28 <= partner / total <= 0.4, f"{partner} of {total} lists")
+
+    def test_the_tcl_share_in_the_logkit_note_matches_the_tcl_lists(self):
+        # The third share in the catalogue, and the one nothing measured: the note said "most TCL
+        # lists" while 36 of the 89 folders whose tv.json says TCL disable it, which is about two
+        # in five. The other two shares are read above; a note that counts folders needs this one.
+        folders = disabled_by_folder()
+        named = brands()
+        tcl = [name for name in folders if named.get(name) == "TCL"]
+        self.assertGreaterEqual(len(tcl), 60, "the brand reader has to find the TCL folders")
+        disabled = sum(1 for name in tcl if LOGKIT in folders[name])
+        self.assertIn("about two in five TCL lists", privacy.CATALOGUE[LOGKIT][1])
+        self.assertTrue(0.34 <= disabled / len(tcl) <= 0.46,
+                        f"{disabled} of {len(tcl)} TCL lists disable it")
+
+
+class BrandReaderTest(unittest.TestCase):
+    """brands() decides which folders a note counting "TCL lists" counts, so it is read too."""
+
+    def tree(self, **folders):
+        base = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, base, True)
+        for name, body in folders.items():
+            (base / name).mkdir()
+            if body is not None:
+                (base / name / "tv.json").write_text(body)
+        return base
+
+    def test_it_reads_the_brand_a_folder_ships(self):
+        base = self.tree(**{
+            "tcl-43c645": '{"brand": "TCL"}',
+            "semp-tcl-50p8m": '{"brand": "TCL", "model": "50P8M"}',
+            "sony-kd-55x8509c": '{"brand": "Sony", "model": "KD-55X8509C"}',
+        })
+        known = brands(base)
+        self.assertEqual(known["tcl-43c645"], "TCL")
+        # The brand decides a TCL set, not the folder's name: this one does not start with tcl-.
+        self.assertEqual(known["semp-tcl-50p8m"], "TCL")
+        self.assertEqual(known["sony-kd-55x8509c"], "Sony")
+
+    def test_a_folder_without_a_tv_json_is_not_counted(self):
+        base = self.tree(**{"bare": None, "tcl-43c645": '{"brand": "TCL"}'})
+        self.assertNotIn("bare", brands(base))
+        self.assertEqual(list(brands(base)), ["tcl-43c645"])
 
 
 if __name__ == "__main__":
