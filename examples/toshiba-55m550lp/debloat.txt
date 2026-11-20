@@ -3,9 +3,9 @@
 # Fingerprint: Toshiba/songshan_emT_FFM/songshan:11/RTT2.220118.001/01.03.02.01:user/release-keys
 #
 # Hisense-built, not Vestel: ro.product.manufacturer=Hisense, device songshan, board m7632 (MediaTek). It is the
-# same board and build as examples/hisense-smarttv-4k-ffm-android11 (seven units there), so that header's notes
-# apply here too; this folder exists so a Toshiba owner finds it under Toshiba. Nothing in the Vestel-built
-# Toshiba lists (toshiba-cosmos-android-tv, toshiba-65ua2363dg) applies to this set.
+# same board and build as examples/hisense-smarttv-4k-ffm-android11, whose header carries a note for each set
+# reported on it, so those notes apply here too; this folder exists so a Toshiba owner finds it under Toshiba.
+# Nothing in the Vestel-built Toshiba lists (toshiba-cosmos-android-tv, toshiba-65ua2363dg) applies to this set.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-55m550lp/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-55m550lp/debloat.txt com.google.android.apps.tv.launcherx
