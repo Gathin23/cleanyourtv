@@ -50,6 +50,7 @@ state = load()
 
 def run(command):
     if "pm install" in command:
+        state["home"] = state.get("home_after_install", state["home"])
         return "Success\n"
     # A TV that never held WRITE_SECURE_SETTINGS: the revoke step finds it denied. The step itself is run
     # against fake pm and dumpsys in test_launcher_min_sdk; here only the handover is under test.
@@ -165,7 +166,7 @@ class HandoverTest(unittest.TestCase):
         self.home = self.base / "home"
         self.home.mkdir()
 
-    def handover(self, **overrides):
+    def handover(self, env_extra=None, **overrides):
         state = {
             "stock_home": STOCK_HOME,
             "home": STOCK_HOME,
@@ -187,6 +188,7 @@ class HandoverTest(unittest.TestCase):
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))
+        env.update(env_extra or {})
         if os.name != "posix" or not shutil.which("bash"):
             raise unittest.SkipTest("build-and-install.sh is a POSIX script; it needs bash")
         result = subprocess.run(
@@ -248,6 +250,43 @@ class HandoverTest(unittest.TestCase):
         self.assertIn("recovery is incomplete", result.stderr)
         self.assertTrue(any("pm enable --user 0" in c for c in state["commands"]))
         self.assertIsNotNone(self.record())
+
+    def test_stock_launcher_none_keeps_stock_home_and_enables_home_key_service(self):
+        # #4070: tvlauncher holds HOME at priority 2 on a TCL Android TV 8, so set-home-activity leaves it Home.
+        result, state = self.handover(set_home_fails=True,
+                                      env_extra={"STOCK_LAUNCHER": "none", "HOME_KEY_SERVICE": "1"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(f"Home stays {STOCK_HOME}", result.stdout)
+        self.assertIn("Installed.", result.stdout)
+        commands = state["commands"]
+        self.assertTrue(any("enabled_accessibility_services" in c and "HomeKeyService" in c for c in commands))
+        self.assertTrue(any("WRITE_SECURE_SETTINGS" in c for c in commands))
+        self.assertFalse(any("pm disable-user" in c or "pm enable" in c for c in commands))
+        self.assertIsNone(self.record())
+
+    def test_stock_launcher_none_without_home_key_service_says_what_is_missing(self):
+        result, state = self.handover(set_home_fails=True, env_extra={"STOCK_LAUNCHER": "none"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("HOME_KEY_SERVICE=1", result.stdout)
+        self.assertFalse(any("HomeKeyService" in c for c in state["commands"]))
+
+    def test_none_picked_because_home_was_ours_still_stops(self):
+        # An upgrade: Home already belonged to this launcher, so the script picks none itself. A Home that
+        # then lands elsewhere is not a stock_home_redirect setup.
+        result, state = self.handover(home=NEW_HOME, home_after_install=STOCK_HOME, set_home_fails=True,
+                                      env_extra={"HOME_KEY_SERVICE": "1"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Home already belongs to this launcher", result.stdout)
+        self.assertIn("not to the new launcher", result.stderr)
+        self.assertFalse(any("HomeKeyService" in c for c in state["commands"]))
+
+    def test_ps1_keeps_the_stock_home_only_for_a_none_passed_in(self):
+        ps1 = (ROOT / "launcher" / "build-and-install.ps1").read_text(encoding="utf-8")
+        code = "\n".join(line for line in ps1.splitlines() if not line.lstrip().startswith("#"))
+        self.assertLess(code.index("$keepStockHome = $StockLauncher -eq 'none'"), code.index("if (-not $StockLauncher)"))
+        kept = code.index("-and $keepStockHome) {")
+        self.assertLess(kept, code.index("$restored = Undo-Handover"))
+        self.assertLess(kept, code.index("if ($HomeKeyService) { Enable-Service 'HomeKeyService' }"))
 
     def test_second_launcher_tie_is_not_rolled_back(self):
         # A second launcher (e.g. Projectivy) keeps claiming HOME, so after a successful handover
