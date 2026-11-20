@@ -1,0 +1,93 @@
+# Hisense 43QD65QFC (AFTOLCBC82, ginza), Fire OS 8.1.8.0 / Android 11, firmware RS8180.3746N, US market
+# Reported and tested on the owner's set by @rabbit718 in issue #3523.
+# 43-inch sibling of hisense-fire-tv-55qd6qf: same RS8180/3746N board family. Every name verified
+# installed on THIS set with pm list packages before disabling; applied with tools/disable.sh and
+# checked with tools/check.py (0 drift) after a reboot.
+# Differences from the sister set: vizzini did NOT re-enable at boot here (it stayed DISABLED_USER
+# across the reboot, unlike the 55QD6QF note); on US sets com.tubitv.ott is a user-installed app,
+# not a retailer preload, so it is not on this list at all.
+# Stock Home com.amazon.tv.launcher (its own pm route: Fire OS never hands Home to a third-party
+# launcher here, so no launcher install) and Live TV com.amazon.vodcsp.livefiretv are kept.
+# AirPlay, Casting, Live TV/inputs, Silk and the firmware updater are kept. Wi-Fi is owned by
+# com.amazon.tv.oobe: never disable it.
+# ADB quirk on this firmware (ro.adb.secure=1): the "Allow USB debugging?" popup only renders when
+# a fresh client challenges right after adbd restarts - if a connection sits at unauthorized, start
+# the client and toggle ADB debugging off and on; adbd serves one client, so kill other adb clients
+# first. "Always allow from this computer" persists across reboots, and the ADB debugging switch
+# itself stayed on across the reboot.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-fire-tv-43qd65qfc/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-fire-tv-43qd65qfc/debloat.txt
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+
+# Amazon data collection and telemetry (the silent background uploaders)
+com.amazon.ceviche                     # data collection pipelines
+com.amazon.client.metrics.api          # metrics client API
+com.amazon.device.telemetry.emitter    # telemetry emitter
+com.amazon.dp.logger                   # device log upload
+com.amazon.perfc                       # performance telemetry
+com.amazon.perfcollection              # performance telemetry
+com.amazon.wirelessmetrics.service     # Wi-Fi metrics upload
+com.amazon.livedeviceservice           # live device reporting
+com.amazon.privacypassservice          # privacy pass token service
+com.amazon.tv.developer.dataservice    # personalization data for third-party apps
+com.amazon.wifilocker                  # uploads Wi-Fi passwords to Amazon
+
+# What You Watch / ACR and advertising
+com.amazon.tv.acr                      # Automatic Content Recognition (what's on screen, HDMI included)
+com.amazon.hybridadidservice           # advertising ID
+com.amazon.kso.blackbird               # launcher ad sync / bidding
+com.amazon.media.recommendations       # sponsored and recommendation rows
+com.amazon.sneakpeek                   # autoplaying previews on Home
+com.amazon.providers.contentsupport    # content support provider
+
+# Shopping, promos, retail mode and popups
+com.amazon.shoptv.client               # Shop on Fire TV
+com.amazon.tv.democontent.provider     # retail demo content
+com.amazon.tv.easyupgrade              # "upgrade your Fire TV" promos
+com.amazon.systemnotices               # system notices popups
+com.amazon.uxnotification              # UX notification popups
+com.amazon.tv.releasenotes             # "what's new"
+com.amazon.hedwig                      # Fire TV Channels (free channels with ads)
+com.amazon.storm.lightning.tutorial    # remote app tutorial
+com.amazon.tmm.tutorial                # remote tutorial
+
+# Amazon preloads (regular apps - the owner can also remove them from Settings instead; their
+# Home tiles linger until cleared per app from Settings > Applications > Manage all installed apps)
+com.amazon.bueller.music               # Amazon Music
+com.amazon.bueller.photos              # Amazon Photos
+com.amazon.tahoe                       # Amazon Kids
+com.amazon.gamehub                     # games hub
+com.amazon.spiderpork                  # Amazon Luna
+com.amazon.minitv.android.app          # miniTV
+com.amazon.naatyam                     # Naatyam
+com.amazon.tv.localgallery             # Gallery
+com.amazon.smarthomemapviewapp         # smart home dashboard (cameras, lights)
+com.amazon.ods.kindleconnect           # "show on Fire TV" from Echo / Fire tablet
+
+# Screen mirroring: disable to kill the Input row's Miracast tile (Cast-to-app and AirPlay still
+# work: apps keep casting, and com.apple.android.phPlayFTV is untouched; re-enable to restore it)
+com.amazon.cast.sink
+
+# Alexa group (owner's choice, disabled; voice is not half-on: vizzini is the voice capture, the
+# rest of the group is what makes the answers usable). Unlike the sister 55QD6QF, vizzini stayed
+# disabled across a reboot on this set - the re-enable note below did not reproduce.
+# (vizzini, Amazon's voice-capture service, re-enables itself to ENABLED at every boot: the Alexa
+# group does not stay fully off. check.py --fix, run over Wi-Fi after a reboot, cleans up the
+# rest of the group each boot and leaves Home and everything else alone.)
+com.amazon.vizzini
+com.amazon.alexamediaplayer.runtime.ftv # Alexa media player
+com.amazon.alexa.externalmediaplayer.fireos # Alexa music playback
+com.amazon.aca                         # Alexa hints/cues providers (AlexaCentralForApps)
+com.amazon.aiondec                     # Alexa skill connections
+com.amazon.audiohome                   # Alexa Home Theater
+com.amazon.tv.alexaalerts              # alarms, timers, reminders
+com.amazon.tv.alexanotifications       # Alexa notifications
+com.amazon.rtcsessioncontroller        # Alexa calling / Drop In
+com.amazon.spotify.mediabrowserservice # Spotify for Alexa (the Spotify app is separate)
+
+# Smart home and setup extras
+com.amazon.tv.mattercohost             # Matter smart-home controller (com.amazon.tv.matter, Matter casting, stays)
+com.amazon.tv.ffsprovisioneeclient     # frustration-free setup client
+com.amazon.whisperjoin.middleware.np   # frustration-free setup of other Amazon devices
+com.amazon.whisperjoin.middleware.v2.np # frustration-free setup of other Amazon devices
