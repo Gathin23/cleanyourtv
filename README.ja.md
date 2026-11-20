@@ -256,7 +256,7 @@ TV_HOST=192.168.1.50 tools/theme.sh --reset
 
 - **言語** はテレビのシステム言語に従います。現在、ランチャーには日本語の翻訳がないため、日本語環境では英語で表示されます。
   Android 13 以降では、ランチャーだけの言語を指定できます：
-  `tools/venv/bin/python -I tools/tv.py 'cmd locale set-app-locales com.gathin.tvhome --locales en'`。
+  `tools/venv/bin/python -I tools/tv.py 'cmd locale set-app-locales com.gathin.tvhome --locales ja'`。
 - **時計スクリーンセーバー**：テレビのスクリーンセーバー設定で Clock を選ぶか、次を実行します：
   `tools/venv/bin/python -I tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream; settings put secure screensaver_enabled 1'`。
 - **リモコンの入力切替ボタン**：macOS/Linux でインストールする際に `INPUT_KEY_SERVICE=1` を付けるとユーザー補助サービスが
