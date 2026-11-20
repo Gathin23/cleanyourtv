@@ -1,0 +1,73 @@
+# HY320 Mini projector (TXBox/Rockchip firmware, device rk3326_sgo, board rk3326), Android 12 (SDK 32)
+# Firmware rk3326_sgo-userdebug 12 SQ3A.220705.003.A1 eng.20260919.173827 release-keys, 1280x720,
+# ~1 GB (ro.config.low_ram=true), armeabi-v7a. A different firmware from examples/hy320/ (Google-
+# certified, Android 13) and examples/alwtniet-hy320-mini/ (Allwinner/HTC, Android 11): no com.htc.*
+# or com.softwinner.* packages here, so neither list applies.
+#
+# Apply:   TV_HOST=<projector ip> TV_PORT=3268 tools/disable.sh examples/hy320-mini-txbox/debloat.txt
+# Undo:    TV_HOST=<projector ip> TV_PORT=3268 tools/restore.sh examples/hy320-mini-txbox/debloat.txt
+# TV_PORT=3268 matters: this firmware runs adbd on 3268 (service.adb.tcp.port is preset), not 5555.
+# Everything is DISABLED, not uninstalled. Applied 2026-11-20 and lived with since; reboot-checked
+# twice (all 19 disables and the launcher takeover survived both reboots).
+#
+# Getting ADB: none of the usual routes are needed. adbd listens on port 3268 out of the box, from
+# the first boot, and the vendor's Developer options (reached through Activity Launcher:
+# com.android.tv.settings/.system.development.DevelopmentActivity) do not gate it. ro.adb.secure is
+# unset, so there is no "Allow USB debugging?" prompt: anyone on the LAN gets a shell with no
+# pairing. adbd also advertises itself over mDNS as adb-<serial>._adb._tcp, which finds the port
+# without a scan (`dns-sd -B _adb._tcp` on macOS, `adb mdns services` with a paired adb). The
+# projector's own About page is stripped (no Build row), and its stock launcher's settings are
+# com.shzhtxcz.txbox, which hides the real developer options; Activity Launcher opens them.
+#
+# Kept on purpose:
+# - com.shzhtxcz.txbox: the vendor settings suite (picture, focus, network). It also reinstalls
+#   com.aispeech.tvui and com.rockchip.itvbox at boot when they are missing, which is why the
+#   entries below are disabled rather than uninstalled: a disabled package is still installed,
+#   so the boot restore leaves it alone.
+# - com.shzhtxcz.txbox.launcher: the stock Home, kept enabled as a fallback (STOCK_LAUNCHER=none;
+#   Home is taken with cmd package set-home-activity after the launcher install).
+# - com.rockchip.itvbox: txbox's companion (reinstalled at boot); it links into the factory-reset
+#   flow, so it stays.
+# - com.bozee.usbdisplay: the casting receiver (an AirPlay/"QuickShare" RAOP server on a random
+#   port, AirTunes/150.x). Kept by the owner's choice: phone mirroring is used.
+# - com.rockchips.mediacenter: the USB media player. Kept by the owner's choice.
+# - com.android.rockchip.camera2, com.android.tv.set (factory reset and inputs), the keyboard,
+#   Play Store and Play Services: load-bearing, untouched.
+# - com.google.android.youtube.tv: kept by the owner's choice (in the launcher dock).
+# - de.szalkowski.activitylauncher.oss and com.spocky.projengmenu: owner-installed; Activity
+#   Launcher is the way into the real developer options and Settings on this firmware.
+#
+# Firmware notes:
+# - The panel is 1280x720 at density 240 (853x480dp, cramped). `wm density 213` gives the 960x540dp
+#   TV layout, but on this build the override does NOT survive a reboot and `settings put global
+#   density` is ignored: re-apply `wm density 213` after each full boot (undo: `wm density reset`).
+# - com.sszztxr.app is the TXBox vendor store/bootstrap the owner used to install Chrome: it starts
+#   at boot and tracks package installs. Off by choice; `pm enable --user 0 com.sszztxr.app` brings
+#   the vendor store back to fetch something.
+
+# Vendor apps: TXBox store, OTA updater, ad-carrying "voice UI", burn-in and factory test apps
+com.sszztxr.app                        # TXBox store/bootstrap app, starts at boot; off by choice
+com.sszztxr.oott                       # OTA updater (com.tx.ota.receiver), unknown vendor server
+com.aispeech.tvui                      # "voice UI" carrying com.speed.adv.TransparentAdActivity
+com.shzhtxcz.txcz.test                 # aging/burn-in test app (LaohuaReceiver), starts at boot
+com.rockchip.devicetest                # factory test app, boot receiver
+
+# Streaming portals nobody here uses
+com.android.mgstv                      # Brazilian IPTV FAST grid (brasiliptv), Firebase push
+com.netflix.mediaclient                # dead v9 client; servers reject it
+
+# Owner-installed browser, a 2020 build with years of unpatched CVEs
+com.android.chrome                     # installed from the TXBox store by the owner; off by choice
+
+# AOSP cruft
+com.google.android.onetimeinitializer
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.android.hotspot2.osulogin
+com.android.htmlviewer
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.android.soundpicker
+com.android.companiondevicemanager
+com.android.se
+com.android.wallpaperpicker

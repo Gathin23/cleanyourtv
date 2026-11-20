@@ -1,0 +1,14 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "de.szalkowski.activitylauncher.oss",
+    "com.rockchips.mediacenter"
+  ],
+  "app_library": true,
+  "background_color": "#070A14",
+  "wallpaper": true,
+  "wallpaper_dim": 12,
+  "dock_glass": true,
+  "icon_only_buttons": true,
+  "show_greeting": true
+}
