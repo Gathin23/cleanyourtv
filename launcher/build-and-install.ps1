@@ -75,9 +75,22 @@ if (-not $StockLauncher) {
         if ($LASTEXITCODE -ne 0) { throw 'could not query Home claimants; stock launcher was left untouched' }
         $found = @($knownStock | Where-Object { $claimants -match ([regex]::Escape($_) + '/') })
         if ($found.Count -eq 1) { $StockLauncher = $found[0]; Write-Host "Home is Android's chooser; the stock launcher among the candidates is $StockLauncher." }
-        else { throw "Home is Android's launcher chooser and $($found.Count) known stock launchers claim Home: pick a default on the TV first, or run again with -StockLauncher <package to disable> or -StockLauncher none." }
+        else {
+            # Name the TV's actual HOME claimants so the message lists the packages that could be passed
+            # as -StockLauncher, matching build-and-install.sh (#3471).
+            $candidates = (($claimants -split "`n") | ForEach-Object { if ($_ -match '([A-Za-z0-9_.]+)/') { $Matches[1] } } | Sort-Object -Unique) -join ' '
+            throw "Home is Android's launcher chooser and $($found.Count) known stock launchers claim Home: pick a default on the TV first, or run again with -StockLauncher <package to disable> or -StockLauncher none.`nHOME candidates on this TV: $candidates"
+        }
     }
-    else { throw "Home currently resolves to '$homePkg', which is not a stock launcher this script knows (android = launcher chooser, com.google.android.tungsten.setupwraith = setup wizard, see README Troubleshooting; anything else = another launcher is the default). Run again with -StockLauncher <package to disable> or -StockLauncher none." }
+    else {
+        # List the TV's actual HOME claimants so the message names the packages that could be passed as
+        # -StockLauncher, instead of leaving the reader to find them by hand (#3471).
+        $candidatesRaw = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
+        $candidates = if ($LASTEXITCODE -eq 0) { (($candidatesRaw -split "`n") | ForEach-Object { if ($_ -match '([A-Za-z0-9_.]+)/') { $Matches[1] } } | Sort-Object -Unique) -join ' ' } else { '' }
+        $msg = "Home currently resolves to '$homePkg', which is not a stock launcher this script knows (android = launcher chooser, com.google.android.tungsten.setupwraith = setup wizard, see README Troubleshooting; anything else = another launcher is the default)."
+        if ($candidates) { $msg += "`nHOME candidates on this TV: $candidates" }
+        throw "$msg`nRun again with -StockLauncher <package to disable> or -StockLauncher none."
+    }
 }
 Write-Host "Stock launcher: $StockLauncher"
 $disableStock = if ($StockLauncher -eq 'none') { 'echo stock launcher left alone' } else { "pm disable-user --user 0 $StockLauncher" }

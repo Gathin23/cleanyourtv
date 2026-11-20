@@ -93,13 +93,21 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
           STOCK_LAUNCHER=$FOUND; echo "Home is Android's chooser; the stock launcher among the candidates is $STOCK_LAUNCHER."
         else
           echo "ERROR: Home is Android's launcher chooser and $N known stock launchers claim Home: pick a default on the TV first," >&2
-          echo "or run again with STOCK_LAUNCHER=<package to disable> or STOCK_LAUNCHER=none." >&2; exit 1
+          echo "or run again with STOCK_LAUNCHER=<package to disable> or STOCK_LAUNCHER=none." >&2
+          echo "HOME candidates on this TV: $(printf '%s' "$CLAIMANTS" | tr '\n' ' ')" >&2; exit 1
         fi
       else
+        # List the TV's actual HOME claimants so the message names the packages that could be passed as
+        # STOCK_LAUNCHER=, instead of leaving the reader to find them by hand (#3471).
+        CLAIMANTS=$("$PY" -I ../tools/tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
+          | tr -d '\r' | grep -o '[A-Za-z0-9_.]*/' | tr -d / | sort -u 2>/dev/null) || CLAIMANTS=""
         echo "ERROR: Home currently resolves to '${HOME_PKG:-nothing}', which is not a stock launcher this script knows." >&2
         echo "  android                                  = Android's launcher chooser (two launchers tie); pick a default on the TV first" >&2
         echo "  com.google.android.tungsten.setupwraith  = Google TV's setup wizard; see README, Troubleshooting" >&2
         echo "  anything else                            = another launcher is the default" >&2
+        if [ -n "$CLAIMANTS" ]; then
+          echo "HOME candidates on this TV: $(printf '%s' "$CLAIMANTS" | tr '\n' ' ')" >&2
+        fi
         echo "Run again with STOCK_LAUNCHER=<package to disable> or STOCK_LAUNCHER=none." >&2; exit 1
       fi ;;
   esac
