@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name" translatable="false">Kannada Calendar</string>
+    <string name="today">Today</string>
+    <string name="update">Update the calendar</string>
+    <string name="festivals">Festivals &amp; Occasions</string>
+    <string name="public_holiday">Public holiday · %1$s</string>
+    <string name="restricted_holiday">Restricted holiday · %1$s</string>
+    <string name="tithi">Tithi</string>
+    <string name="nakshatra">Nakshatra</string>
+    <string name="rahu">Rahukalam</string>
+    <string name="kind_festival">Festival</string>
+    <string name="kind_temple">Temple</string>
+    <string name="kind_saint">Saints</string>
+    <string name="kind_vrata">Vrata</string>
+    <string name="kind_day">Days</string>
+    <string name="kind_other">Other</string>
+    <string name="list_focused">Up/Down to scroll · Left to go back</string>
+    <plurals name="more_below">
+        <item quantity="one">%d more below · press OK to scroll</item>
+        <item quantity="other">%d more below · press OK to scroll</item>
+    </plurals>
+    <string name="about">About and remote keys</string>
+    <string name="about_title">About this calendar</string>
+    <string name="about_keys">Remote keys</string>
+    <string name="key_day">Previous or next day</string>
+    <string name="key_week">Previous or next week. Up from the first week reaches the buttons in the red band</string>
+    <string name="key_ok">Open the day\'s festival list to scroll it. Left or Back returns to the month</string>
+    <string name="key_digits">Number keys, where the remote has them: go to that date of the month, 1 then 5 for the 15th</string>
+    <string name="key_month">The arrows beside the month in the red band: previous or next month. Channel +/−, Page Up/Down or Rewind/Fast-forward do the same on remotes that have them</string>
+    <string name="about_dots">Dot colours</string>
+    <string name="about_saved">Saved on %1$s; it covers the days up to %2$s.</string>
+    <string name="prev_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="upcoming_title">Upcoming</string>
+    <string name="upcoming_soon">Next 30 days</string>
+    <string name="upcoming_holidays">Public holidays ahead</string>
+    <string name="upcoming_none">Nothing in the saved calendar.</string>
+    <string name="key_back">Close the calendar</string>
+    <string name="about_source">Calendar</string>
+    <string name="about_source_text">Panchanga, festivals and holidays from the Bangalore Press calendar, downloaded by the TV from your own calendar link about once a month. The holidays are the Karnataka lists as the publisher files them.</string>
+    <string name="about_made">Made by</string>
+    <string name="about_made_text" translatable="false">Gagan T K · github.com/gagantk</string>
+    <string name="close">Close</string>
+    <string name="updating">Updating the calendar…</string>
+    <string name="updating_short">Updating…</string>
+    <string name="updated">Saved %1$s</string>
+    <string name="update_failed_short">Update failed; saved copy shown</string>
+    <string name="no_copy">No calendar is saved yet and the download failed (%1$s). Press the update button in the red band to try again.</string>
+    <string name="no_data">The saved calendar has nothing for this day. Update it from the red band, or move to another day.</string>
+    <string name="no_festivals">No festivals or occasions are listed for this day.</string>
+    <string name="not_configured">Add your calendar link first. On a computer on this network run setup.sh (or setup.ps1) from the add-on\'s folder with the link from the Bangalore Press website; the TV then downloads the calendar itself.</string>
+</resources>

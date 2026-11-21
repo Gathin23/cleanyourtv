@@ -1,0 +1,4 @@
+<resources>
+    <item name="look" type="id" />
+    <item name="page" type="id" />
+</resources>
