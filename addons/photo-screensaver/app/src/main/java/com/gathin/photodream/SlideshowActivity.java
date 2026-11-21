@@ -7,8 +7,8 @@ import android.view.KeyEvent;
 import android.view.WindowManager;
 
 /**
- * The module card on cleanyourtv's Home: the same scene as the screensaver, right away, until Back. Holding OK
- * or pressing Menu opens the settings. The screen stays on while it shows.
+ * The module card on cleanyourtv's Home: the same scene as the screensaver, right away, until Back. Holding OK,
+ * or pressing Menu or the remote's Settings button, opens the settings. The screen stays on while it shows.
  */
 public class SlideshowActivity extends Activity {
 
@@ -38,7 +38,10 @@ public class SlideshowActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_SETTINGS) {
+        // TCL Google TV remotes send their gear (Settings) button as KEYCODE_NOTIFICATION, which only the stock
+        // home answered: with it disabled the button reached nothing here.
+        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_SETTINGS
+                || keyCode == KeyEvent.KEYCODE_NOTIFICATION) {
             openSettings();
             return true;
         }

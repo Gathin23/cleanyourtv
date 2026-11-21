@@ -78,6 +78,13 @@ final class Scene {
         weather = overlay.findViewById(R.id.weather);
         TextView caption = overlay.findViewById(R.id.caption);
         View empty = overlay.findViewById(R.id.empty);
+        // The soft shadow cleanyourtv's Home puts under a wallpaper's caption, on every line over the pictures.
+        // The bottom line's row lets it fade out past each line's edges instead of cutting it off there.
+        float d = context.getResources().getDisplayMetrics().density;
+        for (int id : new int[]{R.id.time, R.id.ampm, R.id.date, R.id.weather, R.id.caption}) {
+            ((TextView) overlay.findViewById(id)).setShadowLayer(6 * d, 0, d, 0xCC000000);
+        }
+        ((ViewGroup) overlay.findViewById(R.id.bottomLine)).setClipChildren(false);
         File dir = context.getExternalFilesDir(null);
         ((TextView) overlay.findViewById(R.id.emptyPath)).setText(
                 dir == null ? "" : new File(dir, Media.PICTURES).getPath());

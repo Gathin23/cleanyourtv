@@ -22,9 +22,7 @@
         android:layout_marginTop="40dp"
         android:textColor="#F2FFFFFF"
         android:textSize="20sp"
-        android:fontFamily="sans-serif-medium"
-        android:shadowColor="#CC000000"
-        android:shadowRadius="8" />
+        android:fontFamily="sans-serif-medium" />
 
     <LinearLayout
         android:id="@+id/empty"
@@ -81,9 +79,7 @@
             android:textColor="#F2FFFFFF"
             android:textSize="56sp"
             android:fontFamily="sans-serif-light"
-            android:includeFontPadding="false"
-            android:shadowColor="#99000000"
-            android:shadowRadius="6" />
+            android:includeFontPadding="false" />
 
         <TextClock
             android:id="@+id/ampm"
@@ -94,9 +90,7 @@
             android:format24Hour=""
             android:textAllCaps="true"
             android:textColor="#B3FFFFFF"
-            android:textSize="16sp"
-            android:shadowColor="#99000000"
-            android:shadowRadius="6" />
+            android:textSize="16sp" />
 
         <TextClock
             android:id="@+id/date"
@@ -108,9 +102,7 @@
             android:letterSpacing="0.14"
             android:textAllCaps="true"
             android:textColor="#B3FFFFFF"
-            android:textSize="16sp"
-            android:shadowColor="#99000000"
-            android:shadowRadius="6" />
+            android:textSize="16sp" />
 
         <Space
             android:layout_width="0dp"
@@ -123,8 +115,6 @@
             android:layout_height="wrap_content"
             android:textColor="#F2FFFFFF"
             android:textSize="32sp"
-            android:fontFamily="sans-serif-light"
-            android:shadowColor="#99000000"
-            android:shadowRadius="6" />
+            android:fontFamily="sans-serif-light" />
     </LinearLayout>
 </FrameLayout>

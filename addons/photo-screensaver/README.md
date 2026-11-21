@@ -8,7 +8,8 @@ loops. Any key wakes the TV back to where it was.
 
 Package `com.gathin.photodream`. You see it as **Photos** (Dutch: **Foto's**) in the TV's screensaver
 settings. On cleanyourtv's Home it is also a module card, **Photos**: OK starts the same slideshow at once,
-holding OK (or Menu) opens the settings, Back leaves.
+holding OK, Menu or the remote's Settings button opens the settings, Back leaves. TCL Google TV remotes
+send their gear button as `KEYCODE_NOTIFICATION`, which the slideshow takes as Settings too.
 
 ## Options
 
