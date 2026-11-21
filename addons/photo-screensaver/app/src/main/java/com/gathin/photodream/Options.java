@@ -13,6 +13,10 @@ final class Options {
     static final String SKY = "sky";
     static final String PRINTS = "prints";
     static final String WEATHER = "weather";
+    /** The town typed for the weather, as the geocoding named it, and where it is. */
+    static final String PLACE = "weather_place";
+    static final String LATITUDE = "weather_latitude";
+    static final String LONGITUDE = "weather_longitude";
     static final String ANIMATION = "animation";
     static final String SECONDS_PER_PICTURE = "seconds_per_picture";
     static final String IDLE_MINUTES = "idle_minutes";
@@ -25,6 +29,10 @@ final class Options {
     final boolean sky;
     final boolean prints;
     final boolean weather;
+    /** "" when no town is set: then the weather uses the TV's own location. */
+    final String place;
+    final double latitude;
+    final double longitude;
     final boolean animation;
     final int secondsPerPicture;
     final int idleMinutes;
@@ -36,6 +44,9 @@ final class Options {
         sky = p.getBoolean(SKY, false);
         prints = p.getBoolean(PRINTS, false);
         weather = p.getBoolean(WEATHER, false);
+        place = p.getString(PLACE, "");
+        latitude = p.getFloat(LATITUDE, 0f);
+        longitude = p.getFloat(LONGITUDE, 0f);
         animation = p.getBoolean(ANIMATION, true);
         secondsPerPicture = p.getInt(SECONDS_PER_PICTURE,
                 Media.seconds(Photos.read(dir == null ? null : new File(dir, Media.SECONDS))));
@@ -48,5 +59,10 @@ final class Options {
 
     static Options load(Context context) {
         return new Options(preferences(context), context.getExternalFilesDir(null));
+    }
+
+    /** A town is typed for the weather, so the TV's own location is not needed. */
+    boolean hasPlace() {
+        return !place.isEmpty();
     }
 }

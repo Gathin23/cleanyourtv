@@ -159,7 +159,10 @@ final class Scene {
                 .translationY(random.nextFloat() * -NUDGE_UP_DP * d).setDuration(1500).start();
     }
 
-    /** The cached reading if it is fresh, else a new one; again every 30 minutes while the scene runs. */
+    /**
+     * The cached reading if it is fresh, else a new one; again every 30 minutes while the scene runs. For the town
+     * typed in the settings, or else where the TV says it is.
+     */
     private void refreshWeather() {
         if (!running) return;
         handler.postDelayed(refreshWeather, Weather.REFRESH_MS);
@@ -170,25 +173,32 @@ final class Scene {
             showWeather(cached);
             return;
         }
+        if (options.hasPlace()) {
+            fetchWeather(cache, options.latitude, options.longitude);
+            return;
+        }
         Weather.locate(context, location -> {
-            ExecutorService n = network;
-            if (location == null || n == null || !running) return;
-            double lat = location.getLatitude(), lon = location.getLongitude();
-            try {
-                n.execute(() -> {
-                    String text;
-                    try {
-                        text = Weather.now(lat, lon);
-                    } catch (Exception e) {
-                        return;   // offline: keep what shows, try again in half an hour
-                    }
-                    cache.edit().putString("text", text).putLong("at", System.currentTimeMillis()).apply();
-                    handler.post(() -> { if (running) showWeather(text); });
-                });
-            } catch (java.util.concurrent.RejectedExecutionException ignored) {
-                // Stopped meanwhile.
-            }
+            if (location != null) fetchWeather(cache, location.getLatitude(), location.getLongitude());
         });
+    }
+
+    private void fetchWeather(SharedPreferences cache, double lat, double lon) {
+        ExecutorService n = network;
+        if (n == null || !running) return;
+        try {
+            n.execute(() -> {
+                String text;
+                try {
+                    text = Weather.now(lat, lon);
+                } catch (Exception e) {
+                    return;   // offline: keep what shows, try again in half an hour
+                }
+                cache.edit().putString("text", text).putLong("at", System.currentTimeMillis()).apply();
+                handler.post(() -> { if (running) showWeather(text); });
+            });
+        } catch (java.util.concurrent.RejectedExecutionException ignored) {
+            // Stopped meanwhile.
+        }
     }
 
     private void showWeather(String text) {
