@@ -30,6 +30,19 @@
 #   - Also on this build, kept: cn.formovie.fengos.iot (Xiaomi MIoT host service, lets the Mi Home app control the
 #     projector; starts at boot) and com.fengos.fmexplorer (Formovie file manager and USB media player).
 #   - The owner put autofocus on the Home button and Home on the apps button (README.md in this folder).
+#
+# Third unit: same MiProjM05 / eva, same build PQ3B.190705.003.1912 (security patch 2021-09-05; the Google system
+# update screen still reports it up to date in November 2026), reached over USB debugging only, from 2026-11-21.
+#   - This list applied cleanly batch by batch, and nothing came back after a reboot. Same Wi-Fi ownership as the
+#     second unit (one older network on setupwraith, which claims no HOME and stayed enabled).
+#   - Also disabled by choice here: com.google.android.katniss and com.google.android.speech.pumpkin (owner does not
+#     use voice; the phone remote app's voice search goes with them).
+#   - Live Channels (com.google.android.tv, updated from the Play Store) is the HDMI handler on this build:
+#     tools/disable.sh refuses it ("the TV opens its HDMI/AV inputs and channels with it"). The AOSP com.android.tv
+#     also answers the channel URI but was not tried as the only one. Hide its tile with hidden_apps instead.
+#   - With USB debugging on, the firmware sets service.adb.tcp.port=5555 at every boot, so network ADB is open on
+#     the LAN as well: tools/adb-closed.py reported it open. `adb usb` closes it until the next reboot.
+#   - Picture modes and the Image settings page: README.md in this folder.
 
 # Telemetry and partner auto-installs
 com.google.android.feedback
@@ -59,6 +72,10 @@ com.android.printspooler
 com.fengmi.testsuite                         # factory test suite: disabled, never launched
 # com.fengmi.autofocustest                   # untested: factory autofocus test (second unit's build), one activity, no
                                              # services; never launched. Autofocus itself is com.fengmi.projector.imaging
+# com.formovie.launchboard                   # untested for days: Formovie app drawer (MainActivity with ALL_APPS and a
+                                             # receiver that opens it; no service, no HOME). Disabled on the third
+                                             # unit the day of the run with Home and HDMI unaffected; not lived with yet
+# com.netflix.ninja                          # off by choice on the third unit (no account); preloaded, so disabled
 
 # Stock launcher (only after the new launcher is Home)
 com.google.android.tvlauncher

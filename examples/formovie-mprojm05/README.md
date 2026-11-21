@@ -58,3 +58,26 @@ and `consume_volume_keys` true, a held Volume Up still moved one step, so that s
 here. A reinstall without `HOME_KEY_SERVICE=1` switches the helper off: the ramp returns and the apps button does
 nothing again. It is the same trade as on the Mi Box S with this remote and in
 [the key-repeat note](../../docs/devices/tcl-55p71b-g09-key-repeat.md).
+
+## Picture modes (third unit, build `.1912`)
+
+The projector's own Image Parameters menu (Sport, Children, Standard, Movie, Showy, Custom) is a broadcast, not
+an activity, and opens over any app with:
+
+```bash
+tools/tv.py 'am broadcast -a com.xiaomi.mitv.settings.DISPLAY_SETTINGS_POPUP -n com.formovie.gsettings/.ui.receiver.PatchwallPlayMenuReceiver'
+```
+
+Up/Down and OK pick a mode; focus starts on Sport whatever is ticked. The choice is stored in Formovie's settings
+provider, readable with `tools/tv.py 'content query --uri content://fmsettings/system'` as
+`display_picture_adjustment` (mode number, then five values at 50 by default). Mode numbers seen: Standard 1,
+Custom 2, Sport 3, Showy 4, Movie 7, Children 10. The `34:` prefix is the source the value belongs to.
+Movie was the factory choice on this unit and its owner found it too red; Standard looked best on the wall.
+
+Two limits on this build:
+
+- The Image tile in Formovie settings (`com.formovie.gsettings/.ui.activity.MainActivity`) crashes with
+  `ActivityNotFoundException`: it starts `com.formovie.fmsettings/.MainRootView`, a package this firmware does not
+  have (it was absent before any debloat). So the Custom sliders (saturation, colour temperature) have no screen.
+- Writing the provider over ADB is refused: `content update` on `content://fmsettings/system` needs
+  `fengmi.permission.WRITE_SETTINGS`. `display_color_adjustment` ("1.0 1.0 1.0") could not be changed.
