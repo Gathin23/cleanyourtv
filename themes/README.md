@@ -212,6 +212,7 @@ A new key needs one there in the same pull request.
 | `ambient_glow` | bool | The glow behind the dock in the focused app's colour (`true` by default); `false` keeps only `background_color` or the wallpaper, e.g. for a calm photo background |
 | `glow_snap` | bool | The ambient glow takes the next app's colour in one frame instead of dimming and fading back in. Each frame of the fade repaints the whole screen, so on a slow GPU (a Mali-G52 on a Xiaomi MiTV-MOEU0) it cut the late frames on Home from 60% to 27%. `false` by default |
 | `app_glow` | bool | The focus highlight glows in the focused app's colour on every tile, as `cinematic_home` does for the dock (`false` by default) |
+| `focus_color` | `#RRGGBB` | The focus highlight's fixed colour, in place of the plain white glass, on every `glass_style` — for a rim or glow that matches a wallpaper. `app_glow` (and `cinematic_home`'s dock) keep precedence: where the highlight would take the app's colour it still does. A value `Color.parseColor()` cannot read leaves the white glass, and the colour is made opaque like `background_color` (`Config.color()` ORs `0xFF000000`). Off by default; while reorder mode is on, the glass keeps the mode's blue |
 | `fade_rows` | bool | The rows fade out as they scroll up under the clock instead of being cut off at a hard line; the wallpaper or sky shows through. The grid then draws into a hardware layer (about 6 MB of graphics memory at 1080p) (`false` by default) |
 
 ## Wallpapers

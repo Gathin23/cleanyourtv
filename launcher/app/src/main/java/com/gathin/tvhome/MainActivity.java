@@ -159,6 +159,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean ambientGlow;
     /** config.xml app_glow: the highlight takes the focused app's colour on every tile. */
     private boolean appGlow;
+    /** Theme focus_color: the highlight's fixed colour where it would be plain white; 0 keeps the white glass. */
+    private int focusColor;
     /** config.xml glow_style: the shape setAmbient paints the glow mask in. */
     private String glowStyle;
     /** config.xml cinematic_white_focus: the cinematic shelf keeps the white highlight. */
@@ -517,7 +519,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);
         glass.setStyle(cfg.glassStyle);
+        // focus_color holds from the first frame; a festive skin takes its place back while it is on.
         if (festive) glass.setAccent(festival.accentColor());
+        else glass.setAccent(cfg.focusColor);
         ambient = findViewById(R.id.ambient);
         // The glow is one bitmap, so its alpha can be applied while drawing it. Otherwise every frame of
         // a fade renders it into a full-screen offscreen buffer first.
@@ -525,6 +529,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambientGlow = cfg.ambientGlow;
         glowSnap = cfg.glowSnap;
         appGlow = cfg.appGlow;
+        focusColor = cfg.focusColor;
         if (!ambientGlow) ambient.setVisibility(View.GONE);
         heroName = findViewById(R.id.heroName);
         hero = findViewById(R.id.hero);
@@ -1680,7 +1685,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         reordering = false;
         dimOthers();   // drop() ran while reordering was still on; restore full brightness now the mode is off
         adapter.setReordering(false);
-        glass.setAccent(festive ? festival.accentColor() : 0);
+        glass.setAccent(festive ? festival.accentColor() : focusColor);
         btnReorder.setActivated(false);
         List<String> keys = adapter.movableKeys();
         List<String> before = orderAtStart;
@@ -1854,8 +1859,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Cinematic shelf: the highlight glows in the dock app's colour, plain white in the grid (and on the dock with
         // cinematic_white_focus). app_glow: every tile. In a single row every tile is the dock's kind.
         boolean coloured = (appGlow || cinematic && !cinematicWhiteFocus && (singleRow || position < COLUMNS)) && !festive;
-        int accent = coloured ? adapter.ambientColorAt(position) : 0;
-        if ((cinematic || appGlow) && !festive && accent != glassAccent) {
+        int accent = Config.focusAccent(focusColor, adapter.ambientColorAt(position), coloured);
+        // focus_color takes the place of the plain white glass; while reorder mode owns the glass (its blue) and no
+        // colour path drives the accent, the highlight stays as the mode left it.
+        if (!festive && ((cinematic || appGlow) || (focusColor != 0 && !reordering)) && accent != glassAccent) {
             glassAccent = accent;
             glass.setAccent(accent);
         }
