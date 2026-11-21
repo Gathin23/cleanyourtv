@@ -293,6 +293,10 @@ final class WallpaperPlayer {
                 options.inTargetDensity = scale[1];
             }
             options.inPreferredConfig = bitmapConfig;
+            // Into sRGB once, here. A photo with an Adobe RGB or Display P3 profile otherwise keeps that colour space
+            // and the GPU converts the full-screen picture on every frame: ~90% late frames on a MiTV-MOOQ1 (Mali,
+            // Android 10) against 0% for the same picture without the profile.
+            options.inPreferredColorSpace = android.graphics.ColorSpace.get(android.graphics.ColorSpace.Named.SRGB);
             options.inMutable = dimColor != 0;
             Bitmap decoded = BitmapFactory.decodeFile(file.getPath(), options);
             if (decoded == null) return null;
