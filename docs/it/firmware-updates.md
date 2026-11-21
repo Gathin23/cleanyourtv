@@ -11,7 +11,7 @@ TV con l'elenco che hai applicato.
 ## Riapri l'ADB, poi controlla
 
 Il controllo e `--fix` raggiungono la TV con l'ADB di rete. Se hai chiuso l'ADB come descrive
-[L'accesso ADB non è un buco di sicurezza?](../faq.md#isnt-adb-access-a-security-hole) (in inglese), riaprilo prima: debug USB, e
+[L'accesso ADB non è un buco di sicurezza?](faq.md#laccesso-adb-non-è-un-buco-di-sicurezza), riaprilo prima: debug USB, e
 debug di rete / ADB se la TV lo ha, di nuovo attivi come al passo 1 dell'[Avvio rapido](../../README.it.md#avvio-rapido).
 Su una TV la cui porta 5555 si apre solo con il debug wireless, attiva anche quello e abbinala di nuovo con l'`adb`
 originale. Da lì vanno bene entrambe le strade: `adb tcpip 5555`, come in [Fai da te](../../README.it.md#fai-da-te), che di
@@ -56,8 +56,9 @@ risponde 2 allo stesso modo, indicando la riga che lo crea.
 Il lavoro ottiene una risposta solo da una TV che tiene l'ADB di rete in ascolto tra un'esecuzione e l'altra e che ha
 accettato «Consentire il debug USB?» per il computer che lo esegue con «Consenti sempre da questo computer» spuntato:
 senza la spunta la TV lo richiede a ogni esecuzione, e se non c'è nessuno ad accettare, l'esecuzione esce con 2. Una
-porta lasciata in ascolto è quella che [L'accesso ADB non è un buco di sicurezza?](../faq.md#isnt-adb-access-a-security-hole)
-dice di chiudere, perché qualunque dispositivo in rete può raggiungerla. Con l'ADB chiuso come descritto lì, ogni
+porta lasciata in ascolto è quella che
+[L'accesso ADB non è un buco di sicurezza?](faq.md#laccesso-adb-non-è-un-buco-di-sicurezza) dice di chiudere,
+perché qualunque dispositivo in rete può raggiungerla. Con l'ADB chiuso come descritto lì, ogni
 esecuzione esce con 2: dopo un aggiornamento fai invece il controllo a mano, con l'ADB riaperto come sopra.
 
 ## Rimettere a posto con `--fix`
