@@ -59,4 +59,11 @@
     <string name="sky_showers">Schauer</string>
     <string name="sky_snow_showers">Schneeschauer</string>
     <string name="sky_thunderstorm">Gewitter</string>
+
+    <string name="today_range">Heute  ·  Höchstwert %1$d° / Tiefstwert %2$d°</string>
+    <string name="hourly_forecast">Nächste 24 Stunden</string>
+    <string name="daily_forecast">Tagesvorhersage</string>
+    <string name="chart_high">Höchstwert</string>
+    <string name="chart_low">Tiefstwert</string>
+    <string name="forecast_unavailable">Vorhersage nicht verfügbar</string>
 </resources>

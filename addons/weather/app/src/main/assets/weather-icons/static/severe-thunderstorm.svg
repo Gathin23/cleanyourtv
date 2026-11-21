@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- (c) ammap.com | SVG weather icons -->
+<!-- Severe Thunderstorm | Contributed by hsoJ95 on GitHub: https://github.com/hsoj95 -->
+<svg width="56" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="blur" x="-.17571" y="-.19575" width="1.3379" height="1.4959">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="0" dy="4" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA slope="0.05" type="linear" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <g transform="translate(16,-2)" filter="url(#blur)">
+    <g class="am-weather-cloud-1d">
+      <path transform="matrix(.6 0 0 .6 -10 -6)"
+        d="m47.7 35.4c0-4.6-3.7-8.2-8.2-8.2-1 0-1.9 0.2-2.8 0.5-0.3-3.4-3.1-6.2-6.6-6.2-3.7 0-6.7 3-6.7 6.7 0 0.8 0.2 1.6 0.4 2.3-0.3-0.1-0.7-0.1-1-0.1-3.7 0-6.7 3-6.7 6.7 0 3.6 2.9 6.6 6.5 6.7h17.2c4.4-0.5 7.9-4 7.9-8.4z"
+        fill="#666" stroke="#fff" stroke-linejoin="round" stroke-width="1.2" />
+    </g>
+    <g class="am-weather-cloud-3d">
+      <path transform="translate(-20,-11)"
+        d="m47.7 35.4c0-4.6-3.7-8.2-8.2-8.2-1 0-1.9 0.2-2.8 0.5-0.3-3.4-3.1-6.2-6.6-6.2-3.7 0-6.7 3-6.7 6.7 0 0.8 0.2 1.6 0.4 2.3-0.3-0.1-0.7-0.1-1-0.1-3.7 0-6.7 3-6.7 6.7 0 3.6 2.9 6.6 6.5 6.7h17.2c4.4-0.5 7.9-4 7.9-8.4z"
+        fill="#333" stroke="#fff" stroke-linejoin="round" stroke-width="1.2" />
+    </g>
+      <g class="am-weather-lightning" transform="matrix(1.2,0,0,1.2,-4,28)">
+        <polygon class="am-weather-stroke" points="11.1 6.9 14.3 -2.9 20.5 -2.9 16.4 4.3 20.3 4.3 11.5 14.6 14.9 6.9"
+          fill="#ffa500" stroke="#fff" />
+      </g>
+    <g class="warning" transform="translate(20,30)">
+      <path
+        d="m7.7791 2.906-5.9912 10.117c-0.56283 0.95042-0.24862 2.1772 0.7018 2.74 0.30853 0.18271 0.66051 0.27911 1.0191 0.27911h11.982c1.1046 0 2-0.89543 2-2 0-0.35857-0.0964-0.71056-0.27911-1.0191l-5.9912-10.117c-0.56283-0.95042-1.7896-1.2646-2.74-0.7018-0.28918 0.17125-0.53055 0.41262-0.7018 0.7018z"
+        fill="#c00" />
+      <path d="m9.5 10.5v-5" stroke="#fff" stroke-linecap="round" stroke-width="1.5" />
+      <circle cx="9.5" cy="13" r="1" fill="#fff" />
+    </g>
+  </g>
+</svg>

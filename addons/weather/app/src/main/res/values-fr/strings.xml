@@ -48,4 +48,11 @@
     <string name="sky_showers">Averses</string>
     <string name="sky_snow_showers">Averses de neige</string>
     <string name="sky_thunderstorm">Orage</string>
+
+    <string name="today_range">Aujourd’hui  ·  Max. %1$d° / Min. %2$d°</string>
+    <string name="hourly_forecast">24 prochaines heures</string>
+    <string name="daily_forecast">Prévisions par jour</string>
+    <string name="chart_high">Maximale</string>
+    <string name="chart_low">Minimale</string>
+    <string name="forecast_unavailable">Prévisions indisponibles</string>
 </resources>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода</string>
+
+    <string name="feels_like">Відчувається як %1$d°</string>
+    <string name="humidity">Вологість %1$d%%</string>
+    <string name="wind">Вітер %1$d км/год</string>
+    <string name="wind_mph">Вітер %1$d миль/год</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Індекс якості повітря %1$d · %2$s</string>
+    <string name="updated">Оновлено о %1$s · Open-Meteo</string>
+    <string name="change_city">Змінити місто</string>
+    <string name="weather_settings">Налаштування погоди</string>
+    <string name="settings_done">Готово</string>
+    <string name="setting_units">Одиниці вимірювання температури</string>
+    <string name="unit_c">Градуси Цельсія (°C)</string>
+    <string name="unit_f">Градуси Фаренгейта (°F)</string>
+    <string name="setting_both_units">Показувати обидві одиниці</string>
+    <string name="setting_days">Тривалість прогнозу</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дні</item>
+        <item quantity="many">%1$d днів</item>
+        <item quantity="other">%1$d дня</item>
+    </plurals>
+    <string name="setting_humidity">Показувати вологість</string>
+    <string name="setting_wind">Показувати швидкість вітру</string>
+    <string name="setting_reset">Скинути налаштування погоди</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">Увімкнено</string>
+    <string name="option_off">Вимкнено</string>
+    <string name="loading">Завантаження прогнозу…</string>
+    <string name="offline">Не вдалося з’єднатися з Open-Meteo. Перевірте підключення телевізора до інтернету. Повторна спроба через 5 хвилин.</string>
+
+    <string name="pick_title">Виберіть місто</string>
+    <string name="pick_hint">Назва міста, наприклад Улан-Батор</string>
+    <string name="pick_search">Знайти</string>
+    <string name="pick_none">Місце з назвою «%1$s» не знайдено</string>
+    <string name="pick_first">Виберіть місто, щоб переглянути прогноз погоди.</string>
+
+    <string name="aqi_good">Добрий</string>
+    <string name="aqi_moderate">Помірний</string>
+    <string name="aqi_sensitive">Шкідливий для чутливих груп</string>
+    <string name="aqi_unhealthy">Шкідливий</string>
+    <string name="aqi_very_unhealthy">Дуже шкідливий</string>
+    <string name="aqi_hazardous">Небезпечний</string>
+
+    <string name="sky_clear">Ясно</string>
+    <string name="sky_sunny">Сонячно</string>
+    <string name="sky_mostly_clear">Переважно ясно</string>
+    <string name="sky_mostly_sunny">Переважно сонячно</string>
+    <string name="sky_partly_cloudy">Мінлива хмарність</string>
+    <string name="sky_cloudy">Хмарно</string>
+    <string name="sky_fog">Туман</string>
+    <string name="sky_drizzle">Мряка</string>
+    <string name="sky_freezing_drizzle">Крижана мряка</string>
+    <string name="sky_light_rain">Невеликий дощ</string>
+    <string name="sky_rain">Дощ</string>
+    <string name="sky_heavy_rain">Сильний дощ</string>
+    <string name="sky_freezing_rain">Крижаний дощ</string>
+    <string name="sky_light_snow">Невеликий сніг</string>
+    <string name="sky_snow">Сніг</string>
+    <string name="sky_heavy_snow">Сильний сніг</string>
+    <string name="sky_snow_grains">Снігові зерна</string>
+    <string name="sky_showers">Злива</string>
+    <string name="sky_snow_showers">Зливовий сніг</string>
+    <string name="sky_thunderstorm">Гроза</string>
+
+    <string name="today_range">Сьогодні  ·  Макс. %1$d° / Мін. %2$d°</string>
+    <string name="hourly_forecast">Найближчі 24 години</string>
+    <string name="daily_forecast">Прогноз на кілька днів</string>
+    <string name="chart_high">Максимум</string>
+    <string name="chart_low">Мінімум</string>
+    <string name="forecast_unavailable">Прогноз недоступний</string>
+</resources>

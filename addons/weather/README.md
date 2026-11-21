@@ -1,7 +1,8 @@
 # Weather
 
-The weather for one city, full screen on the TV: now (temperature, feels-like, conditions), the US air quality
-index as a coloured pill, and the next three days. For the [Clean Your TV](../../README.md) launcher it declares a
+The weather for one city, full screen on the TV. The current reading includes conditions, feels-like temperature,
+today's high and low, and US air quality. Two charts show the next 24 hours in the city's local time and
+the daily highs and lows starting tomorrow. For the [Clean Your TV](../../README.md) launcher it declares a
 [module card](../../docs/modules.md), so once you answer **Show card** its tile reads "Weather" with a
 sky-blue glow; on any other Android TV home it is an ordinary app.
 
@@ -16,7 +17,16 @@ sky-blue glow; on any other Android TV home it is an ordinary app.
   "light rain" at 1 °C (ICON and GFS did, in a Ulaanbaatar blizzard). The app decides by the wet-bulb
   temperature instead, which counts how dry the air is: at 1 °C or below, rain and drizzle are shown as snow.
 - It reads Open-Meteo only while the page is on screen, every 30 minutes, or 5 minutes after a failure.
-- Degrees Celsius by default (Fahrenheit is an option below); English or French words, with the TV's language; day names follow the TV's language.
+- Degrees Celsius by default (Fahrenheit is an option below). App text follows the TV's language, with
+  English, French, German, Italian, Korean, Polish, Russian, Spanish, Turkish and Ukrainian available.
+- The charts use smooth lines between the hourly readings or daily highs and lows. Dots mark forecast values.
+- The current conditions icon animates. Forecast icons stay still for easy scanning.
+- amCharts (© ammap.com) created the original weather icons under CC BY 4.0. Makin-Things adapted and
+  expanded the set. This add-on bundles selected SVGs from that adaptation unchanged with its MIT notice.
+  [Original icons](https://www.amcharts.com/free-animated-svg-weather-icons/) ·
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ·
+  [Adapted icon pack](https://github.com/Makin-Things/weather-icons/tree/3793c6a) ·
+  [Bundled notices](app/src/main/assets/weather-icons/LICENSE)
 
 ## Options
 
@@ -33,10 +43,10 @@ Saved choices override these defaults. With no saved choices the page is as abov
 
 | Option | Default | What it does |
 |---|---|---|
-| `forecast_days` | `3` | Days in the forecast row after today, 3 to 7. Above 3 the day cards share the row, with short day names, so a week fits on screen. |
+| `forecast_days` | `3` | Days in the daily high/low chart after today, 3 to 7, depending on forecast availability. |
 | `show_humidity` | `false` | The relative humidity now, after "Feels like". |
 | `show_wind` | `false` | The wind speed now in km/h, after "Feels like" (mph with `temperature_unit` `f`). |
-| `temperature_unit` | `c` | `f` shows degrees Fahrenheit for the temperature now, feels-like and the days' highs and lows, converted from the reading before rounding. |
+| `temperature_unit` | `c` | `f` shows degrees Fahrenheit for all temperatures, converted before rounding. |
 | `show_both_units` | `false` | The temperature now in the other unit too, at the start of the "Feels like" line ("22°C · Feels like 70°"). |
 
 ![A week, with humidity and wind](https://raw.githubusercontent.com/majnioui/cleanyourtv-contrib/pr-assets/addon-weather-week/weather-options.png)

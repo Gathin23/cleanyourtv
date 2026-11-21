@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pogoda</string>
+
+    <string name="feels_like">Odczuwalna %1$d°</string>
+    <string name="humidity">Wilgotność %1$d%%</string>
+    <string name="wind">Wiatr %1$d km/h</string>
+    <string name="wind_mph">Wiatr %1$d mil/h</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Jakość powietrza %1$d · %2$s</string>
+    <string name="updated">Aktualizacja o %1$s · Open-Meteo</string>
+    <string name="change_city">Zmień miasto</string>
+    <string name="weather_settings">Ustawienia pogody</string>
+    <string name="settings_done">Gotowe</string>
+    <string name="setting_units">Jednostka temperatury</string>
+    <string name="unit_c">Stopnie Celsjusza (°C)</string>
+    <string name="unit_f">Stopnie Fahrenheita (°F)</string>
+    <string name="setting_both_units">Pokazuj obie jednostki</string>
+    <string name="setting_days">Liczba dni prognozy</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d dzień</item>
+        <item quantity="few">%1$d dni</item>
+        <item quantity="many">%1$d dni</item>
+        <item quantity="other">%1$d dni</item>
+    </plurals>
+    <string name="setting_humidity">Pokazuj wilgotność</string>
+    <string name="setting_wind">Pokazuj prędkość wiatru</string>
+    <string name="setting_reset">Przywróć ustawienia domyślne</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">Wł.</string>
+    <string name="option_off">Wył.</string>
+    <string name="loading">Wczytywanie prognozy…</string>
+    <string name="offline">Nie udało się połączyć z Open-Meteo. Sprawdź połączenie telewizora z internetem. Ponowna próba za 5 minut.</string>
+
+    <string name="pick_title">Wybierz miasto</string>
+    <string name="pick_hint">Nazwa miasta, np. Warszawa</string>
+    <string name="pick_search">Szukaj</string>
+    <string name="pick_none">Nie znaleziono miejscowości o nazwie „%1$s”</string>
+    <string name="pick_first">Wybierz miasto, aby zobaczyć prognozę pogody.</string>
+
+    <string name="aqi_good">Dobra</string>
+    <string name="aqi_moderate">Umiarkowana</string>
+    <string name="aqi_sensitive">Szkodliwa dla grup wrażliwych</string>
+    <string name="aqi_unhealthy">Szkodliwa</string>
+    <string name="aqi_very_unhealthy">Bardzo szkodliwa</string>
+    <string name="aqi_hazardous">Niebezpieczna</string>
+
+    <string name="sky_clear">Bezchmurnie</string>
+    <string name="sky_sunny">Słonecznie</string>
+    <string name="sky_mostly_clear">Małe zachmurzenie</string>
+    <string name="sky_mostly_sunny">Przeważnie słonecznie</string>
+    <string name="sky_partly_cloudy">Częściowe zachmurzenie</string>
+    <string name="sky_cloudy">Pochmurno</string>
+    <string name="sky_fog">Mgła</string>
+    <string name="sky_drizzle">Mżawka</string>
+    <string name="sky_freezing_drizzle">Marznąca mżawka</string>
+    <string name="sky_light_rain">Lekki deszcz</string>
+    <string name="sky_rain">Deszcz</string>
+    <string name="sky_heavy_rain">Silny deszcz</string>
+    <string name="sky_freezing_rain">Marznący deszcz</string>
+    <string name="sky_light_snow">Lekki śnieg</string>
+    <string name="sky_snow">Śnieg</string>
+    <string name="sky_heavy_snow">Intensywne opady śniegu</string>
+    <string name="sky_snow_grains">Śnieg ziarnisty</string>
+    <string name="sky_showers">Przelotny deszcz</string>
+    <string name="sky_snow_showers">Przelotny śnieg</string>
+    <string name="sky_thunderstorm">Burza</string>
+
+    <string name="today_range">Dzisiaj  ·  Maks. %1$d° / Min. %2$d°</string>
+    <string name="hourly_forecast">Najbliższe 24 godziny</string>
+    <string name="daily_forecast">Prognoza na kolejne dni</string>
+    <string name="chart_high">Maksimum</string>
+    <string name="chart_low">Minimum</string>
+    <string name="forecast_unavailable">Prognoza niedostępna</string>
+</resources>

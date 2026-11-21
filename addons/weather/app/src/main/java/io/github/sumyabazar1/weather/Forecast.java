@@ -15,9 +15,15 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Open-Meteo, which needs no key: the place search, the weather now and for the next days, and the US air
@@ -28,8 +34,9 @@ final class Forecast {
     static final long REFRESH_MS = 30 * 60_000L;
     static final long RETRY_MS = 5 * 60_000L;
     private static final int TIMEOUT_MS = 8_000;
-    /** Days after today the forecast row can show (options.xml, forecast_days). */
+    /** Days after today the daily chart can show (options.xml, forecast_days). */
     static final int MIN_DAYS = 3, MAX_DAYS = 7;
+    private static final int HOURS = 24;
 
     private Forecast() { }
 
@@ -58,6 +65,9 @@ final class Forecast {
         /** The WMO code, rain turned into snow where the air is cold enough for it (see {@link #snowIfCold}). */
         final int code;
         final boolean day;
+        final double todayMaxC;
+        final double todayMinC;
+        final List<Hour> hours;
         /** The next days, tomorrow first. */
         final List<Day> days;
         /** US AQI, or -1 when the air quality read failed. */
@@ -65,15 +75,34 @@ final class Forecast {
         final int humidity;
         final int windKmh;
 
-        Report(double tempC, double feelsC, int code, boolean day, List<Day> days, int aqi, int humidity, int windKmh) {
+        Report(double tempC, double feelsC, int code, boolean day, double todayMaxC, double todayMinC,
+               List<Hour> hours, List<Day> days, int aqi, int humidity, int windKmh) {
             this.tempC = tempC;
             this.feelsC = feelsC;
             this.code = code;
             this.day = day;
+            this.todayMaxC = todayMaxC;
+            this.todayMinC = todayMinC;
+            this.hours = hours;
             this.days = days;
             this.aqi = aqi;
             this.humidity = humidity;
             this.windKmh = windKmh;
+        }
+    }
+
+    /** An hourly point in the forecast location's time zone. An unavailable temperature leaves a chart gap. */
+    static final class Hour {
+        final LocalDateTime time;
+        final double tempC;
+        final int code;
+        final boolean day;
+
+        Hour(LocalDateTime time, double tempC, int code, boolean day) {
+            this.time = time;
+            this.tempC = tempC;
+            this.code = code;
+            this.day = day;
         }
     }
 
@@ -124,16 +153,74 @@ final class Forecast {
         // and Google, had snow falling.
         JSONObject reply = get("https://api.open-meteo.com/v1/forecast?" + where + "&models=icon_seamless"
                 + "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,is_day,wind_speed_10m"
+                + "&hourly=temperature_2m,weather_code,is_day,relative_humidity_2m"
                 + "&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days="
                 + (forecastDays(days) + 1));
         JSONObject current = reply.getJSONObject("current");
         double temp = current.getDouble("temperature_2m");
         double humidity = current.getDouble("relative_humidity_2m");
         int code = snowIfCold(current.getInt("weather_code"), temp, humidity);
+        JSONObject daily = reply.optJSONObject("daily");
         return new Report(temp, current.getDouble("apparent_temperature"),
                 code, current.getInt("is_day") == 1,
-                days(reply.getJSONObject("daily")), aqiOrUnknown(where),
+                today(daily, "temperature_2m_max"), today(daily, "temperature_2m_min"),
+                hours(reply.optJSONObject("hourly"), current.optString("time")), days(daily), aqiOrUnknown(where),
                 (int) Math.round(humidity), (int) Math.round(current.optDouble("wind_speed_10m", 0)));
+    }
+
+    private static double today(JSONObject daily, String key) {
+        JSONArray values = daily == null ? null : daily.optJSONArray(key);
+        return values == null ? Double.NaN : values.optDouble(0);
+    }
+
+    private static List<Hour> hours(JSONObject hourly, String currentTime) {
+        if (hourly == null) return Collections.emptyList();
+        JSONArray times = hourly.optJSONArray("time");
+        JSONArray values = hourly.optJSONArray("temperature_2m");
+        if (times == null || values == null) return Collections.emptyList();
+        JSONArray codes = hourly.optJSONArray("weather_code");
+        JSONArray daylight = hourly.optJSONArray("is_day");
+        JSONArray humidity = hourly.optJSONArray("relative_humidity_2m");
+        LocalDateTime current;
+        try {
+            current = LocalDateTime.parse(currentTime);
+        } catch (DateTimeParseException e) {
+            return Collections.emptyList();
+        }
+        List<Hour> samples = new ArrayList<>();
+        for (int i = 0; i < times.length(); i++) {
+            double temp = values.optDouble(i);
+            if (!Double.isFinite(temp)) continue;
+            try {
+                int code = codes == null ? -1 : codes.optInt(i, -1);
+                double rh = humidity == null ? Double.NaN : humidity.optDouble(i);
+                if (Double.isFinite(rh)) code = snowIfCold(code, temp, rh);
+                boolean day = daylight == null || daylight.optInt(i, 1) == 1;
+                samples.add(new Hour(LocalDateTime.parse(times.optString(i)), temp, code, day));
+            } catch (DateTimeParseException e) {
+                // A bad timestamp leaves a gap rather than hiding the current and daily forecasts.
+            }
+        }
+        return hourlyWindow(current, samples);
+    }
+
+    /** The next 24 hourly slots, based on Open-Meteo's local timestamps for the chosen city. */
+    static List<Hour> hourlyWindow(LocalDateTime current, List<Hour> samples) {
+        LocalDateTime first = current.truncatedTo(ChronoUnit.HOURS);
+        if (first.isBefore(current)) first = first.plusHours(1);
+        Map<LocalDateTime, Hour> values = new HashMap<>();
+        for (Hour sample : samples) {
+            if (Double.isFinite(sample.tempC)) values.put(sample.time, sample);
+        }
+        List<Hour> result = new ArrayList<>(HOURS);
+        boolean available = false;
+        for (int i = 0; i < HOURS; i++) {
+            LocalDateTime time = first.plusHours(i);
+            Hour sample = values.get(time);
+            result.add(sample != null ? sample : new Hour(time, Double.NaN, -1, false));
+            available |= sample != null;
+        }
+        return available ? result : Collections.emptyList();
     }
 
     /**
@@ -158,20 +245,27 @@ final class Forecast {
                 + 0.00391838 * Math.pow(rh, 1.5) * Math.atan(0.023101 * rh) - 4.686035;
     }
 
-    /** Tomorrow and the days after it; today (index 0) is the current reading. */
-    private static List<Day> days(JSONObject daily) throws JSONException {
-        JSONArray dates = daily.getJSONArray("time");
-        JSONArray codes = daily.getJSONArray("weather_code");
-        JSONArray max = daily.getJSONArray("temperature_2m_max");
-        JSONArray min = daily.getJSONArray("temperature_2m_min");
+    /** Tomorrow and the days after it; today's range is shown separately beside the current reading. */
+    private static List<Day> days(JSONObject daily) {
+        if (daily == null) return Collections.emptyList();
+        JSONArray dates = daily.optJSONArray("time");
+        JSONArray codes = daily.optJSONArray("weather_code");
+        JSONArray max = daily.optJSONArray("temperature_2m_max");
+        JSONArray min = daily.optJSONArray("temperature_2m_min");
+        if (dates == null || codes == null || max == null || min == null) return Collections.emptyList();
         List<Day> out = new ArrayList<>();
         for (int i = 1; i < dates.length(); i++) {
             // With forecast_days 7 the last day can come back without values: stop there instead of failing the page.
-            if (codes.isNull(i) || max.isNull(i) || min.isNull(i)) break;
+            double high = max.optDouble(i);
+            double low = min.optDouble(i);
+            if (codes.isNull(i) || !Double.isFinite(high) || !Double.isFinite(low) || high < low) break;
             // A day whose high stays near freezing gets the same rain-to-snow correction, with the high and
             // saturated air, which is the warm end of the day's precipitation.
-            out.add(new Day(LocalDate.parse(dates.getString(i)), snowIfCold(codes.getInt(i), max.getDouble(i), 100),
-                    max.getDouble(i), min.getDouble(i)));
+            try {
+                out.add(new Day(LocalDate.parse(dates.optString(i)), snowIfCold(codes.optInt(i, 3), high, 100), high, low));
+            } catch (DateTimeParseException e) {
+                break;
+            }
         }
         return out;
     }

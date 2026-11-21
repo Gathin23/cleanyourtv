@@ -66,4 +66,11 @@
     <string name="sky_showers">Rovesci</string>
     <string name="sky_snow_showers">Rovesci di neve</string>
     <string name="sky_thunderstorm">Temporale</string>
+
+    <string name="today_range">Oggi  ·  Max %1$d° / Min %2$d°</string>
+    <string name="hourly_forecast">Prossime 24 ore</string>
+    <string name="daily_forecast">Previsioni giornaliere</string>
+    <string name="chart_high">Massima</string>
+    <string name="chart_low">Minima</string>
+    <string name="forecast_unavailable">Previsioni non disponibili</string>
 </resources>

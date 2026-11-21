@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- (c) ammap.com | SVG weather icons -->
+<svg width="56" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="blur" x="-.3038" y="-.3318" width="1.6076" height="1.894">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="0" dy="4" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA slope="0.05" type="linear" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <g transform="translate(16,-2)" filter="url(#blur)">
+    <g transform="matrix(.8 0 0 .8 16 4)">
+      <g class="am-weather-moon-star-1">
+        <polygon points="1.5 3.3 2.7 2.7 3.3 1.5 4 2.7 5.2 3.3 4 4 3.3 5.2 2.7 4" fill="#ffa500"
+          stroke-miterlimit="10" />
+      </g>
+      <g class="am-weather-moon-star-2">
+        <polygon transform="translate(20,10)" points="1.5 3.3 2.7 2.7 3.3 1.5 4 2.7 5.2 3.3 4 4 3.3 5.2 2.7 4"
+          fill="#ffa500" stroke-miterlimit="10" />
+      </g>
+      <g class="am-weather-moon">
+        <path
+          d="m14.5 13.2c0-3.7 2-6.9 5-8.7-1.5-0.9-3.2-1.3-5-1.3-5.5 0-10 4.5-10 10s4.5 10 10 10c1.8 0 3.5-0.5 5-1.3-3-1.7-5-5-5-8.7z"
+          fill="#ffa500" stroke="#ffa500" stroke-linejoin="round" stroke-width="2" />
+      </g>
+    </g>
+  </g>
+</svg>
