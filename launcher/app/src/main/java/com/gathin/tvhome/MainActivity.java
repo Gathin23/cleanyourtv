@@ -475,6 +475,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         applyViewInputsHandler(cfg.handleViewInputs);
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
+        applyPanelRequestHandler(settingsKeyPanel);
         settingsKeyClearTask = cfg.settingsKeyClearTask;
         COLUMNS = cfg.columns;
         animations = cfg.animations;
@@ -982,6 +983,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     private void applyViewInputsHandler(boolean on) {
         ComponentName handler = new ComponentName(this, InputsRequestActivity.class);
+        PackageManager pm = getPackageManager();
+        int want = on ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
+        if (pm.getComponentEnabledSetting(handler) != want) {
+            pm.setComponentEnabledSetting(handler, want, PackageManager.DONT_KILL_APP);
+        }
+    }
+
+    /**
+     * settings_key_panel: switch QuickSettingsRequestActivity, the documented action another app starts to
+     * open the panel, on or off. Same gating as applyViewInputsHandler: disabled in the manifest, so a
+     * launcher with the panel off answers nothing extra.
+     */
+    private void applyPanelRequestHandler(boolean on) {
+        ComponentName handler = new ComponentName(this, QuickSettingsRequestActivity.class);
         PackageManager pm = getPackageManager();
         int want = on ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
         if (pm.getComponentEnabledSetting(handler) != want) {

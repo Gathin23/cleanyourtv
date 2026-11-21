@@ -139,6 +139,23 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <!-- Another app's way to open the panel above (settings_key_panel), for a provider that answers a
+             remapped gear key the keyboard-layout overlay route (docs/launcher.md): it starts the action
+             instead of Settings.ACTION_SETTINGS, which cannot reach the panel. Disabled here and switched
+             on by MainActivity only while settings_key_panel is true, the way InputsRequestActivity is
+             gated on handle_view_inputs: with the panel off the launcher answers nothing. -->
+        <activity
+            android:name=".QuickSettingsRequestActivity"
+            android:exported="true"
+            android:enabled="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="com.gathin.tvhome.action.QUICK_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".HomeSettingsActivity"
             android:exported="false"
