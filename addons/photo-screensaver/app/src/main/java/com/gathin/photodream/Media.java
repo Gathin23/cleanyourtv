@@ -3,8 +3,10 @@ package com.gathin.photodream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,6 +77,19 @@ final class Media {
             if (files.get(i).getName().equals(previous)) return files.get((i + 1) % files.size());
         }
         return files.get(0);
+    }
+
+    /**
+     * The files in a random order, for one round of the shuffle option. The picture named {@code last} is
+     * never first, so a new round does not open with the picture the round before closed on.
+     */
+    static List<File> shuffled(List<File> files, String last, Random random) {
+        List<File> round = new ArrayList<>(files);
+        Collections.shuffle(round, random);
+        if (round.size() > 1 && round.get(0).getName().equals(last)) {
+            Collections.swap(round, 0, 1 + random.nextInt(round.size() - 1));
+        }
+        return round;
     }
 
     /** seconds.txt's number, 5 to 3600; 20 when it is missing or not a number. */

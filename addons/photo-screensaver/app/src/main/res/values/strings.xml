@@ -10,6 +10,7 @@
     <string name="option_clock_fades">Show the time briefly with each picture</string>
     <string name="option_dates">Show when a picture was taken (month and year)</string>
     <string name="option_animation">Ken Burns animation (zoom and drift)</string>
+    <string name="option_shuffle">Shuffle: a new random order every round</string>
     <string name="option_prints">Three prints instead of full screen (no clips)</string>
     <string name="option_sky">Sky that follows the time of day behind the prints</string>
     <string name="option_weather">Show the weather (needs the TV\'s location)</string>

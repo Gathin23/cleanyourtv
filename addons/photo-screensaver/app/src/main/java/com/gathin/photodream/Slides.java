@@ -65,6 +65,10 @@ final class Slides {
     private final int width;
     private final int height;
     private boolean running;
+    /** The shuffle option: a new random order for every round instead of filename order. */
+    private final boolean shuffle;
+    /** Decoder thread only: what is left of the shuffled round. */
+    private final List<File> round = new ArrayList<>();
     /** Called as each picture or clip starts to fade in (Scene shows the time then); null for none. */
     private Runnable onShown;
 
@@ -104,6 +108,7 @@ final class Slides {
         Options options = Options.load(context);
         interval = (long) options.secondsPerPicture * 1000L;
         animationEnabled = options.animation;
+        shuffle = options.shuffle;
         images = dir == null ? new ArrayList<>() : Media.list(new File(dir, Media.PICTURES));
         if (caption != null) caption.setAlpha(0f);
     }
@@ -135,6 +140,20 @@ final class Slides {
         stopVideo();
     }
 
+    /** Decoder thread: the picture after the last one by name, or the next of a shuffled round. */
+    private File nextFile() {
+        String last = preferences.getString("image", "");
+        File file;
+        if (shuffle) {
+            if (round.isEmpty()) round.addAll(Media.shuffled(images, last, random));
+            file = round.remove(0);
+        } else {
+            file = Media.next(images, last);
+        }
+        preferences.edit().putString("image", file.getName()).apply();
+        return file;
+    }
+
     /** Decodes the next picture off the main thread, then fades it in over the current one. */
     private void showNext() {
         if (!running || images.isEmpty() || decoder == null) return;
@@ -144,8 +163,7 @@ final class Slides {
             String date = "";
             // Skip unreadable pictures, but stop after one round so a folder of broken files doesn't spin.
             for (int tries = 0; tries < images.size() && bitmap == null && clip == null; tries++) {
-                File file = Media.next(images, preferences.getString("image", ""));
-                preferences.edit().putString("image", file.getName()).apply();
+                File file = nextFile();
                 if (Media.video(file.getName())) {
                     clip = file;
                 } else {
