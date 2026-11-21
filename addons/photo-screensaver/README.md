@@ -19,6 +19,7 @@ slideshow. Google TV has no settings entry for other screensavers, so there it i
 | Option | What it does |
 |---|---|
 | Ken Burns animation (zoom and drift) | Enable the slow zoom and drift effect on each picture. On by default; turn it off for a static slideshow. |
+| Sharp pictures | Draws the pictures at the panel's own resolution, for 4K TVs that lay their apps out at 1080p. Full screen only |
 | Time per picture | Seconds each picture stays on screen, from 5 to 3600. Starts with sync's value from `seconds.txt` (20 seconds if missing or invalid); changing it in settings overrides sync. |
 | Time and date | A line along the bottom with the time and the date, moved a little every minute against burn-in |
 | The time with each picture | The line shows for 10 seconds as each picture comes in, then fades away, so nothing stays on screen. Full screen only: with three prints the line stays |
@@ -30,6 +31,18 @@ slideshow. Google TV has no settings entry for other screensavers, so there it i
 The weather needs location access (asked when you switch it on) and the TV's location services on; the
 settings say when they are off and open the TV's location settings. The prints, the sky and the date on a
 picture come from Photo Prints by [@shivamsingh262](https://github.com/shivamsingh262) (#936).
+
+## Sharp pictures
+
+Many 4K TVs lay their apps out at 1920x1080 and enlarge the result (`wm size` then prints a physical size
+of 3840x2160 and an override of 1920x1080). A picture in an ordinary view never has more than 1080 lines
+of its own there, however large the file. With this option on, the pictures are drawn into a surface the
+size of the panel instead, which reaches it pixel for pixel; the time, the date and the weather stay in the
+window above it. It changes nothing on a TV whose apps already run at the panel's size.
+
+It costs memory: two panel-sized pictures in full colour, about 33 MB each at 4K, and for a moment up to
+160 MB more while a large camera original is fitted to the panel. Leave it off on a TV with 1 GB of RAM.
+Clips are unaffected: they play in the window, as before.
 
 ## Install
 
@@ -82,6 +95,10 @@ launcher's Home. The idle timeout (when the screensaver starts) is set via `sync
 At most two screen-sized pictures are held, as GPU bitmaps, and one hardware video player. A 4K picture
 is decoded at screen size. On a TCL 43P69K (1.5 GB) a 1080p clip played with the screensaver at about
 42 MB and 705 MB RAM still free.
+
+With sharp pictures on, the two pictures are the panel's size instead. On a TCL 75QM8L (2.3 GB, Mali-G57)
+the screensaver showed 3840x2160 pictures at a steady 60 frames a second, crossfades included, at about
+49 MB of its own and 680 MB RAM still free.
 
 ## Permissions
 

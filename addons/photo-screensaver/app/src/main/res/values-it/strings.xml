@@ -18,6 +18,8 @@
     <string name="weather_location_off">I servizi di localizzazione sono spenti su questa TV: accendili per il meteo.</string>
     <string name="weather_ok">La posizione è attiva. Il meteo si aggiorna ogni 30 minuti.</string>
     <string name="open_location_settings">Apri le impostazioni della posizione</string>
+    <string name="option_sharp">Foto nitide: disegnate alla risoluzione del pannello</string>
+    <string name="sharp_info">Per le TV 4K che impaginano le app a 1080p. Usa più memoria: circa 33 MB per foto in 4K.</string>
     <string name="preview">Anteprima</string>
     <string name="seconds_per_picture">Tempo per foto: %d secondi</string>
     <string name="idle_minutes">Avvia screensaver dopo: %d minuti</string>

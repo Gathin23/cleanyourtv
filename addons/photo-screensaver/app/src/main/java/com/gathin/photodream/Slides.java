@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -38,9 +40,14 @@ import java.util.concurrent.Executors;
  */
 final class Slides {
 
-    private static final long FADE_MS = 1500L;
+    static final long FADE_MS = 1500L;
     /** How far a picture zooms in over its time on screen; it drifts at most half the extra width. */
-    private static final float ZOOM = 1.12f;
+    static final float ZOOM = 1.12f;
+    /**
+     * The most the sharp path decodes before fitting a picture to the panel: about 160 MB for a moment,
+     * which lets a 45-megapixel camera original through whole. A larger one is halved first.
+     */
+    private static final long SHARP_MAX_PIXELS = 40_000_000L;
 
     private final Context context;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -64,6 +71,8 @@ final class Slides {
     private final boolean animationEnabled;
     private final int width;
     private final int height;
+    /** The sharp option: the pictures at the panel's size, or null: then they are in the two views. */
+    private final SharpStage sharp;
     private boolean running;
     /** Called as each picture or clip starts to fade in (Scene shows the time then); null for none. */
     private Runnable onShown;
@@ -97,11 +106,21 @@ final class Slides {
         back = image(stage);
         front = image(stage);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        width = metrics.widthPixels;
-        height = metrics.heightPixels;
+        Options options = Options.load(context);
+        int[] panel = SharpStage.panel(context);
+        boolean larger = panel != null && (panel[0] > metrics.widthPixels || panel[1] > metrics.heightPixels);
+        if (options.sharp && larger) {
+            sharp = new SharpStage(context, panel[0], panel[1]);
+            // Behind the window, under the clip's view and the two picture views, which stay empty then.
+            stage.addView(sharp.view, 0, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        } else {
+            sharp = null;
+        }
+        width = sharp != null ? sharp.width : metrics.widthPixels;
+        height = sharp != null ? sharp.height : metrics.heightPixels;
         preferences = context.getSharedPreferences("photo_dream", Context.MODE_PRIVATE);
         File dir = context.getExternalFilesDir(null);
-        Options options = Options.load(context);
         interval = (long) options.secondsPerPicture * 1000L;
         animationEnabled = options.animation;
         images = dir == null ? new ArrayList<>() : Media.list(new File(dir, Media.PICTURES));
@@ -121,6 +140,7 @@ final class Slides {
         running = true;
         empty.setVisibility(images.isEmpty() ? View.VISIBLE : View.GONE);
         if (decoder == null) decoder = Executors.newSingleThreadExecutor();
+        if (sharp != null) sharp.start();
         showNext();
     }
 
@@ -133,6 +153,7 @@ final class Slides {
         if (back != null) { cancel(back); release(back); }
         pendingClip = null;
         stopVideo();
+        if (sharp != null) sharp.stop();
     }
 
     /** Decodes the next picture off the main thread, then fades it in over the current one. */
@@ -149,7 +170,7 @@ final class Slides {
                 if (Media.video(file.getName())) {
                     clip = file;
                 } else {
-                    bitmap = decode(file);
+                    bitmap = sharp != null ? decodeSharp(file) : decode(file);
                     if (bitmap != null && caption != null) date = Photos.dateOf(file);
                 }
             }
@@ -167,7 +188,8 @@ final class Slides {
                     return;
                 }
                 if (shown != null) {
-                    crossfade(shown);
+                    if (sharp != null) showSharp(shown);
+                    else crossfade(shown);
                     showCaption(shownDate);
                 }
                 // A single picture still drifts on: it fades into itself with a new zoom.
@@ -187,6 +209,15 @@ final class Slides {
             caption.setText(date);
             caption.animate().alpha(1f).setDuration(FADE_MS / 2).start();
         }).start();
+    }
+
+    /** The sharp path's crossfade: the stage fades the picture in, and a clip showing above it fades out. */
+    private void showSharp(Bitmap bitmap) {
+        sharp.show(bitmap, interval + 2 * FADE_MS, !animationEnabled);
+        if (onShown != null) onShown.run();
+        if (player != null) {
+            video.animate().alpha(0f).setDuration(FADE_MS).withEndAction(this::stopVideo).start();
+        }
     }
 
     void onShown(Runnable listener) {
@@ -270,6 +301,7 @@ final class Slides {
                         view.setAlpha(0f);
                         release(view);
                     }
+                    if (sharp != null) sharp.clear();
                 }, FADE_MS + 100);
             });
             mp.setOnCompletionListener(p -> {
@@ -350,6 +382,44 @@ final class Slides {
             return gpu;
         } catch (Exception | OutOfMemoryError failure) {
             return null;
+        }
+    }
+
+    /**
+     * The sharp path's decode: only the part of the picture the screen shows, in full colour, at the
+     * panel's size. A picture smaller than the panel is decoded whole and enlarged by the stage.
+     */
+    @SuppressWarnings("deprecation")   // newInstance(String, boolean): its replacement arrived in Android 12
+    private Bitmap decodeSharp(File file) {
+        BitmapRegionDecoder region = null;
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getPath(), options);
+            int w = options.outWidth, h = options.outHeight;
+            if (w <= 0 || h <= 0) return null;
+            int[] part = Media.cover(w, h, width, height);
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = Media.regionSample(part[2] - part[0], part[3] - part[1], width, height,
+                    SHARP_MAX_PIXELS);
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            region = BitmapRegionDecoder.newInstance(file.getPath(), false);
+            Bitmap decoded = region.decodeRegion(new Rect(part[0], part[1], part[2], part[3]), options);
+            if (decoded == null) return null;
+            if (decoded.getWidth() > width || decoded.getHeight() > height) {
+                // More than the panel shows: fitted to it, which is also what the two pictures held cost.
+                Bitmap fitted = Bitmap.createScaledBitmap(decoded, width, height, true);
+                if (fitted != decoded) decoded.recycle();
+                decoded = fitted;
+            }
+            Bitmap gpu = decoded.copy(Bitmap.Config.HARDWARE, false);
+            if (gpu == null) return decoded;
+            decoded.recycle();
+            return gpu;
+        } catch (Exception | OutOfMemoryError failure) {
+            return null;
+        } finally {
+            if (region != null) region.recycle();
         }
     }
 }

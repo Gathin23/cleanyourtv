@@ -67,6 +67,8 @@ public class SettingsActivity extends Activity {
         locationButton.setOnClickListener(v -> openLocationSettings());
         list.addView(locationButton, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        list.addView(toggle(Options.SHARP, R.string.option_sharp, null));
+        list.addView(note(R.string.sharp_info));
 
         list.addView(createSpacer(dp(16)));
 
@@ -143,6 +145,14 @@ public class SettingsActivity extends Activity {
             if (changed != null) changed.on(value);
         });
         return s;
+    }
+
+    /** A line under a switch saying what it costs or needs. */
+    private TextView note(int text) {
+        TextView note = new TextView(this);
+        note.setText(text);
+        note.setPadding(dp(8), 0, dp(8), dp(8));
+        return note;
     }
 
     private SeekBar createSeekBar(int min, int max, int current, TextView label) {
