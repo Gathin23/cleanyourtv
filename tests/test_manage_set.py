@@ -189,8 +189,12 @@ class SetValueTest(unittest.TestCase):
         self.assertIn("wallpaper_moods", refusal)
         self.assertIn("object", refusal)
         self.assertIsNone(self.written())
-        self.assertIsNone(self.set_key("wallpaper_moods", '{"morning": "a.jpg"}'))
-        self.assertEqual({"morning": "a.jpg"}, self.written()["wallpaper_moods"])
+        # An object of groups naming pictures the theme ships, which is the value Config.moods() reads; the shapes
+        # it drops are held by tests/test_manage_set_wallpaper_moods.py.
+        (self.theme / "wallpapers").mkdir()
+        (self.theme / "wallpapers" / "a.jpg").write_bytes(b"picture")
+        self.assertIsNone(self.set_key("wallpaper_moods", '{"morning": ["a.jpg"]}'))
+        self.assertEqual({"morning": ["a.jpg"]}, self.written()["wallpaper_moods"])
 
     def test_a_string_key_takes_a_number_as_its_text(self):
         # string() takes a String only, so a number here would leave the key at its default.
