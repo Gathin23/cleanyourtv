@@ -20,9 +20,13 @@ sky-blue glow; on any other Android TV home it is an ordinary app.
 - Degrees Celsius by default (Fahrenheit is an option below). App text follows the TV's language, with
   English, French, German, Italian, Korean, Polish, Russian, Spanish, Turkish and Ukrainian available.
 - The charts use smooth lines between the hourly readings or daily highs and lows. Dots mark forecast values.
-- The current conditions icon animates; forecast icons are static for easy scanning. A subset of
-  [Makin-Things Weather Icons](https://github.com/Makin-Things/weather-icons/tree/3793c6a) is bundled under the
-  [MIT license](app/src/main/assets/weather-icons/LICENSE).
+- The current conditions icon animates. Forecast icons stay still for easy scanning.
+- amCharts (© ammap.com) created the original weather icons under CC BY 4.0. Makin-Things adapted and
+  expanded the set. This add-on bundles selected SVGs from that adaptation unchanged with its MIT notice.
+  [Original icons](https://www.amcharts.com/free-animated-svg-weather-icons/) ·
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ·
+  [Adapted icon pack](https://github.com/Makin-Things/weather-icons/tree/3793c6a) ·
+  [Bundled notices](app/src/main/assets/weather-icons/LICENSE)
 
 ## Options
 

@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Original weather icons by amCharts (© ammap.com).
+https://www.amcharts.com/free-animated-svg-weather-icons/
+Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+
+Makin-Things adapted and expanded the icon set. This add-on bundles selected
+SVGs from that adaptation unchanged.
+https://github.com/Makin-Things/weather-icons/tree/3793c6a
