@@ -46,9 +46,10 @@ commented Netflix line), KEYCODE_SETTINGS/TV_INPUT pairs to
 
 With launcherx disabled and no key helper: Home, Input and volume keys still work; the remote's
 gear button, long-press Home (KEYCODE_ALL_APPS), the GUIDE/PROFILE_SWITCH/MACRO_1 keys and the
-Netflix key do nothing. The owner declined `launcher/build-and-install.sh -HomeKeyService`
-because of the volume-ramp trade (docs/devices/tcl-55p71b-g09-key-repeat.md); the gear key needs
-that helper (`settings_key_keycodes` 17 or 83) the same way examples/sharp-aquos-tve23a maps it.
+Netflix key do nothing. The owner declined the key helper
+(`HOME_KEY_SERVICE=1 launcher/build-and-install.sh`, `-HomeKeyService` in PowerShell) because of
+the volume-ramp trade (docs/devices/tcl-55p71b-g09-key-repeat.md); the gear key needs that helper
+(`settings_key_keycodes` 17 or 83) the same way examples/sharp-aquos-tve23a maps it.
 
 ## Dock
 
