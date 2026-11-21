@@ -579,6 +579,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             shelfRow = new ContinueRow(this, shelfCards, shelfImages, new ContinueRow.Listener() {
                 @Override public void onOpen(WatchNextShelf.Item item) { openShelfCard(item); }
                 @Override public void onLeave() { focusTile(lastFocused); }
+                @Override public void onUp() {
+                    // Up from a card reaches the top bar, like Up from a dock tile does without a shelf.
+                    (btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton()).requestFocus();
+                }
                 @Override public void onFocused(int index) { onShelfCardFocused(index); }
             }, cfg.glassStyle);
             watchNext = new WatchNextShelf(this, handler, this::onWatchNextChanged);

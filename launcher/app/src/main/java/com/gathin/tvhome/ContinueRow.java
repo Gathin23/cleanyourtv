@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * The cards under the top shelf's name (config.xml, continue_watching): 16:9 artwork with a thin progress bar, then
  * the title and a second line. The focus is the launcher's glass slab, one per card and shown only on the focused
- * one, so it scrolls with the row and needs no spring. Keys: Left/Right between cards, Up stays, Down and Back hand
+ * one, so it scrolls with the row and needs no spring. Keys: Left/Right between cards, Up goes to the top bar, Down and Back hand
  * focus back to the dock (Listener.onLeave), OK opens the card.
  */
 final class ContinueRow {
@@ -36,6 +36,9 @@ final class ContinueRow {
 
         /** Down or Back on a card: focus returns to the dock tile. */
         void onLeave();
+
+        /** Up on a card: focus goes to the top bar (Inputs, Wi-Fi, Settings). */
+        void onUp();
 
         void onFocused(int index);
     }
@@ -241,6 +244,7 @@ final class ContinueRow {
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
                         return down && (rtl ? at <= 0 : at >= items.size() - 1);
                     case KeyEvent.KEYCODE_DPAD_UP:
+                        if (down) listener.onUp();
                         return true;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         if (down) listener.onLeave();
