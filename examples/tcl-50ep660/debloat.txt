@@ -1,0 +1,75 @@
+# TCL 50EP660, France (ro.product.model BeyondTV, board RTD2851 / rtd285o, client TCL-EU-RT2851-S1, software AP06),
+# Android TV 9 (API 28), build PPR1.180610.011, security patch 2020-09-05.
+# Same platform as examples/tcl-43ep660/ (AP04 software there); that list's notes apply too.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-50ep660/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-50ep660/debloat.txt
+# Stock launcher: com.google.android.tvlauncher (restore.sh default); launcher/build-and-install.sh
+# disables it once com.gathin.tvhome resolves as Home. Live TV app: com.tcl.tv. HDMI/AV: com.tcl.tvpassthrough.
+#
+# Tested 2026-11-21 on a real unit on Ethernet, in four batches with a screenshot after each, then two
+# reboots: all disabled packages stayed disabled (the TCL user center did not come back on AP06), the TV
+# booted to the new Home (no Live TV takeover), TCL's source menu and the launcher's Sources menu
+# (HDMI1-3, AV) worked, and the real remote's Home, Input, app and Settings buttons all worked with no key
+# helper enabled; holding volume up still ramps. Not yet lived with for days.
+# Quirks: screencap works on Home; network ADB on 5555 closed after Network debugging was switched off and
+# the TV restarted, with USB debugging left on.
+#
+# Already disabled at the factory, left alone: the 14 uk.co.freeview.* apps, com.tcl.bootadservice,
+# com.tcl.common.terminalmanagerplus, com.tcl.gallery, Stan, ZEE5, Eros Now, LINE TV.
+# Not touched (name says factory, never started): com.tcl.factory.view
+#
+# DO NOT DISABLE (load-bearing, per examples/tcl-43ep660/):
+# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough com.tcl.sourcemananger
+# com.tcl.keycustomfunctionservice com.tcl.keyhelp com.tcl.framework.custom
+# com.tcl.tcl_bt_rcu_service com.tcl.autopair com.tcl.inputmethod.international
+# com.tcl.showmode com.tcl.xian.StartandroidService com.google.android.tungsten.setupwraith
+
+# 1. Telemetry and analytics
+com.tcl.bi                                  # TCL BI analytics
+com.tcl.appstatecontroller
+com.tcl.usercenter                          # TCL account
+com.google.android.tv.bugreportsender
+
+# 2. Content, recommendation rows and promos
+com.tcl.cyberui                             # TCL Channel / content service
+com.tcl.messagebox
+com.tcl.esticker
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+
+# 3. Background extras
+com.tcl.tvweishi                            # "TV Guard" cleaner
+com.tcl.MultiScreenInteraction_TV           # T-Cast phone link (Chromecast kept)
+com.tcl.copydatatotv
+com.android.printspooler
+
+# 4. Preloads
+com.tcl.imageplayer
+com.tcl.audioplayer
+com.tcl.videoplayer
+com.tcl.ui_mediaCenter                      # USB media centre (still listed in the source menu, harmless)
+com.tcl.appmarket2                          # TCL app store (Play Store stays)
+com.google.android.play.games
+com.google.android.videos
+com.google.android.music
+
+# 5. Off by choice on this unit (comment out what you use)
+com.spotify.tv.android
+tunein.player
+com.google.android.apps.youtube.music
+com.google.android.katniss                  # voice search and the mic button
+com.google.android.tv.assistant
+com.google.android.speech.pumpkin
+com.tcl.assistant
+com.tcl.micmanager
+com.tcl.miracast
+# com.google.android.apps.mediashell        # Chromecast, kept
+# Firmware updaters: the tested unit's owner disabled both, by choice; they are left enabled here as the
+# repo recommends. Disabling them means no firmware or remote updates until re-enabled.
+# com.tcl.versionUpdateApp
+# com.tcl.rc.ota
+
+# 6. After the launcher is installed
+com.tcl.partnercustomizer                   # TCL rows in the stock launcher
+com.google.android.tvlauncher               # stock launcher, replaced by launcher/
