@@ -43,6 +43,8 @@
 # Kept on purpose: com.coocaa.aigc.home, com.skyworth.setting, com.tianci.system, com.coocaa.os.*
 # (including com.coocaa.os.control and com.coocaa.os.softsettings), com.coocaa.safelauncher,
 # com.tianci.movieplatform, input methods, voice/mic, casting and audio/PQ packages.
+# com.coocaa.os.upgrade is that family's OTA updater: like the sibling Coocaa lists skyworth-7t864-h5d and
+# skyworth-7t861-a23, it is left commented out at the end of this list so firmware updates keep arriving.
 # com.overseas.store.appstore is absent after a factory reset; the line is harmless there.
 com.tianci.ad
 com.coocaa.screensaver
@@ -52,4 +54,4 @@ com.tianci.appstore
 com.overseas.store.appstore
 com.skyworth.performance.monitors
 com.skyworth.testtime
-com.coocaa.os.upgrade
+# com.coocaa.os.upgrade                   # OTA updater, left enabled: uncomment to disable it and stop updates
