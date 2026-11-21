@@ -11,7 +11,6 @@
 # Remote: all buttons worked after the launcher install.
 # Remote app button: worked. The Android 14 entry found it needs
 #   dailymanage, dailyshortcut and myapp, so they are left enabled here.
-# Casting (Chromecast built-in) with setupwraith disabled: worked.
 # In use for about a month (as of 2026-11-21): nothing broke.
 #
 # Apply: TV_HOST=<tv ip> tools/disable.sh examples/skyworth-swtv-22ae-fhd-android11/debloat.txt
