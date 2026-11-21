@@ -62,4 +62,11 @@ public class HomeKeyServiceTest {
         assertTrue(HomeKeyService.stillArmed(SOON, SOON + HomeKeyService.SCREEN_ON_WINDOW_MS));
         assertFalse(HomeKeyService.stillArmed(SOON, 0));
     }
+
+    @Test public void looksAgainOnlyWhileTheStockHomeKeptTheScreen() {
+        assertTrue(HomeKeyService.redirectAgain(false, false, 2));
+        assertFalse(HomeKeyService.redirectAgain(true, false, 2));
+        assertFalse(HomeKeyService.redirectAgain(false, true, 2));
+        assertFalse(HomeKeyService.redirectAgain(false, false, 0));
+    }
 }
