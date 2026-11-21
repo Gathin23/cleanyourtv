@@ -10,21 +10,31 @@
 #
 # Tested on one set, disabled with pm disable-user --user 0 and lived with for a few days.
 # Checked over adb on 2026-10-20: HDMI input, ARC audio to a soundbar and Home work. Nothing else verified.
+# Package state re-checked on 2026-11-21 against pm list packages -d and -e dumps from this set.
+# (Package state only. The firmware line above was not re-probed, the dumps do not report firmware.)
 
-# Launcher partner customization and Google partner setup
+# Launcher partner customization
 com.realtek.leanbacklauncher.partnercustomizer
-com.google.android.partnersetup
 android.autoinstalls.config.google.gtvpai   # Play partner auto-installs
 
 # Preloaded services
 com.seraphic.media.tv.interactive.app
 com.google.android.apps.tv.dreamx           # ambient mode screensaver
-com.apps.scast                              # likely screen mirroring
 com.apps.wifihotspot
 com.mk.tv.meeting.service
 com.apps.esticker3
 com.android.printspooler
 com.android.tv.feedbackconsent
+
+# Google Assistant and voice search. Fine to disable; you lose Google Assistant voice (remote mic).
+com.google.android.katniss
+#   May re-enable at boot: lastDisabledCaller com.realtek.tv, then com.apps.sys (2026-10-30).
+
+# Realtek system services
+com.realtek.connecteddevices
+com.realtek.connecteddevices.overlay
+com.realtek.energymode                      # disabled on this set with no issue seen
+com.realtek.rtkvirtualkeyboard              # Realtek on-screen keyboard; this set keeps the latin IME and has this off
 
 # Privacy Sandbox and on-device personalization
 com.android.adservices.api
@@ -42,14 +52,19 @@ com.realtek.kara
 
 # Preloaded apps
 com.apps.mk.gameui
+com.apps.mk.sk
 com.apps.puresound
 com.apps.usbmediaplayer
 com.wbd.stream                              # Max, off by choice
 
 # Stock home. Disable only after the new launcher is installed and running, or Home lands on a factory test app.
 com.google.android.apps.tv.launcherx
-com.google.android.tungsten.setupwraith     # setup wizard; on this set YouTube casting from a phone still works after a reboot (tested 2026-10-25)
+com.google.android.tungsten.setupwraith     # setup wizard; com.realtek.systemservice re-enables it at every boot
+#   On this set it is harmless when it comes back: it closes itself and hands Home to the custom launcher.
+#   YouTube casting from a phone still works after a reboot (tested 2026-10-25).
 #   Careful: on most Google TV sets setupwraith's RecoveryActivity takes Home once launcherx is off and
 #   crash-loops system_server (docs/TROUBLESHOOTING.md). Forget and re-join Wi-Fi first, it owns the network.
 
-# KEEP: com.realtek.dtv, com.realtek.tv.atv (HDMI and other inputs). Left enabled: com.realtek.airplay2.
+# KEEP: com.realtek.dtv, com.realtek.tv.atv (HDMI and other inputs).
+# Left enabled: com.realtek.airplay2. Disabling it does not stick, com.realtek.systemservice re-enables it
+#   at every boot (lastDisabledCaller confirmed 2026-10-30). It sits stopped and idle, so it is left alone.
