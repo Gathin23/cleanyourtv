@@ -45,6 +45,8 @@ public final class LauncherSettingsActivity extends Activity {
     private String clockFormat;
     private boolean animations;
     private boolean advancedEffects;
+    /** wallpaper_preview: the Wallpaper picker shows the focused row's picture above the list. */
+    private boolean wallpaperPreview;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -52,6 +54,7 @@ public final class LauncherSettingsActivity extends Activity {
         setContentView(R.layout.activity_launcher_settings);
         choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         Config config = Config.load(this);
+        wallpaperPreview = config.wallpaperPreview;
         View reorderChoice = findViewById(R.id.reorderChoice);
         reorderChoice.setVisibility(config.launcherSettingsButton ? View.VISIBLE : View.GONE);
         reorderChoice.setOnClickListener(v -> {
@@ -196,7 +199,7 @@ public final class LauncherSettingsActivity extends Activity {
         String current = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         int checked = "none".equals(current) ? images.size()
                 : indexOf(images, current);
-        new AlertDialog.Builder(this)
+        AlertDialog.Builder picker = new AlertDialog.Builder(this)
                 .setTitle(R.string.wallpaper_label)
                 .setSingleChoiceItems(labels, checked, (dialog, which) -> {
                     dialog.dismiss();
@@ -215,8 +218,13 @@ public final class LauncherSettingsActivity extends Activity {
                     changed();
                     refresh();
                 })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                .setNegativeButton(android.R.string.cancel, null);
+        if (wallpaperPreview) {
+            // The picker as it was, with the focused row's picture over the list; nothing else changes.
+            WallpaperPreview.attach(this, picker, images);
+        } else {
+            picker.show();
+        }
     }
 
     /** Off, then every app with a TV entry point by name. Saved at once; it is read on the next boot. */

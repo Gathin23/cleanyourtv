@@ -395,6 +395,10 @@
     <!-- Wallpapers decode as RGB_565 (2 bytes a pixel, 4 MB at 1080p), which bands dark gradients such as a night
          sky, most of all under wallpaper_dim. true decodes them in 32-bit colour: 8 MB, for TVs with 2 GB or more. -->
     <bool name="wallpaper_true_color">false</bool>
+    <!-- The Wallpaper picker shows a small picture of the focused row above the list (one 320x180 decode on a
+         worker thread, freed when the dialog closes). Off by default: every existing picker stays exactly as
+         it was. Can also be set with "wallpaper_preview": true in a theme's config.json. -->
+    <bool name="wallpaper_preview">false</bool>
     <!-- Rotating wallpapers: show each picture's name under the top-right buttons, from a captions.txt next to the
          pictures in wallpapers/ ("01-dusk.jpg<TAB>Dusk over the peaks", one per line). A picture without a line
          shows no name. Can also be set with "wallpaper_captions": true in a theme's config.json. -->

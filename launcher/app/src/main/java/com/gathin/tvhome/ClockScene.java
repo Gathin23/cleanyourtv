@@ -201,6 +201,12 @@ final class ClockScene {
         }
     }
 
+    /** The wallpaper picker's preview decode (wallpaper_preview, #3907): the same steps as decode, at a
+     *  fixed 320x180 target. Small on purpose; the dialog frees the bitmap when it closes. */
+    static Bitmap decodePreview(File file) {
+        return file == null ? null : decode(file, 320, 180);
+    }
+
     /** Step to the next picture once its turn is up; the tick already runs every minute. */
     private void advanceWallpaper() {
         if (rotation == null || rotationMs <= 0 || rotation.size() < 2) return;
