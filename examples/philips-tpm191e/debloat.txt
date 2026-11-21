@@ -241,6 +241,32 @@
 #   opportunistic and restarting twice brought the clock and the network back.
 # - Not compared package by package after the restarts, so persistence is not confirmed for this unit beyond
 #   Play-Fi coming back.
+#
+# Eleventh unit: Philips 50PUS7354/12 (LED), Czech Republic, on Ethernet. Same firmware as the lead unit:
+# STT2.230526.001, fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys.
+# One session on 21 Nov 2026 with three restarts, not a several-day test. Launcher notes are in README.md.
+# - From the list below: all of batches 1 and 2; all of batch 3 except dlna (kept by choice; music is not
+#   installed); batch 4 after the launcher took Home. usagelogger and demome were skipped by the
+#   TV_INPUT_HARDWARE guard; `dumpsys tv_input` showed inputs only from com.mediatek.tvinput,
+#   com.mediatek.tv.agent, org.droidtv.fastip, com.google.android.videos and org.videolan.vlc, so both were
+#   disabled with TVINPUT_ALLOW=1, as on the sixth unit.
+# - Also disabled, none used here: org.droidtv.amazonalexa, org.droidtv.android.fitness, com.zeasn.whalelive,
+#   com.boosteroidtv.streaming, and the web-app tiles nettvapp1814 (arte), 4546 (Megogo), 4655 (Deezer),
+#   5326 (Toon Goggles), 5512 (Fishing TV), 20004410 (itsmy.tv), 4771 and 4931 (both open only
+#   verification.nettvservices.com). After the last restart that was checked: tv.wuaki.apptv (Rakuten TV),
+#   nl.streamgroup.skylinkcz (Skylink) and cz.tmobile.tvgo (T-Mobile TV GO), so their persistence is not
+#   confirmed. Kept: Chromecast, both firmware updaters, dlna, the tuner, Netflix, YouTube, Disney+, HBO Max,
+#   Apple TV, Oneplay and VLC.
+# - Every other entry, tvrecommendations included, stayed disabled through a restart (`pm list packages -d`
+#   compared before and after). The same 15 Freeview packages and org.droidtv.freeviewplayers were disabled
+#   from the factory.
+# - Some tiles the Philips store installed (installer org.droidtv.nettvapps) are only stubs. homedia.sky.sport,
+#   label "Sky", versionName 2.0.0, has one activity, bumper.homedia.demobumper.MainActivity, which opens the
+#   Play Store page for Sky Switzerland ("not available in your country"). About 25 s after the tile was
+#   opened, the Play Store uninstalled it (Finsky "IQ: Attempting uninstall", then deletePackageX), with no
+#   uninstall sent over ADB; whether a remote press or the Store itself started it is not known, and it cannot
+#   be put back with tools/restore.sh. Read `dumpsys package <name>` rather than opening an unknown tile.
+# - net.cme.voyo.cz.tvapp, Voyo's package, now shows the Oneplay banner.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader

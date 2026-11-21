@@ -235,3 +235,29 @@ checked again 7 November 2026. The household watches broadcast TV through an app
   `scanCode = 217` and `NettvLoggerLocalSvc: LogKeyEvent: key=602,scan=217`. With `katniss` disabled nothing
   opens, and none of `app_keys` `scan:217:<package>`, `KEYCODE_SEARCH:<package>`, `KEYCODE_VOICE_ASSIST:<package>`,
   `KEYCODE_ASSIST:<package>` or `602:<package>` reached `InputKeyService`: no start was logged for any of them.
+
+## Philips 50PUS7354/12 (Czech Republic): single-session notes
+
+Checked on a second Philips 50PUS7354/12 (LED, Czech Republic, on Ethernet), same TP Vision TPM191E board and firmware
+as the lead unit (`STT2.230526.001`), with its original Philips remote. Package details are in `debloat.txt`'s
+"Eleventh unit" note; this section covers the launcher side. One session with three restarts, not a several-day test.
+
+- Built with `tools/docker-build.sh` and installed with `SKIP_BUILD=1 HOME_KEY_SERVICE=1 launcher/build-and-install.sh`,
+  which ran through on its own: Home moved to `com.gathin.tvhome/.MainActivity` once the stock launcher was disabled
+  (`mFocusedApp`), and stayed there after a restart.
+- config.xml: `live_tv_package` `org.droidtv.playtv`, also the first dock slot; `hidden_apps` `org.droidtv.eum`,
+  `org.droidtv.channels`, `com.phorus.playfi.tv`; `columns` 6; `home_long_press_home` and `power_on_home_always` true.
+- The Inputs menu listed HDMI 1 / MHL, HDMI 2 to 4, YPbPr and Live TV. Switching to an input was not tested.
+- The firmware opens `org.droidtv.playtv` at every boot (`wm_set_resumed_activity`: FallbackHome, then
+  PlayTvActivity); with `power_on_home_always` the launcher came up about 6 s later.
+- Checked on the real remote with the stock launcher disabled: a short and a held Home land on Home, and SOURCES and
+  the Settings button kept working. With `HomeKeyService` bound, held Volume Up/Down step once per press, as on the
+  other units.
+- The remote's Netflix (632), Rakuten TV (779) and App Gallery (695) buttons, the same scancodes as the sixth to
+  ninth units, opened the chosen apps with `app_keys` `scan:632:<package>`, `scan:779:<package>` and
+  `scan:695:<package>` (`ActivityTaskManager` logged each start). Before the mapping no Netflix key line was
+  logged, so whether the Netflix button failed without it is not known.
+- `wm size` already showed `Override size: 1920x1080` on the 3840x2160 panel before anything was changed, with no
+  density override; it was left as found.
+- Port 5555 was open with only USB debugging on (`adb_wifi_enabled` 0). With USB debugging off and authorisations
+  revoked, after a restart `tools/adb-closed.py` reported it closed.
