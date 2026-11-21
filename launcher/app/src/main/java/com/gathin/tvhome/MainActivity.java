@@ -350,6 +350,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private List<String> dockApps;
     /** fill_dock false: the dock can have empty slots, which reorder mode leaves out and restores afterwards. */
     private boolean fillDockLeavesSlots;
+    /** config keep_saved_order: the saved tile order outlasts a changed dock_apps. */
+    private boolean keepSavedOrder;
     /** Edit-dock mode (Settings menu): a reorder session that swaps one chosen app into one dock place. */
     private boolean dockEditing;
     /** Dock place being changed in edit-dock mode, or -1 while the place is still being chosen. */
@@ -699,8 +701,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         adapter = new AppAdapter(this, this, COLUMNS, cfg);
         dockApps = cfg.dockApps;
         fillDockLeavesSlots = !cfg.fillDock;
+        keepSavedOrder = cfg.keepSavedOrder;
         Order savedOrder = Order.load(Order.file(this));
-        adapter.setSavedOrder(Order.ranks(savedOrder, dockApps), Order.docked(savedOrder, dockApps));
+        adapter.setSavedOrder(Order.ranks(savedOrder, dockApps, keepSavedOrder), Order.docked(savedOrder, dockApps, keepSavedOrder));
         grid.setAdapter(adapter);
 
         // tvOS layout: push the dock row towards the bottom of the screen, leaving room for
@@ -1696,7 +1699,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!keys.equals(before) || (fillDockLeavesSlots && docked != dockedAtStart)) {
             Order order = new Order(Order.dockKey(dockApps), keys, docked);
             if (Order.save(Order.file(this), order)) {
-                adapter.setSavedOrder(Order.ranks(order, dockApps), Order.docked(order, dockApps));
+                adapter.setSavedOrder(Order.ranks(order, dockApps, keepSavedOrder), Order.docked(order, dockApps, keepSavedOrder));
             } else {
                 Toast.makeText(this, R.string.reorder_not_saved, Toast.LENGTH_SHORT).show();
             }

@@ -97,15 +97,25 @@ final class Order {
      * Tiles without a rank sort after every ranked one.
      */
     static Map<String, Integer> ranks(Order order, List<String> dockApps) {
+        return ranks(order, dockApps, false);
+    }
+
+    /** As above; with keep (config keep_saved_order) the order applies whatever dock_apps it was saved under. */
+    static Map<String, Integer> ranks(Order order, List<String> dockApps, boolean keep) {
         Map<String, Integer> r = new HashMap<>();
-        if (order == null || !order.dock.equals(dockKey(dockApps))) return r;
+        if (order == null || (!keep && !order.dock.equals(dockKey(dockApps)))) return r;
         for (int i = 0; i < order.keys.size(); i++) r.put(order.keys.get(i), i);
         return r;
     }
 
     /** The saved dock size when the order still applies to these dock_apps and recorded one, else -1. */
     static int docked(Order order, List<String> dockApps) {
-        return order == null || !order.dock.equals(dockKey(dockApps)) ? -1 : order.docked;
+        return docked(order, dockApps, false);
+    }
+
+    /** As above; with keep (config keep_saved_order) the recorded dock size applies whatever dock_apps it was saved under. */
+    static int docked(Order order, List<String> dockApps, boolean keep) {
+        return order == null || (!keep && !order.dock.equals(dockKey(dockApps))) ? -1 : order.docked;
     }
 
     /** Sort step for two tiles: saved ones first in saved order, then 0 to fall through to the usual rule. */

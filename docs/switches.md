@@ -70,6 +70,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
 | `clock_format` | <img src="switches/clock_format.jpg" width="320" alt="clock_format on a TV"> |
 | `glow_snap` | <img src="switches/glow_snap.jpg" width="320" alt="glow_snap on a TV: the glow in Netflix red behind the dock"> |
+| `keep_saved_order` | <img src="switches/keep_saved_order.jpg" width="320" alt="keep_saved_order on a TV: the owner's own dock order, JioTV+ first, kept after a theme whose dock_apps lists Netflix first was pushed"> |
 | `settings_key_clear_task` | <img src="switches/settings_key_clear_task.jpg" width="320" alt="settings_key_clear_task on a TV: the TV Settings screen the gear opens"> |
 
 `icon_tiles` is a `config.xml` key rather than a theme key, as its type cell in the Keys table says: the

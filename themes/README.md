@@ -94,6 +94,7 @@ A new key needs one there in the same pull request.
 |---|---|---|
 | `dock_apps` | list of package names | The dock row, in order; missing apps are skipped |
 | `fill_dock` | bool | Fill the dock slots `dock_apps` leaves free with the first grid apps (true by default); false leaves them empty |
+| `keep_saved_order` | bool | Keep the order the owner saved with Reorder when a pushed theme has a different `dock_apps`; by default the saved order is ignored then and the theme's dock takes effect (`false` by default). Set it in `config.xml` to hold across themes: a pushed theme replaces a value set in the previous theme's `config.json` |
 | `hidden_apps` | list of package names | Never shown as tiles |
 | `live_tv_package`, `live_tv_action` | string | The Live TV app and, if it has no leanback entry, the action to start it with |
 | `live_tv_input_id` | string | Live TV source for the Inputs menu: an exact system tuner ID opens its channel collection. The special value `content://android.media.tv/channel` opens the stock launcher's root channel URI on Xiaomi MiTV-MSSP1 (#1941). Empty keeps automatic selection. Missing input or unsupported collection falls back to the app's normal launch. [HAAM satellite example](../docs/devices/haam-r4.md) |
