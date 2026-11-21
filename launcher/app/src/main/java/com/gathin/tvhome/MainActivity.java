@@ -25,6 +25,7 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -304,6 +305,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             openStartAppOnWake();
+            showWelcomeSplash();
         }
     };
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
@@ -948,13 +950,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             registerReceiver(packageReceiver, packageFilter);
         }
-        if (openOnStartOnWake) {
+        try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON), Context.RECEIVER_NOT_EXPORTED);
             } else {
                 registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
             }
-        }
+        } catch (Exception ignored) { }
 
         // From the application, not this activity: on Android 12 a ConnectivityManager keeps the context it was
         // made with (its static sInstance, and the callback Messenger the system holds), so every recreate() left
@@ -973,6 +975,88 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (savedInstanceState == null && !openLauncherSettingsIfAsked(getIntent()) && !openLibraryIfAsked(getIntent())) {
             openInputsIfAsked(getIntent());
         }
+        showWelcomeSplash();
+    }
+
+    private View welcomeSplashView;
+
+    private void showWelcomeSplash() {
+        runOnUiThread(() -> {
+            if (isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) return;
+            FrameLayout root = findViewById(R.id.root);
+            if (root == null) return;
+            if (welcomeSplashView != null) {
+                root.removeView(welcomeSplashView);
+                welcomeSplashView = null;
+            }
+
+            LinearLayout splash = new LinearLayout(this);
+            welcomeSplashView = splash;
+            splash.setOrientation(LinearLayout.VERTICAL);
+            splash.setGravity(Gravity.CENTER);
+            splash.setBackgroundColor(0xFF000000);
+            splash.setFocusable(true);
+            splash.setFocusableInTouchMode(true);
+
+            TextView title = new TextView(this);
+            title.setText("W E L C O M E");
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+            title.setTextColor(0xFFD4AF37);
+            title.setGravity(Gravity.CENTER);
+            title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                title.setLetterSpacing(0.25f);
+            }
+
+            TextView name = new TextView(this);
+            name.setText("MR. ADNAN");
+            name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 64);
+            name.setTextColor(0xFFFFFFFF);
+            name.setGravity(Gravity.CENTER);
+            name.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD));
+            name.setPadding(0, (int) (14 * density), 0, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                name.setLetterSpacing(0.12f);
+            }
+
+            View line = new View(this);
+            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams((int) (160 * density), (int) (3 * density));
+            lineParams.topMargin = (int) (24 * density);
+            line.setLayoutParams(lineParams);
+            line.setBackgroundColor(0xFFFFB23C);
+
+            splash.addView(title);
+            splash.addView(name);
+            splash.addView(line);
+
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            root.addView(splash, lp);
+            splash.requestFocus();
+
+            Runnable dismiss = () -> {
+                if (welcomeSplashView == splash) {
+                    splash.animate()
+                            .alpha(0f)
+                            .setDuration(500)
+                            .withEndAction(() -> {
+                                root.removeView(splash);
+                                if (welcomeSplashView == splash) welcomeSplashView = null;
+                            });
+                }
+            };
+            splash.postDelayed(dismiss, 2800);
+
+            splash.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    splash.removeCallbacks(dismiss);
+                    dismiss.run();
+                    return true;
+                }
+                return false;
+            });
+        });
     }
 
     /**
@@ -1392,7 +1476,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
-        if (openOnStartOnWake) unregisterReceiver(wakeReceiver);
+        try { unregisterReceiver(wakeReceiver); } catch (Exception ignored) { }
         wallpaperPlayer.close();
         ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);   // as registered
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);

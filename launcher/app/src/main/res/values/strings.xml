@@ -124,7 +124,7 @@
         <item quantity="other">%1$d apps</item>
     </plurals>
     <!-- The greeting, then greeting_name: "Good morning, Mr. Trịnh". -->
-    <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="greeting_with_name">WELCOME %2$s</string>
 
     <!-- Race-weekend panel (RaceWeekend). -->
     <string name="race_kicker">Round %1$d · %2$s · %3$s</string>
