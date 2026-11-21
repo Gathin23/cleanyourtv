@@ -66,4 +66,11 @@
     <string name="sky_showers">Chubascos</string>
     <string name="sky_snow_showers">Chubascos de nieve</string>
     <string name="sky_thunderstorm">Tormenta</string>
+
+    <string name="today_range">Hoy  ·  Máx. %1$d° / Mín. %2$d°</string>
+    <string name="hourly_forecast">Próximas 24 horas</string>
+    <string name="daily_forecast">Previsión diaria</string>
+    <string name="chart_high">Máxima</string>
+    <string name="chart_low">Mínima</string>
+    <string name="forecast_unavailable">Previsión no disponible</string>
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="forecast_high">#FFD095</color>
+    <color name="forecast_low">#A0DAFF</color>
+    <string name="temperature_degrees" translatable="false">%1$d°</string>
+    <style name="ForecastHeading">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+</resources>

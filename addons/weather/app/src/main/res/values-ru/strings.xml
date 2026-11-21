@@ -67,4 +67,11 @@
     <string name="sky_showers">Ливень</string>
     <string name="sky_snow_showers">Ливневый снег</string>
     <string name="sky_thunderstorm">Гроза</string>
+
+    <string name="today_range">Сегодня  ·  Макс. %1$d° / Мин. %2$d°</string>
+    <string name="hourly_forecast">Ближайшие 24 часа</string>
+    <string name="daily_forecast">Прогноз по дням</string>
+    <string name="chart_high">Максимум</string>
+    <string name="chart_low">Минимум</string>
+    <string name="forecast_unavailable">Прогноз недоступен</string>
 </resources>

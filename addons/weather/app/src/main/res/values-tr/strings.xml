@@ -65,4 +65,11 @@
     <string name="sky_showers">Sağanak yağmur</string>
     <string name="sky_snow_showers">Sağanak kar</string>
     <string name="sky_thunderstorm">Gök gürültülü sağanak</string>
+
+    <string name="today_range">Bugün  ·  En yüksek %1$d° / En düşük %2$d°</string>
+    <string name="hourly_forecast">Önümüzdeki 24 saat</string>
+    <string name="daily_forecast">Günlük tahmin</string>
+    <string name="chart_high">En yüksek</string>
+    <string name="chart_low">En düşük</string>
+    <string name="forecast_unavailable">Tahmin kullanılamıyor</string>
 </resources>

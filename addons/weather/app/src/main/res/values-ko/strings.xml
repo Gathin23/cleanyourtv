@@ -64,4 +64,11 @@
     <string name="sky_showers">소나기</string>
     <string name="sky_snow_showers">소낙눈</string>
     <string name="sky_thunderstorm">뇌우</string>
+
+    <string name="today_range">오늘  ·  최고 %1$d° / 최저 %2$d°</string>
+    <string name="hourly_forecast">향후 24시간</string>
+    <string name="daily_forecast">일별 예보</string>
+    <string name="chart_high">최고</string>
+    <string name="chart_low">최저</string>
+    <string name="forecast_unavailable">예보를 불러올 수 없음</string>
 </resources>
