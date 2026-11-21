@@ -27,6 +27,10 @@
          the first grid apps, so the dock never shows a gap. false leaves them empty (#162); a theme can
          set "fill_dock": false. -->
     <bool name="fill_dock">true</bool>
+    <!-- A pushed theme with another dock_apps makes the launcher ignore the order the owner saved with Reorder
+         (the new dock takes effect until the owner reorders again). true keeps the saved order whatever
+         dock_apps says; a theme can set "keep_saved_order". Off by default. -->
+    <bool name="keep_saved_order">false</bool>
 
     <!-- Apps never shown as tiles (e.g. the Live TV app, which the Inputs menu already covers). -->
     <string-array name="hidden_apps">

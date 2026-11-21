@@ -106,4 +106,15 @@ public class OrderTest {
         });
         assertEquals(Arrays.asList("c/.C", "a/.A", "m/.M", "n/.N"), tiles);
     }
+
+    @Test
+    public void keepSavedOrderAppliesAfterDockAppsChanged() {
+        Order o = new Order(Order.dockKey(DOCK), Arrays.asList("b/.B", "a/.A"), 1);
+        List<String> other = Arrays.asList("com.disney.disneyplus");
+        assertTrue(Order.ranks(o, other).isEmpty());
+        assertEquals(-1, Order.docked(o, other));
+        assertEquals(Integer.valueOf(0), Order.ranks(o, other, true).get("b/.B"));
+        assertEquals(1, Order.docked(o, other, true));
+        assertTrue(Order.ranks(o, other, false).isEmpty());
+    }
 }
