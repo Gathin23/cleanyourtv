@@ -1,0 +1,6 @@
+{
+  "tv": "Skyworth SWTV-22AE-FHD (umeda, MediaTek), Motorola-branded, Android 11 firmware RTM7.230903.221",
+  "os": "Google TV 11",
+  "brand": "Skyworth",
+  "notes": "Android 11 variant. Skyworth telemetry (recordactivation, aftersale), recommendation rows and customizer, retail demo apps, e-manual; setupwraith disabled to free Home (Wi-Fi unaffected). Remote key and app-button services, Bluetooth remote pairing, HDMI inputs working. Android 14 components (adservices etc.) are not present on this firmware."
+}
