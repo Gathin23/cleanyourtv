@@ -126,6 +126,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long idleClockMs;
     /** Back on Home opens ClockActivity (config.xml, back_opens_clock). */
     private boolean backOpensClock;
+    /** Back on Home starts the system screensaver (config.xml, back_opens_screensaver). */
+    private boolean backOpensScreensaver;
     private final Runnable showIdleClock = () -> startActivity(new Intent(this, ClockActivity.class));
     private String liveTvAction;
     private String liveTvInputId;
@@ -489,6 +491,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         homeIgnoreChannelKeys = cfg.homeIgnoreChannelKeys;
         idleClockMs = cfg.homeIdleClockMinutes * MINUTE_MS;
         backOpensClock = cfg.backOpensClock;
+        backOpensScreensaver = cfg.backOpensScreensaver;
         bootToLiveTv = cfg.bootToLiveTv;
         bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
@@ -1777,8 +1780,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
-        // Home screen: Back goes nowhere, unless back_opens_clock is on.
-        if (backOpensClock) startActivity(new Intent(this, ClockActivity.class));
+        // Home screen: Back goes nowhere, unless back_opens_screensaver or back_opens_clock is on.
+        if (backOpensScreensaver) RemoteKeys.launch(this, "screensaver");
+        else if (backOpensClock) startActivity(new Intent(this, ClockActivity.class));
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
