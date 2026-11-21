@@ -33,6 +33,22 @@
 # back on the XBR-49X705D. All stayed disabled across reboots. launcher/ installed; Home, HDMI and the remote's buttons
 # work. Channel Up/Down on Home open com.sony.dtv.tvx. Tested one day.
 #
+# Also confirmed 2026-11-20 on a Sony XBR-49X705D (Latin America, product BRAVIA_ATV2_SA, model BRAVIA 4K GB),
+# same build: BRAVIA_ATV2_SA-user 9 PTT1.190515.001.S54 672201 release-keys, security patch 2022-01-05. Wi-Fi.
+# Applied the list in three batches with screenshots between them, minus com.google.android.youtube.tvmusic
+# (in use) and plus, by choice, com.google.android.katniss, com.sony.dtv.smartmediaapp and
+# com.sony.dtv.osat.music; com.sony.dtv.promos is not installed there. android.autoinstalls.config.sony.bravia
+# and com.qterics.da.product were disabled without a TVINPUT_ALLOW warning. All entries stayed disabled across
+# three reboots. launcher/ installed (live_tv_package com.sony.dtv.tvx, no key helper); Home confirmed with
+# mResumedActivity. Inputs lists the CEC names (an Apple TV behind an HT-G700 soundbar on HDMI 3/ARC, a PS5 on
+# HDMI 4); ARC stayed established (dumpsys hdmi_control: mArcEstablished true, system audio on).
+# com.sony.dtv.discovery is PERSISTENT on this build: disabled, its process still starts at boot (12 MB PSS
+# instead of 33 MB). Measured after a reboot and two idle minutes on Home, stock vs this list, one run each:
+# MemAvailable 697 -> 917 MB, app processes 50 -> 38, running services 85 -> 68; idle CPU and boot time (64 s)
+# unchanged. Disabling com.google.android.backdrop leaves screensaver_components pointing at it, and the set
+# went straight to a black screen when idle; pointing screensaver_components and
+# screensaver_default_component at com.gathin.tvhome/.ClockDream fixed it. Tested one day.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-gb/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-gb/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -81,7 +97,8 @@ com.sony.dtv.imanual                           # i-Manual
 com.google.android.youtube.tvmusic
 com.google.android.videos
 com.google.android.play.games
-com.google.android.backdrop                    # ambient screensaver, replaced by the launcher's Clock
+com.google.android.backdrop                    # ambient screensaver; first point screensaver_components and
+                                               # screensaver_default_component at com.gathin.tvhome/.ClockDream
 
 # Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
 # com.google.android.apps.mediashell           # Chromecast built-in
