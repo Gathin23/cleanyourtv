@@ -224,8 +224,9 @@ def find(name, root=ROOT):
 
 # ---------------------------------------------------------------- a switch's value
 
-# The Keys-table cell of a colour a theme names: `background_color` and `accent_color`. Its two readers are
-# parsers of their own rather than Config.string(), which is why a value can be a String and still be dropped.
+# The Keys-table cell of a colour a theme names: `background_color`, `accent_color` and `focus_color`. Their
+# readers are parsers of their own rather than Config.string(), which is why a value can be a String and still
+# be dropped.
 COLOUR_CELL = "#RRGGBB"
 
 
@@ -642,16 +643,16 @@ def colour_value(key, text):
                      f"with the skin's own accent colour, so the theme would show no change. "
                      f"Nothing was written or pushed.")
         return value
-    # background_color, the other half of the cell: Config.color() and Color.parseColor().
+    # background_color and focus_color: the other readers of the cell, Config.color() and Color.parseColor().
     if digits is None:
         return value
     if not re.fullmatch(r"[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8}", digits):
-        sys.exit(f"background_color takes {COLOUR_CELL}, so {text!r} is not one the launcher keeps: "
+        sys.exit(f"{key} takes {COLOUR_CELL}, so {text!r} is not one the launcher keeps: "
                  f"Color.parseColor() cannot read it and Config.color() keeps the colour the theme already had, "
                  f"so the theme would show no change. Nothing was written or pushed.")
     if len(digits) == 8 and digits[:2].upper() != "FF":
         shown = "#FF" + digits[2:].upper()
-        sys.exit(f"background_color takes {COLOUR_CELL}, and Config.color() makes every colour opaque, so the "
+        sys.exit(f"{key} takes {COLOUR_CELL}, and Config.color() makes every colour opaque, so the "
                  f"alpha in {text!r} would be overwritten: the TV would show {shown}. Nothing was written or "
                  f"pushed.")
     return value

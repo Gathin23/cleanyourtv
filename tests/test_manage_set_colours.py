@@ -30,8 +30,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import manage  # noqa: E402
 
-# The two keys the Keys table gives the `#RRGGBB` cell.
-COLOUR_KEYS = {"background_color", "accent_color"}
+# The three keys the Keys table gives the `#RRGGBB` cell.
+COLOUR_KEYS = {"background_color", "accent_color", "focus_color"}
 CONFIG_JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Config.java"
 FESTIVAL_JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Festival.java"
 
@@ -103,6 +103,28 @@ class ColourValueTest(unittest.TestCase):
     def test_an_opaque_eight_digit_background_is_taken(self):
         self.assertIsNone(self.set_key("background_color", "#FF000000"))
         self.assertEqual("#FF000000", self.written()["background_color"])
+
+    def test_focus_color_is_read_like_the_background(self):
+        # focus_color's reader is Config.color() too: a name passes, a bad digit count and a transparent
+        # alpha are refused with what the TV would show.
+        self.assertIsNone(self.set_key("focus_color", "red"))
+        self.assertEqual("red", self.written()["focus_color"])
+        self.assertIsNone(self.set_key("focus_color", "#C86A4A"))
+        self.assertEqual("#C86A4A", self.written()["focus_color"])
+        for value in ("#12345", "#80FF0000"):
+            with self.subTest(value=value):
+                original = '{"greeting_name": "Keep"}\n'
+                self.config.write_text(original, encoding="utf-8")
+                self.push.reset_mock()
+                refusal = self.set_key("focus_color", value)
+                self.assertIsNotNone(refusal, "a bad colour was written, and Config.color() keeps the built-in black")
+                self.assertIn("focus_color", refusal)
+                self.assertIn("Nothing was written or pushed", refusal)
+                self.assertEqual(self.config.read_text(encoding="utf-8"), original)
+                self.push.assert_not_called()
+        refusal = self.set_key("focus_color", "#80FF0000")
+        self.assertIn("opaque", refusal)
+        self.assertIn("#FFFF0000", refusal)
 
     def test_six_hex_digits_are_taken_and_trimmed(self):
         # The launcher trims every colour it reads (`((String) v).trim()`), so the value written is the trimmed one.
