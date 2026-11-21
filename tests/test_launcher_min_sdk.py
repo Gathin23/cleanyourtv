@@ -59,6 +59,9 @@ def run(command):
         return state["install_output"]
     if "am start" in command:
         return "Status: ok\n"
+    # The stock_home_redirect probe (test_launcher_handover covers its answers): a TV without the redirect.
+    if "pm list packages com.gathin.tvhome" in command and "enabled_accessibility_services" in command:
+        return "not-installed\n"
     if "set-home-activity" in command:
         state["home"] = NEW
         return ""
