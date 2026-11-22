@@ -170,8 +170,8 @@ class ArgumentTest(unittest.TestCase):
             out = Path(tmp) / ("a" * 300)
             try:
                 os.stat(out)
-            except OSError:
-                pass
+            except OSError as e:
+                too_long = e.strerror
             else:
                 self.skipTest("this filesystem stats a 300-character name")
             err = self.parse_error(["nav", "--out", str(out)])
@@ -184,7 +184,7 @@ class ArgumentTest(unittest.TestCase):
             err = self.parse_error(["nav", "--out", str(out / "before")])
             self.assertIn(str(out), err)
             self.assertIn("cannot be looked at", err)
-            self.assertIn("File name too long", err)
+            self.assertIn(too_long, err)
 
     def test_a_folder_or_a_new_folder_is_still_accepted(self):
         with tempfile.TemporaryDirectory() as tmp:

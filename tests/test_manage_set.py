@@ -365,13 +365,13 @@ class SetThemeFolderTest(unittest.TestCase):
         long_name = (Path(self.tmp.name) / ("a" * 300)).resolve()
         try:
             os.stat(long_name)
-        except OSError:
-            pass
+        except OSError as e:
+            too_long = e.strerror
         else:
             self.skipTest("this filesystem accepts a 300-character name")
         refusal = self.set_key(folder=long_name)
         self.assertIn(f"{long_name} cannot be looked at", refusal)
-        self.assertIn("File name too long", refusal)
+        self.assertIn(too_long, refusal)
         self.assertIn("Nothing was written or pushed", refusal)
         self.push.assert_not_called()
 

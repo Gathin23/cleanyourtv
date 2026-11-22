@@ -556,12 +556,12 @@ with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io
         word = str(Path(self.tmp.name) / ("t" * 300))
         try:
             os.stat(word)
-        except OSError:
-            pass
+        except OSError as e:
+            too_long = e.strerror
         else:
             self.skipTest("this filesystem stats a 300-character name")
         status, stderr = self.run_main(word, "--season", "2026")
-        self.assert_refused(status, stderr, "could not look at", "File name too long")
+        self.assert_refused(status, stderr, "could not look at", too_long)
         self.assertEqual(self.out.getvalue(), "")
         self.urlopen.assert_not_called()
 
