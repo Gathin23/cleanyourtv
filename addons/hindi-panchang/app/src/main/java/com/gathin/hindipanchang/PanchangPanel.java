@@ -61,6 +61,7 @@ final class PanchangPanel extends FrameLayout {
     private LocationStore.Place place;
     private int monthOffset = 0;
     private LocalDate selectedDate;
+    private LocalDate shownToday;
     private int wisdomDayOfYear;
     private int simMinutes = 810;
     private boolean isLiveSim = true;
@@ -120,6 +121,16 @@ final class PanchangPanel extends FrameLayout {
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             ZonedDateTime now = ZonedDateTime.now(place.zoneId());
+            LocalDate today = now.toLocalDate();
+            if (!today.equals(shownToday)) {
+                LocalDate next = dayAfterDateChange(selectedDate, shownToday, today, monthOffset);
+                shownToday = today;
+                if (!next.equals(selectedDate)) {
+                    if (wisdomDayOfYear == selectedDate.getDayOfYear()) wisdomDayOfYear = next.getDayOfYear();
+                    selectedDate = next;
+                    rebuildCalendarAndHeader();
+                }
+            }
             if (isLiveSim) {
                 simMinutes = now.getHour() * 60 + now.getMinute();
                 if (activeModal == MODAL_PANCHANG) refreshActiveModal();
@@ -128,12 +139,19 @@ final class PanchangPanel extends FrameLayout {
         }
     };
 
+    /** The day to show once the local date moves from lastToday to today: today when the screen was on lastToday's month and day. */
+    static LocalDate dayAfterDateChange(LocalDate selected, LocalDate lastToday, LocalDate today, int monthOffset) {
+        if (monthOffset == 0 && selected.equals(lastToday) && !today.equals(lastToday)) return today;
+        return selected;
+    }
+
     PanchangPanel(Context context, boolean dream) {
         super(context);
         this.dream = dream;
         this.place = LocationStore.load(context);
         ZonedDateTime now = ZonedDateTime.now(place.zoneId());
         this.selectedDate = now.toLocalDate();
+        this.shownToday = selectedDate;
         this.wisdomDayOfYear = selectedDate.getDayOfYear();
         this.simMinutes = now.getHour() * 60 + now.getMinute();
 
