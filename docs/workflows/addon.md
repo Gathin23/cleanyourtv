@@ -6,7 +6,13 @@
    `addons/tv-hub` ships it - `tests/test_addons.py` accepts either - its own `gradlew` and `gradlew.bat`
    wrappers and an `app` module), with its own package name. Copy the two wrappers from an add-on that is
    already here: the add-on build names `./gradlew` on macOS and Linux and `gradlew.bat` in a Command Prompt,
-   and `tests/test_addons.py` refuses a folder without either one.
+   and `tests/test_addons.py` refuses a folder without either one. The scripts are not the whole wrapper:
+   `gradlew` runs `gradle-wrapper.jar` and reads `gradle-wrapper.properties` out of the gradle folder
+   beside it, so the two files alone stop at a missing class - copy those two as well, or take the
+   four-line `gradlew` and `gradlew.bat` several add-ons ship instead, which hand the build to
+   `launcher/gradlew` with `-p` and need no jar. Copy the root `build.gradle` too: the `app` module's
+   `plugins { id 'com.android.application' }` carries no version, and that file is where the plugin's is
+   declared, `apply false`.
 2. Copy a neighbour's `.gitignore` into the folder as well, so a build leaves nothing to commit: it keeps
    the Gradle output and the local.properties file Android Studio writes with your own SDK path out of
    git. `tests/test_addon_local_properties_ignored.py` asks git about each of those.

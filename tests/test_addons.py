@@ -87,8 +87,8 @@ class AddonFolderTest(unittest.TestCase):
 
 class AddonBuildRouteTest(unittest.TestCase):
     """addons/README.md builds an add-on with `./gradlew` on macOS and Linux and with `gradlew.bat` in
-    Command Prompt, so each folder needs both. Two forms ship here: nineteen carry Gradle's own wrapper
-    (gradlew, gradlew.bat and gradle/wrapper/), and six reuse the repository's pinned Gradle with a
+    Command Prompt, so each folder needs both. Two forms ship here: most carry Gradle's own wrapper
+    (gradlew, gradlew.bat and gradle/wrapper/), and the rest reuse the repository's pinned Gradle with a
     four-line `gradlew` that execs launcher/gradlew -p on this folder, plus the same three lines as a
     .bat. The folder test above asks every add-on for a settings.gradle, a README and a screenshot and
     never for its two wrappers, so the one folder that had a `gradlew` and no `gradlew.bat` - flock -
