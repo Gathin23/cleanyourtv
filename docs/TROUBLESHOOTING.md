@@ -1136,6 +1136,32 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   package that also claims HOME (PatchWall on Xiaomi) makes Android drop the default. The install
   script now picks the known stock launcher among the candidates by itself; otherwise choose one on
   the TV or pass `STOCK_LAUNCHER=<package>`.
+- **Home works after the install, then a later Home press opens Android's chooser with FACTORY MENU in
+  it**, seen on a Hisense HiSmartTV A4 (`xiaoyushan-sa`, Android TV 9, `PTMR.190127.037` /
+  `02.00.00.01`). `launcher/build-and-install.sh` disabled `com.google.android.tvlauncher`, set the new
+  launcher as Home and read it back, and the first Home press opened it. A few seconds later logcat said
+  `Result set changed, dropping preferred activity for Intent { act=android.intent.action.MAIN
+  cat=[android.intent.category.HOME,android.intent.category.DEFAULT] }`, `dumpsys package preferred` showed
+  the new launcher's entry with `mAlways=false`, and the next Home press opened
+  `android/com.android.internal.app.ResolverActivity`. `com.hisense.uifac/.FacRootMenu` claims HOME on this
+  build, and Hisense's PackageManager drops it from some HOME lookups and not others (logcat
+  `[wangbin40]Hisense removing factory`), so the set of Home apps Android compares the default against keeps
+  changing, and Android throws the default away each time. Setting it again with `cmd package
+  set-home-activity` lasted until the next Home press. Do not pick anything in that chooser: it offers the
+  factory menu, and the safety rules say never to open one. What works on that set is keeping the stock
+  launcher, which wins Home on its priority and needs no default:
+  `TV_HOST=<tv ip> tools/tv.py 'pm enable --user 0 com.google.android.tvlauncher'`, then a build with
+  `stock_home_redirect` set to `com.google.android.tvlauncher` and `home_long_press_home` true in
+  `launcher/app/src/main/res/values/config.xml`, installed with
+  `STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 TV_HOST=<tv ip> launcher/build-and-install.sh`. That run ends with
+  `Home resolves to com.google.android.tvlauncher/.MainActivity, not to the new launcher` and exits before its
+  helper step, so `HomeKeyService` has to be switched on the way that step does it
+  (`enabled_accessibility_services`, then `accessibility_enabled 1`); `dumpsys accessibility` then lists it
+  bound. The real Home button opens the new launcher at once, it is still Home after a reboot, and the
+  remote's Input button keeps the stock launcher's inputs panel. The price is the key filter's: a held
+  Volume key steps once per press. Without `home_long_press_home` the helper lets Android handle Home and
+  opens the launcher afterwards, and Android 9 holds app starts for 5 seconds after a Home press, so the
+  stock home shows for that long first.
 - **`tools/restore.sh` leaves the packages an earlier batch disabled off, after the TV changed its
   address mid-cleanup.** The recovery record is one file per list and address
   (`~/.cleanyourtv/recovery-<address>-<list hash>.json`), so a new DHCP lease - a router restart, or
@@ -1207,7 +1233,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   was empty. The same package disabled, given 12 seconds, then rebooted stayed at `enabled=3`
   (disabled-user), and so did every batch applied that way. Wait 15 seconds after the last `pm` command
   before rebooting, the same wait the tested lists already describe between batches. It is the
-  package-state counterpart of the lazy app-ops write above.
+  package-state counterpart of the lazy app-ops write above. A `sync` before the reboot does not stand in
+  for the wait: on an A4 on Android TV 9 (`PTMR.190127.037` / `02.00.00.01`), `sync` and the reboot
+  `tools/tv.py --reboot` sends, a few seconds after `tools/disable.sh`, brought all four packages of the
+  batch back, and the same batch given 25 seconds stayed disabled. `sync` flushes what is already on its
+  way to disk, and Android has not written the package state yet.
 - **A firmware update quietly undoes the cleanup.** The update installs over the cleaned-up system, so
   every listed package is enabled again, Home goes back to the stock launcher and new preloads
   appear that no list mentions. `tools/venv/bin/python -I tools/check.py <list>` reports the first
