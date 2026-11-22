@@ -135,6 +135,9 @@ def main():
                    help="the TV's ADB port (default: the port in the address, else $TV_PORT, else 5555)")
     p.add_argument("--port", type=int, default=15555, help="local port to listen on (default 15555; 0 picks one)")
     args = p.parse_args()
+    # Stripped as tv.py strips TV_HOST: a copied address with a space or newline around it is still that
+    # address, not a host name the relay starts for and no client can reach.
+    args.tv_host = (args.tv_host or "").strip()
     if not args.tv_host:
         p.error("give the TV's IP address, e.g.  tools/venv/bin/python -I tools/relay.py 192.168.1.50")
     # Before the port is read out of it, so a URL's "//<tv ip>" is not answered as a port fragment and a
@@ -153,6 +156,11 @@ def main():
     # The same order as tv.py and adb-closed.py (#997). With 5555 fixed, a TV whose adbd has a port of its
     # own (5877 on the Wanbo T6R Max) was relayed to 5555 whatever TV_HOST and TV_PORT said.
     args.tv_host, endpoint_port = split_host_port(args.tv_host)
+    if not args.tv_host:
+        # ":5555" or "[]:5555": the relay started and printed "-> :5555", and only a client that connected
+        # was told the TV could not be reached.
+        p.error("there is no address before the port: give the TV's IP, e.g.  "
+                "tools/venv/bin/python -I tools/relay.py 192.168.1.50:5555")
     port_from_env = args.tv_port is None and not endpoint_port and bool(os.environ.get("TV_PORT"))
     if args.tv_port is None:
         port_str = endpoint_port or os.environ.get("TV_PORT") or "5555"
