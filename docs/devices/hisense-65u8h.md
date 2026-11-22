@@ -1,8 +1,9 @@
-# Hisense 65U8H (wuyishan): one-session debloat and launcher handover
+# Hisense 65U8H (wuyishan): the Home handover and the tested list
 
-A US Hisense 65U8H was worked on over ADB on 2026-11-02. This is a one-session report, not a
-several-day package-disable list. The 26-package set is recorded here until it has been lived with;
-promote it to `examples/hisense-65u8h/` with a `tv.json` after that.
+Owner report for a US Hisense 65U8H. The tested package list lives in
+[`examples/hisense-65u8h/debloat.txt`](../../examples/hisense-65u8h/debloat.txt); what is here is the
+firmware behaviour around it, in particular who owns Home and the saved Wi-Fi. The 26 packages were
+applied on 2026-11-02, rebooted twice, and lived with until 2026-11-21.
 
 | Identifier | Observed value |
 |---|---|
@@ -31,10 +32,12 @@ Native AirPlay kept working after `setupwraith` was disabled, tested from an App
 from the [wutaishan U7 report](../../examples/hisense-u7-wutaishan/debloat.txt), where AirPlay stops
 with the setup wizard. Chromecast, Miracast and the Google TV screensaver also worked.
 
-## Packages disabled in the one session
+## The list
 
 26 packages, in three batches with a screenshot between each, then two reboots. The disabled list was
-identical after the reboot. Nothing was uninstalled.
+identical after the reboot, and the set was then lived with until 2026-11-21. Nothing was uninstalled.
+The shared list keeps the six streaming apps commented out, as the maintainer policy asks, so it
+disables 20 by default; this set had all six off.
 
 - Tracking: `com.hisense.evservice` (ACR), `android.autoinstalls.config.google.gtvpai` (PAI),
   `com.google.android.partnersetup`, `com.google.android.feedback`,
@@ -46,8 +49,8 @@ identical after the reboot. Nothing was uninstalled.
 - Voice assistants: `com.google.android.katniss`, `com.google.android.tv.assistant`,
   `com.hisense.alexa`.
 - DLNA: `com.hisense.tv.dlna`.
-- Streaming apps not used: `com.amazon.amazonvideo.livingroom`, `com.hulu.livingroomplus`,
-  `com.wbd.stream`, `com.tubitv`, `tv.pluto.android`, `com.haystack.android`.
+- Streaming apps not used in this home, commented out in the shared list: `com.amazon.amazonvideo.livingroom`,
+  `com.hulu.livingroomplus`, `com.wbd.stream`, `com.tubitv`, `tv.pluto.android`, `com.haystack.android`.
 - Setup wizard: `com.google.android.tungsten.setupwraith`.
 
 Already disabled at the factory: Netflix, Disney+, Google TV movies, Play Games and
@@ -73,7 +76,7 @@ AirPlay/HomeKit, the screensaver (`dreamx`), YouTube TV, Twitch and Jellyfin.
 
 ## Not tested
 
-- No several-day run, so no `examples/` list yet.
 - Casting from a phone, HDMI signal playback and CEC were not tested beyond the Inputs menu listing
   HDMI 1-4, AV and Live TV.
+- No full restore was run after the list settled.
 - Screenshots and the exact commands stay private and are not committed.

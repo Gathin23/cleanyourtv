@@ -1,0 +1,80 @@
+# Hisense 65U8H (device wuyishan, MediaTek MT9900 / mt5895), US. Google TV / Android 11 (SDK 30),
+# build RTT2.211209.001 / 00.00.00.56, 2 GB RAM, armeabi-v7a. ro.product.model is "SmartTV 4K FFM",
+# which several Hisense boards in examples/ answer too: identify this unit by ro.product.device
+# (wuyishan) and the build id, not by the model string.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-65u8h/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-65u8h/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-11-02 in three batches with a screenshot after each, rebooted twice, then lived
+# with until 2026-11-21. The disabled list was identical after the reboot, and the set stayed in use
+# without anything coming back on. Working: Home, the remote, Input opening the launcher's menu,
+# Wi-Fi and ADB, native AirPlay from an Apple device, Chromecast, Miracast, the Google TV screensaver,
+# Twitch and Jellyfin. Not tested: HDMI signal playback and CEC beyond the Inputs menu listing HDMI
+# 1-4, AV and Live TV, casting from a phone, and a full restore.
+#
+# 26 packages were off in the tested set, including the six streaming apps below. This shared list
+# ships those six commented out, so an owner keeps the ones they use; uncomment the ones you do not.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Install the replacement launcher after this
+# list: launcher/build-and-install.sh starts it, confirms Home, then disables launcherx.
+# Live TV and HDMI: com.mediatek.wwtv.tvcenter. Input menu: com.vt.tv.input.
+#
+# setupwraith (last line) owned the saved Wi-Fi network here. Forget the network and join it again in
+# Settings > Network & Internet first, check `dumpsys wifi | grep -o 'cname=[^ ]*'` shows
+# android.uid.system:1000 rather than setupwraith, then apply with FORCE_SETUPWRAITH=1. If it is
+# skipped, launcherx stays Home, and after launcherx is disabled setupwraith's RecoveryActivity takes
+# Home ahead of the new launcher.
+# Native AirPlay kept working after setupwraith was disabled here, unlike the wutaishan U7 list.
+#
+# A key helper is not used. HOME_KEY_SERVICE=1 with app_keys and settings_key_keycodes opened the
+# gear's quick-settings panel, but the YouTube button still did nothing and the held-volume ramp
+# dropped to one step per press. Removing the helper brought the ramp back.
+#
+# Kept on purpose: all com.mediatek.* input and middleware packages, com.vt.tv.input, the
+# smartsense/AIoT family (com.hisense.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.aiot,
+# com.vt.tv.aipq), Play Store and Play Services, the keyboard, Bluetooth and remote services, the OTA
+# updater, Chromecast (mediashell), Miracast, AirPlay/HomeKit, the screensaver (dreamx), YouTube TV,
+# Twitch and Jellyfin.
+# Already disabled at the factory: Netflix, Disney+, Google TV movies, Play Games and
+# net.vidaatv.android.tv.
+
+# Tracking
+com.hisense.evservice                       # Vtp_ACR, viewing-data content recognition
+android.autoinstalls.config.google.gtvpai   # Google TV partner auto-installs (PAI)
+com.google.android.partnersetup             # partner referral tracking
+com.google.android.feedback                 # crash/feedback uploader
+com.google.android.syncadapters.calendar    # calendar sync, unused on a TV
+
+# Retail, first-run and preloads
+com.hisense.storemode                       # shop demo loop
+com.hisense.fte                             # first-time setup hooks
+com.vt.eula                                 # EULA screen
+com.google.android.onetimeinitializer       # one-time setup helper, already past
+com.hisense.hibrowser                       # stock browser
+com.hisense.tv.protector                    # DeviceAssistant cleaner and "turbo mode"
+com.vt.tv.mediacenter                       # USB media centre
+com.android.printspooler                    # printing, unused on a TV
+com.android.dreams.basic                    # stock screensaver; dreamx is kept
+com.google.android.youtube.tvmusic          # YouTube Music
+
+# Voice assistants
+com.google.android.katniss                  # Google Assistant
+com.google.android.tv.assistant             # Google TV assistant
+com.hisense.alexa                           # HiAlexa
+
+# DLNA
+com.hisense.tv.dlna                         # DLNA media renderer
+
+# Streaming apps not used in this home (by choice; keep the ones you use). This set had these six off.
+# com.amazon.amazonvideo.livingroom         # Prime Video
+# com.hulu.livingroomplus                   # Hulu
+# com.wbd.stream                            # Max
+# com.tubitv                                # Tubi
+# tv.pluto.android                          # Pluto TV
+# com.haystack.android                      # Haystack News
+
+# Google TV's setup wizard. Its RecoveryActivity claims HOME and beats the new launcher once
+# launcherx is disabled; it owned the saved Wi-Fi here (see the header).
+com.google.android.tungsten.setupwraith     # setup wizard; owns the saved Wi-Fi until it is re-joined

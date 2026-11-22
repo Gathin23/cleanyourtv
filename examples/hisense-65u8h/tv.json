@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 65U8H (wuyishan, MediaTek MT9900), US",
+  "os": "Google TV 11",
+  "brand": "Hisense",
+  "notes": "Hisense ACR (`com.hisense.evservice`), Google partner tracking and PAI, store/first-run modes, the stock browser and USB media centre, DeviceAssistant cleaner, the three voice assistants and DLNA; setupwraith owned the saved Wi-Fi and its RecoveryActivity took Home after launcherx, so it goes too; native AirPlay, Chromecast, Miracast and the held-volume ramp still work; 20 packages by default, six streaming apps commented out because this set had them off; [folder README](hisense-65u8h/README.md), [device note](../docs/devices/hisense-65u8h.md)"
+}
