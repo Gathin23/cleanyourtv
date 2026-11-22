@@ -69,8 +69,9 @@ two recovery lines above at hand.
   [#2948](https://github.com/Gathin23/cleanyourtv/issues/2948).
 - **The standby LED can latch into a fast blink; the cause is still open, and a disabled package is not ruled out.**
   Three owners reported it again on 2026-11-21 and 2026-11-22, on `OS3.0.101.0.UFTMATV`
-  ([#4302](https://github.com/Gathin23/cleanyourtv/issues/4302)) and on `OS3.0.106.0.UFTMATV` (two comments on
-  #2948 from other sets), so both builds carry it. Their kernel log names the transition:
+  ([#4302](https://github.com/Gathin23/cleanyourtv/issues/4302)) and on `OS3.0.106.0.UFTMATV` (a comment on
+  #2948 from a second set, and that set's owner again on 2026-11-22), so both builds carry it. Their kernel
+  log names the transition:
   `Leds_Breath_Suspend_Noirq`, then `Leds_Breath_Resume_Noirq` about 20 ms later,
   `[LED-DFX] [find_transition] INVALID TRANS from NORMAL to RESUMING`, and
   `[LED-DFX] [led_check_callback] [FLICKER] timeout` about 14 s after that. Once it latches, the LED stays in
