@@ -2,5 +2,5 @@
   "tv": "Xiaomi MiTV-MOOR2 / MOOR4 / MOOR6 (venom, MediaTek)",
   "os": "Google TV 11",
   "brand": "Xiaomi",
-  "notes": "Mi ad row and PatchWall, Mi analytics, MiLink, store demo; setup wizard off so a third-party launcher can own Home; MOOR4 on the same firmware: setupwraith owned the setup Wi-Fi (forget and re-join first), Continue watching is not in the local TV provider"
+  "notes": "Mi ad row and PatchWall, Mi analytics, MiLink, store demo; setup wizard off so a third-party launcher can own Home; MOOR4 on the same firmware: setupwraith owned the setup Wi-Fi (forget and re-join first), Continue watching is not in the local TV provider; with both key helpers bound a held Volume key steps once per press, and volume_pauses_filter brings a tap-then-hold ramp back (#3360)"
 }
