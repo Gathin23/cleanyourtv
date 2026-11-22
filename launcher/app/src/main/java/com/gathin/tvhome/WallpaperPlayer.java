@@ -55,6 +55,8 @@ final class WallpaperPlayer {
     /** wallpaper_captions: the shown picture's name from wallpapers/captions.txt; null when off or there are none. */
     private final TextView caption;
     private final Map<String, String> names;
+    /** The grid is scrolled away from the dock, so the caption is faded out (scrolledAway). */
+    private boolean captionAway;
     /** wallpaper_moods: the collection's groups by time of day; empty rotates through all of it. */
     private final Map<String, Set<String>> moods;
     /** config.xml latitude and longitude for the sun's times, and today's {sunrise, sunset} once worked out. */
@@ -233,8 +235,24 @@ final class WallpaperPlayer {
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
         params.topMargin = Math.round(137 * dp) - pad;
         params.setMarginEnd(Math.round(62 * dp) - pad);
-        root.addView(text, params);
+        // In a holder of its own, so scrolling can fade it (scrolledAway) without fighting the picture-change fade.
+        FrameLayout holder = new FrameLayout(context);
+        holder.addView(text, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.addView(holder, params);
         return text;
+    }
+
+    /**
+     * Home scrolled away from the dock (true) or back to it (false). The caption sits on the screen, not in the
+     * grid, so rows scrolled up under it would put the text over the tiles: it fades out while the grid is scrolled.
+     */
+    void scrolledAway(boolean away) {
+        if (caption == null || away == captionAway) return;
+        captionAway = away;
+        View holder = (View) caption.getParent();
+        holder.animate().cancel();
+        holder.animate().alpha(away ? 0f : 1f).setDuration(away ? 150 : 300).start();
     }
 
     /** The displayed picture's name, faded across a change; a picture without a name hides the caption. */
