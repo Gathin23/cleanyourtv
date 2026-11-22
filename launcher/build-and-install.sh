@@ -3,6 +3,22 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0}"
+# STOCK_LAUNCHER is the package disabled once the new launcher has started. Given this launcher's own
+# package, the handover disabled the launcher it had just installed; anything that is not a package name
+# went into the TV's shell line as written. Both are refused before anything is built or sent.
+case "${STOCK_LAUNCHER:-}" in
+  ""|none) ;;
+  com.gathin.tvhome)
+    echo "ERROR: STOCK_LAUNCHER=com.gathin.tvhome is this launcher, and the handover would disable it right after" >&2
+    echo "installing it. Name the TV's own launcher, or STOCK_LAUNCHER=none to disable nothing. Nothing was sent." >&2
+    exit 1 ;;
+  *)
+    if ! printf '%s\n' "$STOCK_LAUNCHER" | LC_ALL=C grep -qxE '[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+'; then
+      echo "ERROR: STOCK_LAUNCHER='$STOCK_LAUNCHER' is not a package name. Pass the stock launcher's package" >&2
+      echo "(e.g. com.google.android.tvlauncher) or STOCK_LAUNCHER=none. Nothing was sent." >&2
+      exit 1
+    fi ;;
+esac
 TOOLS="$(cd ../tools && (pwd -W 2>/dev/null || pwd))"   # absolute (Windows form on Git Bash, for Windows Python), so the venv's Python doesn't warn about "../" in its prefix
 PY=$TOOLS/venv/bin/python
 [ -x "$PY" ] || PY=$TOOLS/venv/Scripts/python.exe
