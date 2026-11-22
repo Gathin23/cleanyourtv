@@ -15,6 +15,7 @@ the rest run the script as a subprocess whose stdout is a pipe with its read end
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import contextlib
+import errno
 import importlib.util
 import io
 import os
@@ -42,6 +43,20 @@ class ClosedReader(io.StringIO):
     def fileno(self):
         # A pipe whose read end is closed has no descriptor this process can flush to; the tool's guard
         # has to cope with that rather than raise out of the run.
+        raise io.UnsupportedOperation("fileno")
+
+
+class FlushFails(io.StringIO):
+    """Stand-in for stdout whose buffered answer is only refused at the last flush."""
+
+    def __init__(self, error):
+        super().__init__()
+        self.error = error
+
+    def flush(self):
+        raise self.error
+
+    def fileno(self):
         raise io.UnsupportedOperation("fileno")
 
 
@@ -113,6 +128,41 @@ class TheAnswerTest(unittest.TestCase):
         code, err, _ = self.run_tv(["--push", "only-one-word"], ClosedReader())
         self.assertEqual(code, 2)
         self.assertIn("--push", err)
+
+
+class TheFinalFlushTest(unittest.TestCase):
+    """main() with _run patched: what the last flush does to the status the run itself earned."""
+
+    def run_main(self, stdout, run_result=0, windows=False):
+        err = io.StringIO()
+        stopped = mock.Mock(return_value=0)
+        run = mock.Mock(side_effect=run_result) if isinstance(run_result, BaseException)             else mock.Mock(return_value=run_result)
+        with mock.patch.object(TV, "_run", run),                 mock.patch.object(TV, "WINDOWS", windows),                 mock.patch.object(TV, "stopped_reading", stopped),                 mock.patch.object(sys, "stdout", stdout),                 contextlib.redirect_stderr(err):
+            code = TV.main()
+        return code, err.getvalue(), stopped
+
+    def test_a_failed_run_keeps_its_status_when_the_final_flush_finds_the_reader_gone(self):
+        code, err, stopped = self.run_main(FlushFails(BrokenPipeError(32, "Broken pipe")), run_result=1)
+        self.assertEqual(code, 1)
+        self.assertEqual(err, "")
+        stopped.assert_called_once_with()
+
+    def test_on_windows_an_einval_at_the_final_flush_is_the_reader_gone(self):
+        code, err, stopped = self.run_main(FlushFails(OSError(errno.EINVAL, "Invalid argument")),
+                                           windows=True)
+        self.assertEqual(code, 0)
+        self.assertNotIn("Traceback", err)
+        stopped.assert_called_once_with()
+
+    def test_on_windows_an_einval_from_a_command_is_not_turned_into_0(self):
+        with self.assertRaises(OSError) as raised:
+            self.run_main(io.StringIO(), run_result=OSError(errno.EINVAL, "Invalid argument"), windows=True)
+        self.assertEqual(raised.exception.errno, errno.EINVAL)
+
+    def test_off_windows_an_einval_at_the_final_flush_is_not_swallowed(self):
+        with self.assertRaises(OSError) as raised:
+            self.run_main(FlushFails(OSError(errno.EINVAL, "Invalid argument")), windows=False)
+        self.assertEqual(raised.exception.errno, errno.EINVAL)
 
 
 class TheUsageTest(unittest.TestCase):
