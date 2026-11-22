@@ -12,7 +12,8 @@
 #
 # Second Android TV 10 unit: MiTV-MOOQ1, firmware QTG3.200305.006.6148, ADB over Wi-Fi. Applied in one session in
 # seven batches with a screenshot after each and reboot-checked three times; not yet lived with for days. The
-# remote's buttons worked on the real remote afterwards, with no key helper (owner's report).
+# remote's buttons worked on the real remote afterwards, with no key helper (owner's report) - except the tuner's
+# channel keys, which need the stock launcher back; see the last bullet.
 # - com.xiaomi.floatingframe holds TV_INPUT_HARDWARE on this build, so tools/disable.sh keeps it: it stayed on.
 # - com.duokan.factorytest/.FactoryLauncher also answers HOME here, at priority 0. It was disabled, never
 #   launched, before the stock launcher went (same quirk as examples/xiaomi-mitv-mooq0/debloat.txt).
@@ -25,6 +26,16 @@
 #   Play Movies, Mi Gallery, the USB media player, the on-screen manual, Google Backdrop, Google Partner Setup,
 #   Miracast (com.xiaomi.wfdsinkhelperservice) and six preloaded Russian streaming apps.
 # - The firmware opens Live TV at power-on by itself, before and after the launcher handover.
+# - Live TV's CH+ / CH- and number keys need com.google.android.tvlauncher on this build. With it disabled they
+#   reach com.mediatek.wwtv.tvcenter and do nothing - logcat reads "Unhandled key: ... keyCode=167 ... No
+#   fallback", and the digits go through MtkTvKeyEvent's sendKeyClick with no effect - while re-enabling it alone
+#   brings channel zapping back (bisected on the real remote one batch at a time: telemetry, PatchWall, tvmanager,
+#   smartshare and the rest made no difference). The tuner's own APK names it
+#   (com.google.android.tvlauncher.MainActivity, getTVLauncherInfoForLiveTv), so comment out the tvlauncher line
+#   below if you watch DVB-T. Home then stays with the Google launcher: it answers HOME at priority 2 and
+#   `set-home-activity` prints Success without moving it (same quirk as examples/tornado-65ua1400e), and disabling
+#   only its .MainActivity is refused for the shell.
+#   Reported on .6148; not tried on the .2591 build at the top of this file.
 
 # Xiaomi telemetry
 com.miui.tv.analytics
@@ -53,6 +64,8 @@ com.google.android.apps.tachyon        # Google Duo
 fusion.android.tv.demo
 
 # Stock Google TV launcher and its recommendation services, replaced by launcher/
+# On firmware .6148 the tuner's Live TV app reads this package itself, so keep it (comment the line out) if you
+# want CH+ / CH- and the number keys to change channels - see the unit notes in the header.
 com.google.android.tvlauncher
 com.google.android.tvrecommendations
 com.google.android.leanbacklauncher.recommendations
