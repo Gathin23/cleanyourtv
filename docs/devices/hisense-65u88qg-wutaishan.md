@@ -6,6 +6,14 @@ list, written down as a one-session report: it has not been lived with for sever
 from the U7, and both are worth knowing before applying that list: native AirPlay kept working, and network ADB
 on port 5555 was open.
 
+**In short:** after the cleanup and the launcher handover everything the owner used worked as before -
+Home, Live TV and HDMI, Chromecast, AirPlay, Gemini, the Input button and the streaming apps - with one exception:
+**held volume**. Most of the remote's app buttons, the gear, the profile button and the Live TV button went dead
+with `launcherx`, because the firmware sends them to it. Mapping them in the launcher's `app_keys` and installing
+with `INPUT_KEY_SERVICE=1` brought every one back (and a button whose stock target is gone can be given a new job:
+any app, an HDMI input or an action such as `settings` or `screensaver`). The price of that helper on this set is
+that a held volume key moves one step; `volume_pauses_filter` restores the ramp after a first tap. Details below.
+
 | Identifier | Observed value |
 |---|---|
 | Retail model | Hisense 65U88QG |
@@ -63,18 +71,42 @@ Read from `WindowManager: interceptKeyTq` lines in `logcat` while the owner pres
 | YouTube | 190 | 469 | nothing (global key for `launcherx`) |
 | Prime Video | 1503 | 468 | nothing (`com.vt.tv.smartsense` global key) |
 | Disney+ | 1562 | 418 | nothing |
-| a fourth app button (logo not recorded) | 1561 | 419 | nothing |
+| Tubi | 1561 | 419 | nothing |
 | Gear | 83 | 598 | nothing (global key for `launcherx`) |
 | Profile | 288 | 600 | nothing (global key for `launcherx`) |
 | Live TV | 172 | 362 | nothing (global key for `launcherx`) |
 | Input | 1594 | 184 | works (`com.vt.tv.input`) |
+| Custom app button | 1554 | 420 | works: Hisense's handler opens the app the owner assigned to it |
 
-`INPUT_KEY_SERVICE=1` with `app_keys` brought all of them back, including `83:settings`, `288:screensaver` and
-`scan:362:input:com.vt.source.external/.hdmi.HdmiTvInputService/HW2` (HDMI 1 is `HW2`, hardware id 2 at
-`hdmi_port=1` in `dumpsys tv_input`). The cost is the one in the
-[key-repeat note](tcl-55p71b-g09-key-repeat.md): with the helper bound, held volume moved one step per press.
-`consume_volume_keys` did not bring the ramp back. `volume_pauses_filter` did in part: a tap followed by a hold
-ramps, a cold hold moves one step, and the buttons keep working. The owner kept that. No soundbar was connected.
+### The workaround
+
+1. Read each button's code from `logcat` while pressing it on the real remote (the table above), since injected
+   keys never reach the helper.
+2. Put one `app_keys` entry per button in `launcher/app/src/main/res/values/config.xml`: `keycode:package` for an
+   app, `keycode:settings` for the gear, an action word such as `screensaver` for a button whose stock target is
+   gone, or `scan:<scancode>:input:<input id>` to make a button switch to an HDMI port (here HDMI 1 is
+   `com.vt.source.external/.hdmi.HdmiTvInputService/HW2`, hardware id 2 at `hdmi_port=1` in `dumpsys tv_input`).
+   Netflix, Input and the custom app button need no entry.
+
+   The owner's mapping, as an example:
+
+   ```xml
+   <string-array name="app_keys" translatable="false">
+       <item>190:com.google.android.youtube.tv</item>              <!-- YouTube -->
+       <item>1503:com.amazon.amazonvideo.livingroom</item>         <!-- Prime Video -->
+       <item>1562:com.disney.disneyplus</item>                     <!-- Disney+ -->
+       <item>1561:com.google.android.youtube.tvmusic</item>        <!-- Tubi button, repurposed -->
+       <item>83:settings</item>                                    <!-- gear -->
+       <item>288:screensaver</item>                                <!-- profile, repurposed -->
+       <item>scan:362:input:com.vt.source.external/.hdmi.HdmiTvInputService/HW2</item> <!-- Live TV -> HDMI 1 -->
+   </string-array>
+   ```
+3. Build and install with `INPUT_KEY_SERVICE=1` (`launcher/build-and-install.sh`); Android drops the helper on
+   every reinstall, so pass it each time.
+4. Volume: with the helper bound, held volume moved one step per press, the trade in the
+   [key-repeat note](tcl-55p71b-g09-key-repeat.md). `consume_volume_keys` did not help here.
+   `volume_pauses_filter` did in part: tap once, then hold within 4 s, and it ramps; a cold hold is one step. All
+   mapped buttons keep working. The owner kept that. No soundbar was connected, so CEC volume is untested.
 
 ## Not tested
 
