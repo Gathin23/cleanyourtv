@@ -61,7 +61,7 @@ if ($env:SKIP_BUILD -ne '1') {
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
-$knownStock = @('com.google.android.tvlauncher', 'com.google.android.apps.tv.launcherx', 'com.google.android.leanbacklauncher', 'com.mitv.tvhome')
+$knownStock = @('com.google.android.tvlauncher', 'com.google.android.apps.tv.launcherx', 'com.google.android.leanbacklauncher', 'com.mitv.tvhome', 'com.droidlogic.mboxlauncher')
 # A -StockLauncher none passed in keeps the stock launcher as Home on purpose (stock_home_redirect), so the Home
 # check after the install accepts it (#4070). The none picked below when Home is already ours does not.
 $keepStockHome = $StockLauncher -eq 'none'

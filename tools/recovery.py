@@ -56,7 +56,8 @@ CUSTOM_LAUNCHER = "com.gathin.tvhome"
 # the state of each one installed, listed or not, so restore turns one back on only when it was on
 # before cleanup (#1714). tests/test_restore_stock_launcher.py keeps the two lists in step.
 STOCK_LAUNCHERS = ("com.google.android.tvlauncher", "com.google.android.apps.tv.launcherx",
-                   "com.google.android.leanbacklauncher", "com.mitv.tvhome")
+                   "com.google.android.leanbacklauncher", "com.mitv.tvhome",
+                   "com.droidlogic.mboxlauncher")
 # What answers HOME without being a launcher, the cases disable.sh, disable.ps1 and check.py skip too:
 # the setup wizards and the settings apps (on Google TV, setupwraith's .RecoveryActivity takes Home and
 # system_server crash-loops on it), a vendor's FallbackHome, the placeholder a TCL or a Xiaomi shows
