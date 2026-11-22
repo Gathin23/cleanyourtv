@@ -44,6 +44,16 @@ class StatusThemesTest(unittest.TestCase):
         self.assertIn("launcher: installed", out.getvalue())
         return code, out.getvalue()
 
+    def test_a_pushed_example_folder_is_named(self):
+        # The examples/ READMEs hand out `tools/theme.sh examples/<tv>`; status called that push "your own".
+        example = self.root / "examples" / "acme-tv" / "config.json"
+        example.parent.mkdir(parents=True)
+        pushed = json.dumps({"dock_apps": ["com.acme.live"]})
+        example.write_text(pushed, encoding="utf-8")
+        code, out = self.status(pushed)
+        self.assertEqual(code, 0)
+        self.assertIn("theme: examples/acme-tv", out)
+
     def test_a_bad_candidate_does_not_hide_a_later_matching_theme(self):
         for contents in (b'{"columns":', b"\xff"):
             with self.subTest(contents=contents):
