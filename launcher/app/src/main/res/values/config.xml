@@ -65,6 +65,11 @@
          launch_actions gives it. Home stays on screen meanwhile, and leaving Home cancels the opening. 0, the
          default: open at once. Up to 600; a theme can set "boot_to_live_tv_delay": 10. -->
     <integer name="boot_to_live_tv_delay">0</integer>
+    <!-- With boot_to_live_tv: open the Live TV app, or the input launch_actions gives it, every time the screen comes
+         back on as well (after boot_to_live_tv_delay), for sets whose power button is a standby with no boot, where a
+         CEC device pulls the input first and Home then comes back over it. Off by default; a theme can set
+         "boot_to_live_tv_on_wake": true. -->
+    <bool name="boot_to_live_tv_on_wake">false</bool>
 
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent

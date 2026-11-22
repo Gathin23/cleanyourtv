@@ -48,6 +48,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `clock_glow` | <img src="switches/clock_glow.jpg" width="320" alt="clock_glow on a TV"> |
 | `open_on_start_choice` | <img src="switches/open_on_start_choice.jpg" width="320" alt="open_on_start_choice on a TV"> |
 | `boot_to_live_tv_delay` | <img src="switches/boot_to_live_tv_delay.jpg" width="320" alt="boot_to_live_tv_delay on a TV"> |
+| `boot_to_live_tv_on_wake` | <img src="switches/boot_to_live_tv_delay.jpg" width="320" alt="boot_to_live_tv_on_wake on a TV"> |
 | `open_on_start_network_wait` | <img src="switches/open_on_start_network_wait.jpg" width="320" alt="open_on_start_network_wait on a TV"> |
 | `open_on_start_on_wake` | <img src="switches/open_on_start_on_wake.jpg" width="320" alt="open_on_start_on_wake on a TV"> |
 | `single_row` | <img src="switches/single_row.jpg" width="320" alt="single_row on a TV"> |

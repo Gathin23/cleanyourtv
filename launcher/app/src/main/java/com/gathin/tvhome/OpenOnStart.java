@@ -30,6 +30,12 @@ final class OpenOnStart {
         return choice && onWake;
     }
 
+    /** boot_to_live_tv_on_wake: the screen turned on at {@code since} (0: not since the last opening), and the Live TV
+     *  opening it asked for is still wanted: within the delay plus a minute, so a Home reached much later stays Home. */
+    static boolean wakeOpenFresh(long now, long since, long delayMs) {
+        return since != 0 && now - since <= delayMs + 60_000L;
+    }
+
     static int boot(Context ctx) {
         return Settings.Global.getInt(ctx.getContentResolver(), Settings.Global.BOOT_COUNT, -1);
     }

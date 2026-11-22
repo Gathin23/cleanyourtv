@@ -112,6 +112,8 @@ final class Config {
     final int openOnStartNetworkWait;
     /** Seconds boot_to_live_tv waits after Home comes up before it opens the Live TV app or input; 0 opens it at once (boot_to_live_tv_delay). */
     final int bootToLiveTvDelay;
+    /** With boot_to_live_tv, the same opening each time the screen comes back on (boot_to_live_tv_on_wake). */
+    final boolean bootToLiveTvOnWake;
     /** The Open on start app also opens when the screen comes back on (config.xml, open_on_start_on_wake). */
     final boolean openOnStartOnWake;
     /** The focused dock app's name in large type above the dock (config.xml, dock_title). */
@@ -301,7 +303,7 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean volumePausesFilter, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
-                   boolean settingsKeyClearTask, int bootToLiveTvDelay) {
+                   boolean settingsKeyClearTask, int bootToLiveTvDelay, boolean bootToLiveTvOnWake) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -408,6 +410,7 @@ final class Config {
         this.inputsCecStateOnly = inputsCecStateOnly;
         this.openOnStartNetworkWait = openOnStartNetworkWait;
         this.bootToLiveTvDelay = bootToLiveTvDelay;
+        this.bootToLiveTvOnWake = bootToLiveTvOnWake;
         this.openOnStartOnWake = openOnStartOnWake;
         this.clockFormat = clockFormat;
         this.wifiStatusWarnings = wifiStatusWarnings;
@@ -476,6 +479,7 @@ final class Config {
         boolean openOnStartChoice = res.getBoolean(R.bool.open_on_start_choice);
         int openOnStartNetworkWait = res.getInteger(R.integer.open_on_start_network_wait);
         int bootToLiveTvDelay = res.getInteger(R.integer.boot_to_live_tv_delay);
+        boolean bootToLiveTvOnWake = res.getBoolean(R.bool.boot_to_live_tv_on_wake);
         boolean openOnStartOnWake = res.getBoolean(R.bool.open_on_start_on_wake);
         boolean dockTitle = res.getBoolean(R.bool.dock_title);
         boolean dockRow = res.getBoolean(R.bool.dock_row);
@@ -594,6 +598,7 @@ final class Config {
             openOnStartChoice = bool(json, "open_on_start_choice", openOnStartChoice);
             openOnStartNetworkWait = integer(json, "open_on_start_network_wait", openOnStartNetworkWait, 0, 600);
             bootToLiveTvDelay = integer(json, "boot_to_live_tv_delay", bootToLiveTvDelay, 0, 600);
+            bootToLiveTvOnWake = bool(json, "boot_to_live_tv_on_wake", bootToLiveTvOnWake);
             openOnStartOnWake = bool(json, "open_on_start_on_wake", openOnStartOnWake);
             dockTitle = bool(json, "dock_title", dockTitle);
             dockRow = bool(json, "dock_row", dockRow);
@@ -737,7 +742,7 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
-                settingsKeyClearTask, Math.max(0, Math.min(600, bootToLiveTvDelay)));
+                settingsKeyClearTask, Math.max(0, Math.min(600, bootToLiveTvDelay)), bootToLiveTvOnWake);
     }
 
     /**

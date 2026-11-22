@@ -285,13 +285,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long openOnStartWaitMs;
     /** boot_to_live_tv_delay, in ms: how long Home stays on screen before the boot's Live TV app or input opens. */
     private long bootLiveTvDelayMs;
+    /** boot_to_live_tv_on_wake, and when the screen last turned on until its opening ran (0: none wanted). */
+    private boolean bootToLiveTvOnWake;
+    private long wakeOpenSince;
     /** open_on_start_on_wake: wakeReceiver is registered for this activity's life. */
     private boolean openOnStartOnWake;
+    private boolean wakeRegistered;
     private volatile Intent startPending;
     /** Opens the boot's Live TV app or input once boot_to_live_tv_delay is over; leaving Home cancels it. */
     private final Runnable openBootLiveTv = new Runnable() {
         @Override
         public void run() {
+            wakeOpenSince = 0;
             if (bootInputId != null) {
                 openInput(bootInputId);
                 return;
@@ -317,9 +322,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private final BroadcastReceiver wakeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            openStartAppOnWake();
+            if (openOnStartOnWake) openStartAppOnWake();
+            if (bootToLiveTv && bootToLiveTvOnWake) {
+                wakeOpenSince = SystemClock.elapsedRealtime();
+                if (resumed) armWakeOpen();   // else the Home that follows the wake arms it (onResume)
+            }
         }
     };
+    /** boot_to_live_tv_on_wake: the Live TV opening after boot_to_live_tv_delay, restarted on every Home that follows
+     *  the wake (a CEC input switch pauses Home and brings it back, which cancels a pending opening). */
+    private void armWakeOpen() {
+        if (!OpenOnStart.wakeOpenFresh(SystemClock.elapsedRealtime(), wakeOpenSince, bootLiveTvDelayMs)) {
+            wakeOpenSince = 0;
+            return;
+        }
+        handler.removeCallbacks(openBootLiveTv);
+        handler.postDelayed(openBootLiveTv, bootLiveTvDelayMs);
+    }
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
     private Set<String> hiddenApps = Collections.emptySet();
     /** library_excluded_apps: packages the App library catalogue never offers. */
@@ -508,6 +527,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
         bootLiveTvDelayMs = cfg.bootToLiveTvDelay * 1000L;
+        bootToLiveTvOnWake = cfg.bootToLiveTvOnWake;
         openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
         liveTvAction = cfg.liveTvAction;
         liveTvInputId = cfg.liveTvInputId;
@@ -963,7 +983,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             registerReceiver(packageReceiver, packageFilter);
         }
-        if (openOnStartOnWake) {
+        wakeRegistered = openOnStartOnWake || (bootToLiveTv && bootToLiveTvOnWake);
+        if (wakeRegistered) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON), Context.RECEIVER_NOT_EXPORTED);
             } else {
@@ -1135,6 +1156,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 break;
         }
         if (openLiveTvAfterBoot()) return;
+        if (wakeOpenSince != 0) armWakeOpen();
         updateGreeting();
         updatePanel();
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
@@ -1408,7 +1430,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
-        if (openOnStartOnWake) unregisterReceiver(wakeReceiver);
+        if (wakeRegistered) unregisterReceiver(wakeReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);   // as registered
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);

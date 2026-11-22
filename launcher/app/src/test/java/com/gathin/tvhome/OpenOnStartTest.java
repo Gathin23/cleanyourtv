@@ -30,6 +30,16 @@ public class OpenOnStartTest {
         assertFalse(OpenOnStart.due(12, 11, SELF, SELF));
     }
 
+    @Test public void aWakeOpeningIsWantedWithinTheDelayPlusAMinute() {
+        assertTrue(OpenOnStart.wakeOpenFresh(1_000, 500, 15_000));
+        assertTrue(OpenOnStart.wakeOpenFresh(75_500, 500, 15_000));
+    }
+
+    @Test public void aWakeOpeningIsDroppedLaterOrWhenNoneWasAsked() {
+        assertFalse(OpenOnStart.wakeOpenFresh(75_501, 500, 15_000));
+        assertFalse(OpenOnStart.wakeOpenFresh(1_000, 0, 15_000));
+    }
+
     @Test public void onlineTheAppOpensAtOnce() {
         assertTrue(OpenOnStart.opensNow(true, 1_000, 60_000));
     }
