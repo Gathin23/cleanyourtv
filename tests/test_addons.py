@@ -87,8 +87,8 @@ class AddonFolderTest(unittest.TestCase):
 
 class AddonBuildRouteTest(unittest.TestCase):
     """addons/README.md builds an add-on with `./gradlew` on macOS and Linux and with `gradlew.bat` in
-    Command Prompt, so each folder needs both. Two forms ship here: nineteen carry Gradle's own wrapper
-    (gradlew, gradlew.bat and gradle/wrapper/), and six reuse the repository's pinned Gradle with a
+    Command Prompt, so each folder needs both. Two forms ship here: most carry Gradle's own wrapper
+    (gradlew, gradlew.bat and gradle/wrapper/), and the rest reuse the repository's pinned Gradle with a
     four-line `gradlew` that execs launcher/gradlew -p on this folder, plus the same three lines as a
     .bat. The folder test above asks every add-on for a settings.gradle, a README and a screenshot and
     never for its two wrappers, so the one folder that had a `gradlew` and no `gradlew.bat` - flock -
@@ -151,6 +151,25 @@ class AddonBuildRouteTest(unittest.TestCase):
         self.assertIn("gradlew.bat", step,
                       "docs/workflows/addon.md asks for a `gradlew` and not its `gradlew.bat`, which this "
                       "test refuses: a folder made from the page fails on the Command Prompt route")
+
+    def test_the_recipe_asks_for_the_files_beside_the_two_scripts(self):
+        """The two scripts are not the whole build: with only them a folder made from the page stops.
+
+        `gradlew` starts `gradle-wrapper.jar` and reads `gradle-wrapper.properties` out of the gradle
+        folder beside it, so a copy of the two scripts and nothing else ends at a missing class - most
+        add-ons carry those two, and the ones that do not ship four-line shims that call
+        `launcher/gradlew`. The `app` module's `plugins { id 'com.android.application' }`
+        carries no version either: the root `build.gradle` declares it `apply false`, which is the only
+        place a new folder could learn it from.
+        """
+        page = (ROOT / "docs" / "workflows" / "addon.md").read_text(encoding="utf-8")
+        step = page.split("\n1. ", 1)[1].split("\n2. ", 1)[0] if "\n1. " in page else ""
+        self.assertIn("gradle-wrapper.jar", step,
+                      "the recipe's first step copies the two scripts and never the wrapper jar they "
+                      "start, so a folder made from the page fails with a missing class")
+        self.assertIn("build.gradle", step,
+                      "docs/workflows/addon.md does not name the root build.gradle that declares the "
+                      "Android Gradle plugin's version for the app module")
 
 
 if __name__ == "__main__":
