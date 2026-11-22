@@ -81,3 +81,33 @@ tools\restore.ps1 -TvHost <tv ip> examples\xiaomi-mitv4i-magnolia\debloat.txt
 ```bash
 TV_HOST=<tv ip> tools/tv.py "pm enable --user 0 <package_name>"
 ```
+
+---
+
+## Second Unit (Talkies Launcher, build 3698)
+
+A second unit running the same firmware build (`PI.3698`) was verified replacing the stock Google TV / Leanback launchers with Talkies (`com.techpp.glass/.HomeActivity`).
+
+Its list is [`debloat-talkies.txt`](debloat-talkies.txt):
+- Disables stock launchers and recommendations (`com.google.android.tvlauncher`, `com.google.android.leanbacklauncher`, and recommendation feeds).
+- Disables PatchWall feeds and Mi channel rows (`com.mitv.tvhome.michannel`, `com.mitv.tvhome.oemtab`, `com.xm.webcontent`).
+- Disables telephony/tablet leftovers (`printspooler`, `calendar`/`contacts` providers, `wallpapercropper`, `smspush`, etc.).
+- Keeps all Droidlogic tuner and HDMI inputs (`com.droidlogic.droidlivetv`, `com.droidlogic.tvinput`, `soundeffectsettings`), core MiTV services, Google Voice search, and Play Store intact.
+
+### Apply (Second Unit)
+```bash
+TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv4i-magnolia/debloat-talkies.txt
+```
+Or on Windows PowerShell:
+```powershell
+tools\disable.ps1 -TvHost <tv ip> examples\xiaomi-mitv4i-magnolia\debloat-talkies.txt
+```
+
+### Restore (Second Unit)
+```bash
+TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv4i-magnolia/debloat-talkies.txt com.techpp.glass
+```
+Or on Windows PowerShell:
+```powershell
+tools\restore.ps1 -TvHost <tv ip> examples\xiaomi-mitv4i-magnolia\debloat-talkies.txt com.techpp.glass
+```

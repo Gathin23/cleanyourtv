@@ -1,0 +1,87 @@
+# Xiaomi Mi TV 4I (MiTV4I, codename magnolia), Android 9 / API 28
+# Firmware: Xiaomi/magnolia/magnolia:9/PI/3698 (build 3698, 2022-03-24)
+# SoC: Amlogic txl (armeabi-v7a), 1 GB RAM, 1280x720 @ 213 dpi
+# Second unit: Home launcher replaced with Talkies (com.techpp.glass/.HomeActivity).
+#
+# Apply:  TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv4i-magnolia/debloat-talkies.txt
+# Undo:   TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv4i-magnolia/debloat-talkies.txt com.techpp.glass
+#
+# Everything is disabled with `pm disable-user`, never uninstalled. Verified on
+# a real TV on 2026-11-22.
+#
+# KEPT ON PURPOSE (do not disable):
+#   com.droidlogic.tvinput, com.droidlogic, com.droidlogic.tv.settings,
+#   com.droidlogic.droidlivetv, com.droidlogic.overlay, com.droidlogic.ble,
+#   com.droidlogic.SubTitleService, com.droidlogic.tv.soundeffectsettings
+#       -> TV tuner, HDMI/AV inputs, picture/sound settings. Disabling these
+#          breaks the source menu and input switching.
+#   com.android.tv, com.android.tv.settings
+#       -> Live Channels and the system TV settings / FallbackHome.
+#   mitv.service, xiaomi.tvservice, com.xiaomi.mitv.res, com.xiaomi.android.TV.audio
+#       -> core MiTV services and shared resources still used by the remote,
+#          IR, audio routing and Droidlogic settings.
+#   com.google.android.katniss, com.google.android.speech.pumpkin,
+#   com.google.android.tts, com.google.android.inputmethod.latin
+#       -> Google TV search, voice search, TTS and the on-screen keyboard.
+#   com.google.android.tv.remote.service
+#       -> Android TV phone remote.
+#   com.google.android.gms, com.google.android.gsf, com.android.vending
+#       -> Play services / Play Store.
+#   com.android.bluetooth
+#       -> Bluetooth remotes and audio.
+#   com.xiaomi.mitv.updateservice
+#       -> OTA firmware updates. Enable it temporarily to check for updates.
+#   com.mitv.tvlock
+#       -> parental lock. Disable only if you never use it.
+#   com.google.android.tungsten.setupwraith
+#       -> first-run setup wizard. Safe to disable after setup, but kept so a factory
+#          reset still completes.
+
+# --- Ads / telemetry ---
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+
+# --- Xiaomi PatchWall / Mi content rows ---
+com.mitv.tvhome.michannel
+com.mitv.tvhome.oemtab
+com.xm.webcontent
+com.mitv.videoplayer
+com.xiaomi.mimusic2
+com.xiaomi.mitv.tvmanager
+com.xiaomo.tv.milegal
+android.autoinstalls.config.xiaomi.amelie
+android.autoinstalls.config.xioami.dangal
+co.sensara.tv.mitv.res
+com.mitv.milinkservice                 # Mi cast; Chromecast via mediashell still works
+
+# --- Stock launchers and their recommendation feeds (Talkies is Home) ---
+com.google.android.tvlauncher
+com.google.android.leanbacklauncher
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+
+# --- Phone/tablet leftovers with no use on a TV ---
+com.android.printspooler
+com.android.providers.calendar
+com.android.providers.contacts
+com.android.wallpaperbackup
+com.android.wallpapercropper
+com.android.smspush
+com.android.sharedstoragebackup
+com.android.providers.userdictionary
+com.android.backupconfirm
+com.android.htmlviewer
+com.android.dreams.basic
+com.google.android.syncadapters.calendar
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.android.onetimeinitializer
+com.google.android.tv.bugreportsender
+org.chromium.webview_shell
+com.android.proxyhandler
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.xiaomi.android.tvsetup.partnercustomizer
+com.google.android.backdrop
+com.google.android.marvin.talkback
