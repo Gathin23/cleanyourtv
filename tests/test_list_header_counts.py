@@ -35,6 +35,17 @@ this list sends that the sibling `debloat*.txt` in the same folder does not. "of
 can only mean that - a package is off here only if this list sends it - and a folder with one list
 states no such comparison, so the walk reads only the folders that ship two.
 
+A third shape is the total a header states about the whole list: `examples/skyworth-7t864-h5d/debloat.txt`
+opened with "The list disables 7 packages: cloud ad push, the data engine, background monitors,
+factory diagnostics, and two owner-confirmed-unused device services. All 7 were verified to stay
+disabled across a cold boot on this unit." On 2026-11-20 the list's `com.coocaa.guide` line became a
+comment - the EPG guide is broadcast middleware, so the shared list leaves it to the reader - and the
+folder's device note was corrected in the same commit while the header kept counting seven of the six
+lines the list sends. A reader sizing the list up from the header, or from the table row its `tv.json`
+writes, got a number that describes no file. So "the list disables N packages" is read too, as a claim
+about the whole file: N is what `tools/disable.sh` would send for it. A header that states no total is
+not read, and a count in words is read through the same map as the sibling comparison.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
@@ -52,6 +63,9 @@ EXTRA = re.compile(r"the\s+(\d+)\s+below\s+plus\s+`?([A-Za-z][\w.]*\.[\w.]+)`?",
 # folder's other list. The number is written in words or in digits.
 MORE = re.compile(r"\b([A-Za-z0-9]+)\s+more\s+(?:packages?\s+)?(?:are\s+)?off\s+here\s+than\s+there\b",
                   re.IGNORECASE)
+# `The list disables 7 packages` - the total a header states for the whole file, not for a batch.
+TOTAL = re.compile(r"\b(?:the|this) list (?:disables|sends|applies)\s+(\d+|[A-Za-z]+)\s+packages?\b",
+                   re.IGNORECASE)
 WORDS = {word: number for number, word in enumerate(
     "one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
     "seventeen eighteen nineteen twenty".split(), 1)}
@@ -100,6 +114,18 @@ def siblings(path):
     return sorted(p for p in path.parent.glob("debloat*.txt") if p.is_file() and p != path)
 
 
+def stated_total(text):
+    """Every total a header states for the whole file ("the list disables N packages"), as N."""
+    found = []
+    for match in TOTAL.finditer(text):
+        token = match.group(1).lower()
+        if token.isdigit():
+            found.append(int(token))
+        elif token in WORDS:
+            found.append(WORDS[token])
+    return found
+
+
 class HeaderCountTest(unittest.TestCase):
     def test_a_package_named_as_an_extra_is_not_one_of_the_lines_below(self):
         read = 0
@@ -131,6 +157,23 @@ class HeaderCountTest(unittest.TestCase):
                         f"carries {len(sent)} packages",
                     )
 
+    def test_the_total_a_header_states_is_what_the_list_sends(self):
+        read = 0
+        for path in lists():
+            sent = packages(path)
+            for count in stated_total(path.read_text(encoding="utf-8")):
+                read += 1
+                with self.subTest(list=path.parent.name, file=path.name):
+                    self.assertEqual(
+                        count,
+                        len(sent),
+                        f"examples/{path.parent.name}/{path.name} says the list disables {count} "
+                        f"packages and tools/disable.sh would send {len(sent)}: {sent}",
+                    )
+        self.assertGreaterEqual(
+            read, 1, "no debloat list states its own total any more"
+        )
+
 
 class ReaderTest(unittest.TestCase):
     """The reader above, against sentences written here."""
@@ -146,6 +189,24 @@ class ReaderTest(unittest.TestCase):
     def test_a_header_that_names_no_extra_is_not_read(self):
         text = "# 12 packages are disabled, all of them telemetry\n"
         self.assertEqual(extras(text), [])
+
+
+class StatedTotalReaderTest(unittest.TestCase):
+    """The reader for "the list disables N packages", against sentences written here."""
+
+    def test_a_number_in_digits_is_read(self):
+        self.assertEqual(stated_total("# The list disables 7 packages: cloud ad push\n"), [7])
+
+    def test_a_number_in_words_is_read(self):
+        self.assertEqual(stated_total("# This list sends six packages\n"), [6])
+
+    def test_a_header_that_states_no_total_is_not_read(self):
+        # A count of what stays enabled, or of a batch, is not a claim about the whole file.
+        self.assertEqual(stated_total("# the list keeps 12 packages enabled\n"), [])
+        self.assertEqual(stated_total("# The first batch disabled 9 packages\n"), [])
+
+    def test_a_word_the_map_has_not_got_is_not_guessed_at(self):
+        self.assertEqual(stated_total("# the list disables several packages\n"), [])
 
 
 class SecondListDifferenceTest(unittest.TestCase):

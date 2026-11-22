@@ -24,9 +24,10 @@
 # nothing disabled at all (pm list packages -d stays empty). It is the lowest-risk way to lose the
 # recommendations and the ad screensaver's lead-in, and it is worth doing before any line here.
 #
-# The list disables 7 packages: cloud ad push, the data engine, background monitors, factory
-# diagnostics, and two owner-confirmed-unused device services. All 7 were verified to stay
-# disabled across a cold boot on this unit.
+# The list disables 6 packages: cloud ad push, the data engine, background monitors, factory
+# diagnostics and the karaoke microphone companion. All 6 were verified to stay disabled across a
+# cold boot on this unit. com.coocaa.guide, the boot/EPG guide receiver, was off on this set too and
+# is kept commented out below: it is broadcast TV middleware, so a shared list leaves it on.
 
 # --- Telemetry, ad push, background monitors (disabled by default) ---
 # Verified safe across cold boots:
