@@ -152,3 +152,30 @@ microphone, Chromecast and the Play Store stayed enabled.
   shared storage is mounted, so the launcher finds no wallpaper files at that moment.
 - **Factory reset:** not tried. As a precaution, run `tools/restore.sh` first, with launcherx named too, so
   that the setup wizard and the stock launcher are on when the reset starts.
+
+## The remote's buttons and a held volume key (November 2026)
+
+The 43-inch unit above kept the helper and lost the ramp: a held volume button stepped once per press,
+and its owner chose to keep the YouTube mapping. The model is not limited to that exchange.
+`volume_pauses_filter` (off by default) makes a volume change stop the key helpers filtering for four
+seconds, so the first press steps once, a press or hold inside those four seconds repeats as usual, and the
+buttons answer again when the pause ends. It needs `key_filter` on, and
+[`themes/README.md`](../../themes/README.md) documents it with the rest of the theme keys.
+
+An owner of another `MiTV-MZTU0` / `river` set reported the result on
+[#3360](https://github.com/Gathin23/cleanyourtv/issues/3360) on 17 November 2026: Google TV 14, build
+`UKN1.240806.017.V816.0.25.1.14.2.URTMIXM`, launcher built from main of 15 November with local look changes
+only, both helpers bound (`INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1`) and `key_filter` on. Before the switch a
+held Volume key moved one step per press. With `"volume_pauses_filter": true` a press followed by a hold
+inside those four seconds ramped as usual on the physical remote, and holding Volume Down in a YouTube list
+kept scrolling with the helpers still bound.
+
+The exchange is unchanged: while the pause runs, the buttons the helpers filter do not answer, so the ramp
+and those buttons take the remote by turns. That owner also recorded this model's keycodes for `app_keys`:
+YouTube is `KEYCODE_BUTTON_3`, the Input button is `KEYCODE_TV_INPUT` (`KEYCODE_TV_INPUT:inputs` opens the
+launcher's Inputs menu in place of Xiaomi's source picker), and the Settings button is `KEYCODE_SETTINGS`
+(176), which `HomeKeyService` was already answering, not the `KEYCODE_NOTIFICATION` 83 that other Xiaomi
+remotes send.
+
+The mechanism, the other routes and what each of them costs are in
+[A key helper is bound and a held remote button stopped repeating](../../docs/TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating).
