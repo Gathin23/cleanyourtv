@@ -440,7 +440,7 @@ class _Shell:
     """What bench.py's accessibility helpers expect of a TV: a shell()."""
 
     def __init__(self, run):
-        self.shell = lambda cmd, read_timeout_s=None: run(cmd)
+        self.shell = lambda cmd, read_timeout_s=None, retry=False: run(cmd)
 
 
 if __name__ == "__main__":
