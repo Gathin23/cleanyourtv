@@ -26,6 +26,11 @@ Enabling `HomeKeyService` (`settings put secure enabled_accessibility_services c
 - `app_keys` maps `scan:425` and `KEYCODE_BUTTON_3` to `com.google.android.youtube.tv`.
 - `app_keys` maps `scan:207` and `KEYCODE_BUTTON_7` to `com.truedmp.idtv` (TrueID TV).
 
+The folder also holds `config.json` at its root, from another unit on the same firmware: that one points the same
+Prime Video button at Prime Video itself, keeps Prime Video in the dock and works the Apps button through an
+`ALL_APPS` entry. Push whichever mapping you want - `examples/xiaomi-mitv-afmu0/theme` for the TrueID TV one above,
+`examples/xiaomi-mitv-afmu0` for the Prime Video one.
+
 ## Private DNS (AdGuard DoT)
 Private DNS (such as AdGuard DoT) works on this set.
 
