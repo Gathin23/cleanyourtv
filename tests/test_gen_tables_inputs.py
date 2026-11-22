@@ -127,10 +127,11 @@ class RootTest(unittest.TestCase):
         # is what read_inputs asks (stat_folder), not `Path.is_dir()`, which on Python 3.14 answers
         # False for this error instead of raising it.
         refused = PermissionError(errno.EACCES, "Permission denied")
+        root = Path("/somebody elses checkout")
         with mock.patch.object(Path, "stat", side_effect=refused):
-            patch, reason = gen_tables.read_inputs(Path("/somebody elses checkout"), None)
+            patch, reason = gen_tables.read_inputs(root, None)
         self.assertIsNone(patch)
-        self.assertIn("/somebody elses checkout", reason)
+        self.assertIn(str(root), reason)
         self.assertIn("Permission denied", reason)
         self.assertIn("Nothing was read or written", reason)
 
