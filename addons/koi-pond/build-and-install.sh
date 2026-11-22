@@ -30,7 +30,9 @@ if [ "${SKIP_BUILD:-}" != 1 ]; then
 fi
 [ -f "$APK" ] || { echo "ERROR: no $APK; build it first (tools/docker-build.sh addons/koi-pond)." >&2; exit 1; }
 "$PY" -I "$TOOLS/b64push.py" "$APK" /data/local/tmp/koipond.apk >/dev/null
-tv "pm install -r /data/local/tmp/koipond.apk; rm -f /data/local/tmp/koipond.apk"
+OUT="$(tv 'pm install -r /data/local/tmp/koipond.apk; rm -f /data/local/tmp/koipond.apk')"
+echo "$OUT"
+case "$OUT" in *Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; esac
 tv "[ -f $BEFORE ] || { settings get secure screensaver_components; settings get secure screensaver_enabled; } > $BEFORE; settings put secure screensaver_components $DREAM; settings put secure screensaver_enabled 1" >/dev/null
 echo "Installed: Koi Pond is the screensaver. Undo with: addons/koi-pond/build-and-install.sh --uninstall"
 [ -z "${START:-}" ] || tv "am start -n com.android.systemui/.Somnambulator >/dev/null; sleep 3; dumpsys dreams | grep mCurrentDreamName"
