@@ -127,8 +127,6 @@ transponder.
 
 ```bash
 tools/tv.py 'getprop ro.platform.vs.dtv'          # 1
-tools/tv.py 'su 0 grep -n vs_frontend_fe /vendor/etc/init/hw/init.amlogic.board.rc'
-# 83:    insmod /vendor/lib/modules/vs_frontend_fe.ko      (under on property:ro.platform.vs.dtv=0)
 tools/tv.py 'ls /dev/dvb0.*'                      # ca0 ca1 demux0-2 dvr0-2 net0-2, and no frontend0
 ```
 

@@ -127,12 +127,7 @@ Tried on this set before the stock launcher went back on, none of which moved Ho
 
 The configuration this project supports on the platform is the one its folder already gives: keep
 `launcherx` and `setupwraith` enabled, and take Home with `HOME_KEY_SERVICE=1` and
-`stock_home_redirect=com.google.android.apps.tv.launcherx`. One owner accepted losing the wizard
-(and the cast credentials that live in it, [TROUBLESHOOTING](../TROUBLESHOOTING.md)) and used
-`pm uninstall -k --user 0 com.google.android.tungsten.setupwraith`; that held across one cold boot
-where `pm disable-user` did not. It is outside this project's disable-only rule and one boot is not a
-list, so it is a report here, not a recommendation - and the saved Wi-Fi network belongs to the
-wizard, so the warning in [PROMPT.md](../../PROMPT.md) applies before either step.
+`stock_home_redirect=com.google.android.apps.tv.launcherx`.
 
 ## If Home is already black after a reboot
 

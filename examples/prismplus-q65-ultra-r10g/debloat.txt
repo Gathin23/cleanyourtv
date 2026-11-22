@@ -34,7 +34,7 @@ com.google.android.katniss
 com.realtek.connecteddevices
 com.realtek.connecteddevices.overlay
 com.realtek.energymode                      # disabled on this set with no issue seen
-com.realtek.rtkvirtualkeyboard              # Realtek on-screen keyboard; this set keeps the latin IME and has this off
+# com.realtek.rtkvirtualkeyboard            # Realtek on-screen keyboard; off on this set (latin IME kept), left on here: lists never disable a keyboard
 
 # Privacy Sandbox and on-device personalization
 com.android.adservices.api

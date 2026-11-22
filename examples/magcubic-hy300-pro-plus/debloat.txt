@@ -35,8 +35,8 @@
 # found manual 4-corner keystone, the horizontal zero point (InitAngle), zoom, projection flip and the PQ
 # adjustments all unavailable once com.htc.magcubicos is disabled, with only the G-sensor auto keystone
 # (com.hysd.vafocus) left running on its own. The board's driver is no substitute for the screen either:
-# reading /sys/class/prj/bl_duty reboots the projector on that build, so keep it closed while ADB is the way
-# back in.
+# reading /sys/class/prj/bl_duty reboots the projector on that build, so do not
+# read it.
 #
 # Inputs: com.softwinner.vis lists HDMI1-3 and CVBS1-2, but nothing on this firmware handles the
 # passthrough URI as a TV app (ACTION_VIEW on it resolves to OfficeSuite), so config.json sends the Inputs

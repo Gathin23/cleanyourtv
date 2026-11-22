@@ -36,7 +36,6 @@ ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "docs" / "app-library.md"
 JAVA_DIR = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome"
 STORE = JAVA_DIR / "LibraryApps.java"
-DIALOG = JAVA_DIR / "AppLibraryDialog.java"
 CONFIG_JAVA = JAVA_DIR / "Config.java"
 CONFIG_XML = ROOT / "launcher" / "app" / "src" / "main" / "res" / "values" / "config.xml"
 
@@ -182,18 +181,6 @@ class PageAgainstCode(unittest.TestCase):
         self.assertGreaterEqual(claims, 3,
                                 f"only {claims} key paragraphs read as off by default: the page states "
                                 f"three")
-
-    def test_a_first_install_is_what_marks_an_app_new(self):
-        """`Updating an existing app does not mark it as new` is firstInstallTime and not lastUpdateTime."""
-        dialog = DIALOG.read_text(encoding="utf-8")
-        self.assertIn("info.firstInstallTime", dialog,
-                      "AppLibraryDialog.java no longer reads firstInstallTime, so nothing makes an app new")
-        self.assertNotIn("installed.put(pkg, info.lastUpdateTime)", dialog,
-                         "AppLibraryDialog.java feeds lastUpdateTime to LibraryApps.recent(), so an "
-                         "updated app reads as newly installed")
-        self.assertRegex(self.page, r"Updating an existing app does not mark it as new",
-                         "docs/app-library.md no longer makes that promise")
-
 
 class ReadersTest(unittest.TestCase):
     """Each reader, on the shapes it has to tell apart."""

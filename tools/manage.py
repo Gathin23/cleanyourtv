@@ -103,6 +103,8 @@ LAUNCHER_ID = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$")
 # The README tables are read back through tools/tables.py, the one Markdown-table reader in the
 # repo (gen_tables.py writes them; this reads them; the schema is documented there).
 
+# `python3 -I tools/manage.py`, the form its header gives, leaves the script's own folder off sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tables import img_src, img_srcs, plain, table_rows  # noqa: E402
 
 

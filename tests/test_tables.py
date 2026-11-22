@@ -230,5 +230,14 @@ class SchemaTest(unittest.TestCase):
         self.assertIsNone(shot)
 
 
+class IsolatedLaunchTest(unittest.TestCase):
+    def test_manage_py_runs_with_python_dash_i(self):
+        """manage.py's header runs every command as `python3 -I tools/manage.py`; tables must import there too."""
+        import subprocess
+        r = subprocess.run([sys.executable, "-I", str(ROOT / "tools" / "manage.py"), "--help"],
+                           capture_output=True, text=True, cwd=ROOT)
+        self.assertEqual(0, r.returncode, r.stderr[-800:])
+
+
 if __name__ == "__main__":
     unittest.main()

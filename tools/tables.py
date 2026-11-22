@@ -69,3 +69,9 @@ def plain(cell):
     """A Markdown cell as text: links to their words, code marks dropped."""
     s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", cell or "")
     return s.replace("`", "").strip()
+
+
+if __name__ == "__main__":   # a library; run directly, it prints its note
+    import sys
+    print((__doc__ or "").strip())
+    sys.exit(0)

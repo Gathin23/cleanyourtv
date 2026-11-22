@@ -68,7 +68,7 @@ two recovery lines above at hand.
   on a real cold boot needs a reboot or the plug, not 关机. Noted while chasing the standby-LED report in
   [#2948](https://github.com/Gathin23/cleanyourtv/issues/2948).
 - **The standby LED can latch into a fast blink; the cause is still open, and a disabled package is not ruled out.**
-  Three owners reported it again on 2026-11-21 and 2026-11-22, on `OS3.0.101.0.UFTMATV`
+  Two owners reported it again, three times, on 2026-11-21 and 2026-11-22, on `OS3.0.101.0.UFTMATV`
   ([#4302](https://github.com/Gathin23/cleanyourtv/issues/4302)) and on `OS3.0.106.0.UFTMATV` (a comment on
   #2948 from a second set, and that set's owner again on 2026-11-22), so both builds carry it. Their kernel
   log names the transition:

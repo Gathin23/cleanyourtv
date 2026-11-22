@@ -11,8 +11,8 @@
 # Tested on Challenger 32T22 BT: freed up crucial RAM for third-party launcher (com.gathin.tvhome) and streaming apps.
 # The Home half cannot be reproduced from this repository on this set: the published launcher is minSdk 26
 # (Android 8) and `pm install` answers INSTALL_FAILED_OLDER_SDK on this API 24 TV (#576,
-# docs/TROUBLESHOOTING.md), so the alternative home that com.cvte.tv.launcher is disabled behind was a build
-# with a lower minSdk of your own. The debloat half applies as it is, from the stock home screen.
+# docs/TROUBLESHOOTING.md), so the launcher half cannot be installed here and the stock Home stays enabled.
+# The debloat half applies as it is, from the stock home screen.
 
 # Factory test and diagnostic tools (CVTE & TCL ODM)
 cn.cvte.tv.factory.autotest
@@ -42,5 +42,5 @@ com.ecloud.emedia                        # DLNA/media cloud service
 com.android.htmlviewer
 com.android.browser                      # Outdated stock browser (AOSP)
 
-# Stock launcher (disable only after installing and setting an alternative launcher as Home)
-com.cvte.tv.launcher
+# Stock launcher: kept. Disabling it with no other Home installed leaves the TV without a Home screen.
+# com.cvte.tv.launcher

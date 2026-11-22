@@ -40,7 +40,7 @@ com.google.android.leanbacklauncher.recommendations
 
 # 3. Background extras
 com.tcl.tvweishi                            # "TV Guard" cleaner
-com.tcl.MultiScreenInteraction_TV           # T-Cast phone link (Chromecast kept)
+#com.tcl.MultiScreenInteraction_TV           # T-Cast phone link (Chromecast kept)
 com.tcl.copydatatotv
 com.android.printspooler
 
@@ -54,16 +54,16 @@ com.google.android.play.games
 com.google.android.videos
 com.google.android.music
 
-# 5. Off by choice on this unit (comment out what you use)
-com.spotify.tv.android
-tunein.player
-com.google.android.apps.youtube.music
-com.google.android.katniss                  # voice search and the mic button
-com.google.android.tv.assistant
-com.google.android.speech.pumpkin
-com.tcl.assistant
-com.tcl.micmanager
-com.tcl.miracast
+# 5. Off on the tested set by the owner's choice; uncomment what you don't use
+#com.spotify.tv.android
+#tunein.player
+#com.google.android.apps.youtube.music
+#com.google.android.katniss                  # voice search and the mic button
+#com.google.android.tv.assistant
+#com.google.android.speech.pumpkin
+#com.tcl.assistant
+#com.tcl.micmanager
+#com.tcl.miracast
 # com.google.android.apps.mediashell        # Chromecast, kept
 # Firmware updaters: the tested unit's owner disabled both, by choice; they are left enabled here as the
 # repo recommends. Disabling them means no firmware or remote updates until re-enabled.

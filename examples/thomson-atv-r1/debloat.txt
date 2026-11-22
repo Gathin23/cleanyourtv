@@ -80,11 +80,12 @@ com.google.android.marvin.talkback             # TalkBack screen reader
 # com.google.android.tv.remote.service         # RE-ENABLED: its AtvSearchAssistantService answers the mic button
 
 # Apps the owner does not use
-com.netflix.ninja
-com.amazon.amazonvideo.livingroom              # Prime Video
-ru.rt.video.app.tv                             # Wink / Rostelecom
-tv.okko.androidtv                              # Okko
-com.google.android.youtube.tvmusic             # YouTube Music preload
+# Off on the owner's unit; uncomment any you don't use.
+#com.netflix.ninja
+#com.amazon.amazonvideo.livingroom              # Prime Video
+#ru.rt.video.app.tv                             # Wink / Rostelecom
+#tv.okko.androidtv                              # Okko
+#com.google.android.youtube.tvmusic             # YouTube Music preload
 com.tcl.browser                                # TCL browser preload
 
 # Android parts a TV stick does not need

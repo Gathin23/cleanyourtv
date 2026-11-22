@@ -2,5 +2,5 @@
   "tv": "TCL 50EP660 (France, BeyondTV, Realtek RTD2851, AP06)",
   "os": "Android TV 9",
   "brand": "TCL",
-  "notes": "Same platform as the 43EP660: TCL BI analytics, user center, TCL Channel, message box, TV Guard, T-Cast, app store, USB players; voice and Miracast off by choice, Chromecast and updaters kept; remote buttons all work after the stock launcher is disabled, no key helper"
+  "notes": "Same platform as the 43EP660: TCL BI analytics, user center, TCL Channel, message box, TV Guard, T-Cast, app store, USB players; voice, Miracast and T-Cast off on the tested set, left commented out, Chromecast and updaters kept; remote buttons all work after the stock launcher is disabled, no key helper"
 }
