@@ -625,6 +625,20 @@ class SetThemeFolderTest(unittest.TestCase):
         self.assertIsNone(self.set_key(folder=mine))
         self.assertIs(json.loads((mine / "config.json").read_text(encoding="utf-8"))["dock_band"], True)
 
+    def test_the_checkout_itself_is_refused(self):
+        # `set dock_band true --theme .` from the checkout started a config.json beside README.md and pushed the
+        # checkout as the theme.
+        root = (Path(self.tmp.name) / "checkout").resolve()
+        root.mkdir()
+        patcher = mock.patch.object(manage, "ROOT", root)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        refusal = self.set_key(folder=root)
+        self.assertIsNotNone(refusal)
+        self.assertIn("this checkout itself", refusal)
+        self.assertFalse((root / "config.json").exists())
+        self.push.assert_not_called()
+
     def test_every_folder_that_ships_a_config_json_is_one_set_refuses(self):
         # A third kind of folder with a config.json in it (a new add-on contract, say) has to be added to
         # PROJECT_FOLDERS, or set would rewrite it the way examples/ used to be rewritable.

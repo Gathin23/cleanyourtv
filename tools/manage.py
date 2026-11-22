@@ -850,6 +850,11 @@ def looked_at(path):
 def own_folder_problem(folder):
     """Why set may not write into `folder`, or None: it is one of the folders this checkout ships, a file, or
     not there at all."""
+    if folder == ROOT:
+        # The checkout itself is no theme folder: set would start a config.json beside README.md and push the
+        # whole checkout as the theme.
+        return (f"{folder} is this checkout itself: set writes into a theme folder of your own, so make one "
+                f"somewhere else first. Nothing was written or pushed.")
     for name in PROJECT_FOLDERS:
         project = ROOT / name
         if folder == project or project in folder.parents:
