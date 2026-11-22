@@ -283,6 +283,17 @@ class AnAddressThisCannotProbe(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertEqual(["https://[fe80::1]:1926/6/system", "http://[fe80::1]:1925/6/system"], asked)
 
+    def test_a_bracket_left_open_or_text_after_it_is_named(self):
+        # `[fe80::1` and `[fe80::1]x` built URLs with no host in them, and the run blamed the set.
+        for host in ("[fe80::1", "[fe80::1]x"):
+            with self.subTest(host=host):
+                code, _, asked, err = run({}, argv=("philips-api.py", host))
+                self.assertEqual(code, 2)
+                self.assertEqual(asked, [], "a URL built from %s was asked: %s" % (host, asked))
+                self.assertIn(f"{host} ", err)
+                self.assertIn("so it is not an address", err)
+                self.assertNotIn("nothing answered", err)
+
     def test_a_colon_with_nothing_after_it_is_named(self):
         code, out, asked, err = run({}, argv=("philips-api.py", "tv.example:"))
         self.assertEqual(code, 2)

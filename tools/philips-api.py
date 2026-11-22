@@ -174,6 +174,12 @@ def address_problem(host):
         return (f"{host} is a URL, not the TV's address: this check asks the address itself on "
                 f"{PORTS[0][0]} and {PORTS[1][0]}, so pass it alone, without http:// or https://.")
     address, rest = split_address(host)
+    if host.startswith("[") and not address.endswith("]"):
+        return (f"{host} opens a bracket and does not close it, so it is not an address: pass the "
+                f"TV's address with its bracket closed: {host}].")
+    if host.startswith("[") and rest is None and address != host:
+        return (f"{host} has {host[len(address):]!r} after the closing bracket, so it is not an "
+                f"address: pass the TV's address alone: {address}.")
     if rest is None:
         if ":" in address and not address.startswith("["):
             return (f"{host} is an IPv6 address written without brackets, so the URLs this asks are not "
