@@ -46,6 +46,21 @@ com.xiaomi.gamecenter.sdk.service.mibox
 # Unhide it first if you ever factory-reset the TV. Left commented out: launcher/ needs Android 8
 # (minSdk 26) and this set runs 5.1, and the minSdk-22 build proposed in PR #146 was closed unmerged
 # on 2026-10-22, so take the debloat half only.
+#
+# Do not `pm hide` it either, not even to hand Home to a third-party launcher (#4305). On this firmware
+# PatchWall's own start is what releases Xiaomi's cloud delayed-start gate, so `pm hide` - the only
+# primitive left when `pm disable-user` is refused - is a trap with no UI to undo it from:
+#   I/MitvConfigParser: [Black] com.sohu.inputmethod.sogou.tv=64
+# Flag 64 is the delayed-start list in /data/system/mitv_security_center.xml, and its entries wait on
+# PatchWall (`delay_time=[15]` for Sogou, `pw_broadcast=[true]` for the media apps). Hidden PatchWall
+# never starts, so the gate never opens, reboot or not: Sogou - the only input method here - stays
+# installed, enabled and the selected `default_input_method` while its process refuses to launch
+# (`LaunchOtherAppsUtils: disablestart process`, `Unable to launch app ... process is bad`), so no
+# keyboard appears in any text field, and com.xiaomi.mitv.mediaexplorer and com.mitv.mivideoplayer go
+# the same way. Unhiding the other packages does not help; the stock launcher has to start once.
+# Undo: `pm unhide --user 0 com.mitv.tvhome`, set PatchWall as default HOME (Home > 选择主屏幕应用 >
+# 桌面 > 始终), press Home once and wait ~20 s. Reported on firmware 22.7.26.1940; this list's set is
+# 22.8.17.1977 and was not tested for the gate.
 # com.mitv.tvhome
 
 # Owner's-choice removals NOT listed above (uninstalled with APKs backed up first, restore by
