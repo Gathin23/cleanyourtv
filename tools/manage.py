@@ -37,7 +37,11 @@ but a `banner_*` drawable this checkout ships, so `com.netflix.ninja=magenta` is
 the tile never shows. The two keys the Inputs menu reads a vendor number out of are read the same way:
 `input_sources` entries one at a time, since InputSources.mapped() skips an entry it cannot match to an input id,
 and `source_panel_extra` as the `"name=value"` pair openSourcePanel() sends, since a value without a name or a
-whole number before the '=' sends no extra at all. A theme's config.json is hand-edited, so one
+whole number before the '=' sends no extra at all. A `wallpaper_moods` object is read group by group for the same
+reason: Config.moods() walks WallpaperMood.ALL's morning, evening and night and keeps only a name
+ThemeFiles.collectionImage() accepts, and WallpaperMood.select() answers a group holding none of the collection's
+pictures with the whole collection, so a group named anything else, an empty group, and a name this theme does not
+ship in `wallpapers/` are refused rather than written as a group that never shows. A theme's config.json is hand-edited, so one
 that cannot be read, is not JSON, or is not a JSON object is named before the key is written, and a write it cannot
 make says so instead of ending in a traceback. An edit whose UTF-8 config would exceed the launcher's 64 KB
 read limit is refused before writing or pushing; the previous file is kept.
@@ -540,6 +544,67 @@ def panel_extra_problem(text):
     if not whole_number(number):
         return (f"{text!r} gives {number!r} after the '=', and openSourcePanel() catches the NumberFormatException "
                 f"a half that is not a whole number throws, so it sends no extra at all")
+    return None
+
+
+# The groups of a rotating wallpaper collection: WallpaperMood.ALL, the three Config.moods() walks
+# (`for (String mood : WallpaperMood.ALL)`), so a group named anything else - `dusk`, `Morning` - is never looked
+# at. Each name is then kept only when ThemeFiles.collectionImage() takes it, a name without a leading dot matched
+# whole by IMAGE, and WallpaperMood.select() answers a group holding none of the collection's pictures with the
+# whole collection. Every one of those is a group that never shows what the theme says it shows, with nothing on
+# the TV saying so. A shipped theme is held to both halves by tests/test_theme_wallpaper_moods.py; this is the
+# same rule for the folder set writes.
+WALLPAPER_MOODS = ("morning", "evening", "night")
+MOOD_PICTURE = re.compile(r"[A-Za-z0-9_.-]+\.(jpg|jpeg|png|webp)", re.IGNORECASE)
+WALLPAPERS = "wallpapers"
+
+
+def moods_problem(value, folder):
+    """The first wallpaper_moods group or picture name the launcher drops, or None.
+
+    The reader is three steps, and each drops what it cannot read without a word:
+
+        // Config.moods(JSONObject)
+        JSONArray names = o.optJSONArray(mood);           // only for mood in WallpaperMood.ALL
+        String name = names.optString(i, "").trim();
+        if (ThemeFiles.collectionImage(name)) group.add(name);
+
+        // WallpaperMood.select()
+        return group.isEmpty() ? all : group;
+
+    so a group named off the three, one that is not a list, an empty group, a name the launcher's filter refuses,
+    and a name the theme does not ship in `wallpapers/` all end as no group at that time of day: the whole
+    collection rotates through instead, and `set` has already reported the object as written.
+    """
+    if not isinstance(value, dict):
+        return f"{value!r} is not an object of groups"
+    allowed = ", ".join(WALLPAPER_MOODS[:-1]) + " or " + WALLPAPER_MOODS[-1]
+    pictures = None
+    for mood, names in value.items():
+        if mood not in WALLPAPER_MOODS:
+            return (f"the group {mood!r} is not one the launcher reads ({allowed}), so Config.moods() never "
+                    f"looks at it and its pictures never show")
+        if not isinstance(names, list):
+            return (f"the group {mood!r} holds {type(names).__name__}, not a list of picture names, so "
+                    f"Config.moods() drops the group")
+        if not names:
+            return (f"the group {mood!r} is empty, and WallpaperMood.select() answers an empty group with the "
+                    f"whole collection, so the group would change nothing")
+        for name in names:
+            if not isinstance(name, str) or not name.strip():
+                return f"the group {mood!r} holds {name!r}, which is not a picture name"
+            name = name.strip()   # moods() trims every name it reads
+            if name.startswith(".") or not MOOD_PICTURE.fullmatch(name):
+                return (f"the group {mood!r} names {name!r}, which ThemeFiles.collectionImage() refuses (a "
+                        f".jpg, .jpeg, .png or .webp name, and no leading dot), so Config.moods() drops it")
+            if pictures is None:
+                collection = folder / WALLPAPERS
+                pictures = ({p.name for p in collection.iterdir() if p.is_file()}
+                            if collection.is_dir() else set())
+            if name not in pictures:
+                return (f"the group {mood!r} names {name!r}, which this theme does not ship in "
+                        f"{WALLPAPERS}/: WallpaperMood.select() matches the kept names against the collection's "
+                        f"pictures, so a group holding none of them shows every picture instead")
     return None
 
 
@@ -1109,6 +1174,12 @@ def cmd_set(key, value, theme_folder):
     if problem:
         sys.exit(problem)
     parsed = value_as(key, item, value)   # before the file is written or anything is pushed
+    if key == "wallpaper_moods":
+        # The one refusal value_as() cannot make: whether a group's names are the pictures this theme ships is a
+        # question about the folder, which is this command's argument rather than the key's row.
+        problem = moods_problem(parsed, folder)
+        if problem:
+            sys.exit(f"{key} takes {item.get('type')}, and {problem}. Nothing was written or pushed.")
     command = theme_command(folder)
     data[key] = parsed
     f = folder / "config.json"
