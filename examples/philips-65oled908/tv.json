@@ -2,5 +2,5 @@
   "tv": "Philips 65OLED908/12 (TPV, PH1M_WW_9972, MediaTek), France",
   "os": "Google TV 14",
   "brand": "Philips",
-  "notes": "Same board and firmware build as the 55OLED820, on Wi-Fi: Samba TV ACR, Google feedback, DAC analytics, Google screensaver, NFT Collection, retail demo, Play Games, Ginga and HD+ pages, Control4, Alexa, Play-Fi, Aurora and Sunrise; `org.droidtv.eum` kept: the Sources panel binds to it and crashes when it is off, so the HDMI inputs cannot be picked; launcherx stays, Home is a third-party launcher through an accessibility service"
+  "notes": "Same board and firmware build as the 55OLED820, on Wi-Fi: Samba TV ACR, Google feedback, DAC analytics, Google screensaver, NFT Collection, retail demo, Play Games and the HD+ pages, Control4, Alexa and Play-Fi; Ginga, Aurora and Sunrise off on the tested set, left commented out in the list (broadcast middleware, and two Ambilight extras); `org.droidtv.eum` kept: the Sources panel binds to it and crashes when it is off, so the HDMI inputs cannot be picked; launcherx stays, Home is a third-party launcher through an accessibility service"
 }
