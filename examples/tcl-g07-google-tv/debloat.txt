@@ -131,6 +131,40 @@
 # - The set had a 23-day uptime, 72 boots in total, so nothing here says the packages survived a reboot: the
 #   AR07 units above were re-enabled at boot for com.tcl.notereminder and com.tcl.usercenter.
 #
+# Also tested 2026-11-21 on a unit in Spain (product G07_4K_GB_NF, board rtd2851a, client TCL-EU-RTD51A-S1,
+# Android 11 / SDK 30, build RP1A.200622.001 incremental AR07, software V8-R51AT01-LF1V138,
+# security patch 2025-12-05, 2 GB RAM, es-ES, Bluetooth remote BT_RC833_U1). Tested in one session with one
+# reboot check (not yet lived with for several days); Home and the launcher came back cleanly after reboot:
+# - Disabled 36 packages with `pm disable-user --user 0` (none uninstalled): the telemetry/ad/promo/preload
+#   subset from this list (guard, useragreement, feedback, partnersetup, onetimeinitializer, gtvpai,
+#   waterfall.overseas, dashboard, messagebox, tv.tclhome_passive, notereminder, usercenter, esticker,
+#   hotelmenu, tcl.android.webview, browser, gallery, ui_mediaCenter, MultiScreenInteraction_TV, miracast,
+#   videos, youtube.tvmusic, play.games, syncadapters.calendar, setupwraith, launcherx, dreamx), plus
+#   AOSP extras (providers.calendar, providers.contacts, printspooler) and 6 unused streaming apps.
+# - Already disabled at the factory (`pm list packages -d --user 0`): au.com.stan.and, com.tcl.micmanager,
+#   com.tcl.smartalexa.
+# - Kept enabled by choice: com.tcl.ttvs (firmware updates), com.tcl.partnercustomizer (remote shortcuts),
+#   com.tcl.channelplus (to avoid unplayable ghost channels in Live TV), com.tcl.t_solo (Bluetooth audio),
+#   voice (com.google.android.katniss, com.tcl.assistant, com.google.android.tv.assistant), Chromecast
+#   (com.google.android.apps.mediashell), and 6 user apps (Netflix, YouTube, Disney+, Prime Video, Spotify,
+#   Steam Link).
+# - Wi-Fi: an older saved network belonged to setupwraith, while the active network belonged to
+#   com.android.tv.settings (uid 1000). Disabling setupwraith kept the active Wi-Fi connection intact.
+# - Launcher (`com.gathin.tvhome`) installed with HOME_KEY_SERVICE=1, ClockDream screensaver, 6-column dock,
+#   `live_tv_package=com.tcl.tv`, `live_tv_input_id=com.tcl.tvinput/.TDTVInputService/HW1413742848`, and
+#   `hidden_apps` (`com.tcl.tv`, `com.tcl.notereminder`, `com.tcl.usercenter`). `gamepad_passthrough=true`
+#   was compiled in but not yet tested with a Bluetooth controller in Steam Link.
+# - Remote (`BT_RC833_U1`, verified on the real remote): Home, Input, Settings, Netflix, YouTube, Prime Video,
+#   voice mic, and held volume all worked. The Live TV (antenna) button stopped working with launcherx off
+#   (`dumpsys window policy` routes KEYCODE_GUIDE to launcherx); mapping `scan:365`, `4001`, `172`, `170`,
+#   and `scan:377` to `input:com.tcl.tvinput/.TDTVInputService/HW1413742848` in `app_keys` restored direct
+#   antenna TV switching. (The profile/person button was launcherx-only; LIST works inside Live TV and Info
+#   works on active TV/HDMI signals.)
+# - Physical HDMI & console gaming verified on HDMI 1 (Xbox Series X): video/audio, Game Master, ALLM,
+#   and HDMI-CEC TV power-on/power-off from the console all worked. (TCL firmware hides Game Master under
+#   Settings > System while on Android Home and shows it again on an active HDMI console signal.)
+# - MemAvailable after debloat + launcher: ~755 MB (out of 2 GB RAM).
+#
 # DO NOT DISABLE: com.tcl.tv (Live TV, HDMI playback), com.tcl.tvinput (tuner, HDMI and AV inputs),
 # com.tcl.suspension (Quick Panel, also the Input key's source panel), com.tcl.keyhelp (remote virtual keys),
 # com.tcl.autopair, com.google.android.tv.remote.service, com.tcl.inputmethod.international (the keyboard),
