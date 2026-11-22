@@ -34,15 +34,18 @@
 # - Wireless debugging leaves port 5555 open across reboots: switch off USB/Wireless debugging when done.
 # - Remote (Vendor_2717_Product_32b9.kl): once launcherx is off, Netflix (BUTTON_6) still opens Netflix, but
 #   YouTube (BUTTON_3, scan 425), Prime Video (BUTTON_7, scan 207), Xiaomi TV+ (BUTTON_5, scan 150) and Apps
-#   (ALL_APPS, scan 216) do nothing. config.json in this folder maps them back with app_keys, which needs
-#   INPUT_KEY_SERVICE=1 when running build-and-install.sh. The real Home button worked without HOME_KEY_SERVICE.
+#   (ALL_APPS, scan 216) do nothing. The config.json at this folder's root maps them back with app_keys, which
+#   needs INPUT_KEY_SERVICE=1 when running build-and-install.sh. The real Home button worked without
+#   HOME_KEY_SERVICE.
 # - The volume buttons send IR to the TV: `getevent -lt` shows no event on the box while they are held, so a held
 #   button not repeating is the TV's doing, with or without a key helper.
 # - Remote shortcut keys (Vendor_2717_Product_32b9.kl): YouTube sends BUTTON_3 (scancode 425), Prime Video sends
 #   BUTTON_7 (scancode 207), and Apps button sends ALL_APPS (scancode 216). Enable HomeKeyService
 #   (settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService) and push
-#   examples/xiaomi-mitv-afmu0/theme/config.json with tools/theme.sh to restore YouTube, map Prime Video, and make
-#   the Apps button open Home. See README.md.
+#   examples/xiaomi-mitv-afmu0/theme/config.json with tools/theme.sh: its app_keys give BUTTON_3 and scan:425
+#   YouTube, and BUTTON_7 and scan:207 TrueID TV (com.truedmp.idtv), the app that unit's owner put on the button,
+#   while HomeKeyService answers ALL_APPS so the Apps button opens Home. The config.json at the folder's root,
+#   from another unit, is the one that points BUTTON_7 at Prime Video. See README.md.
 
 # Telemetry and feedback
 com.miui.tv.analytics
