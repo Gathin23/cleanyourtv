@@ -283,9 +283,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean openOnStartChoice;
     /** open_on_start_network_wait, in ms; the boot's app while it waits for the network, and until when. */
     private long openOnStartWaitMs;
+    /** boot_to_live_tv_delay, in ms: how long Home stays on screen before the boot's Live TV app or input opens. */
+    private long bootLiveTvDelayMs;
     /** open_on_start_on_wake: wakeReceiver is registered for this activity's life. */
     private boolean openOnStartOnWake;
     private volatile Intent startPending;
+    /** Opens the boot's Live TV app or input once boot_to_live_tv_delay is over; leaving Home cancels it. */
+    private final Runnable openBootLiveTv = new Runnable() {
+        @Override
+        public void run() {
+            if (bootInputId != null) {
+                openInput(bootInputId);
+                return;
+            }
+            Intent i = liveTvIntent();
+            if (i != null) open(i);
+        }
+    };
     private long startDeadline;
     /** Opens the boot's app once the network is validated (networkCallback posts this) or the wait is over. */
     private final Runnable openWhenOnline = new Runnable() {
@@ -493,6 +507,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
+        bootLiveTvDelayMs = cfg.bootToLiveTvDelay * 1000L;
         openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
         liveTvAction = cfg.liveTvAction;
         liveTvInputId = cfg.liveTvInputId;
@@ -1320,6 +1335,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroArt.animate().cancel();
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(openWhenOnline);
+        handler.removeCallbacks(openBootLiveTv);   // leaving Home during boot_to_live_tv_delay: Live TV stays closed
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
         if (gameDay != null) gameDay.stop();
@@ -3254,6 +3270,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String target = bootToLiveTv ? liveTvPkg : app;
         if (!OpenOnStart.due(boot, prefs.getInt(OpenOnStart.BOOT_KEY, -1), target, getPackageName())) return false;
         if (!prefs.edit().putInt(OpenOnStart.BOOT_KEY, boot).commit()) return false;
+        if (bootToLiveTv && bootLiveTvDelayMs > 0) {
+            // boot_to_live_tv_delay: Home stays on screen meanwhile; the once-per-boot mark is already written.
+            handler.postDelayed(openBootLiveTv, bootLiveTvDelayMs);
+            return false;
+        }
         if (bootToLiveTv && bootInputId != null) {
             openInput(bootInputId);
             return true;

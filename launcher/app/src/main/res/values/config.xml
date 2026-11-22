@@ -61,6 +61,11 @@
          set "open_on_start_network_wait": 180. -->
     <integer name="open_on_start_network_wait">0</integer>
 
+    <!-- Seconds boot_to_live_tv waits after Home comes up before it opens the Live TV app, or the HDMI input that
+         launch_actions gives it. Home stays on screen meanwhile, and leaving Home cancels the opening. 0, the
+         default: open at once. Up to 600; a theme can set "boot_to_live_tv_delay": 10. -->
+    <integer name="boot_to_live_tv_delay">0</integer>
+
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
          to that package instead, and the app starts normally. Leave empty to omit. -->
