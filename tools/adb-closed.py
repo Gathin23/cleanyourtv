@@ -32,9 +32,9 @@ reply's header. adbd always answers one, with CNXN (this computer is already all
 key) or STLS (the Wireless debugging port, before its TLS handshake), so any of those is network ADB on
 whatever port it was. A port that answers with anything else, or hangs up, is open but not ADB, and the
 message says so and names the check for 5555; it still exits 1, as any open port does, because only the TV's
-own refusal shows a port closed. A port that says nothing within the time, or that the greeting cannot reach,
-is judged by its number as before, since silence proves nothing either way. The check sends only the greeting,
-never a key, so it cannot bring up the TV's "Allow USB debugging?" prompt (#3890).
+own refusal shows a port closed. A port that says nothing within the time, that the greeting cannot reach, or
+whose ADB answer stops part way, is judged by its number as before, since that proves nothing either way.
+The check sends only the greeting, never a key, so it cannot bring up the TV's "Allow USB debugging?" prompt (#3890).
 """
 import errno
 import ipaddress
@@ -71,6 +71,14 @@ def adb_answer(header):
     return None
 
 
+def short_reply(header):
+    """A non-empty reply that is not a complete ADB header: unknown when it begins an ADB answer, else not ADB."""
+    for command, name in ADB_ANSWERS.items():
+        if 4 <= len(header) < 24 and header[:4] == struct.pack("<I", command):
+            return "unknown", f"it began an ADB answer ({name}) and stopped after {len(header)} of 24 bytes"
+    return "not adb", "it answered with something that is not ADB"
+
+
 def ask_adb(sock):
     """Greet an open port: ("adb", command), ("not adb", why) or ("unknown", why).
 
@@ -91,8 +99,7 @@ def ask_adb(sock):
                 break
             header += chunk
     except socket.timeout:
-        return ("not adb", "it answered with something that is not ADB") if header else (
-            "unknown", f"it said nothing within {HANDSHAKE_S:.0f} s")
+        return short_reply(header) if header else ("unknown", f"it said nothing within {HANDSHAKE_S:.0f} s")
     except OSError as e:
         return "unknown", f"the greeting could not be sent ({e})"
     command = adb_answer(header)
@@ -100,7 +107,7 @@ def ask_adb(sock):
         return "adb", command
     if not header:
         return "not adb", "it hung up on ADB's greeting"
-    return "not adb", "it answered with something that is not ADB"
+    return short_reply(header)
 
 
 def this_computer(host):

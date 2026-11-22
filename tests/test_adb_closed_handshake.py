@@ -47,15 +47,24 @@ ADB_CLOSED = load_script()
 #   http                            answers with an HTTP error, as a web API would
 #   hangup                          closes the connection without a word
 #   quiet                           keeps the connection open and says nothing
+#   cut-<name>                      sends part of a reply, then times out or hangs up (see CUT_REPLIES)
 STAND_IN = r"""
 import os, runpy, socket, struct, sys
 answers = dict(item.split("=") for item in os.environ["STAND_IN_TV"].split(","))
 COMMANDS = {"adb-cnxn": 0x4E584E43, "adb-auth": 0x48545541, "adb-stls": 0x534C5453}
 
+AUTH = struct.pack("<6I", 0x48545541, 1, 0, 0, 0, 0x48545541 ^ 0xFFFFFFFF)
+CNXN = struct.pack("<6I", 0x4E584E43, 1, 0, 0, 0, 0x4E584E43 ^ 0xFFFFFFFF)
+CUT_REPLIES = {"cut-auth8-timeout": (AUTH[:8], "timeout"), "cut-cnxn4-eof": (CNXN[:4], "eof"),
+               "cut-auth3-timeout": (AUTH[:3], "timeout"), "cut-http-timeout": (b"HTTP/1.1 ", "timeout")}
+
 class Connection:
     def __init__(self, answer):
         self.answer = answer
-        if answer in COMMANDS:
+        self.ends = "eof"
+        if answer in CUT_REPLIES:
+            self.reply, self.ends = CUT_REPLIES[answer]
+        elif answer in COMMANDS:
             command = COMMANDS[answer]
             self.reply = struct.pack("<6I", command, 1, 0, 0, 0, command ^ 0xFFFFFFFF)
         elif answer == "http":
@@ -72,6 +81,8 @@ class Connection:
         if self.answer == "quiet":
             raise socket.timeout("timed out")
         chunk, self.reply = self.reply[:size], self.reply[size:]
+        if not chunk and self.ends == "timeout":
+            raise socket.timeout("timed out")
         return chunk
     def close(self):
         sys.stderr.write("[stand-in] closed\n")
@@ -144,6 +155,35 @@ class AnAnswerThatIsNotAdbTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn(f"{TV}:5555 is still open, but it is not ADB", result.stderr)
         self.assertNotIn("check it with", result.stderr)
+
+
+class ACutOffReplyIsUnknownTest(unittest.TestCase):
+    def test_a_cut_off_adb_answer_is_unknown_not_not_adb(self):
+        result = check_tv(TV, tv="5555=cut-auth8-timeout")
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertNotIn("Network ADB is not on this port", result.stderr)
+        self.assertIn(f"{TV}:5555 is still open: network ADB is on", result.stderr)
+
+    def test_ask_adb_says_unknown_for_a_cut_off_adb_answer(self):
+        for answer in ("cut-auth8-timeout", "cut-cnxn4-eof"):
+            with self.subTest(answer=answer):
+                result = check_tv(TV, "1925", tv=f"1925={answer},5555=refused")
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn(f"{TV}:1925 is still open: something answers there", result.stderr)
+                self.assertNotIn("it is not ADB", result.stderr)
+
+    def test_fewer_than_four_bytes_or_a_non_adb_word_is_still_not_adb(self):
+        for answer in ("cut-auth3-timeout", "cut-http-timeout"):
+            with self.subTest(answer=answer):
+                result = check_tv(TV, "5555", tv=f"5555={answer}")
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn("it is not ADB", result.stderr)
+
+    def test_short_reply_names_the_command_and_the_bytes(self):
+        verdict, why = ADB_CLOSED.short_reply(struct.pack("<I", 0x4E584E43))
+        self.assertEqual(verdict, "unknown")
+        self.assertIn("CNXN", why)
+        self.assertIn("4 of 24", why)
 
 
 class SilenceProvesNothingTest(unittest.TestCase):
