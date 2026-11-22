@@ -94,7 +94,7 @@ CATALOGUE = {
     ),
     "com.tcl.logkit": (
         "telemetry",
-        "TCL log capture and upload; disabled in most TCL lists in examples/",
+        "TCL log capture and upload; disabled in about two in five TCL lists in examples/",
     ),
     "com.google.android.feedback": (
         "telemetry",
