@@ -69,3 +69,45 @@ The Input button's default target is the Philips Sources drawer described above;
   Play Services, Chromecast, Assistant, firmware updates and Ambilight enabled.
 - The owner confirmed HDMI playback, tuner reception and USB media playback through the built-in app.
 - Other functions are not claimed as tested.
+
+## Third unit: Philips 49PUS7502/12 (one day of use)
+
+Same product, board and firmware as above, read from the TV: `TPM171E`, `PH7M_EU_5596`, Android TV 8.0.0 (SDK 26),
+build `OC release-keys` 4718, security patch 2021-01-05, fingerprint
+`Philips/PH7M_EU_5596/PH7M_EU_5596:8.0.0/OC/4718:user/release-keys`, 1920x1080, density 320. This was one
+afternoon and evening, not several days; the list's claims above are not repeated for this unit.
+
+**`tools/disable.sh` refused two packages of this list on this TV.** `org.droidtv.usagelogger` and
+`org.droidtv.demome` both hold `android.permission.TV_INPUT_HARDWARE`, so its input guard skips them
+("the software layer under the HDMI/AV/tuner inputs"). They stayed enabled here and nothing was forced. If the
+50PUS7303 and 55PUS7503 owners disabled them by another route, that is their result; this unit did not test it.
+
+What was applied here, with the guard's two skips left enabled:
+
+- The telemetry group (Inscape ACR, the DAC pair, the framework logger, Partner Setup, Market Feedback).
+- The Philips promo group and the Android TV tutorials, including the three options the list keeps commented
+  (`org.droidtv.sticker`, `org.droidtv.twittershare`, `org.droidtv.nettv.market`).
+- The stock launcher and its two recommendation engines, replaced by the launcher in `launcher/`.
+- Outside this list, as the owner's own choice: `com.google.android.videos`, `com.google.android.music` and
+  `com.google.android.play.games`.
+
+Kept: Netflix, Prime Video, YouTube, ZDF and ARD, Assistant, Alexa, Chromecast, firmware updates,
+`org.droidtv.eum`, Ambilight, DLNA and Play Store. No Private DNS was set.
+
+Checked on this unit, with screenshots from the TV and key presses over ADB: the replacement Home as Home
+(the resumed activity and Home resolution), D-pad moves of one row, the Inputs pill opening HDMI 4 (`org.droidtv.playtv`
+in front, empty screenshot as expected), Netflix, ZDF and ARD launching from their tiles and Home returning, a
+reboot with the disabled list identical before and after, and the Philips control API still answering on port
+1926 (`tools/philips-api.py`). The owner pressed the real remote's Home, Input and Netflix buttons and held
+volume up: all worked with the Home key service bound. Not tested: tuner reception, USB media, Ambilight/Hue,
+DLNA.
+
+**Power-on lands on Live TV.** After a cold boot the TV opened `org.droidtv.playtv` by itself, so Home was not
+what came up. In `launcher/app/src/main/res/values/config.xml`, `power_on_home` alone did not move it; with
+`power_on_home_always` also true, and the launcher installed with the Home key service, the next cold reboot came up
+on Home. This matches the note for the Philips 65OLED706 in `docs/TROUBLESHOOTING.md`. The replacement launcher
+used `org.droidtv.playtv` as `live_tv_package`; Watch TV is also in the Inputs pill.
+
+**Android 8 has no Wireless debugging.** USB debugging alone opens port 5555. No "Allow USB debugging?" prompt appeared on the first attempt
+(the handshake timed out); after a full restart (not standby) the connection worked, as the list header suggests.
+Switching USB debugging off closed the port again.
