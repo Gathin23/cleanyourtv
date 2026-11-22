@@ -56,6 +56,14 @@ class ReadPackagesTest(MatchCase):
                                    "package:/data/app/x/base.apk=com.example.bar\n")
         self.assertEqual(["com.example.bar", "com.example.foo"], match.read_packages(path))
 
+    def test_the_i_and_u_forms_take_the_name_not_what_follows_it(self):
+        # `pm list packages -i` adds `  installer=<package>` and -U adds ` uid:<n>`: the name is the
+        # first word, so -i must not report the installer and -U must not drop the line.
+        path = self.write("p.txt", "package:com.a.b  installer=com.android.vending\n"
+                                   "package:com.c.d uid:10012\n"
+                                   "package:/data/app/e.apk=com.e.f uid:1000\n")
+        self.assertEqual(match.read_packages(path), ["com.a.b", "com.c.d", "com.e.f"])
+
     def test_bare_names_and_crlf_and_bom_are_taken(self):
         path = self.base / "p.txt"
         path.write_bytes(b"\xef\xbb\xbfcom.example.first\r\n  com.example.second  \r\n")
