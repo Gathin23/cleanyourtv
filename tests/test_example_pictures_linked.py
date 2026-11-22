@@ -101,7 +101,7 @@ def strays(root):
     """The pictures in `root`'s list folders that no page below `root` shows, as paths relative to it."""
     root = Path(root)
     seen = shown(root)
-    return sorted(str(p.relative_to(root)) for p in pictures(root / "examples") if p.resolve() not in seen)
+    return sorted(p.relative_to(root).as_posix() for p in pictures(root / "examples") if p.resolve() not in seen)
 
 
 class TheTreeTest(unittest.TestCase):
@@ -112,7 +112,7 @@ class TheTreeTest(unittest.TestCase):
 
     def test_the_walk_still_reads_the_pictures_the_tree_ships(self):
         # A floor: a walk that read nothing would pass the case above while judging no picture at all.
-        found = {str(p.relative_to(ROOT)) for p in pictures(EXAMPLES)}
+        found = {p.relative_to(ROOT).as_posix() for p in pictures(EXAMPLES)}
         self.assertGreaterEqual(len(found), 3, f"pictures() read {sorted(found)}")
         for name in ("examples/tcl-q7c-google-tv/65q7d-pro-home.png",
                      "examples/tuvio-td43ufbcv5/home.png",
@@ -122,7 +122,7 @@ class TheTreeTest(unittest.TestCase):
     def test_a_note_outside_examples_shows_a_sets_picture(self):
         # The other half of the floor: a link from a page in another folder has to resolve into examples/,
         # which is how a `docs/devices/` note shows the Home screen of a set whose list has no README.
-        found = sorted(str(p.relative_to(ROOT)) for p in shown(ROOT, inside_examples=False)
+        found = sorted(p.relative_to(ROOT).as_posix() for p in shown(ROOT, inside_examples=False)
                        if p.is_file() and EXAMPLES in p.parents)
         self.assertNotEqual(found, [], "no picture below examples/ is shown from a page outside it")
 
