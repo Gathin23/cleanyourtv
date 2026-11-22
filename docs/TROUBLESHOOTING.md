@@ -1715,6 +1715,34 @@ with the real remote. An `input:com.tcl.channelplus/com.tcl.iptv.service.InputSe
 this one with `tools/tv.py 'logcat -d -v time | grep TclKeyLayoutMap'` while pressing it — `getevent` alone shows
 every TCL remote key as `KEY_UNKNOWN`.
 
+## The TV key does nothing, and TCL's own EPG service answers it (TCL Android TV 11)
+
+**Seen on:** a TCL 40S5400A (`C06`, product `C06_2K_GB`, Android TV 11, build `AR2101` / `AR21`, TCL software
+`V8-T221T05-LF1V361`) with the stock `com.google.android.tvlauncher` disabled and the launcher here as Home, no
+accessibility service bound, and the IR remote `TCL_RC902V_U1`
+([#4282](https://github.com/Gathin23/cleanyourtv/issues/4282)).
+
+The TV key did nothing on Home and Live TV did not open. It is the symptom of the Google TV set above through a
+different chain: on this board `getevent` names the press `KEY_EPG` (every key of that set's remote came back
+`KEY_UNKNOWN` instead), `TclKeyLayoutMap` maps it to keycode **4001**, and TCL's EPG handler answers it and
+stops - it starts `com.tcl.tv/.service.GlobalKeyService`, logs `processKeyCode: keyCode = 4001`, then:
+
+```
+startEpg: topActivityName = com.gathin.tvhome.MainActivity isSpecialScene = false
+startEpg: current is not Freeview Play
+```
+
+So the key is not dropped for want of a target: the guide is started only while Live TV is already in front, and
+on Home there is nothing for it to open. Read `startEpg` first, with
+`tools/tv.py 'logcat -d -v time | grep -i startEpg'` right after the press - that line is what tells this board
+apart from the `TclShortCutKeyManager` one above, which takes the key before any window sees it.
+
+**Fix:** on this unit a Key Mapper rule on key code 4001, action "Launch app" `com.tcl.tv`, with "Don't override
+default action" left on, so the guide still opens inside Live TV. `app_keys` was not tried here, because no key
+helper was bound, so the route the entry above documents is untested on this board rather than ruled out. Whether
+the stock launcher opened Live TV on this key could not be checked after the swap, so a launcher that handles
+keycode 4001 on Home is a request in that issue, not a regression fixed here.
+
 ## The Inputs list shows the empty HDMI 1 as connected, and a device on HDMI 2 nowhere (TCL UnionTV)
 
 **Seen on:** a TCL UnionTV (`ro.product.model` UnionTV, Android 9, `PPR2.180905.006.A1`), with the launcher as
