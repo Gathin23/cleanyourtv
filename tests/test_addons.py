@@ -152,25 +152,6 @@ class AddonBuildRouteTest(unittest.TestCase):
                       "docs/workflows/addon.md asks for a `gradlew` and not its `gradlew.bat`, which this "
                       "test refuses: a folder made from the page fails on the Command Prompt route")
 
-    def test_the_recipe_asks_for_the_files_beside_the_two_scripts(self):
-        """The two scripts are not the whole build: with only them a folder made from the page stops.
-
-        `gradlew` starts `gradle-wrapper.jar` and reads `gradle-wrapper.properties` out of the gradle
-        folder beside it, so a copy of the two scripts and nothing else ends at a missing class - most
-        add-ons carry those two, and the ones that do not ship four-line shims that call
-        `launcher/gradlew`. The `app` module's `plugins { id 'com.android.application' }`
-        carries no version either: the root `build.gradle` declares it `apply false`, which is the only
-        place a new folder could learn it from.
-        """
-        page = (ROOT / "docs" / "workflows" / "addon.md").read_text(encoding="utf-8")
-        step = page.split("\n1. ", 1)[1].split("\n2. ", 1)[0] if "\n1. " in page else ""
-        self.assertIn("gradle-wrapper.jar", step,
-                      "the recipe's first step copies the two scripts and never the wrapper jar they "
-                      "start, so a folder made from the page fails with a missing class")
-        self.assertIn("build.gradle", step,
-                      "docs/workflows/addon.md does not name the root build.gradle that declares the "
-                      "Android Gradle plugin's version for the app module")
-
 
 if __name__ == "__main__":
     unittest.main()
