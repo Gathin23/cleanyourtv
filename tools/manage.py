@@ -253,6 +253,7 @@ def number_in_range(key, item, parsed, text):
 # keys add. A list with anything else in it is answered with the built-in default, not the list.
 KEYCODES = "list of keycodes"
 JAVA_INT_MAX = 2147483647
+JAVA_LONG_MAX = 2**63 - 1
 
 
 def keycode_problem(values):
@@ -273,9 +274,14 @@ def keycode_problem(values):
         if int(entry) < 1:
             return f"{int(entry)} is below 1"
         if int(entry) > JAVA_INT_MAX:
-            # intValue() keeps the low 32 bits: 4294967297 becomes keycode 1, 4294967296 becomes 0.
-            wrapped = (int(entry) + 2**31) % 2**32 - 2**31
-            return f"{int(entry)} is above {JAVA_INT_MAX}, the largest the launcher reads; it would read {wrapped}"
+            # org.json reads a whole number that fits a long as a Long, whose intValue() keeps the low 32 bits
+            # (4294967297 becomes keycode 1); a fraction or anything larger is a Double, whose intValue() stops
+            # at the int maximum.
+            if isinstance(entry, float) or int(entry) > JAVA_LONG_MAX:
+                read = JAVA_INT_MAX
+            else:
+                read = (int(entry) + 2**31) % 2**32 - 2**31
+            return f"{int(entry)} is above {JAVA_INT_MAX}, the largest the launcher reads; it would read {read}"
     return None
 
 

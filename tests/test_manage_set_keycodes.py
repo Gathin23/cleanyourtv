@@ -152,6 +152,14 @@ class KeycodeProblemTest(unittest.TestCase):
         self.assertIn("-4 is below 1", manage.keycode_problem([-4]))
         self.assertIn("not a whole number", manage.keycode_problem([83.5]))
 
+    def test_an_entry_org_json_reads_as_a_double_names_the_int_maximum(self):
+        # A Double's intValue() stops at 2147483647 instead of wrapping like a Long's: 3e9, and a whole number
+        # too large for a long, are read as the int maximum, not as a wrapped negative number.
+        for entry in (3e9, 10**20):
+            with self.subTest(entry=entry):
+                self.assertIn("it would read 2147483647", manage.keycode_problem([entry]))
+        self.assertIn("it would read -1294967296", manage.keycode_problem([3000000000]))
+
 
 class KeysTableTest(unittest.TestCase):
     """The table is where set learns which keys are keycode lists, and where an author reads the rule."""
