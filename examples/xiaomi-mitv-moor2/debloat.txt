@@ -103,6 +103,13 @@
 #              answers with the same input panel.
 #   Xiaomi TV  KEYCODE_BUTTON_5 (192), partnercustomizer again: it starts com.mitv.livetv, which reopens
 #              the last input used (an HDMI port, not a tuner). Expected, no change needed.
+#   Volume     with a helper bound the held Volume key steps once per press (MOOR4 and MOOR6 above) and
+#              the key never reaches the helper, so an app_keys entry cannot repeat it. "volume_pauses_filter":
+#              true stops the helpers filtering for 4 s after a volume change: the first press steps once,
+#              a press or hold within those 4 s repeats, and the buttons above answer again when the pause
+#              ends. Confirmed on this model with the real remote (2026-11-21, launcher 3.6 built from
+#              f63a1ebc, firmware RTM5.220609.003.2674, both helpers bound, key_filter on), including after
+#              a reboot; README.md has the configuration and the cost (#3360).
 
 # Xiaomi telemetry
 com.miui.tv.analytics
