@@ -85,8 +85,10 @@
    `TV_HOST=<tv ip> tools/theme.sh examples/philips-google-tv-ta7/theme`. Both checks that read a shipped `config.json`
    (`tests/test_shipped_config_keys_are_read.py` and `tests/test_shipped_config_values.py`) walk
    `examples/` at any depth, so a key or a value in that subfolder is judged where it sits rather than
-   skipped, and `tools/theme.sh` is handed the folder that holds the `config.json` - the subfolder, not
-   the list folder, which has none.
+   skipped. `tools/theme.sh` is handed the folder that holds the `config.json` you are pushing, which for
+   a theme is the subfolder. `examples/xiaomi-mitv-afmu0` is the one of the six that also keeps a
+   `config.json` at the folder's own root, from a second unit of the same board: the subfolder is the
+   theme its `README.md` has the owner push, and the root file is that other unit's dock and button map.
    A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages", "The
    list disables **N packages**", "The list contains N packages", "`debloat.txt` is the list: N
    packages") is compared with what `tools/disable.sh` would send for the list, so a line added or
