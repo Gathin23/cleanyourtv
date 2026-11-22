@@ -78,7 +78,11 @@ com.google.android.play.games
 # Personal choice: comment out what you use
 com.google.android.katniss              # Google Assistant (the mic button stops working)
 
-# Disabling setupwraith gives Home back but can cost casting (Chromecast built-in); keep it if you cast.
+# Disabling setupwraith gives Home back, and on this set it cost nothing: the owner's 20 November 2026
+# follow-up, on the same firmware, cast from a phone normally and the set stayed discoverable, Home
+# Assistant's Google Cast integration finding it after the disable. Other builds do lose Chromecast
+# built-in with it (docs/TROUBLESHOOTING.md#connecting), so check casting once after the line goes and
+# comment the line out if it is gone.
 # Disable only after the saved network no longer says cname=com.google.android.tungsten.setupwraith;
 # see the note above.
 com.google.android.tungsten.setupwraith
