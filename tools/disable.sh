@@ -12,8 +12,12 @@ LIST="${1:?usage: disable.sh <debloat list>}"
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
 # C:/Users/..., the same path (and so the same record) as the PowerShell scripts.
-LIST_DIR="$(cd "$(dirname "$LIST")" && { pwd -W 2>/dev/null || pwd; })"
-LIST="$LIST_DIR/$(basename "$LIST")"
+# A folder that is not there keeps the path as typed, as in restore.sh: a list path one folder short
+# used to stop here on bash's "cd: <folder>: No such file or directory", and the "cannot read the
+# list" check below, written for exactly this, was never reached.
+if LIST_DIR="$(cd "$(dirname "$LIST")" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"; then
+  LIST="$LIST_DIR/$(basename "$LIST")"
+fi
 cd "$(dirname "$0")/.."
 # The safety overrides are read from the environment. `FORCE_HOME=1 tools/disable.sh ...` lasts one
 # command, but an exported value stays set for the shell and reaches child processes (check.py --fix).
