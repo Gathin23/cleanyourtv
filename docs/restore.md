@@ -32,6 +32,26 @@ That record lives in `~/.cleanyourtv/`, one file per TV and list.
 - The file is named after the address the TV was reached at, so `TV_HOST` is what picks the record:
   a run without it stops with tv.py's line and sends nothing to the TV, rather than falling back to
   the whole list for a record it cannot name.
+- The list is part of the name too: the eight characters after the address are a hash of the list's
+  path, resolved first, so `examples/x/debloat.txt`, `./examples/x/debloat.txt` from that folder and
+  a soft link to the file all reach the one record. A copy of the list - one you keep beside your
+  notes, a second checkout - is a different file with a name of its own: undo from there finds no
+  record, says `no recovery record for this TV and list` while the record for the copy's original sits
+  in `~/.cleanyourtv/`, and takes the no-record path below, which enables every listed package,
+  including the ones you had disabled yourself. Undo with the file you applied, in the checkout you
+  cleaned the TV from.
+- The same file can also hash twice. A hard link, or the same list spelt with other capitalisation on
+  a disk that ignores case (macOS, by default), is one file reached by a path that hashes differently:
+  the run finds the record taken for that file and prints which one it used (`using <record>, the
+  record taken for this list under another spelling of its path`) instead of falling back to the
+  whole list.
+- Two records that both name this TV and list are not chosen between: the run prints both paths and
+  stops before anything reaches the TV (`this TV and list have two recovery records:`, then `Nothing
+  was changed on the TV`). They are either the older name for this address beside the current one, or
+  two spellings of the list that each wrote a record before the lookup above existed, and they can
+  disagree about what was on before cleanup - which of them is this TV is not something the script can
+  tell. Move the one that is not this TV's state from before cleanup aside deliberately, then run it
+  again.
 - A second run of the same list keeps the first record instead of saving the cleaned-up state over it.
 - If you added packages to the list since, that run adds them to the record before disabling them, and
   a listed package that was not installed then but is installed and enabled now is recorded as enabled.
