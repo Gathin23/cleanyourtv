@@ -317,10 +317,13 @@ it today rather than the rule: `tests/test_readme_theme_count.py` counts the fol
 `config.json` and fails on a page whose number is not that count, naming the page, so its list is the one
 a page that starts stating the count joins.
 
-Two sentences a row may state are read back by `tests/test_theme_row_claims.py`: a rotation ("a new one
-every 20 minutes") against that theme's `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT")
-against its `CREDITS.md` - a row that states a licence while the folder ships no `CREDITS.md` is reported,
-because the file is what the claim rests on.
+The layout, the rotation and the licence a row states are read back by `tests/test_theme_row_claims.py`:
+a column count ("six columns", "six smaller tiles per row") against that theme's `columns`, a grid row
+under the dock ("no grid rows below", "one row of the grid under the dock") against `rows_below_dock` -
+or against the built-in `config.xml` value when the theme sets neither key, which is what the TV draws -
+a rotation ("a new one every 20 minutes") against `wallpaper_rotation_minutes`, and a licence ("CC BY,
+not MIT") against its `CREDITS.md` - a row that states a licence while the folder ships no `CREDITS.md`
+is reported, because the file is what the claim rests on.
 
 Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
 and say which TV you tried it on in the PR description.
