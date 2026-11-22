@@ -202,6 +202,35 @@
 # and Prime Video keys work on the real remote; Live TV and HDMI 4 show a picture. Assistant, Chromecast,
 # OTA and the MMP player stayed enabled.
 #
+# TENTH UNIT (EU, UK): Philips 43PUS7906/12, on Wi-Fi. The build of the third, fourth and eighth units:
+# persist.odm.tpv.fw.revision=TPM215E_R.101.000.198.158, persist.odm.tpv.region=eu,
+# ro.product.name=PH0M_EA_T32, Android 11 (SDK 30), ro.config.low_ram=true; About says
+# "2020/2021 UHD Android TV". Lived with for over a week.
+# Applied as written: the four telemetry lines, nettv.market, fusion.android.tv.demo, disclaimercustomization,
+# partnercustomizer, tvrecommendations, backdrop (screensaver moved to com.android.dreams.basic/.Colors,
+# quirk 1), the Google setup/sync packages, videos, youtube.tvmusic, talkback, play.games, Netflix and Prime
+# Video; also, by the owner's choice, com.google.android.katniss (Assistant), tv.wuaki.apptv (Rakuten),
+# org.droidtv.eum (Help; Source, Inputs and Live TV still work with it off), and com.android.tv.ota (the owner
+# stops firmware updates on purpose). Kept: Chromecast, the Play Store, and the Freeview apps (U, iPlayer,
+# ITVx, C4, C5). Home handed to launcher/ on the first try; setupwraith is installed but is not a HOME
+# claimant and owns no saved network. After each reboot the disabled list matched what was applied.
+# FREEVIEW CATCH-UP (iPlayer, ITVx, C4, C5) BLACK SCREEN or "Oops... Code: FVP-03-023": not the debloat. The
+# TV's own HbbTV setting "Block tracking sites" (Live TV > Options/Menu > HbbTV) blocks the hosts the Freeview
+# catch-up apps load, so they hang on the spinner and go black. Turning "Block tracking sites" OFF fixes every
+# Freeview catch-up app, and the setting survives standby and reboots once saved.
+# FREEVIEW "unable to connect" (FVP-03-023) after a power cut: the Freeview sign-in service held a client
+# certificate the server no longer accepts (logcat: mdsclient TLSV1_ALERT_DECRYPT_ERROR). `pm clear
+# uk.co.freeview.mdsclient` makes it sign in again and fixes iPlayer and ITVx. Do NOT clear
+# uk.co.freeview.fvpconfigauth (the factory Freeview identity).
+# USB PORT: this set has a single USB port in OTG mode. With USB debugging ON it runs in device mode
+# (sys.usb.controller=Mstar-udc) and USB sticks are not detected at all. After debugging work, turn USB
+# debugging off and either mains power-cycle or use the TV's own Settings > reboot (a hard reboot) to get USB
+# storage back.
+# REMOTE'S RAKUTEN KEY: TPVTvService catches keycode 249 (scancode 472) and launches tv.wuaki.apptv by an
+# explicit component, so the key never reaches the focused app; only the launcher's key helper can catch it,
+# and on this board any key-filtering service stops held Volume Up/Down from ramping (as the sixth unit found),
+# so remapping it costs the volume ramp. The owner left the key unmapped and kept the ramp.
+#
 # TPV / Philips telemetry
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517
 org.droidtv.gel                             # metrics collector running in candeebug's process
