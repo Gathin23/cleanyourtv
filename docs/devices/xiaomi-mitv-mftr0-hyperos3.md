@@ -67,19 +67,22 @@ two recovery lines above at hand.
   `Set enter_standby:1`, `uptime` does not reset and ADB still answers afterwards, so a symptom that clears only
   on a real cold boot needs a reboot or the plug, not 关机. Noted while chasing the standby-LED report in
   [#2948](https://github.com/Gathin23/cleanyourtv/issues/2948).
-- **The standby LED can latch into a fast blink, with or without the packages a list disables.** Two owners
-  reported it again on 2026-11-21, on `OS3.0.101.0.UFTMATV`
-  ([#4302](https://github.com/Gathin23/cleanyourtv/issues/4302)) and on `OS3.0.106.0.UFTMATV` (a comment on
-  #2948 from a second set), so both builds carry it. Their kernel log names the transition:
+- **The standby LED can latch into a fast blink; the cause is still open, and a disabled package is not ruled out.**
+  Three owners reported it again on 2026-11-21 and 2026-11-22, on `OS3.0.101.0.UFTMATV`
+  ([#4302](https://github.com/Gathin23/cleanyourtv/issues/4302)) and on `OS3.0.106.0.UFTMATV` (two comments on
+  #2948 from other sets), so both builds carry it. Their kernel log names the transition:
   `Leds_Breath_Suspend_Noirq`, then `Leds_Breath_Resume_Noirq` about 20 ms later,
   `[LED-DFX] [find_transition] INVALID TRANS from NORMAL to RESUMING`, and
   `[LED-DFX] [led_check_callback] [FLICKER] timeout` about 14 s after that. Once it latches, the LED stays in
-  FLICKER through every later standby until a reboot or the plug. No package has to be off for it: #4302 latches
-  with `com.xiaomi.miplay`, `com.xiaomi.voicecontrol` and `com.mitv.tvhome` still enabled, and the other owner
-  toggled `com.xiaomi.wakeupservice` off and back with the flicker either way. `dumpsys power` taken right after
-  a latch shows the partial wake locks still held (`LanHostRuntime`, `wakeup_WakelockTag`, `AudioIn`), and the
-  second set also logs a `MitvPowerManagerService` message pending on the power looper. #2948 was closed on
-  2026-11-17; #4302 is the follow-up.
+  FLICKER through every later standby until a reboot or the plug. The package sets in the reports disagree
+  about what matters: the 101 set latches with `com.xiaomi.miplay`, `com.xiaomi.voicecontrol` and
+  `com.mitv.tvhome`'s siblings still enabled, and the 106 set's owner toggled `com.xiaomi.wakeupservice` off
+  and back with the flicker either way - then reported on 2026-11-22 that the blink stopped once every
+  package its list had disabled was re-enabled, though turning them back on one at a time had not stopped it
+  before that. So no single package is the trigger, and a cumulative effect of several is not ruled out.
+  `dumpsys power` taken right after a latch shows the partial wake locks still held (`LanHostRuntime`,
+  `wakeup_WakelockTag`, `AudioIn`), and one set also logs a `MitvPowerManagerService` message pending on the
+  power looper. #2948 was closed on 2026-11-17; #4302 is the follow-up.
 
 ## A second set on the same build
 
