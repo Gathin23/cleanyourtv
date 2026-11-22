@@ -959,7 +959,7 @@ final class PanchangEngine {
         boolean isAdhik = (rashiStart == rashiEnd);
 
         int amantaMonth = (rashiStart + 1) % 12;
-        int purnimantaMonth = (elongation >= 180.0) ? (amantaMonth + 1) % 12 : amantaMonth;
+        int purnimantaMonth = (elongation >= 180.0 && !isAdhik) ? (amantaMonth + 1) % 12 : amantaMonth;
         return new int[]{purnimantaMonth, isAdhik ? 1 : 0};
     }
 
