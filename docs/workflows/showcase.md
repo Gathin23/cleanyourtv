@@ -28,7 +28,11 @@
    `COUNT_PAGES` table with the parser or the digits reader that page needs, and refuses a row that leaves
    any of them behind: the pages named here are the ones that carry the number today, and that table is the
    list a bump has to cover - a translation that starts stating the count joins it, and this step with it.
-3. Keep each cell to one line: what it is, what it was built and tested on, and the author.
+3. Keep each cell to one line: what it is, what it was built and tested on, and the author. A project that
+   borrows a name - another company's product or TV brand, or this repo's own - says it is unofficial in
+   its "what it is" cell: "Unofficial, fan-made tvOS-style fork (not affiliated with Apple)". A reader has
+   to be able to tell a look-alike from the company's own app, and a row that leaves it out is asked for it
+   on the pull request (#4258, #4314).
 4. The project is open source with a link people can read and build, says which TV it was tested on, collects
    nothing beyond what its README says, and is yours or listed with the author's blessing.
 5. Put a screenshot in the PR description; it is linked from the row.
