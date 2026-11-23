@@ -126,6 +126,24 @@
 # volume ramped. Key helpers were left off. Only the outcome was checked, not which firmware service answers
 # (TclShortCutKeyManager does on the 55P6K above). Power-on lands on the new Home by itself.
 # AdGuard Private DNS worked there.
+#
+# Also used on a TCL Smart TV (device G10, product G10_4K_GB_NF_32BIT, Realtek rtd6748),
+# Android 14 / SDK 34, build UTT2.250416.001 AU02 — the first Android 14 unit on this list
+# (every unit above is STT2.230203.001, Android 12). Tested on 2026-11-23 for one session with
+# no reboot check, not yet lived with for several days, driving a third-party launcher
+# (Projectivy, com.spocky.projengmenu) as Home rather than the reference launcher.
+# Disabled from this list: exhibit, esticker, ocean.instructions, repairguide, hotelmenu,
+# logkit, samba TV ACR, gtvpai, feedback, talkback, tclhome_passive, gamebar, and from the
+# optional lines ttvs, messagebox, usercenter, smartalexa, magiconnectfree and guard; dashboard
+# was disabled by hand and then re-enabled (this list keeps it). launcherx and setupwraith were
+# both disabled so the third-party launcher could hold Home: with launcherx off, setupwraith's
+# translucent RecoveryActivity stacked as the Home task and the screen went black until
+# setupwraith was disabled too — the same order the quirks above describe, seen here as a black
+# screen rather than a script stop. Wi-Fi stayed up (the saved network was not owned by
+# setupwraith on this unit). The physical remote's Home and Input keys worked with launcherx
+# off; Netflix (4062), YouTube (4065) and gear (83) did nothing, as on the C6KS. Input opened
+# the switcher as an overlay: com.tcl.suspension/.ui.main.InputActivity finishes immediately,
+# but the com.android.tv.action.VIEW_INPUTS intent still shows the quick panel over Home.
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g10-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g10-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
