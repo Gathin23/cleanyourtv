@@ -10,7 +10,8 @@
 # Live TV app: com.realtek.tv (MainActivity); HDMI and AV through com.realtek.tv.passthrough. No com.cvte.* packages.
 #
 # Applied on 2026-11-10 over ADB on port 5555 in three batches with a screenshot after each, and reboot-checked.
-# On 2026-11-23, after an over-the-air update to UKRE.260524.089, `pm list packages -d` still held all 15.
+# On 2026-11-23, after an over-the-air update to UKRE.260524.089, `pm list packages -d` still held all 15 that were
+# disabled then, the four commented-out streaming and HbbTV entries below included.
 #
 # Disabled from the factory, so not listed (restore.sh would turn it ON): com.android.tv, an empty placeholder
 # (/system_ext/priv-app/RtkLiveTv_empty, version 999.0.0) that the firmware switches off itself.
@@ -30,12 +31,15 @@ com.realtek.leanbacklauncher.partnercustomizer  # partner rows on the Google TV 
 com.realtek.karaoke.userguide                   # karaoke how-to screen
 com.google.android.play.games                   # Play Games
 
+# Streaming and broadcast apps
+# This set has these off; uncomment if you don't use them.
+# com.netflix.ninja                    # Netflix
+# com.netflix.tokenmanager             # Netflix sign-in helper
+# com.amazon.amazonvideo.livingroom    # Prime Video
+# com.seraphic.hbbtv.app               # HbbTV red button
+
 # Off by the owner's choice
-com.netflix.ninja                      # Netflix
-com.netflix.tokenmanager               # Netflix sign-in helper
-com.amazon.amazonvideo.livingroom      # Prime Video
 com.google.android.videos              # Google TV movie store
 com.google.android.katniss             # Google Assistant (remote mic button); keyboard dictation stays
 com.realtek.kara                       # karaoke microphone
-com.seraphic.hbbtv.app                 # HbbTV red button
 com.rtk.mediabrowser                   # USB media player (VLC installed instead)
