@@ -1,0 +1,15 @@
+{
+  "background_color": "#050608",
+  "wallpaper": false,
+  "show_clock": false,
+  "show_greeting": false,
+  "cinematic_home": true,
+  "cinematic_white_focus": true,
+  "dock_glass": true,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "app_glow": false,
+  "ambient_glow": false,
+  "focus_overshoot": false,
+  "advanced_effects": true
+}

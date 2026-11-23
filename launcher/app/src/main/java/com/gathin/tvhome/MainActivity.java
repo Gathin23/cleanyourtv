@@ -597,10 +597,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
-        if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
+        if (cfg.showClock && cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
                 && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
             alignDateBelowIconsWithClock();
         }
+        if (!cfg.showClock) hideClock();
         if (shamsi) {
             shamsiDate.setVisibility(View.VISIBLE);
             TextView date = findViewById(R.id.date);
@@ -2558,6 +2559,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         lp.bottomMargin = 0;
         buttons.setLayoutParams(lp);
         buttons.setGravity(Gravity.CENTER_VERTICAL);
+    }
+
+    /**
+     * show_clock false: the clock's row and the date column go, wherever date_below_clock put them, and the buttons,
+     * which sit on the clock block's bottom line, stay at the header's top. The greeting and stats keep their own keys.
+     */
+    private void hideClock() {
+        ((View) findViewById(R.id.clock).getParent()).setVisibility(View.GONE);
+        ((View) findViewById(R.id.date).getParent()).setVisibility(View.GONE);
+        View buttons = findViewById(R.id.topButtons);
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) buttons.getLayoutParams();
+        lp.removeRule(RelativeLayout.ALIGN_BOTTOM);
+        lp.bottomMargin = 0;
+        buttons.setLayoutParams(lp);
     }
 
     /** With the date below, keep the icons beside the clock rather than beside the last date line. */
