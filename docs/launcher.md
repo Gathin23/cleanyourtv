@@ -122,6 +122,9 @@ tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.Clock
   name an activity (`package/.Activity`), such as an add-on's quick bar, instead of the app's launcher entry.
   A `front:` prefix sets what a tap opens while that button's own app is already in front. It needs
   `HomeKeyService` bound (`HOME_KEY_SERVICE=1`); `InputKeyService` follows it then.
+- A Xiaomi stick (MiTV-AESP0, Android 9) turns its **Netflix** button (keycode 1001) into an `nflx://` link
+  before any key helper sees it. With Netflix disabled, `"1001:<package>"` in `app_keys` makes the launcher
+  answer that link and open the mapped app; without a 1001 entry the launcher leaves `nflx://` links alone.
 - In place of an app, an `app_keys` entry can name an action: `back`, `home`, `recents`, `mute`, `sleep`
   (standby, Android 9 and later), `screensaver`, `settings`, `wifi`, `library` (Home with the App library
   open, for a remote's Apps button; needs `app_library`) or `ignore` (the button does nothing), so a spare

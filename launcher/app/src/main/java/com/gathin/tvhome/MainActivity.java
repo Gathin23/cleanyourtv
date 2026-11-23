@@ -473,6 +473,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cfg.restoreKeyServices) ServiceRepair.restore(this);
         settingsRevision = settingsRevision();
         applyViewInputsHandler(cfg.handleViewInputs);
+        applyNetflixLinkHandler(RemoteKeys.parseAppKeys(cfg.appKeys).containsKey(NetflixLinkActivity.NETFLIX_KEYCODE));
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
         settingsKeyClearTask = cfg.settingsKeyClearTask;
@@ -993,7 +994,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * only when the state differs, so an ordinary start does not touch the package manager.
      */
     private void applyViewInputsHandler(boolean on) {
-        ComponentName handler = new ComponentName(this, InputsRequestActivity.class);
+        applyHandler(InputsRequestActivity.class, on);
+    }
+
+    /** NetflixLinkActivity on while app_keys maps keycode 1001 (a Xiaomi stick's Netflix button), off otherwise. */
+    private void applyNetflixLinkHandler(boolean on) {
+        applyHandler(NetflixLinkActivity.class, on);
+    }
+
+    private void applyHandler(Class<?> activity, boolean on) {
+        ComponentName handler = new ComponentName(this, activity);
         PackageManager pm = getPackageManager();
         int want = on ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
         if (pm.getComponentEnabledSetting(handler) != want) {
