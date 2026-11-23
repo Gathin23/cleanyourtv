@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 моделей телевізорів · 139 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 527 видань: 543 статті з 57 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV. Репозиторій №1 у трендах тижня, 19–25 жовтня 2026, через trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 моделей телевізорів · 139 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 579 видань: 595 статей з 58 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV. Репозиторій №1 у трендах тижня, 19–25 жовтня 2026, через trendshift.io." width="800"></a>
 </p>
 
 ## З чого почати
@@ -474,8 +474,8 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 
 Через два тижні репозиторій став №1 у трендах GitHub за тиждень 19–25 жовтня: понад 46 тис. зірок і 5,7 тис.
 форків, 1,4 млн переглядів і 260 тис. клонів за 14 днів. Станом на 20 листопада: 59 тис. зірок і 7,8 тис. форків. Тепер списки охоплюють 508 моделей телевізорів від
-139 брендів. Публікації: 543 статті з 57 країн і 674 відео на YouTube та Bilibili, усе в [docs/PRESS.md](docs/PRESS.md)
-(станом на 14 листопада 2026 року).
+139 брендів. Публікації: 595 статей з 58 країн і 944 відео на YouTube та Bilibili, усе в [docs/PRESS.md](docs/PRESS.md)
+(станом на 23 листопада 2026 року).
 
 ## Долучитися
 

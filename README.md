@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV models · 139 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 527 more: 543 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher. #1 trending repo of the week, Oct 19–25 2026, via trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV models · 139 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 579 more: 595 articles from 58 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher. #1 trending repo of the week, Oct 19–25 2026, via trendshift.io." width="800"></a>
 </p>
 
 ## Start here
@@ -534,8 +534,8 @@ first four days. The repo was called tv-vibehack until the 19th; old links work.
 
 Two weeks on, it was the #1 trending repository on GitHub for the week of 19–25 October, with over 46K stars
 and 5.7K forks, and 1.4M views and 260K clones in 14 days. By 20 November it had 59K stars and 7.8K forks. The lists now cover 508 TV models from 139 brands.
-The coverage: 543 articles from 57 countries and 674 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
-(numbers as of 14 November 2026).
+The coverage: 595 articles from 58 countries and 944 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
+(numbers as of 23 November 2026).
 
 ## Contributing
 

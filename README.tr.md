@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV modeli · 139 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 527 yayın daha: 57 ülkeden 543 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV modeli · 139 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 579 yayın daha: 58 ülkeden 595 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
 </p>
 
 ## Buradan başlayın
@@ -479,8 +479,8 @@ bağlantılar çalışır.
 
 İki hafta sonra, 19–25 Ekim haftasında GitHub'ın 1 numaralı trend deposu oldu; 46 binden fazla yıldız, 5,7 bin
 fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 20 Kasım itibarıyla 59 bin yıldız ve 7,8 bin fork. Listeler artık 508 TV modelini ve 139 markayı kapsıyor.
-Basındaki karşılığı: 543 makale (57 ülkeden) ve YouTube ile Bilibili'de 674 video, hepsi [docs/PRESS.md](docs/PRESS.md)
-içinde (rakamlar 14 Kasım 2026 itibarıyla).
+Basındaki karşılığı: 595 makale (58 ülkeden) ve YouTube ile Bilibili'de 944 video, hepsi [docs/PRESS.md](docs/PRESS.md)
+içinde (rakamlar 23 Kasım 2026 itibarıyla).
 
 ## Katkıda bulunma
 

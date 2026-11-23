@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 tv-modellen · 139 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 527 media: 543 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher. #1 trending repository van de week, 19–25 oktober 2026, via trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 tv-modellen · 139 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 579 media: 595 artikelen uit 58 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher. #1 trending repository van de week, 19–25 oktober 2026, via trendshift.io." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -37,7 +37,7 @@
 Op 17 oktober 2026 plaatste ik voor-en-na-beelden van de tv van mijn ouders, die ik via wifi met Claude Code had opgeschoond.
 Het bericht kreeg 8,6 miljoen weergaven. Mensen gingen hetzelfde doen met hun eigen tv's en hun reacties vormden de basis voor de lijsten hier: meer dan 170 tv-modellen, aangeleverd door ruim 200 bijdragers in de eerste vier dagen. Tot en met de 19e heette deze repository tv-vibehack; oude links werken nog.
 
-Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. Op 20 november waren het 59.000 sterren en 7.800 forks. De lijsten tellen nu 508 tv-modellen van 139 merken. De berichtgeving: 543 artikelen uit 57 landen en 674 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 14 november 2026).
+Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. Op 20 november waren het 59.000 sterren en 7.800 forks. De lijsten tellen nu 508 tv-modellen van 139 merken. De berichtgeving: 595 artikelen uit 58 landen en 944 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 23 november 2026).
 
 **Thema's, schakelaars en uitbreidingen:** [cleanyour.tv/addons](https://cleanyour.tv/addons)
 

@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV-Modelle · 139 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 527 weitere: 543 Artikel aus 57 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher. Platz 1 der Trend-Repositories der Woche, 19.–25. Oktober 2026, über trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV-Modelle · 139 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 579 weitere: 595 Artikel aus 58 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher. Platz 1 der Trend-Repositories der Woche, 19.–25. Oktober 2026, über trendshift.io." width="800"></a>
 </p>
 
 ## Einstieg
@@ -444,7 +444,7 @@ ersten vier Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionie
 
 Zwei Wochen später war es das Repository auf Platz 1 der GitHub-Trends in der Woche vom 19. bis 25. Oktober, mit über 46.000 Sternen
 und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Am 20. November waren es 59.000 Sterne und 7.800 Forks. Die Listen umfassen jetzt 508 TV-Modelle von 139 Marken.
-Die Berichterstattung: 543 Artikel aus 57 Ländern und 674 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 14. November 2026).
+Die Berichterstattung: 595 Artikel aus 58 Ländern und 944 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 23. November 2026).
 
 ## Mitmachen
 

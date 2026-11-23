@@ -480,8 +480,8 @@ deb ataldi; eski havolalar ishlaydi.
 
 Ikki hafta oʻtib, 19–25 oktabr haftasida GitHub ning 1-oʻrindagi trend ombori boʻldi; 46 mingdan ortiq yulduz,
 5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. 20-noyabr holatiga 59 ming yulduz va 7,8 ming fork. Roʻyxatlar endi 508 TV modelini va 139 brendni
-qamrab oladi. Matbuotdagi aks: 543 maqola (57 mamlakatdan) va YouTube hamda Bilibili da 674 video, hammasi
-[docs/PRESS.md](docs/PRESS.md) da (raqamlar 2026-yil 14-noyabr holatiga).
+qamrab oladi. Matbuotdagi aks: 595 maqola (58 mamlakatdan) va YouTube hamda Bilibili da 944 video, hammasi
+[docs/PRESS.md](docs/PRESS.md) da (raqamlar 2026-yil 23-noyabr holatiga).
 
 ## Hissa qoʻshish
 

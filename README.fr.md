@@ -546,9 +546,9 @@ tv-vibehack jusqu'au 19 ; les anciens liens fonctionnent toujours.
 
 Deux semaines plus tard, c'était le dépôt n° 1 des tendances sur GitHub pour la semaine du 19 au 25 octobre, avec
 plus de 46 000 étoiles et 5 700 forks, ainsi que 1,4 million de vues et 260 000 clones en 14 jours. Au 20 novembre, il compte 59 000 étoiles et 7 800 forks. Les listes
-couvrent désormais 508 modèles de téléviseurs de 139 marques. La couverture médiatique : 543 articles de 57 pays et
-674 vidéos sur YouTube et Bilibili, tous recensés dans [docs/PRESS.md](docs/PRESS.md)
-(chiffres au 14 novembre 2026).
+couvrent désormais 508 modèles de téléviseurs de 139 marques. La couverture médiatique : 595 articles de 58 pays et
+944 vidéos sur YouTube et Bilibili, tous recensés dans [docs/PRESS.md](docs/PRESS.md)
+(chiffres au 23 novembre 2026).
 
 ## Contribuer
 
