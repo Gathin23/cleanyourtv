@@ -28,7 +28,7 @@ them, since the launcher answers any other value with its own default. A colour 
 to the shape its own parser reads - six hex digits, and no background alpha, which Config.color() overwrites - so
 a malformed colour is refused rather than written as one the theme already had. A list of app_keys is read one entry at a
 time the way the launcher reads it: a key that is a keycode or a KEYCODE_ name and a target that is a package, an
-activity, an action word, input:, guide: or inputs, since RemoteKeys skips an entry it cannot read without a word
+activity, an action word, input:, guide:, action: or inputs, since RemoteKeys skips an entry it cannot read without a word
 and that button would open nothing. A list of `"package=value"` entries (`app_labels`, `app_banners`,
 `launch_actions`) is read one entry at a time too: Config.packageMap() keeps only an entry with a package before
 the '=' and a value after it, so an entry without both halves is refused rather than written as one the tile never
@@ -336,9 +336,9 @@ def app_key_target_problem(entry, target):
     """Why launch() would open nothing for this target, or None.
 
     launch() reads a target as an action word (isAction()'s ten), the input switcher ("inputs"), an input
-    ("input:<input id>"), a program guide ("guide:<package>"), an activity ("package/.Activity") or a package; a
-    target that is none of those - "youtube" without its dots, "guide:" with no package - finds no launch intent
-    and does nothing. A package name always has a dot, which is how isAction() tells a word from an app.
+    ("input:<input id>"), a program guide ("guide:<package>"), an intent action ("action:<intent action>"), an
+    activity ("package/.Activity") or a package; a target that is none of those - "youtube" without its dots,
+    "guide:" with no package, "action:" with no dotted action - finds no launch intent and does nothing. A package name always has a dot, which is how isAction() tells a word from an app.
     """
     if target in APP_KEY_WORDS or target == "inputs":
         return None
@@ -351,6 +351,13 @@ def app_key_target_problem(entry, target):
         if PACKAGE_NAME.fullmatch(package):
             return None
         return f"{entry!r}: guide: takes the Live TV app's package (guide:com.tcl.tv), not {package!r}"
+    if target.startswith("action:"):
+        # An intent action is a dotted name like a package; a bare word has no activity to answer it.
+        action = target[len("action:"):].strip()
+        if PACKAGE_NAME.fullmatch(action):
+            return None
+        return (f"{entry!r}: action: takes an intent action (action:android.settings.DISPLAY_SETTINGS), "
+                f"not {action!r}")
     package, slash, activity = target.partition("/")
     if slash and not activity.strip():
         return f"{entry!r}: {target!r} names no activity after the slash"
@@ -358,8 +365,8 @@ def app_key_target_problem(entry, target):
         return None
     words = ", ".join(APP_KEY_WORDS)
     return (f"{entry!r}: {target!r} is nothing the launcher opens - a package name has a dot "
-            f"(com.google.android.youtube.tv), and the words are {words}, inputs, input:<input id> and "
-            f"guide:<package>")
+            f"(com.google.android.youtube.tv), and the words are {words}, inputs, input:<input id>, "
+            f"guide:<package> and action:<intent action>")
 
 
 def app_keys_problem(values):

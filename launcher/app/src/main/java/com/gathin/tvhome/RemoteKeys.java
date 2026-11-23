@@ -35,7 +35,8 @@ import java.util.regex.Pattern;
  * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app, a target
  * of "inputs" opens the input switcher, for a remote whose source button sends a key Android does not map,
  * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi, library) does that action, and
- * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say).
+ * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say), and
+ * "action:<intent action>" starts that action (TCL's picture panel: action:android.settings.DISPLAY_SETTINGS).
  */
 final class RemoteKeys {
 
@@ -435,6 +436,13 @@ final class RemoteKeys {
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             } catch (ActivityNotFoundException ignored) {
             }
+            return;
+        }
+        if (pkg.startsWith("action:")) {
+            // An intent action, for vendor screens that close themselves unless opened by action, e.g.
+            // "action:android.settings.DISPLAY_SETTINGS" for TCL's picture panel (com.tcl.settings/.PictureActivity).
+            String action = pkg.substring("action:".length()).trim();
+            if (!action.isEmpty()) start(ctx, new Intent(action));
             return;
         }
         String guide = guidePackage(pkg);
