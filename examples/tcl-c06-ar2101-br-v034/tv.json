@@ -1,6 +1,0 @@
-{
-  "tv": "TCL C06 (client type TCL-LA-MT9221-01, 'Smart TV' / TV+ OS), Brazil",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "Brazilian TV+ OS unit on V8-T221T01-LF1V034, the same C06/MT9221 platform as tcl-l40s66e (V030) and tcl-40s5400a. TCL account/promos, voice assistants, Google extras and a duplicate webview disabled; `com.tcl.ttvs` kept for firmware updates and Cast safety, `com.tcl.guard` kept because it is PERSISTENT on this unit, and the TV/input/remote packages kept. Built-in Wi-Fi was damaged by water, so the whole job ran over the built-in Ethernet (a USB Wi-Fi dongle tested dead on a PC as well). usercenter and smartalexa are re-enabled at every boot on this firmware and are noted, not re-disabled. Apple TV style launcher installed as Home (dock: SmartTube, CORE, Downloader, YouTube) with `com.google.android.tvlauncher` disabled; TCL tiles and the Alexa tile hidden through the theme, Chromecast (port 8009, mediashell) verified after every wave and after reboot. Neither power_on_home nor power_on_home_always could stop the firmware opening Live TV at boot; the owner chose to accept it and press Home. AdGuard Private DNS enabled. One session of a few hours, not a several-day test; reboot-checked once."
-}
