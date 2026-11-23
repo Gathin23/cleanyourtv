@@ -87,6 +87,31 @@
 # - With ~25 streaming apps in /data, swap was over 80% full and apps opened slowly; disabling or removing the
 #   unused ones freed about 200 MB of swap. Play Store compiling app updates after a reboot (dex2oat) also slows
 #   it for a while.
+#
+# Sixth VU31, same build, 2026-11-21 to 23: the list above with the three (5th) lines, dreamx kept, plus the two (6th)
+# lines and the set's unused streaming preloads, in five batches with a screenshot and crash-log check after each,
+# then the launcher; reboot-checked, two days of use. Sun NXT, YuppTV, analiti and Voot were not installed on this
+# set. Remote: SONY TV VRC 001 with Netflix, YouTube, Prime Video and Disney+ buttons. Notes from it:
+# - Realtek's key converter logs every remote key, so `logcat | grep KCR-KeyConverter` reads a button here, e.g.
+#   "getKeyCode[153]: scanCode: 651 --> keyCode: 196". On Android 14 `dumpsys input` lists recent events only as
+#   "KeyEvent, age=...", and the shell cannot read /vendor/usr/keylayout. Netflix 758 -> 191 (BUTTON_4), YouTube
+#   569 -> 201 (BUTTON_14), Prime Video 652 -> 189 (BUTTON_2), Disney+ 651 -> 196 (BUTTON_9), the gear 204 -> 83,
+#   Input 549 -> 178 (TV_INPUT).
+# - With launcherx off the four app buttons and the gear did nothing (an app button logs advancesetting's
+#   handlerGlobalkey, then the DeviceModeContentProvider error). The app_keys in config.json beside this list, with
+#   INPUT_KEY_SERVICE=1, open all four apps by scancode, checked with the real remote; held volume then steps once
+#   per press.
+# - The gear: scan:204:com.sony.dtv.smartui/.settings.SmartSettingsActivity in app_keys opens Sony's Quick Settings
+#   strip (Settings, Picture settings, Picture mode, Brightness) rather than Android TV Settings, which 83:settings
+#   opens. Checked with the real remote.
+# - Input opened smartui's SmartSelectActivity with launcherx off and no helper, as on the second set; here that
+#   menu listed only TV and Edit. With InputKeyService bound the key goes out as VIEW_INPUTS, which resolves to the
+#   same menu. 178:inputs in app_keys opens the launcher's own Inputs list instead (HDMI 1-3, Video, Live TV).
+#   Checked with the real remote.
+# - The firmware sets persist.adb.tcp.port=5555, which is why USB debugging alone opens 5555. Wireless debugging was
+#   off again after a reboot. With the authorisations revoked, USB debugging off and a restart, tools/adb-closed.py
+#   reported 5555 closed.
+# - Android's microphone privacy toggle (dumpsys sensor_privacy) was off before the debloat and still off after it.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
@@ -129,9 +154,11 @@ com.analiti.fastest.android              # analiti speed test
 com.google.android.marvin.talkback       # screen reader, off by choice (2nd)
 com.google.android.tts                   # text-to-speech, off by choice
 com.viacom18.tv.voot                     # Voot streaming preload
-# com.google.android.katniss               # Google Assistant / voice search; the mic button stops working (5th)
-# com.sony.dtv.assistantadapter            # Sony's Assistant setup glue, boot receiver only (5th)
-# com.google.android.youtube.tvmusic       # YouTube Music (system app) (5th)
+# com.google.android.katniss               # Google Assistant / voice search; the mic button stops working (5th, 6th)
+# com.sony.dtv.assistantadapter            # Sony's Assistant setup glue, boot receiver only (5th, 6th)
+# com.google.android.youtube.tvmusic       # YouTube Music (system app) (5th, 6th)
+# com.google.android.apps.mediashell       # Chromecast built-in; casting to the TV stops (6th)
+# com.sony.dtv.airplayapp                  # AirPlay (6th)
 
 # Launcher handover (2nd): setupwraith is safe to disable before the launcher (launcherx keeps Home), but
 # only once the Wi-Fi owner check above is clean.
