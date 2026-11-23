@@ -24,7 +24,9 @@ class BuildInstallPs1OrderTest(unittest.TestCase):
     def test_home_moves_only_after_the_start_check(self):
         start = CODE.index("am start -W")
         check = CODE.index("the new launcher did not start")
-        homes = [m.start() for m in re.finditer(r"set-home-activity --user 0 com\.gathin\.tvhome", CODE)]
+        # The applicationId is a parameter now (-LauncherApplicationId), so the step names the resolved
+        # variable rather than the literal; what this test holds is the ORDER, not the spelling.
+        homes = [m.start() for m in re.finditer(r"set-home-activity --user 0 \$appId/", CODE)]
         self.assertTrue(homes, "the script still sets the new launcher as Home")
         self.assertLess(start, check)
         for at in homes:

@@ -8,12 +8,17 @@
 #                             input_key_keycodes and app_keys; re-pass on every install
 #        [-HomeKeyService]    remotes whose Home button sends KEYCODE_ALL_APPS (Xiaomi sticks)
 #        [-RestoreKeyServices] grants WRITE_SECURE_SETTINGS for restore_key_services (helpers back after a force stop); revoked without it
+#        [-LauncherApplicationId <pkg>] builds the APK under that applicationId, for firmware that only hands HOME
+#                             to a launcher installed under a name on its allowlist (Xiaomi China sets on
+#                             Android 14 want com.ts.launcher; docs/devices/xiaomi-mitv-mftr0-hyperos3.md).
+#                             Omitted, app\build.gradle's default is used and nothing changes.
 param(
     [string]$TvHost = $env:TV_HOST,
     [string]$StockLauncher = '',
     [switch]$InputKeyService,
     [switch]$HomeKeyService,
-    [switch]$RestoreKeyServices
+    [switch]$RestoreKeyServices,
+    [string]$LauncherApplicationId = $env:LAUNCHER_APPLICATION_ID
 )
 $ErrorActionPreference = 'Stop'
 # Pipe plain UTF-8 to native commands; the default here prepends a BOM that corrupts the first command.
@@ -37,6 +42,14 @@ if ($minSdk -and $tvSdk -and [int]$tvSdk -lt $minSdk) {
     throw "this TV runs SDK $tvSdk and the launcher is built with minSdk $minSdk (app\build.gradle), so pm install would answer INSTALL_FAILED_OLDER_SDK. Nothing was built, pushed or disabled. The debloat half of the repo still applies to that set; the launcher half would need your own build with a lower minSdk (docs/TROUBLESHOOTING.md)."
 }
 
+# The applicationId the APK is built under. Omitted, app\build.gradle's default is used, read from the file so
+# this script keeps no second copy of it. Every step below (build, start, verify, grants) addresses this value.
+$gradleDefault = Select-String -Path 'app\build.gradle' -Pattern "gradleProperty\('launcherApplicationId'\)\.getOrElse\('([^']*)'\)" -ErrorAction SilentlyContinue |
+    Select-Object -First 1 | ForEach-Object { $_.Matches[0].Groups[1].Value }
+if (-not $gradleDefault) { $gradleDefault = 'com.gathin.tvhome' }
+$appId = if ($LauncherApplicationId) { $LauncherApplicationId } else { $gradleDefault }
+if ($LauncherApplicationId) { Write-Host "Building under applicationId $appId (-LauncherApplicationId)" }
+
 # SKIP_BUILD=1 installs the APK already built (tools\docker-build.ps1 builds it in Docker, with no JDK here).
 if ($env:SKIP_BUILD -ne '1') {
     if (-not $env:JAVA_HOME -or -not (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
@@ -50,7 +63,11 @@ if ($env:SKIP_BUILD -ne '1') {
         "sdk.dir=$($sdk -replace '\\', '\\')" | Out-File -Encoding ascii local.properties
     }
 
-    .\gradlew.bat assembleRelease -q --console=plain
+    if ($LauncherApplicationId) {
+        .\gradlew.bat assembleRelease -q --console=plain "-PlauncherApplicationId=$appId"
+    } else {
+        .\gradlew.bat assembleRelease -q --console=plain
+    }
     if ($LASTEXITCODE -ne 0) { throw 'Gradle build failed' }
 } elseif (-not (Test-Path 'app\build\outputs\apk\release\app-release.apk')) {
     throw 'SKIP_BUILD=1 but there is no app\build\outputs\apk\release\app-release.apk; build it first (tools\docker-build.ps1)'
@@ -70,7 +87,7 @@ if (-not $StockLauncher) {
     if ($LASTEXITCODE -ne 0 -or -not $homePkg) { throw 'could not ask the TV which launcher owns Home; check -TvHost and the debugging prompt, or pass -StockLauncher <package>' }
     $homePkg = "$homePkg".Trim().Split('/')[0]
     if ($knownStock -contains $homePkg) { $StockLauncher = $homePkg }
-    elseif ($homePkg -eq 'com.gathin.tvhome') { $StockLauncher = 'none'; Write-Host 'Home already belongs to this launcher; nothing will be disabled.' }
+    elseif ($homePkg -eq $appId) { $StockLauncher = 'none'; Write-Host 'Home already belongs to this launcher; nothing will be disabled.' }
     elseif ($homePkg -eq 'android') {
         # Android's chooser: launchers tie and no default is set (a restore followed by a re-applied list
         # ends here). Take the one known stock launcher among the HOME claimants, if there is exactly one.
@@ -111,7 +128,7 @@ if ($LASTEXITCODE -ne 0 -or "$out" -notmatch 'Success') { throw 'pm install fail
 # Stop the instance Android restarted mid-update, which can come up non-occluding (see build-and-install.sh,
 # #1101), and write back a key helper the force stop took off the list. Through stdin: Windows PowerShell 5.1
 # drops the inner double quotes from a native argument.
-'s=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop com.gathin.tvhome; case "$s" in *com.gathin.tvhome*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac' |
+('s=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop ' + $appId + '; case "$s" in *' + $appId + '*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac') |
     & $py -I ..\tools\tv.py --batch | Out-Null
 # Start the launcher on its own, before Home or the stock launcher is touched (see build-and-install.sh, #239):
 # Home moves to it only in the batch below, after this start check passed, so a launcher that does not
@@ -119,14 +136,14 @@ if ($LASTEXITCODE -ne 0 -or "$out" -notmatch 'Success') { throw 'pm install fail
 # in the batch a failed start only prints an Error line and the stock launcher would be disabled anyway.
 # With -StockLauncher none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would make this
 # launcher the home process until a restart, and Android then blocks the stock launcher's button launches (#1274).
-$startCmd = if ($StockLauncher -eq 'none') { 'am start -W -n com.gathin.tvhome/.MainActivity' }
-            else { 'am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity' }
+$startCmd = if ($StockLauncher -eq 'none') { "am start -W -n $appId/.MainActivity" }
+            else { "am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n $appId/.MainActivity" }
 $start = (& $py -I ..\tools\tv.py $startCmd) -join "`n"
 Write-Host $start
 if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m)^Error') { throw "the new launcher did not start (see above); $StockLauncher was left enabled" }
 @(
-    'pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted',
-    'cmd package compile -m speed -f com.gathin.tvhome',
+    "pm grant $appId android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted",
+    "cmd package compile -m speed -f $appId",
     $disableStock
 ) | & $py -I ..\tools\tv.py --batch
 # A failed batch is not fatal here: the stock launcher may already be disabled, so fall through to the
@@ -137,7 +154,7 @@ if ($LASTEXITCODE -ne 0) { Write-Warning "tv.py --batch failed (exit code $LASTE
 # launcher is a HOME candidate whenever it is installed, so the chooser check below cannot tell a
 # switch that took from one that did not on its own (#4068). It prints "Success" when the preference
 # took; anything else means it did not.
-$setHomeOut = (& $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>$null) -join "`n"
+$setHomeOut = (& $py -I ..\tools\tv.py "cmd package set-home-activity --user 0 $appId/.MainActivity" 2>$null) -join "`n"
 $setHomeOk = ($LASTEXITCODE -eq 0 -and $setHomeOut -match 'Success')
 
 $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
@@ -188,15 +205,15 @@ $homeNow = Get-HomeNow
 if ($homeNow -eq 'android' -and $setHomeOk) {
     $claimants = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
     if ($claimants -match 'com\.gathin\.tvhome/') {
-        $homeNow = 'com.gathin.tvhome/chooser'
-        Write-Host "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
+        $homeNow = "$appId/chooser"
+        Write-Host "Home is Android's chooser; set-home-activity reported Success and $appId is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
     }
 }
-if ($homeNow -and $homeNow -notlike 'com.gathin.tvhome/*' -and $keepStockHome) {
+if ($homeNow -and $homeNow -notlike "$appId/*" -and $keepStockHome) {
     Write-Host "Home stays $homeNow, as -StockLauncher none disabled nothing (stock_home_redirect)."
     if (-not $HomeKeyService) { Write-Warning 'Without -HomeKeyService nothing sends Home here; run again with it for stock_home_redirect.' }
 }
-elseif ($homeNow -notlike 'com.gathin.tvhome/*') {
+elseif ($homeNow -notlike "$appId/*") {
     $reason = if ($homeNow) { "Home resolves to '$homeNow', not to the new launcher" } else { 'the TV stopped answering while Home was being switched, so the outcome is unknown' }
     $restored = Undo-Handover
     $hint = if ($homeNow) { ' On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to your debloat list (see README, Troubleshooting), apply it, then run this script again.' } else { '' }
@@ -205,11 +222,11 @@ elseif ($homeNow -notlike 'com.gathin.tvhome/*') {
 else { Write-Host "Home now resolves to $homeNow" }
 # Optional accessibility services, appended to enabled_accessibility_services without dropping others.
 function Enable-Service([string]$Name) {
-    $svc = "com.gathin.tvhome/.$Name"
+    $svc = "$appId/.$Name"
     # Through stdin: Windows PowerShell 5.1 drops the inner double quotes from a native argument, and the
     # TV's shell then fails with "no closing quote" while the service stays off.
     # TCL names the op AUTO_START or APP_AUTO_START; without write-settings the grant is lost at the next reboot.
-    ('cmd appops set com.gathin.tvhome AUTO_START allow 2>/dev/null; cmd appops set com.gathin.tvhome APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; s=$(settings get secure enabled_accessibility_services); case "$s" in *' + $Name + '*) settings put secure enabled_accessibility_services ""; settings put secure accessibility_enabled 0; sleep 1; settings put secure enabled_accessibility_services "$s" ;; null|"") settings put secure enabled_accessibility_services ' + $svc + ' ;; *) settings put secure enabled_accessibility_services "$s:' + $svc + '" ;; esac; settings put secure accessibility_enabled 1; echo ' + $Name + ' enabled') |
+    ('cmd appops set ' + $appId + ' AUTO_START allow 2>/dev/null; cmd appops set ' + $appId + ' APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; s=$(settings get secure enabled_accessibility_services); case "$s" in *' + $Name + '*) settings put secure enabled_accessibility_services ""; settings put secure accessibility_enabled 0; sleep 1; settings put secure enabled_accessibility_services "$s" ;; null|"") settings put secure enabled_accessibility_services ' + $svc + ' ;; *) settings put secure enabled_accessibility_services "$s:' + $svc + '" ;; esac; settings put secure accessibility_enabled 1; echo ' + $Name + ' enabled') |
         & $py -I ..\tools\tv.py --batch
     if ($LASTEXITCODE -ne 0) { throw "could not enable $Name (tv.py exit code $LASTEXITCODE); Home is already the new launcher" }
 }
@@ -221,17 +238,17 @@ if ($HomeKeyService) { Enable-Service 'HomeKeyService' }
 # state it wants, and the install stops when the marker is missing (see build-and-install.sh). The steps are the
 # same text as there, which tests/test_launcher_secure_ack.py checks.
 $secure = 'android.permission.WRITE_SECURE_SETTINGS'
-$read = 's=$(dumpsys package com.gathin.tvhome) && case "$s" in *"DUMP TIMEOUT"*) ;; *"' + $secure + ': granted=true"*)'
+$read = 's=$(dumpsys package ' + $appId + ') && case "$s" in *"DUMP TIMEOUT"*) ;; *"' + $secure + ': granted=true"*)'
 if ($RestoreKeyServices) {
-    $step = 'pm grant com.gathin.tvhome ' + $secure + ' && ' + $read + ' echo restore-granted ;; esac'; $mark = 'restore-granted'
+    $step = 'pm grant ' + $appId + ' ' + $secure + ' && ' + $read + ' echo restore-granted ;; esac'; $mark = 'restore-granted'
     $hint = 'the launcher does not hold it, so restore_key_services cannot put the helpers back'
 } else {
-    $step = 'pm revoke com.gathin.tvhome ' + $secure + '; ' + $read + ' ;; *"' + $secure + '"*) echo secure-settings-revoked ;; esac'
+    $step = 'pm revoke ' + $appId + ' ' + $secure + '; ' + $read + ' ;; *"' + $secure + '"*) echo secure-settings-revoked ;; esac'
     $mark = 'secure-settings-revoked'
     $hint = 'the launcher may still hold it; run again with -RestoreKeyServices to keep it on purpose'
 }
 $out = ($step | & $py -I ..\tools\tv.py --batch) -join "`n"
 Write-Host $out
 # Only a line that is the marker and nothing else counts: tv.py --batch echoes the step, which contains it too.
-if (($out -split '\r?\n') -cnotcontains $mark) { throw "WRITE_SECURE_SETTINGS is not in the state this install asked for ($mark missing): $hint. The launcher is installed and is Home. Check by hand: tools\tv.py 'dumpsys package com.gathin.tvhome'" }
+if (($out -split '\r?\n') -cnotcontains $mark) { throw "WRITE_SECURE_SETTINGS is not in the state this install asked for ($mark missing): $hint. The launcher is installed and is Home. Check by hand: tools\tv.py 'dumpsys package ' + $appId" }
 Write-Host 'Installed. Press Home on the remote to see it.'

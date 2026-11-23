@@ -60,15 +60,18 @@ def block(path, first, last):
     return "\n".join(lines[start:end + 1])
 
 
-def sh_step(restore):
-    script = block(SH, "SECURE=", "fi") + '\nprintf %s "$STEP"'
+def sh_step(restore, app_id="com.gathin.tvhome"):
+    script = ("APP_ID=" + app_id + "\n" + block(SH, "SECURE=", "fi") + '\nprintf %s "$STEP"')
     env = dict(os.environ, RESTORE_KEY_SERVICES="1" if restore else "0")
     return subprocess.run(["bash", "-c", script], capture_output=True, text=True, timeout=30,
                           env=env, check=True).stdout
 
 
-def ps_step(restore):
+def ps_step(restore, app_id="com.gathin.tvhome"):
+    # Both installers address whatever identity they resolved, so the harness supplies it the way the script
+    # does before this block runs.
     script = (f"$RestoreKeyServices = ${'true' if restore else 'false'}\n"
+              + f"$appId = '{app_id}'\n"
               + block(PS1, "$secure = ", "}") + "\n[Console]::Out.Write($step)")
     return subprocess.run([PWSH, "-NoProfile", "-Command", script], capture_output=True, text=True,
                           timeout=60, check=True).stdout
@@ -81,10 +84,11 @@ class SecureAckTest(unittest.TestCase):
         if not PWSH or not shutil.which("bash"):
             raise unittest.SkipTest("needs bash and pwsh")
         for restore in (False, True):
-            with self.subTest(restore=restore):
-                step = sh_step(restore)
-                self.assertIn("dumpsys package", step)
-                self.assertEqual(ps_step(restore), step)
+            for app_id in ("com.gathin.tvhome", "com.ts.launcher"):
+                with self.subTest(restore=restore, app_id=app_id):
+                    step = sh_step(restore, app_id)
+                    self.assertIn("dumpsys package " + app_id, step)
+                    self.assertEqual(ps_step(restore, app_id), step)
 
     def test_bash_accepts_only_a_whole_returned_line(self):
         # On Windows shutil.which finds System32ash.exe, the WSL launcher, which fails when no distro is installed.
