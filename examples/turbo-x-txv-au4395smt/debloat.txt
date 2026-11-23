@@ -35,12 +35,6 @@
 # - Owner's choices kept: Netflix, YouTube, Cosmote TV (gr.cosmote.cosmotetv.androidtv, which now
 #   calls itself MagentaTV), ANT1+ (gr.antenna.ant1.screen) and Chromecast built-in.
 #
-# Status: disabled in seven batches on one TV on 2026-11-23, screenshot after each batch, then one
-# reboot with `pm list packages -d` unchanged (this firmware re-enabled nothing, tvrecommendations
-# included) and one power cycle from the remote. Checked on the real remote by the owner the same
-# night: Input, Settings, Netflix and YouTube keys work; the Prime Video key does nothing, since
-# its app is disabled below. Not yet in daily use for several days when this was written.
-#
 # Quirks on this firmware:
 # - screencap works over ADB; Live TV comes back empty, as usual.
 # - ro.adb.secure = 1. The set ran network ADB on 5555 and Wireless debugging side by side;
