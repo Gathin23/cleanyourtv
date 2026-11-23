@@ -40,8 +40,10 @@
 # - The Home key arrived as KEYCODE_HOME (3), not ALL_APPS: `interceptKeyTq keycode=3` in logcat, then HOME
 #   started the launcher. HOME_KEY_SERVICE=1 was used anyway and does no harm; check your remote's revision.
 # - The Netflix key is Xiaomi keycode 1001, consumed by the system in interceptKeyBeforeQueueing without
-#   POLICY_FLAG_PASS_TO_USER, which launches Netflix itself. Accessibility services never see it, so it cannot
-#   be remapped (app_keys, Button Mapper) without root; with Netflix disabled the key just does nothing.
+#   POLICY_FLAG_PASS_TO_USER, and sends VIEW nflx://www.netflix.com/ instead. Accessibility services never see
+#   it, but with Netflix disabled the launcher answers that link: "1001:<package>" in app_keys makes the button
+#   open that app (checked with the real remote on a PI.2055 unit, 23 Nov 2026). Without a 1001 entry the
+#   launcher leaves nflx:// links alone, and the button opens Netflix, or nothing while Netflix is disabled.
 # - Closing ADB: switching off "USB debugging" alone, then rebooting, left 5555 open. Switching off the
 #   Developer options master switch and rebooting closed it (tools/adb-closed.py: refused).
 # - Free memory: about 150 MB stock, about 265 MB right after a reboot with the list and the launcher.
