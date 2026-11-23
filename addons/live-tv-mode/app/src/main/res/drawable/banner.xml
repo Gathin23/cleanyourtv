@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A TV with an antenna and a red "live" dot, with a home arrow turning into the screen, on a dark tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#14161C" android:pathData="M0,0h320v180h-320z" />
+    <!-- antenna -->
+    <path android:strokeColor="#3A404D" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M160,44 L136,22 M160,44 L184,22" />
+    <!-- screen -->
+    <path android:fillColor="#2A2F3A" android:pathData="M92,44h136a12,12 0,0 1,12 12v76a12,12 0,0 1,-12 12h-136a12,12 0,0 1,-12 -12v-76a12,12 0,0 1,12 -12z" />
+    <!-- stand -->
+    <path android:fillColor="#2A2F3A" android:pathData="M140,150h40v7h-40z" />
+    <!-- home outline -->
+    <path android:strokeColor="#F2F2F2" android:strokeWidth="6" android:strokeLineJoin="round"
+        android:pathData="M136,104 L160,82 L184,104 L184,126 L136,126 Z" />
+    <!-- live dot -->
+    <path android:fillColor="#E5484D" android:pathData="M214,66 m-9,0 a9,9 0,1 0 18,0 a9,9 0,1 0 -18,0" />
+</vector>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Live TV mode</string>
+    <string name="service_description">Lets Live TV mode see which app comes to the front, so that Home, Back to Home and waking up open Live TV, and counts quick Home presses for the home screen. It reads no screen content and no keys.</string>
+    <string name="hint">Home, Back to Home, power-on and waking up open Live TV. Press Home quickly the set number of times for the home screen, until the TV next goes to sleep.</string>
+    <string name="enabled_state">Live TV mode: %1$s</string>
+    <string name="presses_state">Home presses for the home screen: %1$s</string>
+    <string name="wake_state">Wake to Live TV from any app: %1$s</string>
+    <string name="app_state">Live TV app: %1$s</string>
+    <string name="app_none">none found, press OK to choose</string>
+    <string name="helper_on">Accessibility helper: on</string>
+    <string name="helper_off">Accessibility helper: off. Press OK to switch it on</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+</resources>
