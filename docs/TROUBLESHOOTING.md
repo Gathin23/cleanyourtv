@@ -1265,6 +1265,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   player. They are not packages of their own, so only that package leaves with it. `pm enable com.youview.poa` brought
   them back. How each one launches, and how to give each a Home tile, is in
   [the Sony UK catch-up note](devices/sony-youview-uk-catchup.md).
+- **Freeview catch-up apps (iPlayer, ITVx, C4, C5) hang on the spinner, then go black, or answer
+  "Oops... Code: FVP-03-023"** (Philips 43PUS7906/12, `PH0M_EA_T32`, Android TV 11,
+  `TPM215E_R.101.000.198.158`, EU/UK). Not the debloat: the list keeps them, U included. The set's own HbbTV
+  setting **"Block tracking sites"** (Live TV > Options/Menu > HbbTV) blocks the hosts those apps load,
+  so the spinner never resolves and the picture stays black. Turning that setting off fixes all of them,
+  and it survives standby and a reboot once saved - it is there to block those hosts, so that is the
+  trade. The same code after a power cut is a different fault, a Freeview sign-in certificate the
+  server no longer accepts (`mdsclient TLSV1_ALERT_DECRYPT_ERROR` in `logcat`), fixed by
+  `tools/tv.py 'pm clear uk.co.freeview.mdsclient'` - never `uk.co.freeview.fvpconfigauth`, which is
+  the factory Freeview identity. An app that *vanished* instead is the Sony case above. Measured on one
+  unit: the tenth-unit block of
+  [`examples/philips-50pud7406/debloat.txt`](../examples/philips-50pud7406/debloat.txt) has the session.
 - **Channel Up/Down on the real remote lands two channels on**, showing the next channel's banner first
   (Xiaomi MiTV-MOOQ0, Android TV 11, `RTM4.220307.164.8835`, Spain). Live TV tunes one channel on the key
   press. On key release it hands the key to its HbbTV layer (`key is handled in hbbtv` in `logcat`), and about
