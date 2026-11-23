@@ -1,0 +1,15 @@
+{
+  "dock_apps": [
+    "com.mediatek.wwtv.tvcenter",
+    "gr.cosmote.cosmotetv.androidtv",
+    "gr.antenna.ant1.screen",
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv"
+  ],
+  "hidden_apps": [],
+  "columns": 5,
+  "boot_to_live_tv": true,
+  "open_on_start_choice": true,
+  "open_on_start_on_wake": true,
+  "show_stats": true
+}
