@@ -54,7 +54,8 @@ LANG_ROW = {
     "README.nl.md": "talen",
     "README.pt-BR.md": "idiomas",
     "README.tr.md": "dil",
-    "README.uk.md": "мова",
+    # Ukrainian inflects the noun with the number: 31 мова, 32 мови. tools/gen_tables.py writes the form.
+    "README.uk.md": "мови",
     "README.uz.md": "til",
 }
 
