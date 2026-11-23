@@ -52,3 +52,30 @@ reboot, and Home stayed on `com.gathin.tvhome`. `com.cltv.fast` was enabled on t
 - With `com.google.android.backdrop` disabled, `screensaver_components` still pointed at it, so it was set to the
   launcher's Clock as in `docs/launcher.md`. The screensaver was not watched starting.
 - Not checked: several days of use, Chromecast, or a firmware update.
+
+## Also tested: Hyundai H-LED50QBU7500 (Changhong `DVB95ML`, longshan)
+
+A retail unit whose model number was recorded, cleaned on 2026-11-20 and lived with for three days.
+
+| Field | Observed value |
+|---|---|
+| Retail model | Hyundai H-LED50QBU7500 |
+| Manufacturer / product | `Changhong` / `DVB95ML` |
+| Android model / device | `AI PONT` / `longshan` |
+| Android / API | 14 / 34 |
+| Firmware | `UKNV.260518.001` |
+| Home before | the owner's FLauncher, with `com.google.android.tvlauncher` already disabled by them |
+
+- The whole list applied with `tools/disable.sh`; everything stayed disabled across a reboot.
+- `launcher/build-and-install.sh` with `STOCK_LAUNCHER=me.efesser.flauncher` handed Home to the
+  reference launcher; the owner's third-party home was disabled and uninstalled at their request.
+  Cold power-on lands on Home, checked over three days.
+- Voice remote: the owner had disabled `com.google.android.tv.remote.service` months earlier.
+  Assistant opened but heard nothing: katniss logs `AudioProviderSource is null` and the interaction
+  ends `EMPTY_QUERY` / `NO_SPEECH_DETECTED`. `pm enable com.google.android.tv.remote.service` brought
+  voice back; it stays enabled.
+- With `com.google.android.backdrop` disabled, `screensaver_components` still pointed at it; set to the
+  launcher's Clock as in `docs/launcher.md`.
+- Three days of daily use: voice, held-volume repeat (no key helper was enabled), the dock apps,
+  Chromecast and screen mirroring all worked. No firmware update arrived, so the OTA's effect on the
+  list remains unchecked.
