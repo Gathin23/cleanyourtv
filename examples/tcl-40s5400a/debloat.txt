@@ -88,19 +88,17 @@
 #   `pm disable-user --user 0`. Kept by choice: Chromecast (mediashell), ttvs (the firmware
 #   updater and Cast safety), the TV/input/remote packages, guard (PERSISTENT on this unit) and
 #   partnercustomizer (the TKey button). No Android core package touched.
-# - The built-in Wi-Fi was damaged by water, so all work ran over the built-in Ethernet; a USB
-#   Wi-Fi dongle was dead on a PC as well, and no USB Ethernet adapter was in use. The job ran
-#   over Ethernet the whole time.
 # - After sync, a 60 s wait and one reboot, 27 of the 29 disabled packages stayed off; usercenter
 #   and smartalexa came back at every boot (idle), and esticker was re-disabled after a sideload
 #   test re-enabled it (final disabled count 28).
 # - AdGuard Private DNS (dns.adguard-dns.com, hostname mode) was enabled and resolved normally.
-# - The Apple TV style launcher was installed as Home (com.gathin.tvhome, dock SmartTube/CORE/
-#   Downloader/YouTube, reduced motion) with the stock launcher disabled afterwards; the TCL and
-#   the Alexa tile were hidden through the launcher theme rather than disabled. HDMI (tuner plus
-#   HDMI 1-3), Live TV and Cast (port 8009, mediashell) were kept and checked after every wave and
-#   after the reboot. Neither power_on_home nor power_on_home_always could keep Home in front at
-#   boot; the owner chose to accept Live TV at power-on and press Home. Not claimed as a fix.
+# - The Apple TV style launcher was installed as Home (com.gathin.tvhome, reduced motion) with the
+#   stock launcher disabled afterwards; the TCL and the Alexa tile were hidden through the launcher
+#   theme rather than disabled. HDMI (tuner plus HDMI 1-3), Live TV and Cast (port 8009,
+#   mediashell) were kept and checked after every wave and after the reboot. Neither power_on_home
+#   nor power_on_home_always could keep Home in front at boot; the owner chose to accept Live TV at
+#   power-on and press Home. Not claimed as a fix. The dock's apps are the owner's choice, not the
+#   theme's.
 #
 # Second Asia-Pacific unit, 2026-11-15: same model "Smart TV", product C06_2K_GB, build AR2101,
 # Android TV 11 (SDK 30), persist.tcl.client_type TCL-AP-MT9221-01, security patch 2025-03-05,

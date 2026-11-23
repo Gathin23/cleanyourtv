@@ -1,10 +1,4 @@
 {
-  "dock_apps": [
-    "org.smarttube.beta",
-    "com.nathnetwork.crgoldapp",
-    "com.esaba.downloader",
-    "com.google.android.youtube.tv"
-  ],
   "columns": 4,
   "rows_below_dock": 1,
   "dock_row": true,
@@ -38,6 +32,5 @@
   "focus_overshoot": false,
   "advanced_effects": false,
   "cinematic_home": false,
-  "show_stats": false,
-  "clock_format": "system"
+  "show_stats": false
 }
