@@ -29,6 +29,12 @@
 #
 # Kept by the owner's choice: Netflix, Hulu, Prime Video, YouTube, Chromecast, Play Store, and the
 # firmware updater (com.tcl.versionUpdateApp, commented out below so a shared list keeps it on).
+#
+# com.tcl.xian.StartandroidService is KEPT although most TCL lists disable it: with it off, Settings >
+# System update fails with "cannot access network resources" while apps stream fine. Found on the
+# tested set by re-enabling the whole list (update worked), then halving it: with only this package
+# back on, the update check worked again; with it off and com.tcl.bi back on, it still failed.
+# Disable it only if you do not want TCL firmware updates.
 # Off by choice: Google Assistant / TCL voice / Alexa, YouTube Music, Play Movies, Play Games.
 #
 # Tested on a real unit 2026-11-23, in four batches with a Home screenshot after each, then a reboot:
@@ -39,7 +45,7 @@
 
 # ---- 1. TCL and Google telemetry ----
 com.tcl.bi                                  # TCL BI analytics
-com.tcl.xian.StartandroidService            # background reporting service
+# com.tcl.xian.StartandroidService          # KEPT: System update needs it (see header)
 com.google.android.feedback                 # feedback / crash reporting
 com.google.android.tv.bugreportsender       # bug report uploader
 
