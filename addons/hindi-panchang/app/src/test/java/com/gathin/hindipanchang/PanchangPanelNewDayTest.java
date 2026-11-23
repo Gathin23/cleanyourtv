@@ -34,4 +34,28 @@ public class PanchangPanelNewDayTest {
         assertEquals(d(2026, 11, 22),
                 PanchangPanel.dayAfterDateChange(d(2026, 11, 22), d(2026, 11, 22), d(2026, 11, 22), 0));
     }
+
+    @Test public void browsedNextMonthAtMonthEnd() {
+        assertEquals(0, PanchangPanel.monthOffsetAfterDateChange(1, d(2026, 11, 30), d(2026, 12, 1), false));
+    }
+
+    @Test public void browsedNextMonthAtYearEnd() {
+        assertEquals(0, PanchangPanel.monthOffsetAfterDateChange(1, d(2026, 12, 31), d(2027, 1, 1), false));
+    }
+
+    @Test public void browsedPreviousMonthAtMonthEnd() {
+        assertEquals(-2, PanchangPanel.monthOffsetAfterDateChange(-1, d(2026, 11, 30), d(2026, 12, 1), false));
+    }
+
+    @Test public void pickedDayInCurrentMonthKeptAcrossMonthEnd() {
+        assertEquals(-1, PanchangPanel.monthOffsetAfterDateChange(0, d(2026, 11, 30), d(2026, 12, 1), false));
+    }
+
+    @Test public void followsTodayResetsOffset() {
+        assertEquals(0, PanchangPanel.monthOffsetAfterDateChange(0, d(2026, 11, 30), d(2026, 12, 1), true));
+    }
+
+    @Test public void sameMonthDayChangeKeepsOffset() {
+        assertEquals(1, PanchangPanel.monthOffsetAfterDateChange(1, d(2026, 11, 22), d(2026, 11, 23), false));
+    }
 }

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -121,16 +122,7 @@ final class PanchangPanel extends FrameLayout {
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             ZonedDateTime now = ZonedDateTime.now(place.zoneId());
-            LocalDate today = now.toLocalDate();
-            if (!today.equals(shownToday)) {
-                LocalDate next = dayAfterDateChange(selectedDate, shownToday, today, monthOffset);
-                shownToday = today;
-                if (!next.equals(selectedDate)) {
-                    if (wisdomDayOfYear == selectedDate.getDayOfYear()) wisdomDayOfYear = next.getDayOfYear();
-                    selectedDate = next;
-                    rebuildCalendarAndHeader();
-                }
-            }
+            if (followDateChange()) rebuildCalendarAndHeader();
             if (isLiveSim) {
                 simMinutes = now.getHour() * 60 + now.getMinute();
                 if (activeModal == MODAL_PANCHANG) refreshActiveModal();
@@ -143,6 +135,27 @@ final class PanchangPanel extends FrameLayout {
     static LocalDate dayAfterDateChange(LocalDate selected, LocalDate lastToday, LocalDate today, int monthOffset) {
         if (monthOffset == 0 && selected.equals(lastToday) && !today.equals(lastToday)) return today;
         return selected;
+    }
+
+    /** The month offset that keeps the same calendar month on screen once the local date moves from lastToday to today. */
+    static int monthOffsetAfterDateChange(int monthOffset, LocalDate lastToday, LocalDate today, boolean followsToday) {
+        if (followsToday) return 0;
+        YearMonth shown = YearMonth.from(lastToday).plusMonths(monthOffset);
+        return (int) ChronoUnit.MONTHS.between(YearMonth.from(today), shown);
+    }
+
+    private boolean followDateChange() {
+        LocalDate today = LocalDate.now(place.zoneId());
+        if (today.equals(shownToday)) return false;
+        LocalDate next = dayAfterDateChange(selectedDate, shownToday, today, monthOffset);
+        boolean follows = !next.equals(selectedDate);
+        monthOffset = monthOffsetAfterDateChange(monthOffset, shownToday, today, follows);
+        if (follows) {
+            if (wisdomDayOfYear == selectedDate.getDayOfYear()) wisdomDayOfYear = next.getDayOfYear();
+            selectedDate = next;
+        }
+        shownToday = today;
+        return true;
     }
 
     PanchangPanel(Context context, boolean dream) {
@@ -181,6 +194,7 @@ final class PanchangPanel extends FrameLayout {
 
     void updatePlace(LocationStore.Place newPlace) {
         this.place = newPlace;
+        followDateChange();
         rebuildCalendarAndHeader();
     }
 
@@ -726,6 +740,7 @@ final class PanchangPanel extends FrameLayout {
     // -------------------------------------------------------------------------
     void start() {
         handler.removeCallbacks(tick);
+        followDateChange();
         rebuildCalendarAndHeader();
         if (!dream) {
             post(this::focusSelectedMoonOrb);
@@ -742,6 +757,7 @@ final class PanchangPanel extends FrameLayout {
         boolean keepLeftFocus = btnLeftChevron != null && btnLeftChevron.hasFocus();
         boolean keepRightFocus = btnRightChevron != null && btnRightChevron.hasFocus();
 
+        followDateChange();
         monthOffset += delta;
         LocalDate today = LocalDate.now(place.zoneId());
         LocalDate targetMonthFirst = today.withDayOfMonth(1).plusMonths(monthOffset);
@@ -759,6 +775,7 @@ final class PanchangPanel extends FrameLayout {
     }
 
     void jumpToToday() {
+        followDateChange();
         monthOffset = 0;
         ZonedDateTime now = ZonedDateTime.now(place.zoneId());
         selectedDate = now.toLocalDate();
@@ -769,6 +786,7 @@ final class PanchangPanel extends FrameLayout {
     }
 
     private void jumpToDate(LocalDate target) {
+        followDateChange();
         LocalDate todayFirst = LocalDate.now(place.zoneId()).withDayOfMonth(1);
         LocalDate targetFirst = target.withDayOfMonth(1);
         monthOffset = (targetFirst.getYear() - todayFirst.getYear()) * 12
