@@ -1,6 +1,7 @@
 <!-- Thanks. One or two sentences on what this changes and the TV it was tried on is plenty. -->
 
-**Tested on:** <!-- model, Android version -->
+**Tested on:** <!-- model, Android version and the build string the TV reports (Settings > About, or the
+`getprop ro.build.display.id` value); write "no TV - unit tests only" when no set was involved -->
 
 ### If this adds or changes a TV list
 - [ ] `examples/<brand>-<model>/debloat.txt`, header with model, Android version and firmware build
