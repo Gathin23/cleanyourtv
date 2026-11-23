@@ -1,4 +1,5 @@
-# Xiaomi MiTV-AESP0 (codename aquaman), Android TV 9 (SDK 28), firmware PI.2055.
+# Xiaomi Mi TV Stick, first generation 1080p (MiTV-AESP0, codename aquaman), Android TV 9 (SDK 28), firmware PI.2055.
+# Not the Mi TV Stick 4K (MDZ-27-AA), which is a different device.
 # Stock launcher: com.google.android.tvlauncher (disabled by launcher/build-and-install.sh).
 # Live TV app: none (no tuner/HDMI inputs); com.google.android.tv is Live Channels.
 #
