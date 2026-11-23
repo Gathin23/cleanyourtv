@@ -54,7 +54,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # screenshots, notes, traces and bench results, plus their ADB key - the folders .gitignore keeps out of
 # a checkout. tests/test_walks_skip_ignored_folders.py holds every walker to that list.
 SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
-             "traces", "bench-results", "adbkey"}
+             "traces", "bench-results", "adbkey", ".idea"}
 
 SCRIPT_RE = re.compile(r"([A-Za-z0-9_.\\/-]+\.ps1)\b")
 # The shell twin, named in a page: `launcher/build-and-install.sh`, `tools\disable.sh`.

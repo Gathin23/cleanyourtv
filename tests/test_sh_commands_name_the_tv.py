@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # The walkers' usual skip list: build output, the CI venv, and the folders .gitignore keeps out of a
 # checkout - a person's backups, screenshots, notes, traces, bench results and ADB key.
 SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
-             "traces", "bench-results", "adbkey"}
+             "traces", "bench-results", "adbkey", ".idea"}
 
 # The scripts that read TV_HOST. tools/docker-build.sh builds an image and sends nothing to a TV.
 SCRIPT_RE = re.compile(r"(?:^|[\s`'\"(])(tools/(?:disable|restore|theme)\.sh)\b")
