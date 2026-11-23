@@ -204,6 +204,7 @@ COUNT_PAGES = {
     "README.es.md": ("proyectos", digits_number),
     "README.uk.md": ("проєктів", digits_number),
     "README.uz.md": ("loyiha", digits_number),
+    "README.el.md": ("έργα", digits_number),
 }
 
 

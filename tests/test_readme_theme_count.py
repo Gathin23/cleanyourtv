@@ -222,11 +222,12 @@ class ReadmeThemeCountTest(unittest.TestCase):
         # README.uz.md is the eighth, missing for a third: its count was a numeral with the
         # classifier attached, which this file reads as no claim at all. README.fr.md is the ninth,
         # stating its count in digits ("28 thèmes"), like README.tr.md and README.pt-BR.md.
-        # README.es.md is the tenth, stating its count in digits ("29 temas").
+        # README.es.md is the tenth, stating its count in digits ("29 temas"), and README.el.md the eleventh
+        # ("33 θέματα").
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.es.md", "README.fr.md", "README.he.md", "README.md", "README.nl.md",
+                         ["README.de.md", "README.el.md", "README.es.md", "README.fr.md", "README.he.md", "README.md", "README.nl.md",
                           "README.pt-BR.md", "README.tr.md", "README.uk.md", "README.uz.md"],
-                         "the front pages that state the theme count are not the ten that did: "
+                         "the front pages that state the theme count are not the eleven that did: "
                          f"{sorted(set(stating))}")
 
 
