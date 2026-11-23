@@ -54,6 +54,20 @@
          included. Off by default; a theme can set "open_on_start_on_wake": true. -->
     <bool name="open_on_start_on_wake">false</bool>
 
+    <!-- Live TV mode, for a TV whose viewers only watch broadcast TV: Home, Back to Home, power-on and waking up
+         open the Live TV app (live_tv_package) instead of the home screen. Pressing Home quickly
+         live_tv_mode_home_presses times shows the home screen, which stays reachable until the TV next goes to
+         sleep. true also adds three rows to Launcher settings, so the mode, the presses and the wake rule below
+         can be changed on the TV. Off by default; a theme can set "live_tv_mode": true. -->
+    <bool name="live_tv_mode">false</bool>
+    <!-- With live_tv_mode: how many quick Home presses (under a second apart) show the home screen. 2 or 3 on the TV;
+         a theme can set "live_tv_mode_home_presses" from 2 to 5. -->
+    <integer name="live_tv_mode_home_presses">3</integer>
+    <!-- With live_tv_mode: waking up also leaves an app that was open (YouTube, an HDMI input) for Live TV. false
+         keeps that app in front, and only a home screen left open goes back to Live TV. A theme can set
+         "live_tv_mode_wake_from_apps": false. -->
+    <bool name="live_tv_mode_wake_from_apps">true</bool>
+
     <!-- Seconds the first Home after the TV starts waits for a working internet connection before it opens the
          boot_to_live_tv or Open on start app. A streaming app opened before the network is back shows an error,
          and after a power cut Wi-Fi can take minutes, as the router starts again too. Home stays on screen

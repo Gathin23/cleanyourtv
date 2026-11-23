@@ -122,6 +122,9 @@
     <string name="wallpaper_none">ללא</string>
     <string name="wallpaper_applied">הטפט שונה</string>
     <string name="wallpaper_theme_default">ברירת המחדל של ערכת הנושא</string>
+    <string name="live_tv_mode_state">מצב שידור חי: %1$s</string>
+    <string name="live_tv_mode_presses_state">לחיצות על כפתור הבית למסך הבית: %1$s</string>
+    <string name="live_tv_mode_wake_state">יציאה ממצב המתנה לשידור חי מכל אפליקציה: %1$s</string>
 
     <!-- Race-weekend panel (RaceWeekend). -->
     <string name="race_kicker">סבב %1$d · %2$s · %3$s</string>

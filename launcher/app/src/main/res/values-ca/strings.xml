@@ -75,6 +75,9 @@
     <string name="wallpaper_none">Cap</string>
     <string name="wallpaper_applied">Fons de pantalla canviat</string>
     <string name="wallpaper_theme_default">El del tema</string>
+    <string name="live_tv_mode_state">Mode TV en directe: %1$s</string>
+    <string name="live_tv_mode_presses_state">Pulsacions d\'Inici per a la pantalla d\'inici: %1$s</string>
+    <string name="live_tv_mode_wake_state">En reactivar, TV en directe des de qualsevol app: %1$s</string>
     <string name="quick_picture">Pantalla</string>
     <string name="quick_network">Xarxa</string>
     <string name="quick_apps">Aplicacions</string>

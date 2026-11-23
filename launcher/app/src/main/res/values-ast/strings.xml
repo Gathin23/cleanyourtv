@@ -44,6 +44,9 @@
     <string name="advanced_effects_state">Efeutos avanzaos: %1$s</string>
     <string name="open_on_start_label">Abrir al aniciar</string>
     <string name="open_on_start_state">Abrir al aniciar: %1$s</string>
+    <string name="live_tv_mode_state">Mou TV en direutu: %1$s</string>
+    <string name="live_tv_mode_presses_state">Calcos del botón d\'Aniciu pa la pantalla d\'aniciu: %1$s</string>
+    <string name="live_tv_mode_wake_state">Espertar en TV en direutu dende cualquier app: %1$s</string>
     <string name="advanced_effects_warning">Eleva les tarxetes, amplía los iconos y anidia les transiciones de color. Pue aumentar l\'usu de memoria; la diferencia real depende del to televisor.</string>
     <string name="follow_theme">Siguir el tema (reestablecer axustes)</string>
     <string name="follow_theme_hint">Usa\'l diseñu y los efeutos del tema actual o los valores integraos. Aplicar o reestablecer un tema tamién desanicia estos axustes.</string>

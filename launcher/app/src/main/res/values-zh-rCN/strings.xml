@@ -144,6 +144,9 @@
 
     <string name="dock_edit_pick_place">选择这个应用要放的程序坞位置，然后按确定。按返回取消。</string>
     <string name="dock_opacity_label">程序坞透明度</string>
+    <string name="live_tv_mode_state">电视直播模式：%1$s</string>
+    <string name="live_tv_mode_presses_state">按主页键几次进入主屏幕：%1$s</string>
+    <string name="live_tv_mode_wake_state">唤醒时从任何应用回到电视直播：%1$s</string>
     <string name="tile_add_to_dock">添加到程序坞</string>
     <string name="tile_move">移动</string>
     <string name="tile_replace_in_dock">替换为其他应用</string>

@@ -43,6 +43,9 @@
     <string name="advanced_effects_state">Geavanceerde effecten: %1$s</string>
     <string name="open_on_start_label">Openen bij opstarten</string>
     <string name="open_on_start_state">Openen bij opstarten: %1$s</string>
+    <string name="live_tv_mode_state">Live tv-modus: %1$s</string>
+    <string name="live_tv_mode_presses_state">Keren op Home voor het startscherm: %1$s</string>
+    <string name="live_tv_mode_wake_state">Bij ontwaken live tv vanuit elke app: %1$s</string>
     <string name="advanced_effects_warning">Voegt een zwevende tegel, icoonzoom en vloeiende kleurovergangen toe. Kan meer geheugen gebruiken; het werkelijke verschil hangt af van je tv.</string>
     <string name="follow_theme">Thema volgen (keuzes op de tv wissen)</string>
     <string name="follow_theme_hint">Gebruikt de indeling en beweging van het huidige thema of de ingebouwde instellingen. Een thema pushen of resetten wist ook je keuzes op de tv.</string>

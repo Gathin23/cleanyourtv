@@ -104,6 +104,9 @@
     <string name="wallpaper_none">Ei taustakuvaa</string>
     <string name="wallpaper_applied">Taustakuva vaihdettu</string>
     <string name="wallpaper_theme_default">Teeman oletus</string>
+    <string name="live_tv_mode_state">TV-kanavatila: %1$s</string>
+    <string name="live_tv_mode_presses_state">Koti-painalluksia aloitusnäyttöön: %1$s</string>
+    <string name="live_tv_mode_wake_state">Herätessä TV-kanavat mistä tahansa sovelluksesta: %1$s</string>
     <string name="race_kicker">Osakilpailu %1$d · %2$s · %3$s</string>
     <string name="race_kicker_no_place">Osakilpailu %1$d · %2$s</string>
     <string name="race_next">%1$s alkuun %2$s</string>

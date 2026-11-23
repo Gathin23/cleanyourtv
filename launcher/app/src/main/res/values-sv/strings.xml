@@ -47,6 +47,9 @@
     <string name="advanced_effects_state">Avancerade effekter: %1$s</string>
     <string name="open_on_start_label">Öppna vid start</string>
     <string name="open_on_start_state">Öppna vid start: %1$s</string>
+    <string name="live_tv_mode_state">Live-TV-läge: %1$s</string>
+    <string name="live_tv_mode_presses_state">Tryck på Hem för startskärmen: %1$s</string>
+    <string name="live_tv_mode_wake_state">Vakna till live-TV från alla appar: %1$s</string>
     <string name="advanced_effects_warning">Ger appbrickor en lyfteffekt, förstorar ikoner och ger mjuka färgövergångar. Kan öka minnesanvändningen; skillnaden beror på din TV.</string>
     <string name="follow_theme">Följ temat (återställ val på TV:n)</string>
     <string name="follow_theme_hint">Använder det aktuella temats inställningar för layout och rörelse, eller de inbyggda standardinställningarna. Om du skickar eller återställer ett tema rensas också valen du gjort på TV:n.</string>

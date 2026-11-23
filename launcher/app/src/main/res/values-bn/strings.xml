@@ -38,6 +38,9 @@
     <string name="advanced_effects_state">এডভান্স ইফেক্টস: %1$s</string>
     <string name="open_on_start_label">চালু হলে খুলুন</string>
     <string name="open_on_start_state">চালু হলে খুলুন: %1$s</string>
+    <string name="live_tv_mode_state">লাইভ টিভি মোড: %1$s</string>
+    <string name="live_tv_mode_presses_state">হোম স্ক্রিনের জন্য হোম বোতাম চাপার সংখ্যা: %1$s</string>
+    <string name="live_tv_mode_wake_state">যেকোনো অ্যাপ থেকে জাগলে লাইভ টিভি: %1$s</string>
     <string name="advanced_effects_warning">এতে টাইল একটু উপরে উঠে আসে, আইকন জুম হয় এবং কালার স্মুথভাবে বদলায়। মেমরি বেশি লাগতে পারে; কতটা পার্থক্য হবে তা আপনার টিভির উপর নির্ভর করে।</string>
     <string name="follow_theme">থিম অনুসরণ করুন (টিভিতে করা পছন্দ মুছে দিন)</string>
     <string name="follow_theme_hint">বর্তমান থিম বা বিল্ট-ইন লেআউট ও মোশন সেটিংস ব্যবহার করে। থিম পাঠালে বা রিসেট করলেও টিভিতে করা আপনার পছন্দ মুছে যায়।</string>

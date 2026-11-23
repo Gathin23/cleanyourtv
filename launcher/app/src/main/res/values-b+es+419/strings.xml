@@ -62,6 +62,9 @@
     <string name="advanced_effects_state">Efectos avanzados: %1$s</string>
     <string name="open_on_start_label">Abrir al iniciar</string>
     <string name="open_on_start_state">Abrir al iniciar: %1$s</string>
+    <string name="live_tv_mode_state">Modo TV en vivo: %1$s</string>
+    <string name="live_tv_mode_presses_state">Pulsaciones de Inicio para la pantalla principal: %1$s</string>
+    <string name="live_tv_mode_wake_state">Al reactivar, TV en vivo desde cualquier app: %1$s</string>
     <string name="advanced_effects_warning">Eleva las tarjetas, amplía los iconos y suaviza los cambios de color. Puede aumentar el uso de memoria; depende del televisor.</string>
     <string name="follow_theme">Usar el tema (restablecer configuración)</string>
     <string name="follow_theme_hint">Usa el diseño y los efectos del tema actual o los valores predeterminados. Aplicar o restablecer un tema también borra esta configuración.</string>

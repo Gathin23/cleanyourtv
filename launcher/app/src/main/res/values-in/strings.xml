@@ -42,6 +42,9 @@
     <string name="advanced_effects_state">Efek lanjut: %1$s</string>
     <string name="open_on_start_label">Buka saat mulai</string>
     <string name="open_on_start_state">Buka saat mulai: %1$s</string>
+    <string name="live_tv_mode_state">Mode TV Langsung: %1$s</string>
+    <string name="live_tv_mode_presses_state">Jumlah tekan tombol beranda untuk layar beranda: %1$s</string>
+    <string name="live_tv_mode_wake_state">Bangun ke TV Langsung dari aplikasi apa pun: %1$s</string>
     <string name="advanced_effects_warning">Menambah tile terangkat, zoom ikon, dan transisi warna yang halus. Dapat menambah penggunaan memori; perbedaan aktual tergantung TV Anda.</string>
     <string name="follow_theme">Ikuti tema (atur ulang pilihan di TV)</string>
     <string name="follow_theme_hint">Menggunakan tema saat ini atau pengaturan tata letak dan gerakan bawaan. Memasang atau mengatur ulang tema juga menghapus pilihan di TV Anda.</string>

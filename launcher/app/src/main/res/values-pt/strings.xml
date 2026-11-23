@@ -113,6 +113,9 @@
     <string name="advanced_effects_state">Efeitos avançados: %1$s</string>
     <string name="open_on_start_label">Abrir ao iniciar</string>
     <string name="open_on_start_state">Abrir ao iniciar: %1$s</string>
+    <string name="live_tv_mode_state">Modo TV ao vivo: %1$s</string>
+    <string name="live_tv_mode_presses_state">Toques em Home para a tela inicial: %1$s</string>
+    <string name="live_tv_mode_wake_state">Ao despertar, TV ao vivo a partir de qualquer app: %1$s</string>
     <string name="advanced_effects_warning">Adiciona elevação do bloco, zoom no ícone e transições de cor suaves. Pode usar mais memória; a diferença real depende da sua TV.</string>
     <string name="follow_theme">Seguir o tema (desfaz as escolhas feitas na TV)</string>
     <string name="follow_theme_hint">Usa o tema atual ou o layout e o movimento padrão. Enviar ou redefinir um tema também apaga as escolhas feitas na TV.</string>

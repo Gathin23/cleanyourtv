@@ -63,6 +63,12 @@
     <string name="advanced_effects_state">Advanced effects: %1$s</string>
     <string name="open_on_start_label">Open on start</string>
     <string name="open_on_start_state">Open on start: %1$s</string>
+    <!-- Launcher settings rows of live_tv_mode: Home, power-on and waking up open Live TV instead of the home screen. -->
+    <string name="live_tv_mode_state">Live TV mode: %1$s</string>
+    <!-- %1$s is a number, 2 or 3: how many quick Home presses show the home screen in Live TV mode. -->
+    <string name="live_tv_mode_presses_state">Home presses for the home screen: %1$s</string>
+    <!-- On: waking the TV up also leaves an app that was open (YouTube, an HDMI input) for Live TV. -->
+    <string name="live_tv_mode_wake_state">Wake to Live TV from any app: %1$s</string>
     <string name="advanced_effects_warning">Adds a lifted tile, icon zoom and smooth colour transitions. May increase memory use; the actual difference depends on your TV.</string>
     <string name="follow_theme">Follow theme (reset on-TV choices)</string>
     <string name="follow_theme_hint">Uses the current theme or built-in layout and motion settings. Pushing or resetting a theme also clears your on-TV choices.</string>

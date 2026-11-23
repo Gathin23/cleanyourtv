@@ -43,6 +43,9 @@
     <string name="advanced_effects_state">Avanserte effekter: %1$s</string>
     <string name="open_on_start_label">Åpne ved oppstart</string>
     <string name="open_on_start_state">Åpne ved oppstart: %1$s</string>
+    <string name="live_tv_mode_state">Direkte-TV-modus: %1$s</string>
+    <string name="live_tv_mode_presses_state">Trykk på Hjem for startskjermen: %1$s</string>
+    <string name="live_tv_mode_wake_state">Våkne til direkte-TV fra alle apper: %1$s</string>
     <string name="advanced_effects_warning">Legger til løftede appfliser, ikonzoom og myke fargeoverganger. Kan øke minnebruken. Forskjellen avhenger av TV-en.</string>
     <string name="follow_theme">Følg temaet (tilbakestill lokale valg)</string>
     <string name="follow_theme_hint">Bruker temaets eller de innebygde innstillingene for oppsett og bevegelse. Hvis du overfører eller tilbakestiller et tema, nullstilles også valgene du har gjort på TV-en.</string>

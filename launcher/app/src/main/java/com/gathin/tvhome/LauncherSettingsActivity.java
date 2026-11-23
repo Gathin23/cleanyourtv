@@ -39,12 +39,18 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView advancedChoice;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
+    private TextView liveTvModeChoice;
+    private TextView liveTvModePressesChoice;
+    private TextView liveTvModeWakeChoice;
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
     private String clockFormat;
     private boolean animations;
     private boolean advancedEffects;
+    private boolean liveTvMode;
+    private int liveTvModePresses;
+    private boolean liveTvModeWake;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -64,6 +70,9 @@ public final class LauncherSettingsActivity extends Activity {
         clockFormat = config.clockFormat;
         animations = config.animations;
         advancedEffects = config.animations && config.advancedEffects;
+        liveTvMode = config.liveTvMode;
+        liveTvModePresses = config.liveTvModeHomePresses;
+        liveTvModeWake = config.liveTvModeWakeFromApps;
 
         int[] ids = {R.id.columns4, R.id.columns5, R.id.columns6, R.id.columns7};
         for (int i = 0; i < ids.length; i++) {
@@ -152,12 +161,40 @@ public final class LauncherSettingsActivity extends Activity {
             openOnStartChoice.setVisibility(View.VISIBLE);
             openOnStartChoice.setOnClickListener(v -> showOpenOnStartPicker());
         }
+        liveTvModeChoice = findViewById(R.id.liveTvModeChoice);
+        liveTvModePressesChoice = findViewById(R.id.liveTvModePressesChoice);
+        liveTvModeWakeChoice = findViewById(R.id.liveTvModeWakeChoice);
+        if (config.liveTvModeRows) {
+            liveTvModeChoice.setVisibility(View.VISIBLE);
+            liveTvModePressesChoice.setVisibility(View.VISIBLE);
+            liveTvModeWakeChoice.setVisibility(View.VISIBLE);
+            liveTvModeChoice.setOnClickListener(v -> {
+                liveTvMode = !liveTvMode;
+                choices.edit().putBoolean(Config.LIVE_TV_MODE_KEY, liveTvMode).apply();
+                changed();
+                refresh();
+            });
+            liveTvModePressesChoice.setOnClickListener(v -> {
+                liveTvModePresses = LiveTvMode.nextPresses(liveTvModePresses);
+                choices.edit().putInt(Config.LIVE_TV_MODE_PRESSES_KEY, liveTvModePresses).apply();
+                changed();
+                refresh();
+            });
+            liveTvModeWakeChoice.setOnClickListener(v -> {
+                liveTvModeWake = !liveTvModeWake;
+                choices.edit().putBoolean(Config.LIVE_TV_MODE_WAKE_KEY, liveTvModeWake).apply();
+                changed();
+                refresh();
+            });
+        }
         followThemeChoice = findViewById(R.id.followThemeChoice);
         followThemeChoice.setOnClickListener(v -> {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY).commit();
+                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.CLOCK_FORMAT_KEY).remove(OpenOnStart.KEY)
+                    .remove(Config.LIVE_TV_MODE_KEY).remove(Config.LIVE_TV_MODE_PRESSES_KEY)
+                    .remove(Config.LIVE_TV_MODE_WAKE_KEY).commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
@@ -165,6 +202,9 @@ public final class LauncherSettingsActivity extends Activity {
             clockFormat = current.clockFormat;
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
+            liveTvMode = current.liveTvMode;
+            liveTvModePresses = current.liveTvModeHomePresses;
+            liveTvModeWake = current.liveTvModeWakeFromApps;
             changed();
             refresh();
         });
@@ -317,6 +357,16 @@ public final class LauncherSettingsActivity extends Activity {
                         : wallpaperCurrent != null ? wallpaperCurrent
                         : getString(R.string.wallpaper_theme_default)));
         openOnStartChoice.setText(getString(R.string.open_on_start_state, openOnStartLabel()));
+        liveTvModeChoice.setText(getString(R.string.live_tv_mode_state,
+                getString(liveTvMode ? R.string.on : R.string.off)));
+        liveTvModePressesChoice.setText(getString(R.string.live_tv_mode_presses_state,
+                String.valueOf(liveTvModePresses)));
+        liveTvModeWakeChoice.setText(getString(R.string.live_tv_mode_wake_state,
+                getString(liveTvModeWake ? R.string.on : R.string.off)));
+        liveTvModePressesChoice.setEnabled(liveTvMode);
+        liveTvModePressesChoice.setAlpha(liveTvMode ? 1f : 0.5f);
+        liveTvModeWakeChoice.setEnabled(liveTvMode);
+        liveTvModeWakeChoice.setAlpha(liveTvMode ? 1f : 0.5f);
         followThemeChoice.setSelected(!hasOnTvChoices());
     }
 
@@ -324,7 +374,9 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
-                || choices.contains(Config.CLOCK_FORMAT_KEY) || choices.contains(OpenOnStart.KEY);
+                || choices.contains(Config.CLOCK_FORMAT_KEY) || choices.contains(OpenOnStart.KEY)
+                || choices.contains(Config.LIVE_TV_MODE_KEY) || choices.contains(Config.LIVE_TV_MODE_PRESSES_KEY)
+                || choices.contains(Config.LIVE_TV_MODE_WAKE_KEY);
     }
 
     private void open(Intent intent) {

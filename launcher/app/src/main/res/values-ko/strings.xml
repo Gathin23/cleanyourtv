@@ -60,6 +60,9 @@
     <string name="advanced_effects_state">고급 효과: %1$s</string>
     <string name="open_on_start_label">시작 시 열기</string>
     <string name="open_on_start_state">시작 시 열기: %1$s</string>
+    <string name="live_tv_mode_state">실시간 TV 모드: %1$s</string>
+    <string name="live_tv_mode_presses_state">홈 화면을 여는 홈 버튼 횟수: %1$s</string>
+    <string name="live_tv_mode_wake_state">앱 사용 중에도 깨어나면 실시간 TV: %1$s</string>
     <string name="advanced_effects_warning">타일이 떠오르는 효과, 아이콘 확대, 부드러운 색상 전환을 추가합니다. 메모리 사용량이 늘어날 수 있으며, 실제 차이는 TV에 따라 달라집니다.</string>
     <string name="follow_theme">테마에 맞추기 (TV에서 바꾼 설정 초기화)</string>
     <string name="follow_theme_hint">현재 테마 또는 기본 레이아웃 및 동작 설정을 사용합니다. 테마를 새로 보내거나 초기화하면 TV에서 바꾼 설정도 지워집니다.</string>

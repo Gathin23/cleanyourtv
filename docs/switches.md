@@ -49,6 +49,9 @@ rule sit on its wanted list until a screenshot arrives.
 | `open_on_start_choice` | <img src="switches/open_on_start_choice.jpg" width="320" alt="open_on_start_choice on a TV"> |
 | `open_on_start_network_wait` | <img src="switches/open_on_start_network_wait.jpg" width="320" alt="open_on_start_network_wait on a TV"> |
 | `open_on_start_on_wake` | <img src="switches/open_on_start_on_wake.jpg" width="320" alt="open_on_start_on_wake on a TV"> |
+| `live_tv_mode` | <img src="switches/live_tv_mode.jpg" width="320" alt="live_tv_mode on a TV"> |
+| `live_tv_mode_home_presses` | <img src="switches/live_tv_mode.jpg" width="320" alt="live_tv_mode_home_presses on a TV"> |
+| `live_tv_mode_wake_from_apps` | <img src="switches/live_tv_mode.jpg" width="320" alt="live_tv_mode_wake_from_apps on a TV"> |
 | `single_row` | <img src="switches/single_row.jpg" width="320" alt="single_row on a TV"> |
 | `dock_band_all` | <img src="switches/single_row.jpg" width="320" alt="dock_band_all on a TV"> |
 | `uniform_tiles` | <img src="switches/uniform_tiles.jpg" width="320" alt="uniform_tiles on a TV"> |

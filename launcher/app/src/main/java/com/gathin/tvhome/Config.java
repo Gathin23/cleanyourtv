@@ -44,6 +44,9 @@ final class Config {
     static final String WALLPAPER_CHOICE_KEY = "wallpaper_choice";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
     static final String CLOCK_FORMAT_KEY = "clock_format";
+    static final String LIVE_TV_MODE_KEY = "live_tv_mode";
+    static final String LIVE_TV_MODE_PRESSES_KEY = "live_tv_mode_home_presses";
+    static final String LIVE_TV_MODE_WAKE_KEY = "live_tv_mode_wake_from_apps";
     /**
      * Counts the changes made in Launcher settings. Home remembers the count it was built with and rebuilds on
      * resume when it differs, however the settings were left (see MainActivity#onResume).
@@ -140,6 +143,14 @@ final class Config {
     final boolean glowSnap;
     /** The remote's Settings button clears the TV Settings task before opening it (config.xml / theme settings_key_clear_task). */
     final boolean settingsKeyClearTask;
+    /** live_tv_mode from config.xml or the theme: Launcher settings shows the Live TV mode rows. */
+    final boolean liveTvModeRows;
+    /** Live TV mode in force: the theme or config.xml turns it on, the on-TV row can turn it off (see LiveTvMode). */
+    final boolean liveTvMode;
+    /** Quick Home presses that show the home screen in Live TV mode (live_tv_mode_home_presses). */
+    final int liveTvModeHomePresses;
+    /** Waking up in Live TV mode also leaves an open app for Live TV (live_tv_mode_wake_from_apps). */
+    final boolean liveTvModeWakeFromApps;
     /** App library as a round button in the top bar (config.xml library_button); needs app_library. */
     final boolean libraryButton;
     /** The App library pill after the last Home row; false hides it while libraryButton is on (show_library_pill). */
@@ -299,7 +310,8 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean volumePausesFilter, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
-                   boolean settingsKeyClearTask) {
+                   boolean settingsKeyClearTask, boolean liveTvModeRows, boolean liveTvMode, int liveTvModeHomePresses,
+                   boolean liveTvModeWakeFromApps) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -352,6 +364,10 @@ final class Config {
         this.backOpensClock = backOpensClock;
         this.glowSnap = glowSnap;
         this.settingsKeyClearTask = settingsKeyClearTask;
+        this.liveTvModeRows = liveTvModeRows;
+        this.liveTvMode = liveTvMode;
+        this.liveTvModeHomePresses = liveTvModeHomePresses;
+        this.liveTvModeWakeFromApps = liveTvModeWakeFromApps;
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -486,6 +502,9 @@ final class Config {
         boolean backOpensClock = res.getBoolean(R.bool.back_opens_clock);
         boolean glowSnap = res.getBoolean(R.bool.glow_snap);
         boolean settingsKeyClearTask = res.getBoolean(R.bool.settings_key_clear_task);
+        boolean liveTvMode = res.getBoolean(R.bool.live_tv_mode);
+        int liveTvModePresses = res.getInteger(R.integer.live_tv_mode_home_presses);
+        boolean liveTvModeWake = res.getBoolean(R.bool.live_tv_mode_wake_from_apps);
         boolean libraryButton = res.getBoolean(R.bool.library_button);
         boolean showLibraryPill = res.getBoolean(R.bool.show_library_pill);
         int wifiLabelWidth = res.getInteger(R.integer.wifi_label_width);
@@ -603,6 +622,9 @@ final class Config {
             backOpensClock = bool(json, "back_opens_clock", backOpensClock);
             glowSnap = bool(json, "glow_snap", glowSnap);
             settingsKeyClearTask = bool(json, "settings_key_clear_task", settingsKeyClearTask);
+            liveTvMode = bool(json, "live_tv_mode", liveTvMode);
+            liveTvModePresses = integer(json, "live_tv_mode_home_presses", liveTvModePresses, 2, 5);
+            liveTvModeWake = bool(json, "live_tv_mode_wake_from_apps", liveTvModeWake);
             libraryButton = bool(json, "library_button", libraryButton);
             showLibraryPill = bool(json, "show_library_pill", showLibraryPill);
             wifiLabelWidth = integer(json, "wifi_label_width", wifiLabelWidth, 0, 300);
@@ -692,6 +714,13 @@ final class Config {
         int dockOpacity = json == null ? 100 : integer(json, "dock_opacity", 100, 30, 100);
         dockOpacity = chosenDockOpacity(choices.getInt(DOCK_OPACITY_KEY, -1), dockOpacity);
         clockFormat = choices.getString(CLOCK_FORMAT_KEY, clockFormat);
+        boolean liveTvModeRows = liveTvMode;
+        if (liveTvModeRows) {
+            liveTvMode = choices.getBoolean(LIVE_TV_MODE_KEY, true);
+            int chosenPresses = choices.getInt(LIVE_TV_MODE_PRESSES_KEY, liveTvModePresses);
+            if (chosenPresses >= 2 && chosenPresses <= 5) liveTvModePresses = chosenPresses;
+            liveTvModeWake = choices.getBoolean(LIVE_TV_MODE_WAKE_KEY, liveTvModeWake);
+        }
         String wallpaperOrder = json == null ? WallpaperRotation.ORDER_SHUFFLE
                 : string(json, "wallpaper_order", WallpaperRotation.ORDER_SHUFFLE);
         // An unknown order must not silently change how an existing collection rotates.
@@ -732,7 +761,8 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
-                settingsKeyClearTask);
+                settingsKeyClearTask, liveTvModeRows, liveTvMode, Math.max(2, Math.min(5, liveTvModePresses)),
+                liveTvModeWake);
     }
 
     /**

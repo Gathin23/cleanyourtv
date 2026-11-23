@@ -59,6 +59,9 @@
     <string name="advanced_effects_state">Gelişmiş efektler: %1$s</string>
     <string name="open_on_start_label">Açılışta aç</string>
     <string name="open_on_start_state">Açılışta aç: %1$s</string>
+    <string name="live_tv_mode_state">Canlı TV modu: %1$s</string>
+    <string name="live_tv_mode_presses_state">Ana ekran için tuşa basma sayısı: %1$s</string>
+    <string name="live_tv_mode_wake_state">Uyanınca her uygulamadan Canlı TV: %1$s</string>
     <string name="advanced_effects_warning">Kutucukları yükseltir, simgeleri büyütür ve renk geçişlerini yumuşatır. Bellek kullanımını artırabilir; etki TV’ye bağlıdır.</string>
     <string name="follow_theme">Temayı izle (TV seçimlerini sıfırla)</string>
     <string name="follow_theme_hint">Geçerli temanın veya yerleşik ayarların düzenini ve hareketini kullanır. Tema uygulamak ya da sıfırlamak TV seçimlerini de temizler.</string>

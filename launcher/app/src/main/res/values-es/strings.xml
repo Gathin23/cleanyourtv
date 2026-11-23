@@ -95,6 +95,9 @@
     <string name="wallpaper_none">Ninguno</string>
     <string name="wallpaper_applied">Fondo cambiado</string>
     <string name="wallpaper_theme_default">Predeterminado del tema</string>
+    <string name="live_tv_mode_state">Modo TV en vivo: %1$s</string>
+    <string name="live_tv_mode_presses_state">Pulsaciones de Inicio para la pantalla de inicio: %1$s</string>
+    <string name="live_tv_mode_wake_state">Al reactivar, TV en vivo desde cualquier app: %1$s</string>
     <string name="quick_picture">Imagen</string>
     <string name="quick_network">Red</string>
     <string name="quick_apps">Aplicaciones</string>

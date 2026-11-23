@@ -300,10 +300,36 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             open(i);
         }
     };
+    /** open_on_start_on_wake, or live_tv_mode: sleep locks the home screen again, and waking up leaves an open app
+     *  for Live TV with live_tv_mode_wake_from_apps (a home screen left in front opens Live TV itself, in onResume). */
     private final BroadcastReceiver wakeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            openStartAppOnWake();
+            if (!liveTvMode) {
+                openStartAppOnWake();
+                return;
+            }
+            // Both lock: waking up must find the home screen locked even if the screen-off broadcast came late.
+            LIVE_TV_MODE.lock();
+            if (Intent.ACTION_SCREEN_ON.equals(intent.getAction()) && liveTvModeWakeFromApps
+                    && LIVE_TV_MODE.opensLiveTv(SystemClock.elapsedRealtime())) {
+                openLiveTvForMode();
+            }
+        }
+    };
+    /** live_tv_mode: the Home-press burst and the lock, kept for the process so recreate() does not lock again. */
+    private static final LiveTvMode LIVE_TV_MODE = new LiveTvMode();
+    private boolean liveTvMode;
+    private int liveTvModePresses;
+    private boolean liveTvModeWakeFromApps;
+    /** The launcher was asked for something on this resume (Launcher settings, the library, Inputs): Home stays. */
+    private boolean liveTvModeHold;
+    /** The press that unlocked the home screen came right after one that started Live TV, which can reach the screen
+     *  after it: Home comes back over it. */
+    private final Runnable liveTvModeHomeBack = new Runnable() {
+        @Override
+        public void run() {
+            if (!resumed) open(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(getPackageName()));
         }
     };
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
@@ -493,7 +519,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
-        openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
+        liveTvMode = cfg.liveTvMode && !cfg.liveTvPackage.isEmpty();
+        liveTvModePresses = cfg.liveTvModeHomePresses;
+        liveTvModeWakeFromApps = cfg.liveTvModeWakeFromApps;
+        // Live TV mode decides what waking up opens; the Open on start app would race it to the screen.
+        openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake) && !liveTvMode;
         liveTvAction = cfg.liveTvAction;
         liveTvInputId = cfg.liveTvInputId;
         appLibraryEnabled = cfg.appLibrary;
@@ -960,11 +990,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             registerReceiver(packageReceiver, packageFilter);
         }
-        if (openOnStartOnWake) {
+        if (openOnStartOnWake || liveTvMode) {
+            IntentFilter screen = new IntentFilter(Intent.ACTION_SCREEN_ON);
+            if (liveTvMode) screen.addAction(Intent.ACTION_SCREEN_OFF);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON), Context.RECEIVER_NOT_EXPORTED);
+                registerReceiver(wakeReceiver, screen, Context.RECEIVER_NOT_EXPORTED);
             } else {
-                registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+                registerReceiver(wakeReceiver, screen);
             }
         }
 
@@ -1067,6 +1099,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (liveTvMode) liveTvModeHomePress(intent);
         if (openLauncherSettingsIfAsked(intent)) return;
         if (openLibraryIfAsked(intent)) return;
         if (openInputsIfAsked(intent)) return;
@@ -1132,6 +1165,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 break;
         }
         if (openLiveTvAfterBoot()) return;
+        if (liveTvMode && liveTvModeOnResume()) return;
         updateGreeting();
         updatePanel();
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
@@ -1404,7 +1438,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
-        if (openOnStartOnWake) unregisterReceiver(wakeReceiver);
+        if (openOnStartOnWake || liveTvMode) unregisterReceiver(wakeReceiver);
+        handler.removeCallbacks(liveTvModeHomeBack);
         wallpaperPlayer.close();
         ConnectivityManager cm = getApplicationContext().getSystemService(ConnectivityManager.class);   // as registered
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -3282,6 +3317,52 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (app.isEmpty() || app.equals(getPackageName())) return;
         Intent i = OpenOnStart.intent(getPackageManager(), app);
         if (i != null) openWhenReady(i);
+    }
+
+    /** live_tv_mode: a Home press counts toward the burst that unlocks the home screen, and short of it Live TV
+     *  comes straight back, so to a viewer the button does nothing. Any other request for the launcher (Launcher
+     *  settings, the library, Inputs) keeps the home screen on this resume. */
+    private void liveTvModeHomePress(Intent intent) {
+        if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) {
+            liveTvModeHold = true;
+            return;
+        }
+        if (LIVE_TV_MODE.unlocked()) return;
+        long now = SystemClock.elapsedRealtime();
+        if (LIVE_TV_MODE.press(now, liveTvModePresses)) {
+            if (LIVE_TV_MODE.openedWithin(now, LiveTvMode.PRESS_GAP_MS)) {
+                handler.postDelayed(liveTvModeHomeBack, 400);
+                handler.postDelayed(liveTvModeHomeBack, 1000);   // a slow Live TV app can arrive after the first look
+            }
+            return;
+        }
+        // opened() inside makes the onResume that follows see a fresh open, so it does not start Live TV twice.
+        openLiveTvForMode();
+    }
+
+    /** live_tv_mode: the home screen came to the front some other way (Back from an app, power-on, waking up with
+     *  Home in front) while it is locked. True when Live TV is opening instead. */
+    private boolean liveTvModeOnResume() {
+        if (liveTvModeHold) {
+            liveTvModeHold = false;
+            return false;
+        }
+        if (!LIVE_TV_MODE.opensLiveTv(SystemClock.elapsedRealtime())) return false;
+        return openLiveTvForMode();
+    }
+
+    /** Opens what the Live TV tile opens: its input when launch_actions gives it one, or the Live TV app. */
+    private boolean openLiveTvForMode() {
+        if (bootInputId != null) {
+            LIVE_TV_MODE.opened(SystemClock.elapsedRealtime());
+            openInput(bootInputId);
+            return true;
+        }
+        Intent i = liveTvIntent();
+        if (i == null) return false;
+        LIVE_TV_MODE.opened(SystemClock.elapsedRealtime());
+        open(i);
+        return true;
     }
 
     private boolean openWhenReady(Intent i) {

@@ -63,6 +63,10 @@ The launcher's own page has these rows, top to bottom:
   transitions; they may use more memory) once animations are on.
 - **Open on start**, only with `open_on_start_choice`: Off, or an app that opens instead of Home the first
   time Home comes up after the TV starts. Once per boot, so Home and Back still reach the launcher.
+- **Live TV mode**, **Home presses for the home screen** and **Wake to Live TV from any app**, only with
+  `live_tv_mode`: whether Home, Back to Home, power-on and waking up open the Live TV app instead of this
+  screen; how many quick Home presses (2 or 3) show the home screen until the TV next sleeps; and whether
+  waking up also leaves an open app for Live TV.
 - **Follow theme (reset on-TV choices)**, which clears every choice above. Pushing or resetting a theme
   clears them too.
 - **Choose default home** opens Android's home picker, and **TV system settings** the TV's own settings

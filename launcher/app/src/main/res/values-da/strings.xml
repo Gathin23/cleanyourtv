@@ -46,6 +46,9 @@
     <string name="animations_state">Animationer: %1$s</string>
     <string name="advanced_effects">Avancerede effekter</string>
     <string name="advanced_effects_state">Avancerede effekter: %1$s</string>
+    <string name="live_tv_mode_state">Live-TV-tilstand: %1$s</string>
+    <string name="live_tv_mode_presses_state">Tryk på Hjem for startskærmen: %1$s</string>
+    <string name="live_tv_mode_wake_state">Vågn til live-TV fra enhver app: %1$s</string>
     <string name="follow_theme">Følg tema (nulstil valg på TV)</string>
     <string name="tv_settings">TV-systemindstillinger</string>
     <string name="quick_picture">Billede</string>

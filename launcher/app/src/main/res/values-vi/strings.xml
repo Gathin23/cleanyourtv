@@ -88,6 +88,9 @@
     <string name="wallpaper_none">Không có</string>
     <string name="wallpaper_applied">Đã đổi hình nền</string>
     <string name="wallpaper_theme_default">Theo theme</string>
+    <string name="live_tv_mode_state">Chế độ truyền hình: %1$s</string>
+    <string name="live_tv_mode_presses_state">Số lần bấm Home để mở màn hình chính: %1$s</string>
+    <string name="live_tv_mode_wake_state">Khi bật lại, mở truyền hình từ mọi ứng dụng: %1$s</string>
     <string name="reorder">Sắp xếp ứng dụng</string>
     <string name="reorder_hint">Bấm OK để nhấc ứng dụng, phím mũi tên để di chuyển, Back để đặt xuống. Bấm Back lần nữa để xong.</string>
     <string name="reorder_not_saved">Không lưu được thứ tự mới</string>

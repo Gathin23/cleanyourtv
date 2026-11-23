@@ -43,6 +43,9 @@
     <string name="advanced_effects_state">Qoʻshimcha effektlar: %1$s</string>
     <string name="open_on_start_label">Ishga tushganda ochish</string>
     <string name="open_on_start_state">Ishga tushganda ochish: %1$s</string>
+    <string name="live_tv_mode_state">TV kanallar rejimi: %1$s</string>
+    <string name="live_tv_mode_presses_state">Bosh ekran uchun Home bosishlar: %1$s</string>
+    <string name="live_tv_mode_wake_state">Uygʻonganda istalgan ilovadan TV kanallar: %1$s</string>
     <string name="advanced_effects_warning">Plitkani koʻtarish, belgini kattalashtirish va ranglarning silliq oʻtishini qoʻshadi. Xotira sarfi oshishi mumkin; farq televizoringizga bogʻliq.</string>
     <string name="follow_theme">Mavzuga qaytish (TVdagi tanlovlarni bekor qilish)</string>
     <string name="follow_theme_hint">Joriy mavzu yoki standart joylashuv va harakat sozlamalaridan foydalanadi. Mavzuni yuborish yoki qayta tiklash ham TVdagi tanlovlaringizni tozalaydi.</string>

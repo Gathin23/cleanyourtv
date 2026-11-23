@@ -37,6 +37,9 @@
     <string name="advanced_effects_state">進階效果：%1$s</string>
     <string name="open_on_start_label">開機時開啟</string>
     <string name="open_on_start_state">開機時開啟：%1$s</string>
+    <string name="live_tv_mode_state">電視直播模式：%1$s</string>
+    <string name="live_tv_mode_presses_state">按主畫面鍵幾次進入主畫面：%1$s</string>
+    <string name="live_tv_mode_wake_state">喚醒時從任何應用程式回到電視直播：%1$s</string>
     <string name="advanced_effects_warning">加上圖塊浮起、圖示放大與背景顏色漸變。可能會多用一些記憶體，實際差異視電視而定。</string>
     <string name="follow_theme">跟隨主題（重設電視上的選擇）</string>
     <string name="follow_theme_hint">改用目前主題或內建的版面與動畫設定。推送或重設主題時，也會清除你在電視上做的這些選擇。</string>
