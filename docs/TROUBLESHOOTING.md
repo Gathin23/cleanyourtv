@@ -1062,8 +1062,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   freeze. What lasts is an app that is always running binding the receiver: there, the Home app binding
   `com.google.android.apps.mediashell/.CastReceiverService` (action `com.google.cast.action.BIND`, with
   the package in its `<queries>`) moved it to `vis` with `(service)` in
-  `tools/tv.py "dumpsys activity oom | grep -A1 mediashell"`, and it has not frozen since. This repo's
-  launcher does not do that today. That the freezing causes the lost discovery is inferred from the two
+  `tools/tv.py "dumpsys activity oom | grep -A1 mediashell"`, and it has not frozen since. The receiver's
+  dex (mediashell 3.72.446070) and the process table show why. On a TV, `CastReceiverService` calls
+  `startForeground()` only in its first `onBind` and `stopForeground()` when its last binding goes, and any
+  binding keeps its process at least as important as the client's, so a client that is never cached keeps it
+  out of the freezer's reach. The launcher holds that binding itself when
+  `keep_cast_receiver` is true in `config.xml` (`CastKeeper`, off by default, so set it and run
+  `launcher/build-and-install.sh` again). On a TCL Smart TV Pro (`G08_4K_GB`,
+  `UTT2.250416.001 AU04`) the receiver then sat at `vis` with `BFGS (service)` and
+  `CastReceiverService<=Proc{...com.gathin.tvhome...}` in the same `oom` listing, and the set kept advertising
+  `_googlecast._tcp` for the 45 minutes it was watched, past the half hour after which a plain started
+  service drops to the cached state. A set without the receiver, or with it disabled, gets no binding, and
+  nothing is started or re-enabled there. That the freezing causes the lost discovery is inferred from the two
   showing up together, not proven: if `isFrozen=true` is not there, the receiver is hung, as above.
   [The G08 US notes](../examples/tcl-g08-us-google-tv/README.md#fourth-unit-cast-and-the-freezer).
   Without a launcher change, switching the freezer off works from the shell: on a Xiaomi TV S Mini LED 65 2025

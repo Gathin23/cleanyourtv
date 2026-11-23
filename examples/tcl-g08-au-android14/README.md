@@ -22,6 +22,10 @@ TV_HOST=<tv ip> launcher/build-and-install.sh
 
 ## Notes
 
+- **Casting.** A `G08_4K_GB` set on `AU04` with this list kept casting with the setup wizard off, since the G08
+  receiver signs with MediaDRM. With launcherx off nothing binds the receiver, and phones lost the TV some time
+  after each boot until `keep_cast_receiver` was set to true in the launcher's `config.xml`; it then stayed
+  visible ([TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#working-on-the-tv), the Cast receiver and the freezer).
 - **Wi-Fi and the setup wizard.** On this set the saved network belonged to `setupwraith`
   (`tools/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*'`). It was forgotten and joined again from Settings before
   the wizard was disabled; `disable.sh` skips the wizard by itself while it owns the network.

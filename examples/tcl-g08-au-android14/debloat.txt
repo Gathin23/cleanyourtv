@@ -61,7 +61,9 @@ com.mediatek.backgrounddetection
 # forgotten and joined again from Settings before this ran; disable.sh skips setupwraith by itself when it owns
 # the network.
 com.google.android.apps.tv.launcherx     # stock Google TV home
-# Disabling setupwraith gives Home back but costs casting (Cast to this TV may stop working).
+# Disabling setupwraith gives Home back. A G08_4K_GB on AU04 kept casting with it off, as the G08 receiver signs
+# with MediaDRM rather than setupwraith's CastInfoProvider. If phones lose the TV some time after a boot, set
+# keep_cast_receiver to true in config.xml (docs/TROUBLESHOOTING.md, the Cast receiver and the freezer).
 com.google.android.tungsten.setupwraith  # setup wizard; claims Home once launcherx is off
 
 # DO NOT DISABLE - same as examples/tcl-g08-au-android12:

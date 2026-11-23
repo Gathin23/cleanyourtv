@@ -247,6 +247,13 @@
     <string-array name="app_keys" translatable="false">
     </string-array>
 
+    <!-- Hold Google's Cast receiver (com.google.android.apps.mediashell) bound, so its process stays as important as
+         this launcher's. Turn it on for a TV that keeps Chromecast after the stock home was disabled. Unbound, the
+         receiver falls to the cached state, Android's cached-app freezer stops it, and phones lose the TV until a
+         reboot (docs/TROUBLESHOOTING.md). A TV without the receiver, or with it disabled, is left alone, as
+         nothing is started or re-enabled. Off by default. config.xml only; not read from a theme. -->
+    <bool name="keep_cast_receiver">false</bool>
+
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
          com.xgimi.xrmservice does, on every one of its remote keys, power included (docs/TROUBLESHOOTING.md).
          Whenever that launcher's home screen comes up anyway, HomeKeyService (HOME_KEY_SERVICE=1) sends the TV

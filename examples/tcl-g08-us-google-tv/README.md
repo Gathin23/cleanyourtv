@@ -119,7 +119,8 @@ wizard disabled for a custom Home app. Seen 22 and 23 October 2026.
   freezer stopped it every few minutes (`isFrozen=true`, `curProcState=19`, and `ActivityManager: freezing <pid>
   com.google.android.apps.mediashell` in `logcat`). Phones found the TV slowly or not at all, and once its 8009
   connections sat in `CLOSE_WAIT`. Having the Home app bind `.CastReceiverService` (action
-  `com.google.cast.action.BIND`) kept it at `vis (service)` in `dumpsys activity oom`, and it has not frozen since.
+  `com.google.cast.action.BIND`) kept it at `vis (service)` in `dumpsys activity oom`, and it has not frozen since. The reference launcher does the same
+  when `keep_cast_receiver` is true in its `config.xml`.
   Details and the caveat in
   [TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#working-on-the-tv), under "Casting disappears although the Cast
   receiver is still running".

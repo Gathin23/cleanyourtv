@@ -23,10 +23,12 @@ sibling had one, on a table whose own line says a theme can point the Settings b
 says nothing about the scan code that a remote which sends none needs. A test below reads the three
 integer-array keys, so dropping the form again fails here instead of leaving a key unlisted.
 
-`latitude` and `longitude` are the two exceptions, with their reason in EXEMPT: they are config.xml
-lines a build sets, docs/sky.md documents them, and tests/test_sky_place_note.py requires the Keys
-table to keep naming neither (a theme cannot move the sun). A test here keeps that exemption honest by
-checking both are still read from config.xml by SkyView.java.
+`latitude` and `longitude` are exceptions, with their reason in EXEMPT: they are config.xml lines a
+build sets, docs/sky.md documents them, and tests/test_sky_place_note.py requires the Keys table to keep
+naming neither (a theme cannot move the sun). `keep_cast_receiver` is one too, a build setting
+CastKeeper.java reads that changes nothing on screen, documented in docs/TROUBLESHOOTING.md. A test here
+keeps each exemption honest by checking that its reader in EXEMPT_READERS still reads it from config.xml
+and that the page its EXEMPT entry names still mentions it.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -64,6 +66,15 @@ QUERIES_PACKAGE = re.compile(r'<package\s+android:name="([^"]+)"')
 EXEMPT = {
     "latitude": "docs/sky.md: the sky's place, a build setting no theme can move",
     "longitude": "docs/sky.md: the sky's place, a build setting no theme can move",
+    "keep_cast_receiver": "docs/TROUBLESHOOTING.md: the Cast receiver binding (CastKeeper), a build setting "
+                          "with nothing on screen to show",
+}
+
+# The file that reads each EXEMPT key and how it names it: an exemption holds only while that reader does.
+EXEMPT_READERS = {
+    "latitude": (SKY_VIEW, "R.string.latitude"),
+    "longitude": (SKY_VIEW, "R.string.longitude"),
+    "keep_cast_receiver": (JAVA_DIR / "CastKeeper.java", "R.bool.keep_cast_receiver"),
 }
 
 
@@ -248,15 +259,21 @@ class KeysTableCoversConfigXmlTest(unittest.TestCase):
                               f"package visibility hides it, so the fallback can never match")
 
     def test_the_exemption_is_still_right(self):
-        # latitude and longitude stay out of the table (tests/test_sky_place_note.py requires it), so
-        # they may only stay out while they are what that page describes: config.xml lines SkyView reads.
+        # An EXEMPT key may stay out of the table only while it is what its page describes: a config.xml
+        # line its reader still reads, named on that page. latitude and longitude must stay out
+        # (tests/test_sky_place_note.py requires it).
         config = config_keys(self.config)
-        sky = SKY_VIEW.read_text(encoding="utf-8")
-        for name in EXEMPT:
+        self.assertEqual(set(EXEMPT), set(EXEMPT_READERS),
+                         "every EXEMPT key needs its reader in EXEMPT_READERS, and only those")
+        for name, reason in EXEMPT.items():
+            reader, reference = EXEMPT_READERS[name]
+            page = reason.split(":")[0]
             with self.subTest(key=name):
                 self.assertIn(name, config, f"`{name}` is gone from config.xml: drop its EXEMPT entry")
-                self.assertIn(f"R.string.{name}", sky, f"SkyView.java no longer reads `{name}`: is the "
-                                                      f"docs/sky.md page still right?")
+                self.assertIn(reference, reader.read_text(encoding="utf-8"),
+                              f"{reader.name} no longer reads `{name}`: is the {page} page still right?")
+                self.assertIn(name, (ROOT / page).read_text(encoding="utf-8"),
+                              f"{page} does not mention `{name}`, so nothing documents why it is exempt")
                 self.assertNotIn(name, table_keys(self.text),
                                  f"`{name}` is in the Keys table now: drop its EXEMPT entry")
 

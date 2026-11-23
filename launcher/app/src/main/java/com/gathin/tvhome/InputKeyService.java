@@ -46,6 +46,8 @@ public class InputKeyService extends AccessibilityService {
         // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
+        // With keep_cast_receiver on, bind the Cast receiver at boot, often before Home starts (CastKeeper).
+        CastKeeper.ensure(this);
         inputKeycodes = config.inputKeycodes;
         consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);

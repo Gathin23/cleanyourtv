@@ -1103,6 +1103,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        // With keep_cast_receiver on, keep the Cast receiver bound, binding again after a receiver update (CastKeeper).
+        CastKeeper.ensure(this);
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
