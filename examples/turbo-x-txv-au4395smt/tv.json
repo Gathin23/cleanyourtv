@@ -1,6 +1,0 @@
-{
-  "tv": "Turbo-X TXV-AU4395SMT 43\" 4K (Vestel-built, EMIR, shandao, MediaTek m7632), Greece",
-  "os": "Android TV 14",
-  "brand": "Turbo-X",
-  "notes": "Same Vestel shandao board and build (UKNV.260304.001) as the Cecotec list: Vestel reporter/smartlogger/speedup/smartcenter, ad services, feedback, partner auto-installs, Freeview Play; `fusion.android.tv.demo` kept, because on this unit the retail demo also receives the remote's Input key; Assistant, Prime Video, YouTube Music, Play Movies, Play Games and the E-User Manual off by choice, Chromecast and the USB media player kept; reboot-checked, nothing re-enabled; Live TV first in the dock and on screen after power-on and after wake, for a set shared with older viewers ([README](turbo-x-txv-au4395smt/README.md))"
-}
