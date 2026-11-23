@@ -274,6 +274,18 @@
 # the Netflix, YouTube and Prime Video buttons, HDMI-CEC, casting, USB playback and a completed firmware update. USB
 # debugging was off and the port checked closed afterwards. Reported by @tjmcleod8 (#3876).
 #
+# TCL 43P735, EU firmware on an older build, 2026-11-09, status 2026-11-23 (two weeks, nothing re-enabled): Smart TV
+# Pro G03_4K_GB (BeyondTV4, Realtek rtd288o, software V8-R51MT05-LF1V578, client TCL-EU-RTD51M-S1), Google TV 11,
+# build RP1A.200622.001 AR07, security patch 2023-06-05, 2 GB, infrared remote (rtk_keypad). 41 packages were already
+# off from an earlier pass: most of this list, plus Stan (au.com.stan.and), Rakuten TV (tv.wuaki.apptv), camera2,
+# messaging, printspooler, htmlviewer, dynsystem, hotspot2.osulogin, smartconnect.tv, TalkBack, TTS, hearaid and t_solo.
+# This session added com.tcl.MultiScreenInteraction_TV, setupwraith (android.uid.system owned the Wi-Fi, so no
+# re-join) and launcherx via launcher/build-and-install.sh with HOME_KEY_SERVICE=1. On 2026-11-23 the same 44 were
+# disabled and Home was still the new launcher. Lines of this list left enabled on that unit: Chromecast (mediashell),
+# partnersetup, YouTube Music, com.tcl.android.webview, com.tcl.dashboard, micmanager, Miracast, partnercustomizer and
+# com.tcl.channelplus (TCL's free IPTV channels, opened from a remote button through its TV input). The launcher's
+# theme maps the remote's buttons by scancode (app_keys "scan:<n>:..."), the gear as settings_key_keycodes [4077].
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
