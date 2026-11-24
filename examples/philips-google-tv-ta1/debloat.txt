@@ -127,3 +127,21 @@ com.google.android.apps.tv.launcherx
 # com.netflix.tokenmanager                    # goes with Netflix
 # com.boosteroidtv.streaming                  # Boosteroid cloud gaming
 # tv.wuaki.apptv                              # Rakuten TV
+#
+# ---------------------------------------------------------------------------------------------------------------
+# Fourth set, Philips 65OLED818/12 (OLED, "Philips Google TV TA1", PH1M_WW_9972, UKN2.241117.001), Italy, Wi-Fi,
+# no tuner in use. Applied 2026-11-24 in four batches with a screenshot after each and two reboots; not yet lived
+# with for days.
+# Same as the third set where it matters: setupwraith owned the saved Wi-Fi network, so setupwraith and launcherx
+# stayed enabled and the launcher went on with STOCK_LAUNCHER=none HOME_KEY_SERVICE=1, home_long_press_home true
+# and stock_home_redirect set to launcherx (README.md). Every remote button worked after that, the owner checked.
+# Differences on that set:
+# - Batches 1 and 2 above, without com.google.android.tts (kept with the Assistant), the AirPlay packages, Matter,
+#   dreamx (ambient mode) and Mimi (personalisedsound and io.mimi.sdk.service), all kept by choice.
+# - Also off there, from the commented lines in this file: com.google.android.feedback,
+#   org.droidtv.tv.frameworklogger, com.netflix.tokenmanager (with Netflix), org.droidtv.contentexplorer,
+#   org.droidtv.dlna, and the whole broadcast group except the two below.
+# - org.droidtv.demome: skipped by tools/disable.sh's input-driver check, as on the third set.
+# - com.mediatek.dtv.tvinput.dvbtuner: disabled without TVINPUT_ALLOW, then enabled again by the firmware at every
+#   boot. Leave it in the list commented out; disabling it again after each boot does nothing lasting.
+# - HDMI inputs, Component and Composite listed in the launcher's Inputs menu after both reboots; HDMI 2 played.
