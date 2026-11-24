@@ -198,7 +198,9 @@ def address_problem(raw):
     return None
 
 
-_raw_host = os.environ.get("TV_HOST")
+# Stripped: an address copied off a page or out of a file often carries a space or a newline, and the
+# socket read "192.168.1.50 " as a host name it could not find, so the TV and its network were blamed.
+_raw_host = (os.environ.get("TV_HOST") or "").strip()
 if not _raw_host:
     sys.exit("Set TV_HOST to your TV's IP address, e.g.  TV_HOST=192.168.1.50 tools/tv.py --probe\n"
              "(find it under Settings → Network, or look for the TV in `arp -a`)")
@@ -210,6 +212,12 @@ if _problem:
                      f"TV_HOST=192.168.1.50 tools/tv.py --probe\n")
     sys.exit(2)
 HOST, _endpoint_port = split_host_port(_raw_host)
+if not HOST:
+    # `:5555` or `[]:5555`: a port with no address in front of it, which the socket answered as a TV it
+    # could not reach.
+    sys.stderr.write(f"TV_HOST={_raw_host!r} has no address before the port. Pass the TV's IP, e.g.  "
+                     f"TV_HOST=192.168.1.50:5555 tools/tv.py --probe\n")
+    sys.exit(2)
 _port_str = _endpoint_port or os.environ.get("TV_PORT") or "5555"
 try:
     PORT = int(_port_str)
