@@ -23,8 +23,8 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
    without a TV.
 7. Keep it small, and measure the room before you design it: the gate's ceiling is in
    `.github/workflows/ci.yml`, and little is left under it, so build the launcher and subtract the APK's size
-   from that ceiling rather than working from the rounded figure the front pages print. A switch has to fit in
-   a few hundred bytes, and it may not fit at all - what room is left goes to fixes of wrong behaviour first,
+   from that ceiling rather than working from the rounded figure the front pages print. A switch has to be
+   tiny, and it may not fit at all - what room is left goes to fixes of wrong behaviour first,
    so a preference that does not fit belongs in a fork with one row in `SHOWCASE.md`. Say what it costs in
    bytes in the pull request. The size is printed on the front pages as well, so a switch that moves it
    updates `STATS` in `tools/readme_stats.py` - the number `docs/card.jpg` is drawn from, and what each

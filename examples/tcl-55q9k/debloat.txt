@@ -21,6 +21,7 @@
 # ADB toggle appears at the bottom. Once on, it stays on across reboots:
 #
 #   persist.adb.tcp.port=5555, persist.service.adb.enable=1.
+# Switch the ADB toggle off again on the same screen when you are done: until then port 5555 stays open on the network.
 #
 # Stock launcher: com.tcl.workmode — the only activity that resolves MAIN+HOME, so never disable
 # it (no HOME handler means a black screen on boot). A third-party launcher cannot be installed

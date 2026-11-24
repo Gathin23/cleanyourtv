@@ -6,6 +6,7 @@
 # Setup wizard: com.google.android.tungsten.setupwraith (its RecoveryActivity claims HOME;
 #   launcher/build-and-install.sh fails its Home check until this is disabled)
 # Saved Wi-Fi network was owned by android.uid.system, so disabling setupwraith kept Wi-Fi.
+# Disabling setupwraith gives Home back but costs casting (Chromecast built-in) on Google TV.
 #   Check yours first: dumpsys wifi | grep -o 'cname=[^ ]*'
 # HDMI and tuner inputs: com.mediatek.tvinput (left on)
 # Remote: all buttons worked after the launcher install.

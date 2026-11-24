@@ -1,4 +1,4 @@
-# TCL C06 / TV+ OS (Brazil) — debloat + Apple TV style launcher, second unit
+# TCL 40S5400A (C06): the Brazil unit on V034 (TV+ OS)
 
 **TV:** TCL "Smart TV", client type `TCL-LA-MT9221-01` (TV+ OS), device C06, build AR2101,
 software `V8-T221T01-LF1V034.000077`, TV+ OS `V5.2.0 (V8-2203260-MF1V520)`, Android TV 11
@@ -58,13 +58,6 @@ which disabled `com.google.android.tvlauncher` after Home moved. `com.gathin.tvh
 was confirmed as both `ResumedActivity` and `mFocusedApp`. Plain `tv.py --push` timed out on
 the APK and on a 4.4 MB test APK, so `tools/b64push.py` (base64 chunks + md5) was used.
 
-The look is the `apple-tv-br` theme (`themes/apple-tv-br/config.json`, applied on the TV via
-`TV_HOST=<tv ip> tools/theme.sh themes/apple-tv-br`): frosted-glass dock band with the focused
-app's name above it, ambient and app-colour glow, calm reduced motion and no wallpaper of its own.
-The theme also hides the TCL tiles and the "Works with Alexa" (`com.tcl.smartalexa`) tile from the
-grid without disabling them, so HDMI/Cast stay untouched; which apps fill the dock is the owner's
-choice and is not part of the theme. `reduced_motion: true` keeps it smooth on 1 GB.
-
 ## Verification
 
 Screenshots after every wave; Chromecast checked after each wave and after reboot (port
@@ -77,21 +70,14 @@ Neither `power_on_home` nor `power_on_home_always` could stop the firmware openi
 `com.tcl.tv` a couple of seconds after boot. The owner chose to accept that and press Home.
 Do not claim those helpers work on this firmware.
 
-## Tests
-
-- `python3 -m pytest -q tests/test_examples.py tests/test_list_gives_commands.py tests/test_example_readme_package_fates.py` → **56 passed, 987 subtests passed**.
-- `python3 -m unittest tests.test_examples tests.test_example_readme_package_fates tests.test_example_list_count tests.test_list_gives_commands` → **88 tests, OK**.
-- Full `python3 -m unittest discover -s tests` run during this PR (before the fold): **3818 tests, 14 failures, 114 skipped**. The failures were all in the freshly added `themes/apple-tv-br` (missing `screenshot.jpg` and missing `themes/README.md` row) and are being fixed with this report; no failure traced to the debloat list or the launcher report itself.
-
 ## Re-enable one app / undo
 
 ```
-TV_HOST=192.168.0.6 tools/venv/bin/python tools/tv.py pm enable <package>
-TV_HOST=192.168.0.6 tools/restore.sh examples/tcl-40s5400a/debloat.txt
+TV_HOST=<tv ip> tools/venv/bin/python tools/tv.py pm enable <package>
+TV_HOST=<tv ip> tools/restore.sh examples/tcl-40s5400a/debloat.txt
 ```
 
 The list lives in [`debloat.txt`](debloat.txt) as the Brazil unit, 2026-11-19 (V034) of this
-folder, and the launcher-side switches live in
-[`themes/apple-tv-br/config.json`](themes/apple-tv-br/config.json). The convenience scripts that
+folder. The convenience scripts that
 were used on this unit (`install-launcher.sh`, `restore-all.sh`, `batch1-3.txt`) were local to the
 session and are not part of this report.

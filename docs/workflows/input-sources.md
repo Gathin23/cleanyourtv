@@ -21,8 +21,8 @@ Write the result of each item in the pull request or the task report, or say why
 3. **Inventory.** List every HDMI/AV input the set reports (`dumpsys tv_input`), with its input id, hardware
    id and source value, not only the port in the report. A set whose `dumpsys tv_input` prints nothing has no
    input to inventory at all: its menu is the firmware's own panel, so the mapping is `source_panel_service`
-   (a service) or `source_panel_action` (an activity), with `source_panel_extra` for the extra some panels
-   need - [`examples/vidda-c1s-mt9669`](../../examples/vidda-c1s-mt9669/) is that set, and record the
+   (the panel's component, an activity or a service) and/or `source_panel_action` (the action it answers), with `source_panel_extra` for the extra some panels
+   need - [`examples/vidda-c1s-mt9669`](../../examples/vidda-c1s-mt9669/) is that set. Record the
    component you verified there instead of an input id.
 4. **Configuration.** Check that `input_action`, `input_sources` or the applicable equivalent exist for the
    model and agree with the inventory. A model can have a debloat list and still lack its input mapping.

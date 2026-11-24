@@ -11,6 +11,7 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Connecting: Developer options, then "Network debugging" opens ADB on port 5555.
+# When you are done, switch Network debugging off again so port 5555 is closed.
 # Launcher: as on the 2017 and 2019 models, run launcher/build-and-install.sh first; disabling
 # com.google.android.tvlauncher (last line) hands Home over.
 # A SHIELD has no HDMI inputs and no tuner, so the launcher's Inputs pill has nothing to list.

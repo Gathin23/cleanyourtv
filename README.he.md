@@ -94,11 +94,11 @@
 
 | | | | | | |
 |:---|:---|:---|:---|:---|:---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 90 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 18 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 19 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 |
 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
-| [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 5 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
-| [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 |
-| [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
+| [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 6 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
+| [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
+| [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
 
 </div>
 
@@ -378,7 +378,7 @@ ADB ברשת ביציאה 5555 אינו מוצפן. בחלק מהטלוויזי�
 
 ב־17 באוקטובר 2026 פרסם יוצר הפרויקט [תמונות לפני ואחרי](https://x.com/gathint/status/2111379569030939102) של הטלוויזיה של הוריו, אחרי ניקוי באמצעות Claude Code דרך Wi-Fi. הפרסום הגיע ל־8.6 מיליון צפיות. בתוך ארבעה ימים הקהילה תרמה רשימות ליותר מ־170 דגמים, בעזרת יותר מ־200 תורמים. עד 19 באוקטובר המאגר נקרא tv-vibehack, והקישורים הישנים עדיין עובדים.
 
-בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־20 בנובמבר יש לו 59 אלף כוכבים ו־7,800 פיצולים. הרשימות כיסו 508 דגמים מ־139 מותגים. סיקור בתקשורת: 595 כתבות מ־58 מדינות ו־944 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־23 בנובמבר 2026)
+בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־20 בנובמבר יש לו 59 אלף כוכבים ו־7,800 פיצולים. הרשימות כיסו 513 דגמים מ־139 מותגים. סיקור בתקשורת: 595 כתבות מ־58 מדינות ו־944 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־23 בנובמבר 2026)
 
 ## תרומה לפרויקט
 

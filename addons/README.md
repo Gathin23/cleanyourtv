@@ -130,9 +130,9 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install weather
   so an add-on whose manifest asks for something the column leaves out is a bug in this page.
   The rules in [`docs/modules.md`](../docs/modules.md)
   apply: no telemetry without an opt-in, no ads, your own art.
-- **What the repo does not take.** An add-on built on an accessibility service or on notification
-  access stays out: the add-on rule in [`MAINTAINER.md`](../.github/maintainer/MAINTAINER.md) names
-  both, and a design that needs one lives in its own repository, with one row in
+- **What the repo does not take.** An add-on built on an accessibility service, notification access, READ_LOGS, an overlay, a boot
+  receiver, WRITE_SECURE_SETTINGS, input injection or a LAN server stays out (the rule lives in
+  [`MAINTAINER.md`](../.github/maintainer/MAINTAINER.md)), and a design that needs one lives in its own repository, with one row in
   [`SHOWCASE.md`](../SHOWCASE.md) instead. Network access is asked for in an issue or on the pull
   request before the folder is written, and an add-on whose point is switching wireless debugging
   back on is held rather than merged.

@@ -65,7 +65,8 @@ android.autoinstalls.config.vestel.medusa        # Vestel auto-install stub (pre
 com.mstar.android.tv.disclaimercustomization     # disclaimer screen used only by first-run setup
 
 # Preloaded apps and services (off by the owner's choice)
-com.amazon.amazonvideo.livingroom                # Prime Video. Its remote key does nothing while this is off.
+# This set has Prime Video off; uncomment if you don't use it.
+# com.amazon.amazonvideo.livingroom              # Prime Video. Its remote key does nothing while this is off.
 com.google.android.youtube.tvmusic               # YouTube Music
 com.google.android.videos                        # Google Play Movies & TV. It serves a TvInputService of its own
                                                  # (video previews), not HDMI or the tuner: inputs survive with it off.

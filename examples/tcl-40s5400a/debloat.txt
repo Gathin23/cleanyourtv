@@ -92,13 +92,12 @@
 #   and smartalexa came back at every boot (idle), and esticker was re-disabled after a sideload
 #   test re-enabled it (final disabled count 28).
 # - AdGuard Private DNS (dns.adguard-dns.com, hostname mode) was enabled and resolved normally.
-# - The Apple TV style launcher was installed as Home (com.gathin.tvhome, reduced motion) with the
-#   stock launcher disabled afterwards; the TCL and the Alexa tile were hidden through the launcher
-#   theme rather than disabled. HDMI (tuner plus HDMI 1-3), Live TV and Cast (port 8009,
+# - launcher/ was installed as Home (com.gathin.tvhome, reduced motion) with the
+#   stock launcher disabled afterwards; the TCL and the Alexa tile were hidden with hidden_apps
+#   rather than disabled. HDMI (tuner plus HDMI 1-3), Live TV and Cast (port 8009,
 #   mediashell) were kept and checked after every wave and after the reboot. Neither power_on_home
 #   nor power_on_home_always could keep Home in front at boot; the owner chose to accept Live TV at
-#   power-on and press Home. Not claimed as a fix. The dock's apps are the owner's choice, not the
-#   theme's.
+#   power-on and press Home. Not claimed as a fix.
 #
 # Second Asia-Pacific unit, 2026-11-15: same model "Smart TV", product C06_2K_GB, build AR2101,
 # Android TV 11 (SDK 30), persist.tcl.client_type TCL-AP-MT9221-01, security patch 2025-03-05,

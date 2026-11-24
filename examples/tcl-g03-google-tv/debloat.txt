@@ -331,8 +331,8 @@
 #   was needed for any button: with launcherx off and nothing in `enabled_accessibility_services`, the owner
 #   confirmed on the real remote that Netflix, YouTube, Prime Video and the gear all still work, and so do
 #   Home, Input (TCL's source panel) and the mic, with a held Volume Up still ramping. So HOME_KEY_SERVICE
-#   was left off and this folder's settings_key_keycodes and app_keys were not needed here, unlike every unit
-#   above, where those four buttons die with launcherx. This remote's scancodes were not read.
+#   was left off and this folder's settings_key_keycodes and app_keys were not needed here, as on the infrared-remote
+#   43P735 above and unlike the RC902 and RC813 remotes, whose four buttons die with launcherx. This remote's scancodes were not read.
 # - com.tcl.gallery was disabled by tools/disable.sh with no skip, unlike the 50S546 on this same AR09 build
 #   where it held TV_INPUT_HARDWARE; HDMI 1-3 and AV kept working with it off.
 # - gtvpai was disabled by tools/disable.sh here, not skipped.
@@ -342,6 +342,14 @@
 # - usercenter off, then a standby (`input keyevent SLEEP`) and a wake from the remote: /proc/uptime kept
 #   counting (335 s before, 587 s after), so this unit does not reboot on wake like the 43C641 in #3533.
 #   Standby took the TV off the network until it woke, as on the 43P735 above, so ADB is unreachable there.
+#
+# TCL 43P735, second unit, 2026-11-15 (#3949): BeyondTV4, software V8-R51MT05-LF1V620.021315, build RP1A.200622.001,
+# security patch 2024-03-05, on Ethernet. A light run: only com.tcl.bi and com.tcl.overseasappshow were disabled, and
+# both stayed disabled after a reboot. launcherx, setupwraith, the updater, the inputs and the remote services were kept;
+# stock_home_redirect to launcherx with home_long_press_home and the HomeKeyService helper, which needed APP_AUTO_START
+# allowed to start after a reboot (Google TV showed briefly first). The TCL Channel button opens Waterfall through
+# com.tcl.partnercustomizer, so keep both com.tcl.partnercustomizer and com.tcl.waterfall.overseas if you use that button.
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
