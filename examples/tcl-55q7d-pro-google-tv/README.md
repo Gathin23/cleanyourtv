@@ -94,3 +94,33 @@ started from the QM6K list instead and compared the two afterwards.
   after pairing, and the connect port changes after a reboot or a Wi-Fi drop. On macOS the stock `adb` lost its route
   to the TV after the Mac slept ("No route to host", `kill-server` fixed it); `tools/tv.py` kept working.
 
+## Third unit: TCL 65Q7D Pro, Google TV kept as Home
+
+65" Q7D Pro, model "Smart TV Pro", product `G08_4K_GB`, client type `TCL-EU-MT9653-S1`, firmware
+`UTT2.250416.001 AU02`, about 2.4 GB RAM. The same build as the first unit: all 33 packages of `debloat.txt` are
+on this set, and nothing was disabled out of the box.
+
+- **Stock Home kept.** This owner stays on Google TV, so `com.google.android.apps.tv.launcherx` and
+  `com.google.android.tungsten.setupwraith` were left out of the batches. `dumpsys wifi` showed the saved Wi-Fi
+  network owned by setupwraith on this set (`cname=com.google.android.tungsten.setupwraith`), so disabling it
+  would have taken the TV off Wi-Fi; forget and re-join the network in Settings first if you replace the launcher.
+- **What was applied, on 24 November 2026:** the rest of `debloat.txt` but one line (see the screensaver below),
+  plus `tv.mopa.ginga` and `com.tcl.magiconnectfree` from the optional lines, in three batches with
+  `tools/disable.sh` and a screenshot between them; then the owner's own choices in a fourth: Netflix, Prime Video,
+  HBO Max, AirPlay and Miracast. After `sync` and a reboot all of them were still disabled; Home, the Input panel
+  (`com.tcl.suspension`), YouTube and YouTube Music worked, and Cast and `com.tcl.ttvs` stayed on. Later that
+  evening `com.netflix.tokenmanager` (no use without Netflix), `com.tcl.smartalexa`, `com.tcl.ui_mediaCenter` and
+  `com.tcl.gallery` went as well.
+- **TCL Channel** was gone from the app row after the batches, while `com.tcl.channelplus` stayed enabled.
+- **Screensaver:** with `com.google.android.apps.tv.dreamx` disabled, the screensaver button at the top of Google TV's
+  Home did nothing, and `settings get secure screensaver_default_component` still named it. The owner wanted it back:
+  `pm enable --user 0 com.google.android.apps.tv.dreamx` brought the button back, and `dumpsys dreams` showed its
+  `Backdrop` running. Leave that line out if you keep Google TV and want the screensaver. `com.tcl.gallery` holds
+  TCL's own screensavers; with it off, Google's still runs.
+- **Two packages came back without a reboot.** About 25 minutes after the reboot, `com.tcl.exhibit` and
+  `com.tcl.messagebox` were enabled again. `logcat` puts it at the same second as `UserManagerService: Creating user
+  10 of type com.android.tv.profile`, a second, empty Google TV profile that nobody had asked for on purpose
+  (`pm list users` shows it as `new_user`). The log does not show which component re-enabled them. Both were
+  disabled again and stayed disabled for the rest of the evening; check `pm list packages -d` after a while.
+- **ADB from macOS:** the stock `adb` answered "No route to host" (Local Network privacy) while `tools/tv.py`
+  connected to port 5555, which this set opened alongside Wireless debugging.
