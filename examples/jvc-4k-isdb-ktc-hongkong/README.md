@@ -35,7 +35,7 @@ button through `HomeKeyService` with `stock_home_redirect`, and `key_filter` off
    `adb install --user 0`, with no `-g` and no extra permission granted. The script route should work too, but
    it was not run here; it also installs for every user (this set has a dormant second profile), grants
    location and still sends `set-home-activity`, which launcherx outranks on this set.
-2. Push the settings: `tools/theme.sh examples/jvc-4k-isdb-ktc-hongkong`.
+2. Push the settings: `TV_HOST=<tv ip> tools/theme.sh examples/jvc-4k-isdb-ktc-hongkong`.
 3. Turn on the helper: Settings > Accessibility > Home button. That is the only accessibility service enabled;
    `InputKeyService`, the notification listener and `restore_key_services` stay off.
 
@@ -63,7 +63,7 @@ uninstall the launcher (`pm uninstall --user 0 com.gathin.tvhome`). Google TV wa
 straight back to it. Then:
 
 ```bash
-tools/restore.sh examples/jvc-4k-isdb-ktc-hongkong/debloat.txt com.google.android.apps.tv.launcherx
+TV_HOST=<tv ip> tools/restore.sh examples/jvc-4k-isdb-ktc-hongkong/debloat.txt com.google.android.apps.tv.launcherx
 ```
 
 To get ambient mode back as the screensaver, enable it first and then select
