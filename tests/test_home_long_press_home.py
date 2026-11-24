@@ -52,7 +52,7 @@ class TestHomeLongPressHomeWiring(unittest.TestCase):
                         "the switch must come first: redirectHomeKey passes a held press on to Android")
         block = HOME_KEY[takes:redirect]
         self.assertIn('return true', block, "the Home key must be consumed, or Android still sees the hold")
-        self.assertRegex(block, r'ACTION_UP\s*&&\s*!event\.isCanceled\(\)\)\s*openHome\(\)',
+        self.assertRegex(block, r'ACTION_UP\s*&&\s*!event\.isCanceled\(\)\)\s*openHome\([^)]*\)',
                          "Home must open on release, once per press")
 
     def test_docs_name_it(self):
