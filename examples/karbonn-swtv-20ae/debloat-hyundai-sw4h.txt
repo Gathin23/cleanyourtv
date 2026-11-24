@@ -1,0 +1,86 @@
+# Hyundai TV (Hyundai-branded Skyworth OEM, device SW4H, product SW4H_B), Android TV 10 (API 29),
+# firmware QTG3.200617.002, security patch 2021-10-05.
+# Unit 4 of this folder: same build and same device as Units 1-3, sold under the Hyundai name in
+#   Latin America. ro.product.manufacturer=skyworth, armeabi-v7a, ~1.6 GB RAM (MemTotal 1724616 kB),
+#   1920x1080 at 320 dpi.
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx).
+# Live TV: com.smartdevice.livetv. Inputs: com.mediatek.tvinput. Never disable a com.mediatek.* package.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/karbonn-swtv-20ae/debloat-hyundai-sw4h.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/karbonn-swtv-20ae/debloat-hyundai-sw4h.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Order: install the launcher first (launcher/build-and-install.ps1 -TvHost <ip>), then this list; the
+# stock launcher is left to that script and is only named in a comment here.
+#
+# Status: applied 2026-11-24 in one session from Windows over Wi-Fi, after the CleanYourTV launcher had
+# taken Home; one reboot, every disable held. Not yet lived with for days: this PR stays a draft until
+# it has been in daily use, and this line moves with it.
+#
+# Nothing was re-enabled so far. The set was chosen by measuring what ran at boot on this unit:
+# available RAM went from 770 MB to 902 MB and swap in use from 186 MB to 20 MB after it plus the
+# launcher, which is what made the set worth writing down (1.6 GB of RAM).
+#
+# Arrived with com.sky.market and com.smartdevice.tvworkwithalexa already disabled by the firmware, so
+# neither is listed here. Wi-Fi belongs to android.uid.system on this unit
+# (dumpsys wifi shows only cname=android.uid.system), not to setupwraith.
+# Remote keys: the Netflix button and the nine-dot APPS key route through com.mediatek.partner.netflix,
+# which stays enabled. fusion.android.tv.demo stays enabled as well, as on Units 1-2, so the physical
+# Input key keeps reaching the TV tuner; the launcher's Inputs menu lists HDMI and Live TV without it.
+
+# Skyworth content, ads and preloads
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects ad rows into home screen
+com.smartdevice.acr.recommendation           # ACR - listens to ambient audio for ad targeting
+com.smartdevice.recommendation               # Skyworth recommendation rows, bundles Sensors Data analytics
+com.smartdevice.epopplayer                   # ePop shop demo player
+com.Smartdevice.emanual                      # on-screen manual
+com.mstar.android.tv.disclaimercustomization # manufacturer branding/disclaimer screen
+
+# Hyundai/Latin America preloads (never asked for)
+com.sugarapple.workout                       # Home Workouts
+com.vectorunit.purple.googleplay             # Beach Buggy Racing 2, shop demo build
+
+# Telemetry, feedback and partner attribution
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+android.autoinstalls.config.SW               # Play auto-install config for partner apps
+
+# Ambient screensaver (replaced by the ClockDream screensaver in launcher/)
+com.google.android.backdrop
+
+# Stock home recommendation rows; disable after the new launcher owns Home
+com.google.android.tvrecommendations
+
+# Sponsored partner channels on the stock home
+com.google.android.leanbacklauncher.partnercustomizer
+
+# Skyworth background service with camera, mic, contacts and account permissions; not running here.
+# debloat.txt keeps it as "privacy screen, effect unclear": drop this line for the cautious default.
+com.smartdevice.firewall
+
+# Streaming apps this set does not use. They are per-owner choices, so they ride commented out:
+# uncomment the ones you do not use. Reinstalling from the Play Store brings any of them back.
+# com.amazon.amazonvideo.livingroom          # Prime Video
+# com.crunchyroll.crunchyroid                # Crunchyroll
+# tv.twitch.android.app                      # Twitch
+# com.wbd.stream                             # Max
+# com.google.android.youtube.tvmusic          # YouTube Music
+# com.google.android.videos                  # Google Play Movies
+# com.google.android.play.games              # Google Play Games (already active in debloat.txt)
+
+# Setup wizard: claims HOME here (its RecoveryActivity answers the HOME intent with priority 4) and this
+# set disabled it after the launcher had Home, with the network kept. Check the Wi-Fi owner first:
+# on a set whose saved network belongs to setupwraith the network is forgotten when it is disabled, and
+# on Google TV casting from a phone stops without it. Both are false on this unit.
+# com.google.android.tungsten.setupwraith
+
+# Stock home: launcher/build-and-install.ps1 disables it after Home has moved, and only then.
+# com.google.android.tvlauncher
+
+# Shop demo player: kept, it may receive the remote's Input key on this platform.
+# fusion.android.tv.demo
+
+# Already disabled before this list (left as they were, restore.sh would turn them on):
+# com.sky.market
+# com.smartdevice.tvworkwithalexa
