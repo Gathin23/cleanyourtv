@@ -4,11 +4,13 @@
 
 ## What was disabled
 
-The debloat list disables **11 packages**: Formuler stock launcher (already disabled), Formuler help center, product service, upgrade services (3), network storage service, AOSP dreams/wallpaper/userdictionary, Google feedback.
+The debloat list disables **9 packages**: Formuler stock launcher (already disabled), Formuler help center, upgrade services (2), network storage service, AOSP dreams/wallpaper/userdictionary, Google feedback.
 
 **Kept (not in list):**
 - `tv.formuler.mytvonline.real` — MyTVOnline (IPTV app), kept as dock item
 - `tv.formuler.mytvonline.tunerservice.real` — MyTVOnline tuner service
+- `tv.formuler.service.real`: MyTVOnline binds its TVService. Disabled, the tuner reports `tvservice_not_connected`
+- `tv.formuler.productservice`: MyTVOnline binds its AFR service. Disabled, MyTVOnline crashes on launch with `failed to bind afr service`
 - `com.mediatek.wwtv.tvcenter` — Live TV / tuner for antenna/HDMI (if present)
 - Google Play Store, Play Services, Gboard, Chromecast, Assistant
 

@@ -10,13 +10,13 @@
 # Formuler stock launcher (replaced by launcher/) - already disabled
 tv.formuler.siptv.leanbacklauncher.real
 
-# Formuler background services (safe to disable)
+# Formuler background services
 tv.formuler.helpcenter
-tv.formuler.productservice
 tv.formuler.real.upgrade
 tv.formuler.remoteupgrade.z
-tv.formuler.service.real
 tv.formuler.service.networkstorage.real
+# tv.formuler.service.real       # KEEP: MyTVOnline binds its TVService; disabled, the tuner reports tvservice_not_connected
+# tv.formuler.productservice     # KEEP: MyTVOnline binds its AFR service; disabled, it crashes on launch ("failed to bind afr service")
 
 # AOSP/demo apps
 com.android.dreams.basic
