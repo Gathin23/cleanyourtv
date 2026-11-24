@@ -41,6 +41,11 @@
    out of its repository, so it was never pushed with it, and a link written against a branch that has
    since been renamed or force-pushed. Commit the screenshot somewhere the project tracks and point the
    link at that commit rather than at the branch, so the row keeps working after the project moves.
+   nothing beyond what its README says, and is yours or listed with the author's blessing. A project that has
+   only run on an emulator says that in its Built on cell instead of naming a TV it has not run on -
+   `Android TV 11 emulator (API 30, 1080p); not yet run on a TV`, the shape rows here already use - and a
+   screenshot taken on an emulator says so too.
+5. Put a screenshot in the PR description; it is linked from the row.
 
 Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
 [`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
