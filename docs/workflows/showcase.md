@@ -20,10 +20,10 @@
    A fork goes under the one of Forks' four `###` groups that fits best (Looks and restyles, Added
    features, Made for one TV or brand, Ports to older Android), at the end of that group's table.
 2. Bump the count by one everywhere it is stated: `SHOWCASE.md` opens with an `N projects so far.` line,
-   and the "Built something on top?" row carries the same number on seven translated front pages -
+   and the "Built something on top?" row carries the same number on eight translated front pages -
    `README.md` ("... projects already live") and `README.pt-BR.md` ("que já reúne ... projetos") spell it
-   in words, while `README.de.md`, `README.nl.md`, `README.uk.md`, `README.uz.md`, `README.fr.md` and
-   `README.es.md` write it in digits, the shape a German compound or an Uzbek classified numeral cannot be
+   in words, while `README.de.md`, `README.nl.md`, `README.uk.md`, `README.uz.md`, `README.fr.md`,
+   `README.es.md` and `README.el.md` write it in digits, the shape a German compound or an Uzbek classified numeral cannot be
    read out of. `tests/test_showcase_project_count.py` counts the rows and reads every page in its
    `COUNT_PAGES` table with the parser or the digits reader that page needs, and refuses a row that leaves
    any of them behind: the pages named here are the ones that carry the number today, and that table is the
