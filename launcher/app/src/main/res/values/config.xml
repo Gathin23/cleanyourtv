@@ -411,6 +411,11 @@
          App info page. A theme's config.json can set "tile_menu" either way. -->
     <bool name="tile_menu">true</bool>
 
+    <!-- Tile menu shows a "Close app" row that kills the app's background processes and clears its task,
+         so its next launch starts fresh. Uses android.permission.KILL_BACKGROUND_PROCESSES (protection
+         level normal). Off by default; a theme can set "tile_close_app": true. -->
+    <bool name="tile_close_app">false</bool>
+
     <!-- Grid rows left visible under the dock on the home screen. 0 = dock sits at the very bottom. Tiles shrink if
          the dock, its title and this many rows would not otherwise fit the screen height. -->
     <integer name="rows_below_dock">0</integer>

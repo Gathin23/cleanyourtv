@@ -133,6 +133,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean appLibraryEnabled;
     /** The same opt-in menu is available from either hold-OK or the remote's Menu key. */
     private boolean tileMenuEnabled;
+    /** Tile menu shows a "Close app" row (config.xml, tile_close_app). */
+    private boolean tileCloseAppEnabled;
     private String inputAction;
     private List<String> inputSources;
     private String inputUriScheme;
@@ -498,6 +500,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         liveTvInputId = cfg.liveTvInputId;
         appLibraryEnabled = cfg.appLibrary;
         tileMenuEnabled = cfg.tileMenu;
+        tileCloseAppEnabled = cfg.tileCloseApp;
         inputAction = cfg.inputAction;
         inputSources = cfg.inputSources;
         inputUriScheme = cfg.inputUriScheme;
@@ -3884,6 +3887,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Some firmware has no App info page at all; a row that only toasts "can't open" helps nobody.
         Intent info = SystemSettings.appInfo(this, pkg);
         if (info != null) addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(info));
+        if (tileCloseAppEnabled) addSettingsMenuRow(rows, popup, R.string.tile_close_app, () -> {
+            android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+            if (am != null) am.killBackgroundProcesses(pkg);
+            Intent restart = getPackageManager().getLaunchIntentForPackage(pkg);
+            if (restart != null) restart.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        });
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
         // Dock tiles sit near the bottom of the screen: open the menu above the tile when it would not fit below.
