@@ -179,6 +179,9 @@
 #   remote): Netflix 4062, YouTube 4065, Prime Video 4099, the old TCL Guard button 4140, Settings gear 4077 (a gear mapped to
 #   83 did nothing here). app_keys and settings_key_keycodes in config.xml or a theme bring them back. After a reinstall the
 #   two helpers are enabled but not bound until they are switched off and on again.
+# - The picture button (keycode 4139) opens TCL's picture panel only when com.tcl.settings/.PictureActivity is started by
+#   its action; opened as an activity it closes at once. "4139:action:android.settings.DISPLAY_SETTINGS" in app_keys opens
+#   the panel over Home (43P735, LF1V578, real remote, 2026-11-23).
 # - Game Master (TCL's game mode: ALLM, low lag) survives Home, input changes and power cycles, and the TV shows a "Game
 #   Master : On/Off" banner at every input start. It is turned off only when the Options bar (or the Picture or Sound page)
 #   opens while the current source is not the console: the log says "game console isn't plugged in, turn off game master".
