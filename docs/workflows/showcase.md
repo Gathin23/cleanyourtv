@@ -30,7 +30,10 @@
    list a bump has to cover - a translation that starts stating the count joins it, and this step with it.
 3. Keep each cell to one line: what it is, what it was built and tested on, and the author.
 4. The project is open source with a link people can read and build, says which TV it was tested on, collects
-   nothing beyond what its README says, and is yours or listed with the author's blessing.
+   nothing beyond what its README says, and is yours or listed with the author's blessing. A project that has
+   only run on an emulator says that in its Built on cell instead of naming a TV it has not run on -
+   `Android TV 11 emulator (API 30, 1080p); not yet run on a TV`, the shape rows here already use - and a
+   screenshot taken on an emulator says so too.
 5. Put a screenshot in the PR description; it is linked from the row.
 
 Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
