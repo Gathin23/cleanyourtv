@@ -317,6 +317,31 @@
 # - "consume_volume_keys": true with the key helper bound: the owner reported volume taps and a held volume button
 #   working on the real remote. Without the helper a held Volume Down kept repeating.
 #
+# Australian firmware unit, 2026-11-21: same G03_4K_GB / AR09 / V8-R51MT05-LF1V620 build, client
+# TCL-AU-RTD51M-S1, security patch 2024-03-05, Google TV 11, 32-bit userspace (zygote32), board RTD2851M,
+# on Wi-Fi, ro.adb.secure=1. Applied groups 1-3 in three batches with a screenshot after each, then group 4
+# minus Netflix, Prime Video, the USB player and the game bar, and group 5 minus voice (katniss, tv.assistant,
+# tcl.assistant, micmanager) and Chromecast; then a reboot, group 6, launcher/build-and-install.sh, the
+# screensaver switch to ClockDream and group 7. 31 packages with launcherx. Rebooted twice while ADB was up:
+# every package stayed disabled, the TV booted to the new Home (FallbackHome, then the launcher; no Live TV,
+# no RecoveryActivity), Wi-Fi stayed up, and the tuner, AV and HDMI 1-3 stayed in `dumpsys tv_input` and
+# opened from the launcher's Inputs menu. The firmware updater was kept. Tested the same day, not yet lived
+# with for days. Differences on this unit:
+# - Remote: Bluetooth "TCL_RC802VEU4" (in `dumpsys input`), not one of the RC902 remotes above. No key helper
+#   was needed for any button: with launcherx off and nothing in `enabled_accessibility_services`, the owner
+#   confirmed on the real remote that Netflix, YouTube, Prime Video and the gear all still work, and so do
+#   Home, Input (TCL's source panel) and the mic, with a held Volume Up still ramping. So HOME_KEY_SERVICE
+#   was left off and this folder's settings_key_keycodes and app_keys were not needed here, unlike every unit
+#   above, where those four buttons die with launcherx. This remote's scancodes were not read.
+# - com.tcl.gallery was disabled by tools/disable.sh with no skip, unlike the 50S546 on this same AR09 build
+#   where it held TV_INPUT_HARDWARE; HDMI 1-3 and AV kept working with it off.
+# - gtvpai was disabled by tools/disable.sh here, not skipped.
+# - setupwraith owned a saved phone hotspot that was not in use, while the network in use belonged to
+#   com.android.tv.settings. FORCE_SETUPWRAITH=1, with the owner's agreement, deleted only that hotspot entry
+#   and the network in use was untouched.
+# - usercenter off, then a standby (`input keyevent SLEEP`) and a wake from the remote: /proc/uptime kept
+#   counting (335 s before, 587 s after), so this unit does not reboot on wake like the 43C641 in #3533.
+#   Standby took the TV off the network until it woke, as on the 43P735 above, so ADB is unreachable there.
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
