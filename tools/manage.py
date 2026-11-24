@@ -1135,14 +1135,16 @@ def cmd_status():
         except ValueError:
             pass
         else:
-            for t in themes():
-                f = ROOT / "themes" / t["id"] / "config.json"
+            # A TV's own folder under examples/ is pushed with theme.sh the same way, and named by its path.
+            candidates = [(t["id"], ROOT / "themes" / t["id"] / "config.json") for t in themes()]
+            candidates += [(f"examples/{f.parent.name}", f) for f in sorted((ROOT / "examples").glob("*/config.json"))]
+            for name, f in candidates:
                 try:
                     matches = f.is_file() and json.loads(f.read_text(encoding="utf-8")) == pushed
                 except (OSError, ValueError):
                     continue
                 if matches:
-                    match = t["id"]
+                    match = name
     print(f"theme: {match or ('your own' if config.strip() else 'none (the built-in config.xml)')}")
     return 0
 
