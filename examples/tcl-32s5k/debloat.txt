@@ -25,8 +25,6 @@
 #   This TV is RAM-bound, not I/O-bound: 0% iowait, ~88% idle CPU, but ~330 MB of zram swap in use.
 #   Every MB freed here is a MB less swapped, which is why debloating helps this set noticeably.
 #
-# A second C06 unit on LF1V361 kept casting and setupwraith. See the cleanup walkthrough in README.md.
-#
 # Unit-specific notes (these differ from the 40S5400A list, check yours before copying):
 # - The saved Wi-Fi network belongs to com.android.tv.settings, NOT setupwraith, so setupwraith is
 #   safe to disable here and the network survives. disable.sh checks this for you; do not force it.
@@ -71,6 +69,18 @@
 # com.tcl.providers.config             # reported to drop Wi-Fi on the 65C725; not tried here
 # com.tcl.keyhelp                      # remote-key help/virtual keys
 
+# Second C06 unit (23 November 2026)
+# TCL Smart TV (C06 / C06_2K_GB), Android TV 11, build AR2101 / AR21, TCL software V8-T221T05-LF1V361.
+# On this unit, dumpsys wifi showed com.google.android.tungsten.setupwraith owns the saved Wi-Fi
+# network. Leave it enabled on this unit, and check ownership on yours before applying the list.
+#
+# The 13 packages disabled on this unit were still disabled after a reboot:
+#   com.tcl.partnercustomizer, com.tcl.waterfall.overseas, com.tcl.esticker,
+#   android.autoinstalls.config.tcl.device, com.tcl.guard, com.google.android.feedback,
+#   com.google.android.play.games, com.google.android.tvrecommendations,
+#   com.amazon.amazonvideo.livingroom, com.crunchyroll.crunchyroid, com.google.android.katniss,
+#   com.tcl.smartalexa, com.google.android.tvlauncher.
+#
 # TCL account, promos and content
 com.tcl.usercenter                     # TCL account; re-enabled by ttvs, see notes above
 com.tcl.guard                          # TGuard cleaner/support
