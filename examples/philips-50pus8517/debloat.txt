@@ -220,6 +220,41 @@
 #   key filter dropped the repeats. consume_volume_keys did not change that; volume_pauses_filter true gave
 #   the ramp back after one tap (tap Volume, then hold). Checked on the real remote: Home, SOURCES,
 #   Settings and the app keys.
+#
+# EIGHTH UNIT: Philips 50PUS8507/62 (Turkey), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029, security patch 2025-10-01), so this list applies.
+# Debloated on 30 August 2026 in six batches of at most ten, with the SOURCES drawer opened after every
+# package (am start -n org.droidtv.channels/.sources.SourcesDrawerActivity), then in daily use for almost
+# three months with Projectivy as Home. Status, 24 November 2026: all still disabled (`pm list packages -d`).
+# - Disabled from this list: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   nettvapp20004410, amazonalexa, dlna, demome, feedback, onetimeinitializer, play.games, videos,
+#   youtube.tvmusic, talkback, Boosteroid and tvrecommendations, then tvlauncher once Projectivy was Home.
+# - Disabled there beyond this list, nothing missed in three months: android.autoinstalls.config.tpv.device,
+#   org.droidtv.nettvapps and nettv_launcherapp (the gallery's preload installer and its entry),
+#   philipstvdrawer, dropboxprovider, usbbreakin, com.phorus.playfi.softap, com.google.android.tts, a few AOSP
+#   leftovers (printspooler, dynsystem, the two CTS shims) and the Turkish preloads com.exxen.android,
+#   com.trt.tabii.android, com.turkcell.ott, com.rma.speedtesttv and tv.twitch.android.app.
+# - Also off there, on a set whose owner uses none of these features, so no reason to move them out of the
+#   DO NOT DISABLE block below: nettvbrowser and com.vewd.core.browserui (no HbbTV, no gallery),
+#   contentexplorer (no USB media), teletext, hbbtvopapp, sunrise, calmancalibrator, and nettvregistration
+#   with icp. HDMI, the tuner, Ambilight, standby and the remote kept working. No firmware update has arrived
+#   since, so the update path with nettvregistration off is untested.
+# - org.droidtv.fastip has to stay on this board too (as on examples/philips-75pus8505): with it disabled the
+#   SOURCES drawer crashes at once, org.droidtv.channels logging FATAL EXCEPTION ActivityNotFoundException for
+#   act=org.droidtv.fastip.START_INSTALLATION_FAST_PROMO_PAGE (SourcesDrawerActivity$LaunchPromoVideoTask).
+#   eum broke the drawer here as in quirk 5; aurora is enabled.
+# - Re-enabled by the firmware at every boot, as quirk 4 and the fourth unit say: mediashell,
+#   com.phorus.playfi.tv and io.mimi.tvapp.
+# - org.droidtv.tv.frameworklogger (not on this list; leave it off it) leaks threads on this firmware: about
+#   250 a day, never freed. Near 1,100 threads the 32-bit process cannot start another ("pthread_create
+#   failed ... Try again") and Netflix stops at 86% on its loading circle; standby does not clear it, a power
+#   cycle does for a few days. pm disable-user is undone at boot and floods the log while it holds, and
+#   pm suspend leaves the service running. `am force-stop org.droidtv.tv.frameworklogger` restarts it with a
+#   few threads and nothing else notices. Check the count with
+#   adb shell 'grep Threads /proc/$(pidof org.droidtv.tv.frameworklogger)/status'
+# - Launcher: tvlauncher's HOME filter has priority 2 here too, so set-home-activity alone did not move Home.
+#   Projectivy's accessibility service took the Home key until tvlauncher was disabled; then HOME resolved to
+#   Projectivy on its own and its HDMI tiles appeared without setup.
 
 # TP Vision telemetry. org.droidtv.gel runs inside the candeebug process
 # (android:process="org.droidtv.candeebug"), so disabling candeebug alone leaves a process with
@@ -311,6 +346,8 @@ com.google.android.youtube.tv
 #   Browser engine             com.vewd.core.browserui plus org.droidtv.nettvbrowser — HbbTV and
 #                              the app gallery run on it
 #   USB media                  org.droidtv.contentexplorer ("Media")
+#   Sources promo              org.droidtv.fastip -- the SOURCES drawer starts its FAST promo page
+#                              when it opens and crashes if the package is gone (eighth unit)
 #   Contextual help            org.droidtv.eum -- see quirk 5. It looks like a pure e-manual
 #                              and it is not: persistent xtv binds its EUMService and retries
 #                              forever without it, which costs you the sources drawer
