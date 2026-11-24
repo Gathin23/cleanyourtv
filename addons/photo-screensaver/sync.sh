@@ -38,6 +38,8 @@ tv() { "$PY" -I tv.py "$@"; }
 md5() { "$PY" -I -c 'import hashlib,sys; print(hashlib.md5(open(sys.argv[1],"rb").read()).hexdigest())' "$1"; }
 
 [[ "$IDLE_MINUTES" =~ ^[0-9]+$ ]] && [ "$IDLE_MINUTES" -le 1440 ] || { echo "IDLE_MINUTES takes 1 to 1440" >&2; exit 1; }
+# Base 10: bash reads 08 and 09 as bad octal and the timeout was never set.
+IDLE_MINUTES=$((10#$IDLE_MINUTES))
 [[ "$SECONDS_PER_PICTURE" =~ ^[0-9]+$ ]] && [ "$SECONDS_PER_PICTURE" -ge 5 ] && [ "$SECONDS_PER_PICTURE" -le 3600 ] \
   || { echo "SECONDS_PER_PICTURE takes 5 to 3600" >&2; exit 1; }
 tv "pm path $PKG; true" | grep -q package: \
