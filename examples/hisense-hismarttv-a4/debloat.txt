@@ -20,11 +20,36 @@
 # Kept by choice: Chromecast (mediashell), Assistant (katniss, pumpkin), Miracast receiver
 # ("Screen Sharing", com.mediatek.androidbox), YouTube.
 # Already disabled at the factory: com.google.android.backdrop, com.google.android.apps.inputmethod.zhuyin.
+#
+# Second unit (checked 2026-11-22, one session): product xiaoyushan-sa, the same PTMR.190127.037 with build
+# 02.00.00.01, security patch 2020-06-05; 1.8 GB RAM, armeabi-v7a only. Groups 1-3 applied in three batches,
+# with Netflix, Prime Video and the screensaver (com.hisense.myapplication) kept and group 4 left on.
+# Off by the owner's choice there, with no side effect seen: Assistant (katniss, speech.pumpkin) and
+# Screen Sharing (com.mediatek.androidbox). HDMI 1-3, AV and both tuners stayed registered after every reboot.
+# Not on this build: com.seraphic.browser (the browser is com.hisense.hibrowser), smartconnect.tv. Nothing
+# was disabled at the factory. zhuyin is not installed; backdrop is, and was left enabled.
+# Reboot timing: batch 1, rebooted with `sync` a few seconds after tools/disable.sh, came back all enabled;
+# applied again and given 25 s, it stayed disabled. `sync` does not stand in for the wait.
+# Home does not stay with the new launcher on this build. launcher/build-and-install.sh hands it over and
+# reports success, but com.hisense.uifac/.FacRootMenu ("FACTORY MENU") also claims HOME, and Hisense's
+# PackageManager leaves it out of some HOME lookups only (logcat: "[wangbin40]Hisense removing factory").
+# Android then discards the new default ("Result set changed, dropping preferred activity"), and with the
+# stock launcher disabled the next Home press opens Android's chooser, FACTORY MENU in it. Never pick it.
+# What works: com.google.android.tvlauncher left enabled (it wins Home on priority), "stock_home_redirect"
+# set to it with "home_long_press_home": true, and HomeKeyService on (HOME_KEY_SERVICE=1). The real Home
+# button then opens the new launcher at once, and a held Volume key steps once per press (key_filter).
+# Without home_long_press_home the stock home shows for about 5 s first. Steps: docs/TROUBLESHOOTING.md.
+# With tvlauncher enabled the remote's Input button still opens its inputs panel (VIEW_INPUTS; disabled,
+# nothing answers it, as on the Android 11 list).
+# com.hisense.app.logreport is PERSISTENT: disabled for user 0, its process still starts at boot. The
+# smartsense process also sends an app-launch report each time an app opens, and stays enabled (see Keep).
+# At 13 % free storage smartsense shows "Storage space is running out" after boot: that is the storage.
 
 # Group 1: telemetry
 com.hisense.app.logreport              # Hisense LogReportManagerService
 com.google.android.feedback
 com.google.android.tv.bugreportsender
+# com.google.android.partnersetup      # partner referral tracking; off on the second unit for one session so far, and in the Android 11 list
 
 # Group 2: recommendation rows, retail demo, silent preload installs
 com.google.android.tvrecommendations
@@ -37,6 +62,7 @@ android.autoinstalls.config.hisense.xiaoyushan
 
 # Group 3: preloaded apps
 com.seraphic.browser                   # Hisense browser
+# com.hisense.hibrowser                # HiBrowser, the browser on the second unit's build; off there for one session so far
 com.google.android.music               # Play Music, discontinued
 com.google.android.videos
 com.google.android.play.games
