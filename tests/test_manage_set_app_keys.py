@@ -169,6 +169,13 @@ class AppKeyProblemTest(unittest.TestCase):
         self.assertIn("is nothing the launcher opens", manage.app_key_problem("190:Settings"))
         self.assertIn("not a string", manage.app_key_problem(190))
 
+    def test_a_space_before_the_scan_colon_is_still_a_scancode(self):
+        # parseAppScancodes() compares parts[0].trim() with "scan", so the launcher keeps these entries.
+        for entry in ("scan :490:com.wbd.hbomax", "hold:scan :490:org.xbmc.kodi"):
+            with self.subTest(entry=entry):
+                self.assertIsNone(manage.app_key_problem(entry))
+        self.assertIn("not a scancode", manage.app_key_problem("scan :abc:com.wbd.hbomax"))
+
     def test_a_hold_entry_is_held_to_the_same_rules(self):
         # prefixed() strips "hold:" and hands the rest to parseAppKeys(), so the key behind it has to read too.
         self.assertIn("not a key the launcher reads", manage.app_key_problem("hold:HOME:com.x.y"))

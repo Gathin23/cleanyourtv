@@ -309,7 +309,8 @@ def app_key_problem(entry):
             break
     if ":" not in text:
         return f"{entry!r} has no colon, so RemoteKeys finds no key in it"
-    if text.startswith("scan:"):
+    # parseAppScancodes() trims the word before the first colon, so "scan :490:a.b" is a scancode too.
+    if text.partition(":")[0].strip() == "scan":
         parts = text.split(":", 2)
         if len(parts) != 3 or not parts[2].strip():
             return f"{entry!r} names a scancode but nothing it opens"
