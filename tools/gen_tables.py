@@ -54,6 +54,7 @@ import os
 import re
 import shutil
 import stat
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -600,6 +601,11 @@ def card_python(root):
     return sys.executable
 
 
+def as_command(path):
+    """`path` as the first word of a command the reader pastes: quoted when it has a space in it."""
+    return subprocess.list2cmdline([path]) if os.name == "nt" else shlex.quote(path)
+
+
 def redraw(root, font):
     """Draw docs/stats.png then docs/card.jpg through the two card scripts; a line saying what stopped, or None.
 
@@ -631,11 +637,11 @@ def redraw(root, font):
             # interpreter that failed is not one, so the remedy names the Python that ran this script).
             return (f"{out} was not redrawn: cannot start {shown} ({e.strerror}). The tables are written; "
                     f"draw the picture with an interpreter that runs, then commit it with the tables: "
-                    f"{sys.executable} {script} <Fredoka.ttf> {out}")
+                    f"{as_command(sys.executable)} {script} <Fredoka.ttf> {out}")
         if done.returncode:
             return (f"{out} was not redrawn: {script} exited {done.returncode} and its line above says why. "
                     f"The tables are written; redraw the picture once that is fixed, with "
-                    f"{shown} {script} <Fredoka.ttf> {out}, and commit it with the tables.")
+                    f"{as_command(shown)} {script} <Fredoka.ttf> {out}, and commit it with the tables.")
     return None
 
 
