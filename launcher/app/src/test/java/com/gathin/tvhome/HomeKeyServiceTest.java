@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -61,5 +62,34 @@ public class HomeKeyServiceTest {
     @Test public void alwaysGoesHomeAfterScreenOnUntilAKey() {
         assertTrue(HomeKeyService.stillArmed(SOON, SOON + HomeKeyService.SCREEN_ON_WINDOW_MS));
         assertFalse(HomeKeyService.stillArmed(SOON, 0));
+    }
+
+    @Test public void stockHomeLookupCoversVendorHomeCategories() {
+        // Coocaa OS declares its home under HOME.CC / HOME.CC_MAIN and never under CATEGORY_HOME (#1351).
+        assertEquals(3, HomeKeyService.STOCK_HOME_CATEGORIES.length);
+        assertEquals("android.intent.category.HOME", HomeKeyService.STOCK_HOME_CATEGORIES[0]);
+        assertEquals("android.intent.category.HOME.CC", HomeKeyService.STOCK_HOME_CATEGORIES[1]);
+        assertEquals("android.intent.category.HOME.CC_MAIN", HomeKeyService.STOCK_HOME_CATEGORIES[2]);
+    }
+
+    @Test public void bootHomeComesFromTheHomepagePackageNotTheClassPrefix() {
+        // #1351: the boot activity com.coocaa.homepage.vast.HomePageActivity does not start with the
+        // stock package com.tianci.movieplatform, yet persist.service.homepage.pkg names that package.
+        assertEquals("com.coocaa.homepage.vast.HomePageActivity",
+                HomeKeyService.bootHomeActivity("com.tianci.movieplatform",
+                        "com.coocaa.homepage.vast.HomePageActivity", "com.tianci.movieplatform"));
+    }
+
+    @Test public void aBootHomeForAnotherPackageIsLeftOut() {
+        assertEquals("", HomeKeyService.bootHomeActivity("com.other.stuff",
+                "com.coocaa.homepage.vast.HomePageActivity", "com.tianci.movieplatform"));
+    }
+
+    @Test public void noHomepagePairNamesNoBootHome() {
+        assertEquals("", HomeKeyService.bootHomeActivity("", "com.coocaa.homepage.vast.HomePageActivity",
+                "com.tianci.movieplatform"));
+        assertEquals("", HomeKeyService.bootHomeActivity("com.tianci.movieplatform", "",
+                "com.tianci.movieplatform"));
+        assertEquals("", HomeKeyService.bootHomeActivity(null, null, "com.tianci.movieplatform"));
     }
 }
