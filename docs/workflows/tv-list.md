@@ -22,6 +22,13 @@
      alone.
 3. List only packages you actually disabled and lived with for a few days. Note anything you re-enabled.
    Mark untested entries as comments.
+   - A package the next owner may want goes in commented out, not on an active line. The person's own streaming
+     apps, the firmware updater and the phone-remote service (`com.google.android.tv.remote.service`) are choices
+     each owner makes for themselves, so a set that found one of them unused keeps the line in the list under a
+     note that says so (`# This set has these off; uncomment the ones you don't use`) rather than sending
+     `pm disable-user` at it: a live line takes that app off a TV whose owner wanted it, and the line is commented
+     out on merge anyway. The TV middleware `PROMPT.md` keeps on is written the same way, in the list and never
+     sent.
 4. Add `examples/<folder>/tv.json` beside the list, like `examples/xiaomi-mi-tv-4a/tv.json`:
    ```json
    {
