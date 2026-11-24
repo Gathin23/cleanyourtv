@@ -51,6 +51,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `open_on_start_on_wake` | <img src="switches/open_on_start_on_wake.jpg" width="320" alt="open_on_start_on_wake on a TV"> |
 | `single_row` | <img src="switches/single_row.jpg" width="320" alt="single_row on a TV"> |
 | `dock_band_all` | <img src="switches/single_row.jpg" width="320" alt="dock_band_all on a TV"> |
+| `mac_dock` | <img src="switches/mac_dock.jpg" width="320" alt="mac_dock on a TV"> |
 | `uniform_tiles` | <img src="switches/uniform_tiles.jpg" width="320" alt="uniform_tiles on a TV"> |
 | `lunar_date` | <img src="switches/lunar_date.jpg" width="320" alt="lunar_date on a TV"> |
 | `dock_band` | <img src="switches/dock_band.jpg" width="320" alt="dock_band on a TV"> |

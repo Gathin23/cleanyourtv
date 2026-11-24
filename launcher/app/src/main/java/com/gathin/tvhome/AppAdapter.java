@@ -117,6 +117,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return Math.round(tileWidthPx * DESIGN_H_DP / DESIGN_W_DP);
     }
 
+    /** mac_dock tiles are square; every other tile keeps the banner shape. */
+    static int tileHeightPx(int tileWidthPx, boolean macDock) {
+        return macDock ? tileWidthPx : tileHeightPx(tileWidthPx);
+    }
+
     /** Height of one grid item: the tile, the name label under it and the item's own padding. */
     static int itemHeightPx(int tileHeightPx, float density) {
         return itemHeightPx(tileHeightPx, true, density);
@@ -218,6 +223,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Map<String, String> appLabels, appBanners;
     /** Every app tile is its icon on a card tinted from that icon, never its banner (config.xml, uniform_tiles). */
     private final boolean uniformTiles;
+    /** The macOS-style dock (config.xml, mac_dock): square icon-only tiles, magnification, centred focus. */
+    private final boolean macDock;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     private final List<Entry> items = new ArrayList<>();
@@ -247,7 +254,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.tileMenu = cfg.tileMenu;
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
-        this.uniformTiles = cfg.uniformTiles;
+        this.macDock = cfg.macDock;
+        // mac_dock tiles show the app icon, so banners are never loaded.
+        this.uniformTiles = cfg.uniformTiles || macDock;
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -415,7 +424,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w, macDock);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -438,7 +447,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // tvOS-style tile: a large centred mark, no caption inside the card.
             View icon = v.findViewById(R.id.icon);
             FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
-            iconLp.width = iconLp.height = Math.round(h * ICON_SHARE);
+            // mac_dock: the icon is the whole tile, like an icon in the macOS dock.
+            iconLp.width = iconLp.height = macDock ? h : Math.round(h * ICON_SHARE);
             iconLp.bottomMargin = 0;
             icon.setLayoutParams(iconLp);
         } else if (h < Math.round(DESIGN_H_DP * density)) {
@@ -452,7 +462,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        Holder holder = new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        holder.macDock = macDock;
+        return holder;
     }
 
     @Override
@@ -461,6 +473,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (isLibraryAt(position)) return;
         Holder h = (Holder) holder;
         Entry e = items.get(position);
+        // mac_dock: an app that scrolls into view takes its magnified place at once.
+        if (macDock && dockFocusPos >= 0) magnifyCard(h.card, position, h.card.getLayoutParams().width, false);
         if (e.kind == Entry.EMPTY) {
             // A free dock slot keeps its place in the row and the band, but shows nothing and takes no focus.
             h.card.setVisibility(View.INVISIBLE);
@@ -506,6 +520,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.banner.setVisibility(View.GONE);
             h.icon.setImageDrawable(e.icon);
             h.icon.setVisibility(View.VISIBLE);
+            if (macDock) h.card.setBackground(null);   // the icon is the tile: no tinted card behind it
             h.label.setText(e.label);
             h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
         }
@@ -677,6 +692,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     float focusScale() {
+        if (animations && macDock) return DOCK_MAGNIFY[0];
         return !animations ? 1f : advancedEffects ? 1.12f : 1.10f;
     }
 
@@ -692,6 +708,72 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** Share of the tile height the icon takes in uniform_tiles mode (onCreateViewHolder). */
     private static final float ICON_SHARE = 0.62f;
+
+    /** mac_dock magnification by distance from the focused tile: the tile itself, then one and two apps away. */
+    static final float[] DOCK_MAGNIFY = {1.80f, 1.30f, 1.10f};
+    /** Adapter position of the focused mac_dock tile, or -1 before the first focus. */
+    private static int dockFocusPos = -1;
+    /** Extra sideways shift for the whole row while the first or last app is focused (0 otherwise). */
+    private static float dockExtraShift = 0f;
+
+    /**
+     * mac_dock: grows the focused tile's neighbours a little (less with distance) and pushes them sideways so
+     * nothing overlaps; tiles grow evenly up and down from their centre. At the first or last app, where the row
+     * cannot scroll further, the whole row moves inward just enough for the magnified tile to show in full.
+     */
+    private static void magnifyDock(View item, View focusedCard, int focusedPos) {
+        if (!(item.getParent() instanceof RecyclerView)) return;
+        RecyclerView rv = (RecyclerView) item.getParent();
+        dockFocusPos = focusedPos;
+        int w = focusedCard.getWidth();
+        dockExtraShift = 0f;
+        RecyclerView.Adapter<?> a = rv.getAdapter();
+        int last = a == null ? -1 : a.getItemCount() - 1;
+        if (focusedPos == 0 || focusedPos == last) {
+            float margin = 34 * rv.getResources().getDisplayMetrics().density;   // the row's side clip plus a little air
+            float centre = item.getLeft() + focusedCard.getLeft() + w / 2f;
+            float half = DOCK_MAGNIFY[0] * w / 2f;
+            if (focusedPos == 0 && centre - half < margin) dockExtraShift = margin - (centre - half);
+            else if (focusedPos == last && centre + half > rv.getWidth() - margin)
+                dockExtraShift = (rv.getWidth() - margin) - (centre + half);
+        }
+        for (int c = 0; c < rv.getChildCount(); c++) {
+            View child = rv.getChildAt(c);
+            int p = rv.getChildAdapterPosition(child);
+            View card = child.findViewById(R.id.card);
+            if (p != RecyclerView.NO_POSITION && card != null) magnifyCard(card, p, w, true);
+        }
+    }
+
+    private static void magnifyCard(View card, int p, int w, boolean animate) {
+        if (w <= 0) return;
+        int d = Math.abs(p - dockFocusPos);
+        float s = d < DOCK_MAGNIFY.length ? DOCK_MAGNIFY[d] : 1f;
+        float shift = dockShift(d, w) * Math.signum(p - dockFocusPos) + dockExtraShift;
+        card.setPivotX(w / 2f);
+        card.setPivotY((card.getHeight() > 0 ? card.getHeight() : w) / 2f);
+        card.animate().cancel();
+        if (animate) {
+            card.animate().scaleX(s).scaleY(s).translationX(shift)
+                    .setDuration(200).setInterpolator(new DecelerateInterpolator(1.5f)).start();
+        } else {
+            card.setScaleX(s);
+            card.setScaleY(s);
+            card.setTranslationX(shift);
+        }
+    }
+
+    /**
+     * How far a tile d apps from the focused one moves outward so magnified tiles never overlap: half of the
+     * focused tile's growth, the full growth of every tile between, and half of this tile's own growth.
+     */
+    static float dockShift(int d, int w) {
+        if (d <= 0) return 0f;
+        float shift = (DOCK_MAGNIFY[0] - 1f) * w / 2f;
+        for (int k = 1; k < Math.min(d, DOCK_MAGNIFY.length); k++) shift += (DOCK_MAGNIFY[k] - 1f) * w;
+        if (d < DOCK_MAGNIFY.length) shift += (DOCK_MAGNIFY[d] - 1f) * w / 2f;
+        return shift;
+    }
 
     /**
      * The colour covering most of an icon, for a card that should read as that app: a small saturated badge
@@ -914,6 +996,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** Alpha of the name while the tile is not focused (always_show_names). */
         final float restNameAlpha;
         final boolean overshoot;
+        /** mac_dock: focus also magnifies the neighbours (see magnifyDock). */
+        boolean macDock;
         /** A dock tile: it grows in place without advanced_effects' lift, which reads as off-centre in the band (#2135). */
         boolean inDock;
 
@@ -996,6 +1080,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .setDuration(220).start();
                 }
                 int pos = getBindingAdapterPosition();
+                if (focused && macDock && animations && pos != RecyclerView.NO_POSITION) magnifyDock(itemView, view, pos);
                 if (focused && listener != null && pos != RecyclerView.NO_POSITION) {
                     listener.onTileFocused(pos, view);
                 }

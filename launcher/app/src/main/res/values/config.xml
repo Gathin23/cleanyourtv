@@ -330,6 +330,11 @@
     <!-- With single_row, the band runs behind every app in the row, apps installed later included, instead of
          the dock apps only. Can also be set with "dock_band_all" in a theme. -->
     <bool name="dock_band_all">false</bool>
+    <!-- With single_row, a dock in the style of the macOS dock: square tiles that show only the app's icon (no banner,
+         no card), the focused app fixed in the centre while the row slides under it, the focused app and its two
+         neighbours on each side magnified, apps clipped at the band's ends, and no glass highlight.
+         Off by default. Can also be set with "mac_dock" in a theme. -->
+    <bool name="mac_dock">false</bool>
     <!-- The dock band's padding equals the gap between its tiles on all four sides (as far as the grid's edges leave room),
          so its corners are concentric with the tiles' and the spacing reads even. false (the default) keeps the fixed
          14dp above and below, up to 22dp at the sides and 26dp corners. Can also be set with "dock_even_padding": true in a theme's config.json. -->

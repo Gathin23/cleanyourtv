@@ -34,6 +34,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final boolean singleRow;
     /** dock_band_all: in a single row, the band runs behind every app instead of the dock apps only. */
     private final boolean bandAll;
+    /** mac_dock: the band spans the whole row as a fixed container the apps scroll inside. */
+    boolean fixedBand;
 
     /**
      * @param translucent the cinematic shelf's band: the artwork and the glow show through it.
@@ -137,6 +139,15 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             // sliced square there.
             rect.left = Math.max(rect.left, density);
             rect.right = Math.min(rect.right, parent.getWidth() - density);
+            if (fixedBand) {
+                // mac_dock: a fixed container across the row, and the whole grid clipped to its sides so apps scroll
+                // in and out inside the dock instead of over its ends. The top and bottom stay open for magnified apps.
+                rect.left = sidePad;
+                rect.right = parent.getWidth() - sidePad;
+                if (parent.getClipBounds() == null) {
+                    parent.setClipBounds(new Rect((int) sidePad, -parent.getHeight(), parent.getWidth() - (int) sidePad, parent.getHeight() * 2));
+                }
+            }
         }
         rect.bottom += namesRoom;
         if (lightGlass && (rect.top != shaderTop || rect.bottom != shaderBottom)) {

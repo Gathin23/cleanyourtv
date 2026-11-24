@@ -215,6 +215,7 @@ A new key needs one there in the same pull request.
 | `dock_band` | bool | Draw the dock band and its edge (`true` by default); `false` leaves the tiles floating on the wallpaper with no band, border or dark slab |
 | `single_row` | bool | Every app in the dock's row, the dock apps first, scrolling sideways; no grid below (`false` by default; needs `dock_row`) |
 | `dock_band_all` | bool | With `single_row`, the band runs behind every app in the row, not only the dock apps (`false` by default) |
+| `mac_dock` | bool | With `single_row`, a dock in the style of the macOS dock: square tiles that show only the app's icon, the focused app fixed in the centre while the row slides under it, the focused app magnified and its two neighbours on each side a little, apps clipped at the band's ends, and no glass highlight (`false` by default) |
 | `ambient_glow` | bool | The glow behind the dock in the focused app's colour (`true` by default); `false` keeps only `background_color` or the wallpaper, e.g. for a calm photo background |
 | `glow_snap` | bool | The ambient glow takes the next app's colour in one frame instead of dimming and fading back in. Each frame of the fade repaints the whole screen, so on a slow GPU (a Mali-G52 on a Xiaomi MiTV-MOEU0) it cut the late frames on Home from 60% to 27%. `false` by default |
 | `app_glow` | bool | The focus highlight glows in the focused app's colour on every tile, as `cinematic_home` does for the dock (`false` by default) |
