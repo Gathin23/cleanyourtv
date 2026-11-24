@@ -1,0 +1,22 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.disney.disneyplus"
+  ],
+  "hidden_apps": [
+    "com.android.tv",
+    "com.sony.dtv.ecodashboard"
+  ],
+  "live_tv_package": "com.android.tv",
+  "columns": 4,
+  "app_keys": [
+    "scan:758:com.netflix.ninja",
+    "scan:569:com.google.android.youtube.tv",
+    "scan:652:com.amazon.amazonvideo.livingroom",
+    "scan:651:com.disney.disneyplus",
+    "scan:204:com.sony.dtv.smartui/.settings.SmartSettingsActivity",
+    "178:inputs"
+  ]
+}
