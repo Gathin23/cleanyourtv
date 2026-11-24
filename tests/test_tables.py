@@ -24,6 +24,11 @@ class TableRowsTest(unittest.TestCase):
     def test_separator_skipped(self):
         self.assertEqual([["a", "b"]], tables.table_rows("| H |\n|---|---|\n| a | b |\n", "| H |"))
 
+    def test_separator_with_trailing_space_skipped(self):
+        """An editor that leaves a space after the separator's last | does not turn it into a row."""
+        text = "| Key | Value |\n|---|---| \n| a | b |\n"
+        self.assertEqual([["a", "b"]], tables.table_rows(text, "| Key |"))
+
     def test_separator_with_alignment_colons_skipped(self):
         """GFM alignment marks (:---, ---:) in the separator line do not become a row."""
         text = "| Key | Value |\n|:----|------:|\n| a | b |\n"

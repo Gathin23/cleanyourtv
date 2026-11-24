@@ -39,7 +39,7 @@ def table_rows(text, header_start):
                 if rows:
                     break
                 continue
-            if re.match(r"^\|[\s:|-]+\|$", line):
+            if re.match(r"^\|[\s:|-]+\|\s*$", line):
                 continue
             rows.append([c.strip() for c in line.strip().strip("|").split(" | ")])
     return rows
