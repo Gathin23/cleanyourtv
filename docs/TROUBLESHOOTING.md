@@ -893,8 +893,8 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   The same state came one step earlier on a NOVA 32" (CVTE `Hi3751V350`, Android 14, build
   `20241015_034630`): `com.cvte.tv.launcher.space` was disabled and FLauncher
   (`me.efesser.flauncher`) set as Home, and a power cut landed during the reboot that would have
-  applied the two. The panel stays on the animated `WISDOM SHARE smart cloud tv` logo with the
-  network never coming up, so the `adb connect` above answers nothing at all, and the combinations
+  applied the two. The panel stays on the animated `WISDOM SHARE smart cloud tv` logo with Wi-Fi never
+  coming up, which leaves the `adb connect` above without an address to reach, and the combinations
   the report tried - Power held 30 s, SOURCE and MENU on the remote, Power together with the
   remote's Power, F12/F2/Del/Esc, Shift or Ctrl held from power-on - all left it there. No pinhole
   RESET or SERVICE button is on the set either, and Ctrl+Alt+Del on a USB keyboard reboots it, which
@@ -904,6 +904,21 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   the factory menu that session had enabled ADB from - `MENU`, then `1147`, then `DEBUG`, as
   [`examples/sankey-smart-tv-hi3751v350/README.md`](../examples/sankey-smart-tv-hi3751v350/README.md)
   has it on the same SoC - is drawn by the running TV, so it is no way back in either.
+  Not a button combination, but one owner got such a set back over its **Ethernet** port
+  ([#2516](https://github.com/Gathin23/cleanyourtv/issues/2516), an HQ HQS32NKHM on the same SoC family,
+  CVTE `Hi3751V352E`, Android 14 SDK 34, stock launcher `com.cvte.tv.launcher.brhq`): the framework and
+  `adbd` run long before `sys.boot_completed`, so a set stuck on the animation still has its wired
+  interface broadcasting DHCP `DISCOVER` and still advertises `_adb._tcp` on 5555 (`adb mdns services`
+  finds it) - it has no address to connect to, not no shell. A cable straight from the set to a laptop
+  and one DHCP answer on that link gives it an address: read the set's MAC from
+  `sudo tcpdump -i <en0> -ne 'udp port 67 or udp port 68'`, then serve a single lease with
+  `sudo dnsmasq --interface=<en0> --bind-interfaces --dhcp-authoritative --dhcp-host=<the set's MAC>,169.254.130.100 --dhcp-range=169.254.130.100,169.254.130.199,255.255.0.0,12h --log-dhcp`.
+  `adb connect 169.254.130.100:5555` answered there, and `pm enable com.cvte.tv.launcher.brhq` over it
+  let the boot finish (`sys.boot_completed=1`) with no recovery menu, case opening or firmware flash.
+  The key that set already trusted is what authorises the shell, so this reaches a set whose debugging
+  was already on and nothing else, and Wi-Fi stays dead in this state - it needs the framework, which is
+  why the route is wired-only. It is what to try once the boot is already stuck, not a reason to treat
+  disabling a CVTE launcher as safer.
   The prompt therefore keeps the stock launcher enabled on CVTE boards without a tested list.
 - **Accounts & profiles is empty after the stock launcher is disabled** (TCL 75C845X2, `G08_4K_GB`,
   Google TV 14, [#304](https://github.com/Gathin23/cleanyourtv/discussions/304)). The accounts are still
