@@ -328,6 +328,9 @@ class GeneratorTest(unittest.TestCase):
                  # rather than written into a row `--check` never agrees with (the test below).
                  (tv("X\rGoogle TV", "X"), "one line"),
                  (tv("X", "X", notes="[note](../docs/devices/none.md)"), "leads nowhere"),
+                 # A file that is there on this machine, but not in the checkout the page links into.
+                 (tv("X", "X", notes="[note](/)"), "leads nowhere"),
+                 (tv("X", "X", notes="[note](" + "../" * 40 + "etc)"), "leads nowhere"),
                  # Not a string: refused by name, where the link check used to end in a TypeError (exit 1).
                  (tv("X", "X", notes=["a", "b"]), '"notes" must be'),
                  (tv(["X"], "X"), '"tv" must be')]

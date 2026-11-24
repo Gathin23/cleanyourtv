@@ -143,7 +143,11 @@ def load(root, allow_missing=False):
                     continue
                 # Strip the fragment before decoding: %23 belongs to the filename, not the anchor.
                 local = unquote(target.split("#")[0])
-                if not (root / "examples" / local).exists():
+                # An absolute path, or enough ../ to leave the checkout, names a file on this machine that
+                # is not on the page: os.path.join drops root for the first, and both used to pass.
+                path = os.path.normpath(os.path.join(root, "examples", local))
+                if os.path.isabs(local) or os.path.commonpath([path, os.path.normpath(root)]) != \
+                        os.path.normpath(root) or not os.path.exists(path):
                     problems.append(f"{where}: the link {target} in \"{key}\" leads nowhere "
                                     f"(links are relative to examples/)")
         entries.append((folder.name, data))
