@@ -216,6 +216,21 @@ class DriftCheckTest(unittest.TestCase):
         again = self.run_check(str(self.list_path))
         self.assertEqual(again.returncode, 0, again.stdout + again.stderr)
 
+    def test_a_name_listed_twice_is_counted_and_disabled_once(self):
+        # disable.sh sends each name once; a hand-merged list that repeats a line must not be reported
+        # as two drifted packages, or have --fix send the same disable twice.
+        self.write_list(["com.example.music", "com.example.store", "com.example.music", STOCK])
+        self.tv(disabled=[STOCK])
+        result = self.run_check(str(self.list_path))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("(3 packages)", result.stdout)
+        self.assertIn("back on (2): com.example.music, com.example.store\n", result.stdout)
+        self.assertIn("drift: 2 of 3", result.stdout)
+        fixed = self.run_check("--fix", str(self.list_path))
+        self.assertEqual(fixed.returncode, 0, fixed.stderr)
+        self.assertEqual(self.sent(), ["pm disable-user --user 0 com.example.music",
+                                       "pm disable-user --user 0 com.example.store"])
+
     def test_fix_reports_a_package_the_firmware_pins(self):
         self.tv(disabled=[STOCK], pinned=["com.example.store"])
         result = self.run_check("--fix", str(self.list_path))
