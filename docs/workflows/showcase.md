@@ -31,7 +31,12 @@
 3. Keep each cell to one line: what it is, what it was built and tested on, and the author.
 4. The project is open source with a link people can read and build, says which TV it was tested on, collects
    nothing beyond what its README says, and is yours or listed with the author's blessing.
-5. Put a screenshot in the PR description; it is linked from the row.
+5. Put a screenshot in the PR description; it is linked from the row, and that link has to open: the
+   SHOWCASE rule in `.github/maintainer/MAINTAINER.md` holds a row to a screenshot link that opens
+   (#2211). Two shapes answer 404 - a picture committed to a folder the project's own gitignore keeps
+   out of its repository, so it was never pushed with it, and a link written against a branch that has
+   since been renamed or force-pushed. Commit the screenshot somewhere the project tracks and point the
+   link at that commit rather than at the branch, so the row keeps working after the project moves.
 
 Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
 [`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
