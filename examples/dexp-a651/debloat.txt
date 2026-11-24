@@ -10,6 +10,8 @@
 # The firmware opens Live TV by itself at every power-on.
 # Same-firmware second unit: Hyundai AI PONT (longshan). See README.md for what was checked there and its
 # test limits.
+# Third unit, retail model recorded: Hyundai H-LED50QBU7500 (Changhong DVB95ML, longshan), same firmware,
+# three days of daily use with the reference launcher as Home; see README.md for the voice-remote finding.
 #
 # Left enabled: com.cltv.fast, TV middleware the firmware re-enables at every boot anyway (the tested set had
 # it off).
@@ -23,6 +25,9 @@
 #   (APK installer), com.homwee.factory, com.google.android.leanbacklauncher.partnercustomizer, com.mediatek.*.
 # - com.google.android.tungsten.setupwraith owns the Wi-Fi network saved during first setup: leave it enabled
 #   (it does not claim Home on this Android TV build).
+# - com.google.android.tv.remote.service: the voice remote's mic bridge (AtvSearchAssistantService,
+#   CAPTURE_AUDIO_OUTPUT). With it disabled Assistant opens but hears nothing: katniss logs
+#   AudioProviderSource is null and the interaction ends EMPTY_QUERY. Never disable it on this platform.
 
 # Telemetry, ads and recommendation rows
 # com.cltv.fast                         # TV middleware, re-enabled by the firmware at boot; this set has it off
