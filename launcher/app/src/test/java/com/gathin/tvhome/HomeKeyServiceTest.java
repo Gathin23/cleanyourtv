@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -61,5 +62,23 @@ public class HomeKeyServiceTest {
     @Test public void alwaysGoesHomeAfterScreenOnUntilAKey() {
         assertTrue(HomeKeyService.stillArmed(SOON, SOON + HomeKeyService.SCREEN_ON_WINDOW_MS));
         assertFalse(HomeKeyService.stillArmed(SOON, 0));
+    }
+
+    @Test public void voiceSearchResultsInTheStockHomeStay() {
+        String stock = "com.google.android.apps.tv.launcherx";
+        assertTrue(HomeKeyService.opensStockHome(HomeKeyService.ASSISTANT_PACKAGE, stock));
+        assertTrue(HomeKeyService.opensStockHome(stock, stock));
+        assertFalse(HomeKeyService.opensStockHome("com.google.android.youtube.tv", stock));
+        assertTrue(HomeKeyService.deepLinked(SOON, SOON + HomeKeyService.DEEP_LINK_WINDOW_MS));
+    }
+
+    @Test public void aStockHomeLongAfterADeepLinkIsSentBack() {
+        assertFalse(HomeKeyService.deepLinked(SOON + HomeKeyService.DEEP_LINK_WINDOW_MS, SOON + HomeKeyService.DEEP_LINK_WINDOW_MS));
+        assertFalse(HomeKeyService.deepLinked(SOON, 0));
+    }
+
+    @Test public void theBurstIsShorterThanTheDeepLinkWindow() {
+        assertTrue(HomeKeyService.DEEP_LINK_BURST_MS < HomeKeyService.DEEP_LINK_WINDOW_MS);
+        assertTrue(HomeKeyService.STOCK_HOME_DELAY_MS < 500);
     }
 }
