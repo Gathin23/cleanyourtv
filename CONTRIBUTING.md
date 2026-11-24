@@ -44,8 +44,12 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
    read shorter than `os` does in `examples/README.md`. Change nothing outside your folder: the TV table in
    `examples/README.md`, the brand grid in the READMEs and the counts are generated from every folder's
    `tv.json` after merging, so a PR that edits them only collides with the other open lists.
-5. If your TV's Live TV app or stock launcher has a different package name, say so in the header. Where
-   a script needs the stock launcher, `tools/restore.sh` takes it as its second argument
+5. If your TV's Live TV app or stock launcher has a different package name, say so in the header. If an
+   active line sends the stock launcher, the header also says what comes first: the new launcher installed
+   and set as Home, then the list. `tools/disable.sh` keeps the package the TV answers Home with
+   while nothing else can take Home, so a list applied in the other order leaves that line enabled and
+   disables a set smaller than the file says.
+   Where a script needs the stock launcher, `tools/restore.sh` takes it as its second argument
    (`tools/restore.sh <list> <package>`) and `launcher/build-and-install.sh` takes it in the
    environment, as `STOCK_LAUNCHER=<package>` (`-StockLauncher` on the PowerShell twin, and `none`
    keeps it enabled) - not as an argument. The launcher shows your Live TV app in its Inputs menu from
