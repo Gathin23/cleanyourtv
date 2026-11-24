@@ -523,6 +523,14 @@ def transfer_args(args):
         usage_error("--pull needs the path on the TV to read")
     if not local:
         usage_error("--pull needs the local file to save to")
+    # The three shapes screenshot_target() refuses for the same reason: a blank name was written as a
+    # file called "   " and the run said "pulled", and a name ending in a separator, `.` or `..` was only
+    # found out by os.replace() after the TV had sent the whole file.
+    if not local.strip():
+        usage_error(f"--pull's local file is blank ({local!r}): name the file to save to")
+    if local.endswith(("/", os.sep)) or os.path.basename(local) in (".", ".."):
+        path_error(f"{local} names a folder, and --pull writes the file to the name it is given: give a "
+                   f"file name. Nothing was pulled.")
     folder = os.path.dirname(os.path.abspath(local))
     if not os.path.isdir(folder):
         path_error(f"there is no folder {folder} for {local}: create it, or pull into a folder that is "

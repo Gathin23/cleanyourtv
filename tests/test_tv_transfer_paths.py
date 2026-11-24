@@ -248,6 +248,19 @@ class TransferPathsTest(unittest.TestCase):
         self.assertIsNone(opened)
         self.assertEqual([], sent)
 
+    def test_a_pull_to_a_blank_name_is_refused(self):
+        # `--pull <remote> "$OUT"` with OUT holding a space: the file was written as "   " and the run said
+        # "pulled", exit 0.
+        self.assertRefused(["--pull", "/data/local/tmp/x.txt", "   "], "--pull's local file is blank")
+
+    def test_a_pull_to_a_name_that_is_a_folder_is_refused_before_the_tv_is_opened(self):
+        # The folder is not there yet, so isdir() said no; os.replace() was the first to fail, after the
+        # TV had sent the file.
+        for local in ("not-made-yet/", "not-made-yet/.", "not-made-yet/.."):
+            with self.subTest(local=local):
+                self.assertRefused(["--pull", "/data/local/tmp/x.txt", str(self.files) + "/" + local],
+                                   "names a folder", "Nothing was pulled.")
+
 
 if __name__ == "__main__":
     unittest.main()
