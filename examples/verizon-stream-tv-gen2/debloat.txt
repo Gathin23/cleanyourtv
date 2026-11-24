@@ -6,8 +6,9 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/verizon-stream-tv-gen2/debloat.txt com.verizon.qlv.launcher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Status: applied 2026-10-29, lived with for four weeks since (checked 2026-11-24); the launcher was sideloaded
-# over ADB, Home stayed on com.gathin.tvhome and the real remote's Guide and Home buttons work.
+# Status: applied 2026-10-29, lived with for four weeks since (checked 2026-11-24). After a reboot all 16 packages this set
+# disabled (YouTube Music included) stayed disabled and Home stayed on com.gathin.tvhome (the launcher was sideloaded over ADB); the
+# real remote's Guide and Home buttons work.
 #
 # Stock launcher: com.verizon.qlv.launcher. It is the last line group below: disable it only after the new
 # launcher is installed and confirmed as Home (tools/disable.sh checks this).
@@ -43,7 +44,8 @@ com.uei.quicksetsetup         # UEI remote setup wizard (com.uei.quicksetsdk kep
 com.google.android.tvrecommendations  # recommendation rows on the stock home
 com.google.android.play.games         # Google Play Games
 com.google.android.marvin.talkback    # TalkBack
-com.google.android.youtube.tvmusic    # YouTube Music for TV
+# This set has YouTube Music off; uncomment it if you use it.
+# com.google.android.youtube.tvmusic    # YouTube Music for TV
 
 # === Stock launcher (only once the new launcher is Home) ===
 com.verizon.qlv.launcher
