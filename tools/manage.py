@@ -1251,7 +1251,7 @@ WORDS = {
     "show": (1, None, "an add-on, theme or switch"),
     "status": (0, 0, "no words"),
     "install": (1, None, "an add-on or a theme"),
-    "remove": (1, 1, "one add-on"),
+    "remove": (1, None, "one add-on"),
 }
 
 USAGE_LINES = {
@@ -1283,6 +1283,18 @@ def own_words(command, args):
     if command == "list" and args and args[0] not in LIST_GROUPS:
         raise Usage(f"list takes addons, themes or switches, not {args[0]!r}: {USAGE_LINES[command]}")
     return args
+
+
+def named(args):
+    """(name, rest): the fewest leading words that name an add-on or theme, and the words after them.
+
+    A name in addons/README.md can be several words ("Frigate Glance"), as show reads it; install and remove
+    used to look up the first word alone and answered that name with "no add-on called Frigate".
+    """
+    for n in range(1, len(args) + 1):
+        if find(" ".join(args[:n])):
+            return " ".join(args[:n]), args[n:]
+    return args[0], args[1:]
 
 
 def set_args(args):
@@ -1353,9 +1365,14 @@ def main(argv):
         return cmd_show(" ".join(args))   # a name can be several words: "Frigate Glance"
     if c == "status":
         return cmd_status()
+    name, rest = named(args)
     if c == "install":
-        return cmd_install(args[0], args[1:])
-    return cmd_remove(args[0])
+        return cmd_install(name, rest)
+    if rest:
+        # `remove weather --dry-run` ran pm uninstall with a word it never read: a word after the name is refused.
+        sys.stderr.write(f"remove takes one add-on, and would drop {' '.join(rest)!r}: {USAGE_LINES['remove']}\n")
+        return 2
+    return cmd_remove(name)
 
 
 if __name__ == "__main__":
