@@ -282,7 +282,7 @@ bir cihazda neyin kaldığı [Sorun giderme](docs/TROUBLESHOOTING.md) belgesinde
 | **Temalar** | Wi-Fi üzerinden gönderilen bir `config.json` ile arka plan, duvar kâğıdı ve düzen, yeniden derleme yok. Yerleşik `default/` dahil 33 tema [`themes/`](themes/) içinde gelir |
 | **31 dil** | TV'nin diline uyar; İbranice için tamamen aynalanmış, sağdan sola bir düzen sunar |
 | **Uygulama kitaplığı** | İsteğe bağlı: yüklü tüm uygulamalara göz atın ve Ana ekran kısayolları ekleyin veya kaldırın. Bkz. [uygulama kitaplığı kılavuzu](docs/app-library.md) |
-| **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgisi için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgisini açar |
+| **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgileri için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgilerini açar |
 | **Modül kartları** | Herhangi bir TV uygulaması kendi kutucuğunu sunabilir; her birini bir kez onaylarsınız. Bkz. [`docs/modules.md`](docs/modules.md) |
 | **Eklentiler** | Modül kartı olarak bağlanan isteğe bağlı uygulamalar; [`addons/`](addons/) içinde tutulur ve asla başlatıcıya derlenmez |
 | **Saat ekran koruyucusu** | Ekran izi kalmasın diye ışıltının üzerinde kayan bir saat |
@@ -395,7 +395,7 @@ Başlatıcı yalnızca yüklü olanları listeler ve onları on yıldır değiş
 <details>
 <summary><b>Uygulamalarımı nasıl yeniden düzenlerim?</b></summary>
 
-**Ayarlar** (sağ üstte) üzerinde OK'u basılı tutun ve **Uygulamaları yeniden sırala**'yı seçin. OK bir uygulamayı
+**Ayarlar** (sağ üstte) üzerinde OK'u basılı tutun ve **Uygulamaları sırala**'yı seçin. OK bir uygulamayı
 alır, oklar onu taşır, Geri yerine koyar ve tekrar Geri bitirir. `tile_menu` açıkken bir kutucukta OK'u basılı
 tutmak, o uygulamayı hemen alan **Taşı** seçeneğini sunar. Daha fazlası: [docs/launcher.md](docs/launcher.md#launcher-settings-and-the-default-home)
 
