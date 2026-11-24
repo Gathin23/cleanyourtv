@@ -658,7 +658,7 @@ def stats(values):
     def pick(fraction):
         index = min(len(ordered) - 1, int(len(ordered) * fraction + 0.999) - 1)
         return ordered[max(0, index)]
-    return {"p50": int(statistics.median(ordered)), "p95": pick(0.95),
+    return {"p50": statistics.median(ordered), "p95": pick(0.95),
             "p99": pick(0.99), "max": ordered[-1], "n": len(ordered)}
 
 
