@@ -1,4 +1,6 @@
-# Xiaomi MiTV-AESP0 (codename aquaman), Android TV 9 (SDK 28), firmware PI.2055.
+# Xiaomi Mi TV Stick, first generation 1080p (MDZ-24-AA on the box, reports as MiTV-AESP0, codename aquaman),
+# Android TV 9 (SDK 28), firmware PI.2055.
+# Not the Mi TV Stick 4K (MDZ-27-AA), which is a different device.
 # Stock launcher: com.google.android.tvlauncher (disabled by launcher/build-and-install.sh).
 # Live TV app: none (no tuner/HDMI inputs); com.google.android.tv is Live Channels.
 #
@@ -85,6 +87,18 @@
 #   master switch, then rebooting, left 5555 refusing (tools/adb-closed.py), as on the third set.
 # The reporter calls this an initial variant report and plans a persistence check after several days of use, so
 # the 39 are a one-session readback rather than a soak test, and no OTA cycle was run (the updater stayed on).
+#
+# Sixth verified set (PI.2055 unit, patch 2022-08-05, over ADB on Wi-Fi, with the launcher and HOME_KEY_SERVICE=1).
+# The last three batches were applied on 9 Nov 2026 with tools/disable.sh; on 23 Nov 2026, after two weeks in
+# use, `pm list packages -d` showed 48 disabled, every one of them a line this list carries, one of the extras below
+# or tvlauncher, which launcher/build-and-install.sh disables. No line below was added or re-enabled for this set. Notes from that unit:
+# - Also off by the owner's choice: voice (katniss, pumpkin), com.google.android.tts, TalkBack, Mi Cast
+#   (milinkservice), the firmware updater (com.xiaomi.mitv.updateservice, so no OTA reaches that stick),
+#   Netflix, Prime Video, YouTube Kids (com.google.android.youtube.tvkids), com.android.htmlviewer and
+#   com.dsi.ant.service.socket (ANT+ radio).
+# - Left enabled: setupwraith (it owns one of the saved Wi-Fi networks), Chromecast (mediashell) and partnercustomizer.
+# - Before the replacement launcher, the stick ran FLauncher (me.efesser.flauncher) as Home with tvlauncher
+#   disabled; launcher/build-and-install.sh then made com.gathin.tvhome Home, and FLauncher was removed later.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
