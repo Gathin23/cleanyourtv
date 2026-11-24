@@ -1,0 +1,45 @@
+# Thomson 65QG7C14 (ro.product.model "Thomson TV", product Thomson_4K_RATV3, device cottongreen, Expressluck-built,
+# Realtek rtd6748, ~1.7 GB RAM), Google TV 14 (API 34), applied on build UKRC.260302.020, still holding on UKRE.260524.089.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/thomson-65qg7c14/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/thomson-65qg7c14/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock Home stays: com.google.android.apps.tv.launcherx is not touched by this list and the replacement launcher was
+# not installed. The saved Wi-Fi network belongs to com.google.android.tungsten.setupwraith, which stays enabled.
+# Live TV app: com.realtek.tv (MainActivity); HDMI and AV through com.realtek.tv.passthrough. No com.cvte.* packages.
+#
+# Applied on 2026-11-10 over ADB on port 5555 in three batches with a screenshot after each, and reboot-checked.
+# On 2026-11-23, after an over-the-air update to UKRE.260524.089, `pm list packages -d` still held all 15 that were
+# disabled then, the four commented-out streaming and HbbTV entries below included.
+#
+# Disabled from the factory, so not listed (restore.sh would turn it ON): com.android.tv, an empty placeholder
+# (/system_ext/priv-app/RtkLiveTv_empty, version 999.0.0) that the firmware switches off itself.
+#
+# Kept on purpose: com.realsil.ota (firmware updater), com.realtek.tv and the com.realtek.tv.* inputs (Live TV,
+# HDMI, AV), com.realtek.globalkeyhandler (remote hot keys), YouTube, Play Store and Play services.
+# The factory app com.expressluck.tvfactory is installed and was never opened.
+
+# Tracking
+tv.anoki.acr.anokiacroptin             # Anoki ACR (automatic content recognition)
+com.google.android.feedback            # Google feedback
+com.google.android.partnersetup        # partner setup and attribution
+
+# Promos and retail demo
+com.realtek.retailmode                          # retail demo mode
+com.realtek.leanbacklauncher.partnercustomizer  # partner rows on the Google TV home
+com.realtek.karaoke.userguide                   # karaoke how-to screen
+com.google.android.play.games                   # Play Games
+
+# Streaming and broadcast apps
+# This set has these off; uncomment if you don't use them.
+# com.netflix.ninja                    # Netflix
+# com.netflix.tokenmanager             # Netflix sign-in helper
+# com.amazon.amazonvideo.livingroom    # Prime Video
+# com.seraphic.hbbtv.app               # HbbTV red button
+
+# Off by the owner's choice
+com.google.android.videos              # Google TV movie store
+com.google.android.katniss             # Google Assistant (remote mic button); keyboard dictation stays
+com.realtek.kara                       # karaoke microphone
+com.rtk.mediabrowser                   # USB media player (VLC installed instead)
