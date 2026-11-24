@@ -33,8 +33,12 @@
 # ADB quirk on this firmware (ro.adb.secure=1): the "Allow USB debugging?" popup only renders when a
 # fresh client challenges right after adbd restarts. If a connection sits at unauthorized, start the
 # client and toggle ADB debugging off and on; adbd serves one client, so kill other adb clients first.
-# "Always allow from this computer" persists across reboots. Turn ADB debugging off in Developer options
-# when you are done.
+# "Always allow from this computer" persists across reboots, and the ADB debugging switch itself
+# survived the reboot here. Turn ADB debugging off in Developer options when you are done.
+#
+# Living with this set: the Home tiles of the disabled retailer preloads linger until cleared per app
+# from Settings > Applications > Manage all installed apps. The owner also runs AdGuard's Private DNS,
+# which thins the sponsored banners in the Home feed; the rows themselves stay.
 
 # Amazon data collection and telemetry (the silent background uploaders)
 com.amazon.ceviche                     # data collection pipelines
