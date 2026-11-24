@@ -25,7 +25,9 @@ fi
 
 (cd "$HERE" && ./gradlew assembleRelease -q) || { echo "build failed (JDK 17 and Android SDK 34 needed; see launcher/README)" >&2; exit 1; }
 "$PY" -I "$TOOLS/b64push.py" "$HERE/app/build/outputs/apk/release/app-release.apk" /data/local/tmp/haunted.apk >/dev/null
-tv "pm install -r /data/local/tmp/haunted.apk; rm -f /data/local/tmp/haunted.apk"
+OUT="$(tv 'pm install -r /data/local/tmp/haunted.apk; rm -f /data/local/tmp/haunted.apk')"
+echo "$OUT"
+case "$OUT" in *Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; esac
 tv "[ -f $BEFORE ] || { settings get secure screensaver_components; settings get secure screensaver_enabled; } > $BEFORE; settings put secure screensaver_components $DREAM; settings put secure screensaver_enabled 1" >/dev/null
 echo "Installed: Haunted is the screensaver. Undo with: addons/haunted/build-and-install.sh --uninstall"
 [ -z "${START:-}" ] || tv "am start -n com.android.systemui/.Somnambulator >/dev/null; sleep 3; dumpsys dreams | grep mCurrentDreamName"
