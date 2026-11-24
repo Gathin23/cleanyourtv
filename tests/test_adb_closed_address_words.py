@@ -180,6 +180,17 @@ class AnAddressThatIsNotOneTest(unittest.TestCase):
                 self.assertNotIn("that is a flag", result.stderr)
                 self.assertEqual([], asked(result))
 
+    def test_a_bracket_left_open_or_text_after_it_is_named(self):
+        # `[2001:db8::1]x` dropped the x and asked 2001:db8::1:5555, and `[2001:db8::1` went to the
+        # lookup as a host named with the bracket: neither is the address that was typed.
+        for word in ("[2001:db8::1]x", "[2001:db8::1"):
+            with self.subTest(word=word):
+                result = check_tv(word, tv="5555=refused")
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertEqual([], asked(result))
+                self.assertIn("not the TV's address", result.stderr)
+                self.assertNotIn("is closed", result.stdout)
+
     def test_an_ipv6_address_still_is_one(self):
         # The control: a bracketed address with a port is an address, and is asked as one.
         result = check_tv("[2001:db8::1]:5877", tv="5877=refused")
