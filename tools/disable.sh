@@ -9,6 +9,22 @@ set -euo pipefail
 # Live TV and Settings handler lookups matched nothing (#3286). Match bytes, not the user's alphabet.
 export LC_ALL=C
 LIST="${1:?usage: disable.sh <debloat list>}"
+# One word, the list. A dash-led word (--help, -h, --reset copied over from theme.sh) went to dirname
+# as an option and came back as coreutils' own help inside a cd error; a word after the list was
+# dropped while the list went to the TV. restore.sh refuses both the same way.
+USAGE="usage: TV_HOST=<tv ip> tools/disable.sh <debloat list>"
+case "$LIST" in
+  -*)
+    echo "disable.sh takes a debloat list, and $LIST is a flag it does not have. Nothing was sent to the TV." >&2
+    echo "$USAGE" >&2
+    exit 2 ;;
+esac
+if [ "$#" -gt 1 ]; then
+  shift
+  echo "disable.sh takes one debloat list: $* would not have been used. Nothing was sent to the TV." >&2
+  echo "$USAGE" >&2
+  exit 2
+fi
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
 # C:/Users/..., the same path (and so the same record) as the PowerShell scripts.
