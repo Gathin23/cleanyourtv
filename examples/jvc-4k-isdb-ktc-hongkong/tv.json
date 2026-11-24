@@ -1,0 +1,7 @@
+{
+  "tv": "JVC 4K ISDB TV (KTC, KTC_JVC_4K_ISDB_22GV1, hongkong, MediaTek m7632)",
+  "os": "Google TV launcher on Android TV 11",
+  "readme_os": "Google TV 11",
+  "brand": "JVC",
+  "notes": "Same KTC hongkong board as the [Philips 65PQT8169](philips-65pqt8169/), on build RTM7.230903.140, with a short list: Play Games, Play Movies and ambient mode off; the firmware switches the Assistant and TalkBack back on at every boot, so both are commented out; launcherx and setupwraith stay enabled and the launcher takes the Home button through HomeKeyService with stock_home_redirect and key_filter false (held volume still ramps); antenna, HDMI-CEC, Chromecast and the phone remote checked; factory tools, ktc.factorymenu.ui and fusion.android.tv.demo left alone; USB debugging alone opens 5555; reboot- and cold-boot-checked, 11 days in daily use"
+}

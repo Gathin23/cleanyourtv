@@ -1,0 +1,60 @@
+# JVC 4K ISDB TV (KTC-built, product KTC_JVC_4K_ISDB_22GV1, device hongkong, MediaTek m7632), ISDB-T, Android TV 11 (SDK 30), build RTM7.230903.140
+# Fingerprint: JVC/KTC_JVC_4K_ISDB_22GV1/hongkong:11/RTM7.230903.140/11267555:user/release-keys
+# Security patch 2024-01-01, kernel 4.19.116, 32-bit (armeabi-v7a), about 1.8 GB RAM, ro.adb.secure=1.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/jvc-4k-isdb-ktc-hongkong/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/jvc-4k-isdb-ktc-hongkong/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+# Then the launcher, with Google TV kept as the technical Home: README.md in this folder.
+#
+# Same KTC hongkong board and Android 11 firmware line as examples/philips-65pqt8169 (RTM7.230903.168), but
+# this list is much shorter on purpose: the owner kept Google TV (launcherx) and setupwraith enabled and gave
+# the Home button to the new launcher with stock_home_redirect (config.json here), so nothing that Google TV
+# or casting might need was turned off.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (HOME priority 2). Also claiming HOME:
+# com.google.android.tungsten.setupwraith/.RecoveryActivity (priority 1) and
+# com.android.tv.settings/.system.FallbackHome (-1000). Live TV, antenna (ISDB-T) and inputs:
+# com.mediatek.wwtv.tvcenter, com.mediatek.tvinput and com.mediatek.tv.service (three HDMI inputs, composite,
+# two tuners; CEC reports four HDMI ports with ARC on HDMI 1).
+#
+# Applied by hand on one set on 2026-11-13 with `pm disable-user --user 0`, one package per call (not through
+# tools/disable.sh), then one reboot: the three packages below stayed disabled. Lived with every day until
+# 2026-11-24 (11 days), launcher on the Home button, with nothing breaking; several cold boots (unplugged from
+# the mains) in that time, after each of which the TV came back working (owner's report, not read over ADB).
+#
+# Switched back on at every boot by this firmware (cause not identified; lastDisabledCaller empty, and the
+# boot log shows both being re-read while system_server starts, before any app runs). Both were disabled and
+# checked, and both were enabled again after the reboot, so they are commented out below rather than disabled
+# again after each boot. With katniss disabled, the three voice settings (voice_interaction_service,
+# assistant, voice_recognition_service) went empty until the reboot put them back.
+#
+# Kept on purpose: ktc.factorymenu.ui (carries the MediaTek HotKeyService, VolService and the GLOBAL_BUTTON
+#   receivers - never launched), fusion.android.tv.demo (declares the TV_INPUT_BUTTON activities - never
+#   launched), com.mediatek.autopair (remote pairing), com.mediatek.network, com.mediatek.wwtv.mediaplayer
+#   (USB player), Dolby audio, Gboard, Play Store and Play Services (system updates come through them; no
+#   vendor updater on this build), Chromecast built-in, com.google.android.tv.remote.service (phone remote),
+#   launcherx and setupwraith (see above; setupwraith also carries a CastInfoProvider here).
+# Not touched: com.ktc.serialport, com.ktc.tv.factory, mediatek.factorymenu.ui (factory tools, never started),
+#   and the Google partner/one-time/auto-install/data-saver packages the Philips list disables
+#   (partnersetup, onetimeinitializer, gtvpai, smartconnect.tv, partnercustomizer): not tried with launcherx
+#   still on Home.
+#
+# The saved Wi-Fi networks belong to android.uid.system, not to setupwraith (dumpsys wifi), and the set was on
+# its built-in Ethernet with Wi-Fi off. A dormant managed profile (UserInfo{10:new_user}) exists from an older
+# firmware; it was left alone, and nothing here needed launcherx disabled, so the second-user crash in
+# docs/TROUBLESHOOTING.md does not come into play.
+#
+# No Wireless debugging on this firmware: USB debugging alone opens port 5555 (service.adb.tcp.port=5555,
+# back on its own after a reboot). Close it when done.
+
+# --- Google apps not used (owner's choice) ---
+com.google.android.play.games
+com.google.android.videos                      # Play Movies; a second profile keeps its own enabled copy
+
+# --- Google ambient-mode screensaver ---
+com.google.android.apps.tv.dreamx              # pick another screensaver first (README.md)
+
+# --- Re-enabled by the firmware at every boot (see header) ---
+# com.google.android.katniss                   # Assistant / voice search
+# com.google.android.marvin.talkback           # TalkBack screen reader
