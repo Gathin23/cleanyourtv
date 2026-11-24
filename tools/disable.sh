@@ -48,7 +48,7 @@ done
 PY=tools/venv/bin/python
 [ -x "$PY" ] || PY=tools/venv/Scripts/python.exe
 export MSYS_NO_PATHCONV=1
-[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt"; exit 1; }
+[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt" >&2; exit 1; }
 # Lists come from contributors, and the package name is pasted into a shell command on the TV.
 # Refuse the whole list unless every entry is a bare package name (#165).
 # A list read from a directory that is not there dies in the `cd` above; one whose file is not

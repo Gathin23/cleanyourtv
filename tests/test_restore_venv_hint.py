@@ -111,6 +111,15 @@ class RestoreVenvHintTest(unittest.TestCase):
         _, restore = self.run_script("restore.sh")
         self.assertIn(SH_HINT, restore)
 
+    def test_disable_sh_without_a_venv_puts_the_hint_on_stderr(self):
+        # disable.sh printed the same hint to stdout, so `tools/disable.sh list 2>err.txt` and a caller
+        # reading stderr for the failure (check.py --fix, an assistant) got exit 1 and an empty error.
+        result, output = self.run_script("disable.sh")
+        self.assertEqual(result.returncode, 1, output)
+        self.assertIn(SH_HINT, result.stderr, "the hint is an error, so it goes to stderr")
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(self.sent(), [])
+
     def test_restore_ps1_without_a_venv_says_how_to_make_one(self):
         for script in ("disable.ps1", "restore.ps1"):
             with self.subTest(script=script):
