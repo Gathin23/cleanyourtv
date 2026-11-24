@@ -8,6 +8,13 @@
 - A fix for something your agent got stuck on usually belongs in `PROMPT.md` as one extra sentence, kept
   brand-neutral. Brand-specific knowledge goes in `examples/` or `docs/devices/`. Changes to the safety rules
   themselves go to the maintainer.
+- Which of those two it is follows from the set, not from the note: a unit whose product code matches an
+  `examples/` folder already here and the same build (a second unit, a re-badge or a sibling size) is a second
+  unit of that set, and its notes go into that folder's `README.md` as their own section - or into a second
+  `debloat` list beside the first, the shape `docs/workflows/tv-list.md` step 1 describes - rather than a page
+  of their own under `docs/devices/`; a different retail model, region or firmware line can be its own folder.
+  A page under `docs/devices/` is for a set with no tested list yet, or for notes about the unit a folder
+  already measures.
 - A note in `docs/devices/` is linked from a page a reader comes through: the row for its folder in
   `examples/README.md` when the model has a list of its own, and the "Notes for models that have no tested list
   yet" section of that page when it has not. `tests/test_device_notes_index.py` fails on a note nothing links,
