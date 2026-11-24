@@ -23,13 +23,22 @@
 #   launcher is confirmed as Home, not by a batch (README.md here, and disable.sh's Home guard
 #   would skip it anyway).
 # - ADB over TCP closes on every reboot; Settings -> 账号与安全 -> ADB 调试 re-opens it.
+# - com.mitv.overseaservice, below as an ad-service helper, is also the userspace owner of the OS3
+#   LED-DFX state machine: it writes `/sys/class/led-dfx/device/system_state` and clears the LED on
+#   SCREEN_ON. A set whose standby transition the driver rejects (`Leds_Breath_Suspend_Noirq` then
+#   `Leds_Breath_Resume_Noirq` 20 ms later, `[LED-DFX] [find_transition] INVALID TRANS from NORMAL to
+#   RESUMING`, `[FLICKER] timeout` 14 s after) latched its front LED into a fast blink with the
+#   package disabled - reported on this build and on OS3.0.106 (#4302, #2948). This unit ran the list
+#   for twelve days without a blink, so it is not every set. If one starts: comment this line out,
+#   `pm enable --user 0 com.mitv.overseaservice`, cycle the screen or reboot
+#   (docs/devices/xiaomi-mitv-mftr0-hyperos3.md, "Other OS3.0 limits").
 
 # Xiaomi telemetry / ads / push
 com.miui.tv.analytics                    # TV usage statistics
 com.miui.analytics                       # usage analytics
 com.xiaomi.tvqs                          # quality/performance reporting
 com.xiaomi.mitv.tvpush.tvpushservice     # push ads/notifications
-com.mitv.overseaservice                  # overseas ad-service partner helper (OS3)
+com.mitv.overseaservice                  # overseas ad-service partner helper (OS3), and the LED-DFX owner; see the note above
 com.miui.hybrid.tv                       # hybrid runtime container
 com.xm.webcontent                        # webview container for promotions
 com.mitv.shoplugin                       # TV Taobao shopping plugin
