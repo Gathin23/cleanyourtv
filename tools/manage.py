@@ -1136,7 +1136,7 @@ def cmd_status():
         if item["package"] in have:
             print(f"  {item['id']}")
     config = tv(f"cat /sdcard/Android/data/{launcher}/files/config.json 2>/dev/null")
-    match = None
+    found = []
     if config.strip():
         try:
             pushed = json.loads(config)
@@ -1152,7 +1152,8 @@ def cmd_status():
                 except (OSError, ValueError):
                     continue
                 if matches:
-                    match = name
+                    found.append(name)
+    match = " or ".join(found)
     print(f"theme: {match or ('your own' if config.strip() else 'none (the built-in config.xml)')}")
     return 0
 
