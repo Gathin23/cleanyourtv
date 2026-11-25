@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Kode wilayah resmi SIHAT Kemenag. Default: Kecamatan Ponjong. -->
+    <string name="wilayah" translatable="false">340310</string>
+    <string name="place" translatable="false">Kecamatan Ponjong · Gunungkidul</string>
+    <color name="accent">#2BB673</color>
+</resources>
