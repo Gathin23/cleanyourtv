@@ -21,9 +21,9 @@
 # RAM), the same firmware UTT2.250416.001 AU02. Every package on this list is on that set too. On 24 November
 # 2026 its owner kept Google TV as Home, so launcherx and setupwraith (which owned the saved Wi-Fi network there)
 # stayed on, and so did dreamx, the screensaver behind Home's screensaver button. The other 30, plus the optional
-# lines at the end, went with tools/disable.sh in batches and were all still disabled after a reboot. Later that
-# evening com.tcl.exhibit and com.tcl.messagebox were found enabled again without a reboot; README.md has that
-# and the rest.
+# lines at the end, went with tools/disable.sh in batches and survived a reboot, until com.tcl.ttvs installed
+# updates of com.tcl.exhibit, com.tcl.messagebox, com.tcl.esticker and com.tcl.waterfall.overseas, which left
+# each of them enabled again; README.md has that and the rest.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q7d-pro-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q7d-pro-google-tv/debloat.txt com.google.android.apps.tv.launcherx

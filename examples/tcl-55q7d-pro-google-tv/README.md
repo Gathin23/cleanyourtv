@@ -109,18 +109,22 @@ on this set, and nothing was disabled out of the box.
   `tools/disable.sh` and a screenshot between them; then the owner's own choices in a fourth: Netflix, Prime Video,
   HBO Max, AirPlay and Miracast. After `sync` and a reboot all of them were still disabled; Home, the Input panel
   (`com.tcl.suspension`), YouTube and YouTube Music worked, and Cast and `com.tcl.ttvs` stayed on. Later that
-  evening `com.netflix.tokenmanager` (no use without Netflix), `com.tcl.smartalexa`, `com.tcl.ui_mediaCenter` and
-  `com.tcl.gallery` went as well.
+  evening `com.netflix.tokenmanager` (no use without Netflix), `com.tcl.smartalexa` and `com.tcl.gallery` went as
+  well.
 - **TCL Channel** was gone from the app row after the batches, while `com.tcl.channelplus` stayed enabled.
 - **Screensaver:** with `com.google.android.apps.tv.dreamx` disabled, the screensaver button at the top of Google TV's
   Home did nothing, and `settings get secure screensaver_default_component` still named it. The owner wanted it back:
   `pm enable --user 0 com.google.android.apps.tv.dreamx` brought the button back, and `dumpsys dreams` showed its
   `Backdrop` running. Leave that line out if you keep Google TV and want the screensaver. `com.tcl.gallery` holds
   TCL's own screensavers; with it off, Google's still runs.
-- **Two packages came back without a reboot.** About 25 minutes after the reboot, `com.tcl.exhibit` and
-  `com.tcl.messagebox` were enabled again. `logcat` puts it at the same second as `UserManagerService: Creating user
-  10 of type com.android.tv.profile`, a second, empty Google TV profile that nobody had asked for on purpose
-  (`pm list users` shows it as `new_user`). The log does not show which component re-enabled them. Both were
-  disabled again and stayed disabled for the rest of the evening; check `pm list packages -d` after a while.
+- **`com.tcl.ttvs` turns disabled TCL apps back on when it updates them.** Besides the firmware, TCL's updater
+  installs newer versions of its own apps into `/data/app`, disabled or not, and the update leaves the package
+  enabled. `dumpsys package` shows it: a new `versionName` under a `/data/app` `codePath`, `lastUpdateTime` at that
+  moment, and `lastDisabledCaller: com.tcl.ttvs`. On this set `com.tcl.exhibit` and `com.tcl.messagebox` came back
+  that way about two minutes after the reboot, and `com.tcl.esticker` and `com.tcl.waterfall.overseas` the next
+  day, 17 hours later. Disabling them again is all it takes, and they stay off until the next update; keep
+  `com.tcl.ttvs` for the firmware, and check `pm list packages -d` against the list now and then.
+- **Media player:** `com.tcl.ui_mediaCenter` (the optional line above) was switched back on. The Input panel always
+  shows a "Media player" tile, which only closes the panel while the package is off.
 - **ADB from macOS:** the stock `adb` answered "No route to host" (Local Network privacy) while `tools/tv.py`
   connected to port 5555, which this set opened alongside Wireless debugging.
