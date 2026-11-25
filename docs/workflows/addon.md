@@ -2,10 +2,9 @@
 
 **When to use this:** a widget or tile that can be its own small app, shown through a module card.
 
-A change to an add-on that is already here needs its author's OK when it is a big rework, a new permission
-or a changed install script: say what you want to change and ask them for it in a comment on the pull
-request, since that is what the review of such a PR asks for. A small fix, or a change an issue asked for,
-needs no OK.
+A change to an add-on that is already here - its behaviour, permissions or install script - needs its
+author's OK: say what you want to change and ask them in a comment on the pull request, which is what the
+review of such a PR asks for. Changes to strings or spacing only need no OK.
 
 1. Create `addons/<name>/` as its own Gradle project (`settings.gradle`, or `settings.gradle.kts` as
    `addons/tv-hub` ships it - `tests/test_addons.py` accepts either - its own `gradlew` and `gradlew.bat`
