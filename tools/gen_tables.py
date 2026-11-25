@@ -146,8 +146,8 @@ def load(root, allow_missing=False):
                 # An absolute path, or enough ../ to leave the checkout, names a file on this machine that
                 # is not on the page: os.path.join drops root for the first, and both used to pass.
                 path = os.path.normpath(os.path.join(root, "examples", local))
-                if os.path.isabs(local) or os.path.commonpath([path, os.path.normpath(root)]) != \
-                        os.path.normpath(root) or not os.path.exists(path):
+                if os.path.isabs(local) or os.path.commonpath([os.path.abspath(path), os.path.abspath(root)]) != \
+                        os.path.abspath(root) or not os.path.exists(path):
                     problems.append(f"{where}: the link {target} in \"{key}\" leads nowhere "
                                     f"(links are relative to examples/)")
         entries.append((folder.name, data))
