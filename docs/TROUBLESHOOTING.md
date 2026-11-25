@@ -1458,6 +1458,11 @@ turned off in Settings stays off.
   off one `getevent -t` press and try the `EV_KEY` one when the `MSC_SCAN` one matches nothing. That
   board also brings the stock launcher back within minutes of `pm disable-user` (the
   `com.xgimi.xrmservice` bullet above), and while it is on, the gear and Home open Google TV.
+  For a button that should open the Inputs menu rather than Settings, the scancode goes in `app_keys` with
+  `"inputs"` in place of a package: `"scan:365:inputs"` on a TCL 65C745 or 65C735, whose source button
+  arrives as a key Android does not map ([that list's header](../examples/tcl-65c735/debloat.txt)), and
+  `"178:inputs"` in [the VU31's config](../examples/sony-bravia-vu31/config.json). `input_key_keycodes`
+  holds keycodes, so it cannot answer a press that has none, and `settings_key_scancodes` opens Settings.
 - **All vendor buttons die at once** and `logcat` says `GLOBAL_BUTTON ... process is bad`: the
   global-key receiver crashes on the disabled launcherx and Android stops starting it. Map every such
   keycode in the helpers, also for disabled apps. See [the MOSR4 note](devices/xiaomi-mitv-mosr4.md).
