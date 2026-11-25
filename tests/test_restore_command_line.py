@@ -125,7 +125,9 @@ class RestoreCommandLineTest(unittest.TestCase):
         typed = "examples/my-tv-android-11/debloat.txt"
         result, output = self.run_script("restore.sh", typed)
         self.assertEqual(result.returncode, 1, output)
-        self.assertIn("could not read " + typed, result.stderr,
+        # The path is made absolute against where the script was run, so it ends with what was typed.
+        self.assertIn("could not read ", result.stderr, "recovery.py's refusal")
+        self.assertIn(typed + " (No such file or directory)", result.stderr,
                       "recovery.py's refusal, which names the file the reader typed")
         self.assertIn("Nothing was sent to the TV", result.stderr)
         self.assertNotIn("cd:", output, "bash's own folder error is not an answer about the list")
