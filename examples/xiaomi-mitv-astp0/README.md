@@ -117,6 +117,25 @@ The following values were configured in the launcher:
 
 HDMI 1 was confirmed working with a Nintendo Switch 2. HDMI 2, HDMI 3 and AV 1 were configured but not individually verified.
 
+### Upgrading to a later build
+
+The same board was upgraded from launcher `3.2` to `3.6`, built with
+`-PlauncherApplicationId=com.ts.launcher` and installed over the running build with
+`adb install -r`. Default Home, the launcher's stored settings and volume control all survived.
+
+HDMI switching did not: the 3.6 APK did not carry the two input keys the earlier build had.
+Restoring `input_action` and `input_sources` from [config.json](config.json) in `config.xml` and
+rebuilding fixed it - HDMI 1 was confirmed working on the patched 3.6 build, with volume control
+and Home navigation still correct. HDMI 2, HDMI 3 and AV 1 were not re-checked on that build.
+
+`config.xml` is compiled into the APK, so a build made from a source tree without those keys
+carries the defaults. A theme's `config.json` is a file the launcher reads as an overlay over
+`config.xml` at start ([keys](../../themes/README.md#keys)), so a set's own keys kept there are not
+lost when the APK is rebuilt.
+
+Tested on Xiaomi MiTV-ASTP0 (`mulan`), Android 9, firmware `23.2.15.1886`, reported by the unit's
+owner in [#3703](https://github.com/Gathin23/cleanyourtv/issues/3703).
+
 ### Debloating
 
 Seven Xiaomi packages were successfully disabled through ADB without rooting the device. In particular, `com.xiaomi.wakeupservice` was observed consuming approximately 60% of one CPU core before being disabled.
