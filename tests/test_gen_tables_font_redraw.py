@@ -158,12 +158,27 @@ def remedy(text):
     """(interpreter, script) from the remedy line in `text`, or None when it prints no such command."""
     found = REMEDY.search(text)
     # The interpreter is quoted when its path has a space, so the line pastes as one command.
-    return (shlex.split(found.group("interpreter"))[0], found.group("script")) if found else None
+    return (split_interpreter(found.group("interpreter")), found.group("script")) if found else None
+
+
+def split_interpreter(text):
+    """The one word `text` is, read the way gen_tables.as_command wrote it for this OS."""
+    if os.name == "nt":  # list2cmdline keeps backslashes and double-quotes a path with a space
+        return shlex.split(text, posix=False)[0].strip('"')
+    return shlex.split(text)[0]
 
 
 def bare_interpreter(interpreter):
     """True for an interpreter named without a path, which the shell answers `command not found` to."""
     return "/" not in interpreter and "\\" not in interpreter and bool(BARE_INTERPRETER.match(interpreter))
+
+
+class RemedyReadingTest(unittest.TestCase):
+    def test_a_windows_path_comes_back_whole(self):
+        for path in ("C:\\Python311\\python.exe", "C:\\Program Files\\Python311\\python.exe"):
+            with self.subTest(path=path), mock.patch.object(os, "name", "nt"):
+                line = f"{gen_tables.as_command(path)} tools/readme_stats.py <Fredoka.ttf> docs/stats.png"
+                self.assertEqual(remedy(line), (path, "tools/readme_stats.py"), line)
 
 
 class RedrawFailureTest(unittest.TestCase):
