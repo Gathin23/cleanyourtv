@@ -59,6 +59,16 @@ class DisableListFolderMissingTest(unittest.TestCase):
         self.assertNotIn("cd:", result.stderr)
         self.assertFalse(self.log.exists(), "nothing is sent to the TV")
 
+    def test_a_missing_folder_does_not_fall_back_to_the_checkout_list(self):
+        checkout_lists = self.base / "repo" / "lists"
+        checkout_lists.mkdir()
+        (checkout_lists / "a.txt").write_text("com.example.fromcheckout\n")
+        result = self.run_disable("lists/a.txt")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("cannot read the list", result.stderr)
+        self.assertIn(str(self.base.resolve() / "lists" / "a.txt"), result.stderr)
+        self.assertFalse(self.log.exists(), "nothing is sent to the TV")
+
     def test_a_list_in_a_folder_that_is_there_still_runs(self):
         folder = self.base / "examples" / "my-tv"
         folder.mkdir(parents=True)
@@ -68,6 +78,31 @@ class DisableListFolderMissingTest(unittest.TestCase):
         self.assertTrue(self.log.exists(), result.stderr)
         # The list was found and read: its package reached the TV checks.
         self.assertIn("for p in com.example.ads", self.log.read_text())
+
+
+@unittest.skipUnless(os.name == "posix" and shutil.which("bash"), "restore.sh is a POSIX script; it needs bash")
+class RestoreListFolderMissingTest(unittest.TestCase):
+    def test_a_missing_folder_does_not_hand_recovery_the_checkout_list(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp).resolve()
+            tools = base / "repo" / "tools"
+            tools.mkdir(parents=True)
+            shutil.copy2(ROOT / "tools" / "restore.sh", tools / "restore.sh")
+            client = tools / "venv" / "bin" / "python"
+            client.parent.mkdir(parents=True)
+            client.write_text('#!/bin/sh\necho FAKE-PY "$@" | tee -a "$FAKE_PY_LOG"\n')
+            client.chmod(0o755)
+            (base / "repo" / "lists").mkdir()
+            (base / "repo" / "lists" / "a.txt").write_text("com.example.fromcheckout\n")
+            caller = base / "caller"
+            caller.mkdir()
+            log = base / "py.log"
+            env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(base), FAKE_PY_LOG=str(log))
+            subprocess.run(["bash", str(tools / "restore.sh"), "lists/a.txt"], cwd=caller, env=env,
+                           capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=60)
+            calls = log.read_text()
+            self.assertIn(f"--commands {caller}/lists/a.txt ", calls)
+            self.assertNotIn("--commands lists/a.txt", calls)
 
 
 if __name__ == "__main__":
