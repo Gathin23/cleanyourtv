@@ -97,6 +97,7 @@
     <string name="dock_edit_pick_place">בחרו מקום בשורת המועדפים לאפליקציה הזו ולחצו אישור. חזרה לביטול.</string>
     <string name="reorder">סידור אפליקציות</string>
     <string name="tile_move">העברה</string>
+    <string name="tile_close_app">סגירת האפליקציה</string>
     <string name="reorder_hint">אישור מרים אפליקציה, החצים מזיזים אותה, חזרה מניחה אותה. חזרה שוב לסיום.</string>
     <string name="reorder_not_saved">לא ניתן לשמור את הסדר החדש</string>
     <string name="app_library">ספריית אפליקציות</string>

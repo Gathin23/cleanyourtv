@@ -55,6 +55,8 @@ SHIPPED = {
     "android.permission.ACCESS_FINE_LOCATION",
     "android.permission.WRITE_SECURE_SETTINGS",
     "yandex.tv.permission.ACCESS_TV_SOURCE",
+    # tile_close_app: kills an app's background processes from the tile hold menu (protection normal).
+    "android.permission.KILL_BACKGROUND_PROCESSES",
 }
 
 # The shapes a network connection is opened with, in plain Java and in the libraries that wrap it. A
