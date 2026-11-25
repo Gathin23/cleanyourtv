@@ -2,5 +2,5 @@
   "tv": "Hisense HiSmartTV A4 (xiaoyushan, MStar m7322), India",
   "os": "Android TV 9",
   "brand": "Hisense",
-  "notes": "Hisense log reporting, sponsored home rows, store demo, preload auto-installs, OTA; USB debugging opens port 5555, no wireless toggle; smartsense kept"
+  "notes": "Hisense log reporting, sponsored home rows, store demo, preload auto-installs, OTA; USB debugging opens port 5555, no wireless toggle; smartsense kept; build 02.00.00.01 (xiaoyushan-sa) drops a third-party default Home, so the stock launcher stays on behind stock_home_redirect"
 }

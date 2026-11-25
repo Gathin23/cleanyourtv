@@ -126,6 +126,20 @@ With option B, use the TV's local address instead of `100.x.y.z`.
   updates) are theirs to answer, and so is what's plugged into the USB ports.
 - **Leave the restore script with them**, or at least keep it where you can run it the next time
   you're connected.
+- **With option A, make sure Tailscale survives a reboot** before you close ADB. Google TV has no VPN
+  screen in Settings, so make Tailscale the always-on VPN over ADB, reboot once, and check that the
+  `100.x.y.z` address answers again:
+
+  ```bash
+  TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'settings put secure always_on_vpn_app com.tailscale.ipn'
+  TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'settings put secure always_on_vpn_lockdown 0'
+  ```
+
+  `lockdown 0` leaves the internet working when Tailscale is down. On a
+  [TCL 43P755](../examples/tcl-g03-google-tv/debloat.txt) (Google TV 11, AR11) Tailscale started at
+  boot but did not reconnect, even with TCL's `APP_AUTO_START` app-op allowed; with always-on set, it
+  was back on its tailnet address about 90 seconds after the next boot. Undo:
+  `settings put secure always_on_vpn_app ""`.
 
 ## Afterwards
 

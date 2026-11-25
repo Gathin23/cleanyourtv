@@ -19,7 +19,11 @@ Write the result of each item in the pull request or the task report, or say why
 2. **Mechanism.** Name the one this set uses: standard `VIEW` of the channel URI, an OEM action or
    component, or something else. Do not move a fix between mechanisms without evidence from this set.
 3. **Inventory.** List every HDMI/AV input the set reports (`dumpsys tv_input`), with its input id, hardware
-   id and source value, not only the port in the report.
+   id and source value, not only the port in the report. A set whose `dumpsys tv_input` prints nothing has no
+   input to inventory at all: its menu is the firmware's own panel, so the mapping is `source_panel_service`
+   (the panel's component, an activity or a service) and/or `source_panel_action` (the action it answers), with `source_panel_extra` for the extra some panels
+   need - [`examples/vidda-c1s-mt9669`](../../examples/vidda-c1s-mt9669/) is that set. Record the
+   component you verified there instead of an input id.
 4. **Configuration.** Check that `input_action`, `input_sources` or the applicable equivalent exist for the
    model and agree with the inventory. A model can have a debloat list and still lack its input mapping.
 5. **Evidence per value.** Label each value with one of: verified on the reported device with external
@@ -32,7 +36,8 @@ Write the result of each item in the pull request or the task report, or say why
 Omitting unverified items and then saying "fixed" or "verified" is not acceptable. Unverified items may
 stay, as long as they are visible.
 
-Keys: `input_action`, `input_sources` and `app_keys` entries of the form `input:<input id>` are described in
+Keys: `input_action`, `input_sources`, the `source_panel_service` / `source_panel_action` /
+`source_panel_extra` panel above, and `app_keys` entries of the form `input:<input id>` are described in
 [`themes/README.md`](../../themes/README.md).
 
 Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.

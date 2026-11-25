@@ -1,15 +1,16 @@
 # CleanYourTV in the press
 
-Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **543 articles**, 473 of them from outlets in 57 countries and 70 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [674 videos](#videos) follow the articles.
+Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **595 articles**, 521 of them from outlets in 58 countries and 74 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [944 videos](#videos) follow the articles.
 
 Wrote about it and not here? Open an issue or a pull request with the link.
 
-[United States](#united-states)&nbsp;41 · [United Kingdom](#united-kingdom)&nbsp;5 · [India](#india)&nbsp;18 · [Denmark](#denmark)&nbsp;2 · [Japan](#japan)&nbsp;16 · [Bangladesh](#bangladesh)&nbsp;2 · [United Arab Emirates](#united-arab-emirates)&nbsp;2 · [France](#france)&nbsp;25 · [Germany](#germany)&nbsp;18 · [Spain](#spain)&nbsp;20 · [Italy](#italy)&nbsp;24 · [Norway](#norway)&nbsp;2 · [Portugal](#portugal)&nbsp;6 · [Czechia](#czechia)&nbsp;8 · [Ukraine](#ukraine)&nbsp;8 · [Greece](#greece)&nbsp;11 · [Egypt](#egypt)&nbsp;6 · [Brazil](#brazil)&nbsp;23 · [Argentina](#argentina)&nbsp;4 · [Chile](#chile)&nbsp;2 · [Colombia](#colombia)&nbsp;2 · [Costa Rica](#costa-rica)&nbsp;1 · [Mexico](#mexico)&nbsp;2 · [China](#china)&nbsp;66 · [Taiwan](#taiwan)&nbsp;16 · [Indonesia](#indonesia)&nbsp;19 · [Thailand](#thailand)&nbsp;4 · [Vietnam](#vietnam)&nbsp;15 · [Netherlands](#netherlands)&nbsp;5 · [Poland](#poland)&nbsp;10 · [Russia](#russia)&nbsp;28 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;5 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;9 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;2 · [Hungary](#hungary)&nbsp;2 · [Saudi Arabia](#saudi-arabia)&nbsp;1 · [Romania](#romania)&nbsp;5 · [Sweden](#sweden)&nbsp;4 · [Hong Kong](#hong-kong)&nbsp;5 · [Bulgaria](#bulgaria)&nbsp;2 · [Slovakia](#slovakia)&nbsp;3 · [Belgium](#belgium)&nbsp;1 · [Kenya](#kenya)&nbsp;1 · [Israel](#israel)&nbsp;2 · [Finland](#finland)&nbsp;2 · [Serbia](#serbia)&nbsp;1 · [Lithuania](#lithuania)&nbsp;2 · [Morocco](#morocco)&nbsp;1 · [Croatia](#croatia)&nbsp;3 · [Iran](#iran)&nbsp;1 · [Slovenia](#slovenia)&nbsp;1 · [Nepal](#nepal)&nbsp;1 · [Bolivia](#bolivia)&nbsp;1 · [Albania](#albania)&nbsp;2 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;70
+[United States](#united-states)&nbsp;46 · [United Kingdom](#united-kingdom)&nbsp;5 · [India](#india)&nbsp;18 · [Denmark](#denmark)&nbsp;3 · [Japan](#japan)&nbsp;18 · [Bangladesh](#bangladesh)&nbsp;2 · [United Arab Emirates](#united-arab-emirates)&nbsp;2 · [France](#france)&nbsp;28 · [Germany](#germany)&nbsp;18 · [Spain](#spain)&nbsp;23 · [Italy](#italy)&nbsp;29 · [Norway](#norway)&nbsp;2 · [Portugal](#portugal)&nbsp;8 · [Czechia](#czechia)&nbsp;8 · [Ukraine](#ukraine)&nbsp;8 · [Greece](#greece)&nbsp;15 · [Egypt](#egypt)&nbsp;6 · [Brazil](#brazil)&nbsp;26 · [Argentina](#argentina)&nbsp;4 · [Chile](#chile)&nbsp;2 · [Colombia](#colombia)&nbsp;2 · [Costa Rica](#costa-rica)&nbsp;1 · [Mexico](#mexico)&nbsp;3 · [China](#china)&nbsp;70 · [Taiwan](#taiwan)&nbsp;16 · [Indonesia](#indonesia)&nbsp;19 · [Thailand](#thailand)&nbsp;4 · [Vietnam](#vietnam)&nbsp;15 · [Netherlands](#netherlands)&nbsp;5 · [Poland](#poland)&nbsp;12 · [Russia](#russia)&nbsp;30 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;6 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;10 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;2 · [Hungary](#hungary)&nbsp;4 · [Saudi Arabia](#saudi-arabia)&nbsp;1 · [Romania](#romania)&nbsp;6 · [Sweden](#sweden)&nbsp;4 · [Hong Kong](#hong-kong)&nbsp;5 · [Bulgaria](#bulgaria)&nbsp;2 · [Slovakia](#slovakia)&nbsp;3 · [Belgium](#belgium)&nbsp;1 · [Kenya](#kenya)&nbsp;1 · [Israel](#israel)&nbsp;2 · [Finland](#finland)&nbsp;2 · [Serbia](#serbia)&nbsp;1 · [Lithuania](#lithuania)&nbsp;3 · [Morocco](#morocco)&nbsp;1 · [Croatia](#croatia)&nbsp;4 · [Iran](#iran)&nbsp;3 · [Slovenia](#slovenia)&nbsp;1 · [Nepal](#nepal)&nbsp;1 · [Bolivia](#bolivia)&nbsp;1 · [Albania](#albania)&nbsp;3 · [North Macedonia](#north-macedonia)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;74
 
 ## United States
 
 | Outlet | Article | Date |
 | --- | --- | --- |
+| The Verge | [The vibe-coding revolution is coming to all the gadgets](https://www.theverge.com/column/1039139/vibe-coding-gadgets-tv-camera) | 22&nbsp;Nov |
 | TechCrunch | [People are using AI to make their smart TVs dumb again](https://techcrunch.com/2026/10/19/people-are-using-ai-to-make-their-smart-tvs-dumb-again/) | 19&nbsp;Oct |
 | Mashable | [Smart TV owners have found a new use for AI: Removing home-screen clutter](https://mashable.com/tech/smart-tv-ads-claude-code-ai-cleanup) | 19&nbsp;Oct |
 | Android Authority | [Fed up with ads and bloatware on your smart TV? People are vibecoding ways to remove them](https://www.androidauthority.com/android-tv-vibe-hacking-remove-ads-bloatware-3725338/) | 20&nbsp;Oct |
@@ -51,6 +52,10 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Android Police | [This simple trick made my Google TV faster in less than 5 minutes](https://www.androidpolice.com/simple-trick-old-google-tv-faster/) | 9&nbsp;Nov |
 | Yahoo Tech | [AI Agents Are Stripping Ads From Smart TVs](https://tech.yahoo.com/home/articles/ai-agents-stripping-ads-smart-215300300.html) | 5&nbsp;Nov |
 | Decrypt | [How I Vibe Coded My Smart TV—And Claude Killed It](https://decrypt.co/381717/how-vibe-coded-my-smart-tv-claude-killed-it) | 23&nbsp;Oct |
+| LockerGnome | [People are pointing Claude Code at their smart TVs to switch the ads off, and the trick has spread from Android TV to Fire TV and LG](https://lockergnome.com/vibe-coding-the-ads-off-smart-tvs/) | 23&nbsp;Oct |
+| LINUX Unplugged | [The S in PHP is for Security](https://linuxunplugged.com/690) | 25&nbsp;Oct |
+| Syntax | [Everyone Is Hacking Their TV - Syntax #1050](https://syntax.fm/1050) | 26&nbsp;Oct |
+| Android Faithful | [Google Voice Finally "Getting the Message?" - Android Faithful Episode #177](https://www.androidfaithful.com/episode/google-voice-finally-getting-the-message-android-faithful-episode-177) | 18&nbsp;Nov |
 
 ## United Kingdom
 
@@ -91,6 +96,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | --- | --- | --- |
 | FlatpanelsHD | [People are using AI to clean up their Smart TV homescreens](https://flatpanelshd.com/news.php?id=1792478262&subaction=showfull) | 20&nbsp;Oct |
 | Lyd & Billede | [Bruger AI til at fjerne reklamer fra smart-TV'er](https://www.lydogbillede.dk/nyheter/tv/bruger-ai-til-at-fjerne-reklamer-fra-smart-tver) | 29&nbsp;Oct |
+| FlatpanelsDK | [Folk bruger nu AI til at rydde op på Smart TV hovedskærmen](https://flatpanels.dk/nyhed.php?id=1792479340&subaction=showfull) | 20&nbsp;Oct |
 
 ## Japan
 
@@ -112,6 +118,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Qiita (@dayu510) | [【GitHub 1万Star】スマートTVの広告とプリインを一掃！Wi-Fi経由でApple TV風にする話題のOSS「CleanYourTV」の仕組みを解説](https://qiita.com/dayu510/items/e799bcb685e5ef4bda42) | 1&nbsp;Nov |
 | Qiita (@orsonamiri) | [People Are Using AI To Remove Smart TV Ads: How It Actually Works](https://qiita.com/orsonamiri/items/8b8570da88c1d092ffd2) | 2&nbsp;Nov |
 | マイナビニュース | [テックトピア：米国のテクノロジー業界の舞台裏(77) 足す企業、引く顧客 - AIでテレビを使いやすくする人たちから学べること](https://news.mynavi.jp/techplus/article/techtopia-77/) | 3&nbsp;Nov |
+| ITmedia NEWS | [“何でもリバースエンジニアリング”生成AIで広がる　ソフトウェアもスマート家電も手軽に改造……ブームに潜む危険](https://www.itmedia.co.jp/news/article/2611/10/2000002975/) | 10&nbsp;Nov |
+| Gizmodo Japan | [見捨てられた家電、DIYで生き返る…はずだった。AIハック遊び、流行った途端にブレーキ](https://www.gizmodo.jp/article/ai-reverse-engineer-anything-crackdown/) | 16&nbsp;Nov |
 
 ## Bangladesh
 
@@ -156,6 +164,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | La Crème Du Gaming | [Agacé par les pubs sur la télé de ses parents, il utilise une IA et crée un outil qui peut les supprimer sur d'autres Smart TV](https://www.lacremedugaming.fr/high-tech/agace-par-les-pubs-sur-la-tele-de-ses-parents-il-utilise-une-ia-et-cree-un-outil-qui-peut-les-supprimer-sur-dautres-smart-tv-233172.html) | 2&nbsp;Nov |
 | IT-Connect | [CleanYourTV : comment nettoyer une box Android TV avec l'IA (sans root)](https://www.it-connect.fr/cleanyourtv-nettoyer-box-android-tv/) | 5&nbsp;Nov |
 | JeChange | [Fond noir, 4 applis, une horloge : l'écran d'accueil de télé créé par une IA a été adapté à 30 modèles en 2 jours](https://www.jechange.fr/telecom/internet/news/ecran-accueil-tele-cree-par-ia-fond-noir-4-applis-horloge-30-modeles-2-jours) | 6&nbsp;Nov |
+| Android MT | [Smart TV : couper trois réglages de confidentialité change-t-il quelque chose ?](https://android-mt.ouest-france.fr/news/protection/smart-tv-couper-trois-reglages-de-confidentialite-change-t-il-quelque-chose/227856/) | 31&nbsp;Oct |
+| Android MT | [Google TV qui rame : changer de lanceur peut la relancer en moins de cinq minutes](https://android-mt.ouest-france.fr/tutoriel/google-tv-qui-rame-changer-de-lanceur-peut-la-relancer-en-moins-de-cinq-minutes/229882/) | 10&nbsp;Nov |
+| 01net | [Comment accélérer votre TV sous Android en supprimant les pubs et applis inutiles](https://www.01net.com/astuces/comment-accelerer-votre-tv-sous-android-en-supprimant-les-pubs-et-applis-inutiles.html) | 14&nbsp;Nov |
 
 ## Germany
 
@@ -204,6 +215,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Enrique Dans | [Cuando mejorar tu televisión consiste en quitarle cosas](https://www.enriquedans.com/2026/10/cuando-mejorar-tu-television-consiste-en-quitarle-cosas.html) | 26&nbsp;Oct |
 | Ara | [El teu televisor t'espia: què pots fer per evitar-ho](https://www.ara.cat/media/televisor-t-espia-pots-evitar-ho_1_5901939.html) | 6&nbsp;Nov |
 | Escuela Vue | [Usan Claude y ADB para quitar anuncios y bloatware de la Smart TV](https://escuelavue.es/tecnologia/claude-adb-quitar-anuncios-bloatware-smart-tv/) | 25&nbsp;Oct |
+| AVPasión | [Se desata la fiebre en redes por el 'debloatware' en las Smart TV: mods al gusto y adiós a la publicidad](https://www.avpasion.com/debloatware-redes-smart-tv-publicidad-gusto/) | 19&nbsp;Oct |
+| AVPasión | [5 apps para limpiar la publicidad y cambiar el launcher en televisores Android TV, WebOS y Tizen](https://www.avpasion.com/5-apps-televisores-publicidad-android-webos-tizen/) | 26&nbsp;Oct |
+| Hoy Aragón | [Cómo quitar los anuncios de tu televisor Android con Claude Code: funciona en Xiaomi, TCL o Sony, pero no en Samsung ni LG](https://www.hoyaragon.es/innovacion/como-quitar-anuncios-televisor-android-claude-code-funciona-xiaomi-tcl-sony-samsung-ni-lg/20261112110845152359.html) | 12&nbsp;Nov |
 
 ## Italy
 
@@ -233,6 +247,11 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | DDay.it | [Hardware in affitto: perché il reverse engineering con l'AI fa paura a chi vende prodotti](https://www.dday.it/redazione/59215/hardware-in-affitto-perche-il-reverse-engineering-con-lai-fa-paura-a-chi-vende-prodotti) | 25&nbsp;Oct |
 | XiaomiToday | [Script AI per ripulire le smart TV da pubblicità e tracking](https://www.xiaomitoday.it/script-ai-smart-tv-pubblicita.html) | 20&nbsp;Oct |
 | Tom's Hardware Italia | [Hardware vecchio e non supportato, come riportarlo in vita con l'IA](https://www.tomshw.it/business/hardware-abbandonato-dal-produttore-ce-chi-lo-riporta-in-vita-con-lai-per-ora) | 9&nbsp;Nov |
+| Hardware Upgrade | [Reverse Engineer Anything: oltre 350mila stelle per smontare app e smart TV con l'IA](https://www.hwupgrade.it/news/scienza-tecnologia/reverse-engineer-anything-oltre-350mila-stelle-per-smontare-app-e-smart-tv-con-l-ia_160881.html) | – |
+| Il Post | [Cos’è questa storia che le smart tv ci spiano](https://www.ilpost.it/2026/10/30/smart-tv-dati-privacy/) | 30&nbsp;Oct |
+| Typo | [C'è chi sta usando Claude per liberare la propria TV dalla pubblicità](https://www.typomedia.co/tecnologia/cleanyourtv-ai-smart-tv-pubblicita-claude-code) | 2&nbsp;Nov |
+| Digitalia | [Il vampiro della RAM](https://digitalia.fm/848) | 3&nbsp;Nov |
+| Tom's Hardware Italia | [Smart TV lenta e piena di pubblicità? Ecco come ripulirla usando Claude Code](https://www.tomshw.it/business/tv-android-lenta-e-piena-di-pubblicita-la-ripulisci-con-claude-code-ecco-come) | 9&nbsp;Nov |
 
 ## Norway
 
@@ -251,6 +270,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | TugaTech | [Utilizadores estão a usar IA para tornar as suas Smart TVs mais "estúpidas" e remover publicidade](https://tugatech.com.pt/t92999-utilizadores-estao-a-usar-ia-para-tornar-as-suas-smart-tvs-mais-estupidas-e-remover-publicidade) | – |
 | SAPO Tek | [TV Detox: o projeto que usa o Claude para limpar a smart TV de aplicações e publicidade](https://tek.sapo.pt/noticias/computadores/artigos/tv-detox-o-projeto-que-usa-o-claude-para-limpar-a-smart-tv-de-aplicacoes-e-publicidade/) | 24&nbsp;Oct |
 | TugaTech | [CleanYourTV 3.0 chega para remover anúncios e bloatware de centenas de televisões](https://tugatech.com.pt/t93531-cleanyourtv-3-0-chega-para-remover-anuncios-e-bloatware-de-centenas-de-televisoes) | 28&nbsp;Oct |
+| TechBit | [Este simples truque deixa a Google TV mais rápida em menos de 5 minutos](https://techbit.pt/simples-truque-google-tv-mais-rapida-menos-5-minutos/) | 9&nbsp;Nov |
+| AndroidGeek | [A febre do vibe coding chega ao hardware: a IA que mexe na tua TV, câmara ou sintetizador](https://androidgeek.pt/febre-do-vibe-coding-chega-ao-hardware-a-ia-que-mexe-na-tua-tv-camara-ou-sintetizador) | 22&nbsp;Nov |
 
 ## Czechia
 
@@ -293,6 +314,10 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Gizchina.gr | [Android TV: Το AI κόλπο που αφαιρεί διαφημίσεις και κάνει την τηλεόραση πιο γρήγορη](https://www.gizchina.gr/2026/10/29/android-tv-choris-diafimiseis-claude-code-ai/) | 29&nbsp;Oct |
 | Digitaltvinfo.gr | [Smart TV: Πώς αφαιρούν διαφημίσεις και bloatware με την AI](https://digitaltvinfo.gr/eidiseis/news/smart-tv-pos-afairoyn-diafimiseis-kai-bloatware-me-tin-ai/) | 22&nbsp;Oct |
 | Insomnia.gr | [Με τη βοήθεια της AI, οι χρήστες κάνουν ξανά «χαζές» τις έξυπνες τηλεοράσεις τους](https://www.insomnia.gr/articles/entertainment/tv/me-ti-voitheia-tis-ai-oi-xristes-kanoun-ksana-xazes-tis-eksypnes-tileoraseis-tous) | 20&nbsp;Oct |
+| Hardware Busters | [Can AI Make Your Smart TV Faster? 144 Launch Tests](https://hwbusters.com/software/ai-tv-debloating-tcl-98c7k-benchmarks/) | 21&nbsp;Oct |
+| hxos+ | [AI «καθαρίζει» τις Smart TVs από διαφημίσεις και tracking: Οι χρήστες παίρνουν τον έλεγχο στα χέρια τους](https://hxosplus.gr/vision/ai-smart-tvs/) | 23&nbsp;Oct |
+| Hacks.gr | [How artificial intelligence helps users change the software on their devices](https://en.hacks.gr/pos-i-techniti-noimosyni-voitha-toys-christes-na-allazoyn-to-logismiko-ton-syskeyon-toys/) | 22&nbsp;Nov |
+| Digitaltvinfo.gr | [Η τεχνητή νοημοσύνη ανοίγει νέους δρόμους στην τροποποίηση ηλεκτρονικών συσκευών](https://digitaltvinfo.gr/eidiseis/tech-news/i-techniti-noimosyni-anoigei-neoys-dromoys-stin-tropopoiisi-ilektronikon-syskeyon/) | 23&nbsp;Nov |
 
 ## Egypt
 
@@ -332,6 +357,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Showmetech | [TV vibecoding: usuários estão usando IA para remover anúncios e apps de suas smart TVs](https://www.showmetech.com.br/tv-vibecoding-ia-para-remover-anuncios-de-smart-tvs/) | 20&nbsp;Oct |
 | Olhar Digital | [Limpeza de smart TV com IA: Usuários relatam TV que parou de funcionar e anúncios que voltam com a atualização](https://olhardigital.com.br/curiosidades/2026/11/10/limpeza-de-smart-tv-com-ia-usuarios-relatam-tv-que-parou-de-funcionar-e-anuncios-que-voltam-com-a-atualizacao/) | 10&nbsp;Nov |
 | Olhar Digital | [Smart TV sem anúncios? Dono usa IA para “limpar” a TV de anúncios e apps que vinham de fábrica, e o resultado viralizou e virou movimento na internet](https://olhardigital.com.br/curiosidades/2026/11/10/smart-tv-sem-anuncios-dono-usa-ia-para-limpar-a-tv-de-anuncios-e-apps-que-vinham-de-fabrica-e-o-resultado-viralizou-e-virou-movimento-na-internet/) | 10&nbsp;Nov |
+| Estadão (TecMundo) | [Usuários usam vibe coding para 'limpar' Smart TVs e otimizar sistema](https://www.estadao.com.br/tecmundo/produto-e-review/usuarios-estao-deixando-suas-smart-tvs-mais-rapidas-com-ia-confira-como-fazer/) | 20&nbsp;Oct |
+| TecStudio | [Projeto que tira propaganda de TV Android chega à versão 3.0 com suporte a 300 modelos](https://www.tecstudio.com.br/tecnologia/projeto-que-tira-propaganda-de-tv-android-chega-a-versao-3-0-com-suporte-a-300-modelos/) | 26&nbsp;Oct |
+| Estadão (TecMundo) | [Claude teria começado a bloquear tentativas de modificar Smart TVs](https://www.estadao.com.br/tecmundo/inteligencia-artificial/claude-agora-bloqueia-tentativas-de-modificar-smart-tvs-alertam-usuarios/) | 28&nbsp;Oct |
 
 ## Argentina
 
@@ -368,6 +396,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | --- | --- | --- |
 | OneDigital | [CleanYourTV limpia tu Android TV de publicidad con IA](https://onedigital.mx/2026/10/21/cleanyourtv-limpiar-android-tv/) | 21&nbsp;Oct |
 | Qore | [Desarrolladores usan IA para quitar anuncios de smart TVs](https://www.qore.com/tecnologia/desarrolladores-usan-ia-para-quitar-anuncios-de-smart-tvs/) | 20&nbsp;Oct |
+| OneDigital | [Prune: el debloater de código abierto para teléfonos Samsung Galaxy](https://onedigital.mx/2026/11/21/prune-debloater-codigo-abierto-samsung-galaxy/) | 21&nbsp;Nov |
 
 ## China
 
@@ -439,6 +468,10 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | 今日头条 Toutiao (下1个好软件) | [爆火开源项目 &#124; 关闭安卓手机广告、热搜、资讯推荐和营销推送](https://www.toutiao.com/article/7700881603635036712/) | 26&nbsp;Oct |
 | Ifeng Tech | [智能电视广告引不满，部分用户借助Claude等AI智能体清理广告和预装应用](https://tech.ifeng.com/c/8xNzUAQZMqQ) | 20&nbsp;Oct |
 | Huxiu | [一位开发者让电视服用了Claude，这是它系统发生的变化](https://www.huxiu.com/article/4900161.html) | 24&nbsp;Oct |
+| SMZDM | [123 款电视都能用，告别广告，把你的安卓电视变成 Apple TV！](https://post.smzdm.com/p/apqmnq22/) | 23&nbsp;Oct |
+| IT之家 | [“小白一句话让AI爆改电视桌面”疯传，但我有几句实话要说！](https://www.sohu.com/a/1092233297_114760) | 24&nbsp;Oct |
+| NetEase (163.com) | [AI“一键清理”智能电视广告](https://www.163.com/dy/article/LAB1BMSA05199NPP.html) | 28&nbsp;Oct |
+| Juejin | [这 6 个 GitHub 项目是刚开源，但是 Star 攀升很快的几个。](https://juejin.cn/post/7702284306036916224) | 30&nbsp;Oct |
 
 ## Taiwan
 
@@ -538,6 +571,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Audiostereo.pl | [Koniec z reklamami w Smart TV. Użytkownicy używają AI, by odzyskać własne telewizory](https://www.audiostereo.pl/magazyn/magazyn-kulturalny/newsy/koniec-z-reklamami-w-smart-tv-u%C5%BCytkownicy-u%C5%BCywaj%C4%85-ai-by-odzyska%C4%87-w%C5%82asne-telewizory-r2002) | – |
 | Wolne Media | [AI pomaga usunąć szpiegusie i reklamy z telewizorów smart](https://wolnemedia.net/ai-pomaga-usunac-szpiegusie-i-reklamy-z-telewizorow-smart/) | 21&nbsp;Oct |
 | Komputer Świat | [AI pomaga usuwać reklamy ze Smart TV. Własny interfejs coraz popularniejszy](https://www.komputerswiat.pl/audio-i-video/telewizory/ai-pomaga-usuwac-reklamy-ze-smart-tv-wlasny-interfejs-coraz-popularniejszy/xjf6v9e) | 21&nbsp;Oct |
+| AIPORT | [Claude Code czyści smart TV z reklam i bloatware’u. Projekt tv-vibehack zebrał ponad 1300 gwiazdek na GitHubie w kilka dni - AIPORT.pl](https://aiport.pl/co-nowego-w-ai/claude-code-czysci-smart-tv-z-reklam-i-bloatwareu-projekt-tv-vibehack-zebral-ponad-1300-gwiazdek-na-githubie-w-kilka-dni/) | 19&nbsp;Oct |
+| Cyfrelo | [AI usuwa reklamy i śledzenie ze smart TV](https://cyfrelo.pl/ai-usuwa-reklamy-i-sledzenie-ze-smart-tv/) | 20&nbsp;Oct |
 
 ## Russia
 
@@ -571,6 +606,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Код (thecode.media) | [Вайбкодер избавил Google TV от рекламы и переделал UI под Apple TV](https://thecode.media/vajbkoder-izbavil-google-tv-ot-reklamy-i-peredelal-ui-pod-apple-tv/) | 18&nbsp;Oct |
 | Shazoo | [Владелец телевизора Samsung использовал ИИ Claude и за 11 часов очистил телевизор от рекламы и слежки](https://shazoo.ru/2026/10/23/192947/vladelec-televizora-samsung-ispolzoval-ii-claude-i-za-11-casov-otcistil-televizor-ot-reklamy-i-slezki) | 23&nbsp;Oct |
 | SecurityLab.ru | [ИИ превращает умные телевизоры обратно в «глупые». Рекламу и телеметрию вычищают под ноль](https://www.securitylab.ru/news/579201.php) | 25&nbsp;Oct |
+| AppTractor | [Люди используют ИИ, чтобы снова сделать свои «умные» телевизоры «глупыми»](https://apptractor.ru/info/news/lyudi-ispolzuyut-ii-chtoby-snova-sdelat-svoi-umnye-televizory-glupymi.html) | 20&nbsp;Oct |
+| Habr | [Claude Code получил новое правило «не создавать копии уже существующих игр — даже если изменить их название»](https://habr.com/ru/articles/1101842/) | 30&nbsp;Oct |
 
 ## Belarus
 
@@ -588,6 +625,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Digital Age | [Akıllı televizyonları "aptallaştırma" akımı başladı](https://digitalage.com.tr/akilli-televizyonlari-aptallastirma-akimi-basladi/) | 21&nbsp;Oct |
 | ShiftDelete.Net | [CleanYourTV 3.0 ile Android TV Hız Canavarı Oluyor](https://shiftdelete.net/cleanyourtv-3-0-ile-android-tv-hiz-canavari-oluyor) | 26&nbsp;Oct |
 | ShiftDelete.Net (English edition) | [CleanYourTV 3.0 Transforms Android TVs Into Performance Powerhouses](https://shiftdelete.net/en/cleanyourtv-3-0-transforms-android-tvs-into-performance-powerhouses-2) | 26&nbsp;Oct |
+| Wall Street Turkish | [Yapay Zekaya Bu Kez Ters Görev: Televizyondaki Reklam Fazlalıklarını Kaldır](https://wallstreetturkish.com/yapay-zekaya-bu-kez-ters-gorev-televizyondaki-reklam-fazlaliklarini-kaldir-28035) | 20&nbsp;Oct |
 
 ## Jordan
 
@@ -608,6 +646,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | ZDNet Korea | [광고 없애고 추적 끄고…AI로 스마트TV 개조하는 이용자 증가](https://zdnet.co.kr/view/?no=20261020223659) | 20&nbsp;Oct |
 | Korea Economic Daily (한국경제) | [내 돈 주고 산 스마트TV인데, 광고 봐야해? AI로 싹 지웠다](https://www.hankyung.com/article/2026102535071) | 25&nbsp;Oct |
 | The Chosun Daily (English) | [AI 'Subtraction Tech' Strips Unwanted Features from Smart Devices, SNS](https://www.chosun.com/english/industry-en/2026/11/02/EVBITF4Y3FDQLJ4ASNPTP3CL2M/) | 1&nbsp;Nov |
+| Chosun Ilbo | [스마트 TV서 기능 삭제, 인스타서 릴스 삭제… AI 활용한 ‘빼기 테크’가 뜬다](https://www.chosun.com/economy/tech_it/2026/11/02/EZYUKPVLXJGYHIABMMNX65ZBWM/) | 2&nbsp;Nov |
 
 ## Australia
 
@@ -629,6 +668,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | --- | --- | --- |
 | Mobilissimo.hu | [MI-vel egyszerűsítik és reklámtalanítják okostévéjüket a felhasználók](https://www.mobilissimo.hu/mi-vel-egyszerusitik-es-reklamtalanitjak-okostevejuket-a-felhasznalok/) | 23&nbsp;Oct |
 | TechWorld.hu | [Beszállt az AI az emberek okostévék ellen vívott háborújába](https://techworld.hu/2026/10/21/beszallt-az-ai-az-emberek-okostevek-ellen-vivott-haborujaba/) | 21&nbsp;Oct |
+| AndroGeek | [Már a reklámokat is mesterséges intelligenciával irtják ki az okostévékből](https://androgeek.hu/hir/a-mesterseges-intelligencia-segitsegevel-szabaditjak-meg-az-okosteveket-a-reklamoktol) | 20&nbsp;Oct |
+| AI Forradalom | [Másfél óra alatt átírta Xiaomi TV-jének felületét egy indiai fejlesztő Claude Code-dal](https://aiforradalom.hu/alkalmazasok/masfel-ora-alatt-atirta-xiaomi-tv-jenek-feluletet-egy-indiai-fejleszto-claude-co) | 22&nbsp;Nov |
 
 ## Saudi Arabia
 
@@ -645,6 +686,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Playtech.ro | [Oamenii folosesc inteligența artificială ca să scape de reclamele de pe Smart TV. Claude Code poate transforma un televizor lent într-unul mult mai rapid](https://playtech.ro/2026/oamenii-folosesc-inteligenta-artificiala-ca-sa-scape-de-reclamele-de-pe-smart-tv-claude-code-poate-transforma-un-televizor-lent-intr-unul-mult-mai-rapid/) | 20&nbsp;Oct |
 | Arena IT | [CleanYourTV - aplicația open-source care te scapă de reclamele și bloatware-ul din Android TV](https://arenait.ro/cleanyourtv-aplicatia-open-source-care-scapa-reclamele-bloatware-android/) | 27&nbsp;Oct |
 | iSay.ro | [Vibe coding pe Smart TV. Folosește Claude Code pentru a șterge reclamele și bloatware-ul](https://www.isay.ro/vibe-coding-smart-tv-claude-code/) | 20&nbsp;Oct |
+| Săptămâna Financiară | [AI pentru reducerea reclamelor pe televizoare smart](https://www.sfin.ro/reclame-televizoare-smart/) | 16&nbsp;Nov |
 
 ## Sweden
 
@@ -718,6 +760,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | --- | --- | --- |
 | Cybernews | [Smart TV debloating movement explodes on GitHub: AI removes tracking](https://cybernews.com/security/smart-tv-debloating-movement-cleanyourtv-explodes-on-github/) | 27&nbsp;Oct |
 | INFA.LT | [Išmaniųjų televizorių savininkai, naudodamiesi „Claude“ dirbtiniu intelektu, atsikrato reklamos ir sekimo](https://infa.lt/145848/ismaniuju-televizoriu-savininkai-naudodamiesi-claude-dirbtiniu-intelektu-atsikrato-reklamos-ir-sekimo/) | 22&nbsp;Oct |
+| Cybernews | [Debloating expert Chris Titus targets LG TV ads and preinstalled apps with a new tool](https://cybernews.com/security/chris-titus-releases-lg-webos-tv-debloat-tool/) | 18&nbsp;Nov |
 
 ## Morocco
 
@@ -732,12 +775,15 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Bug.hr | [Očistite pametni televizor uz CleanYourTV: bolje sučelje bez reklama nastalo vibe kodiranjem](https://www.bug.hr/televizori/ocistite-pametni-televizor-uz-cleanyourtv-bolje-sucelje-bez-reklama-nastalo-63714) | 21&nbsp;Oct |
 | Logično | [Philips televizor bez reklama uz GitHub i AI asistenta](https://www.logicno.com/zivotni-stil/philips-televizor-bez-reklama-uz-github-i-ai-asistenta.html) | 19&nbsp;Oct |
 | Poduzetnički portal | [Klonovi Adobea, TV bez oglasa i 'otključani' PS5 prijete zaradi divova](http://poduzetnistvo.org/news/klonovi-adobea-tv-bez-oglasa-i-otkljucani-ps5-prijete-zaradi-divova) | 2&nbsp;Nov |
+| PC Chip | [Ljudi uz pomoć umjetne inteligencije svoje pametne televizore pretvaraju u „glupe”](https://pcchip.hr/hardver/tv-i-monitori/ljudi-uz-pomoc-umjetne-inteligencije-svoje-pametne-televizore-pretvaraju-u-glupe/) | 22&nbsp;Oct |
 
 ## Iran
 
 | Outlet | Article | Date |
 | --- | --- | --- |
 | Techna (تکنا) | [توسعه دهندگان با کلاد، تبلیغات تلویزیون های Android TV و Google TV را حذف میکنند](https://techna.news/news-139161.html) | 22&nbsp;Oct |
+| Technoc | [انقلاب وایب کدینگ به دنیای گجت‌ها رسید؛ تغییر نرم‌افزار دستگاه‌ها با هوش مصنوعی](https://technoc.ir/ai-vibe-coding-hardware-gadgets/) | 23&nbsp;Nov |
+| Techrato | [انقلاب هوش مصنوعی به گجت‌ها رسید؛ حالا می‌توانید تلویزیون و دوربین خود را با چند دستور تغییر دهید!](https://techrato.com/619044/ai-vibe-hacking-gadgets-tv-camera-claude-code/) | 23&nbsp;Nov |
 
 ## Slovenia
 
@@ -763,6 +809,13 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | --- | --- | --- |
 | Business Magazine Albania | [Përdoruesit po heqin reklamat nga televizorët inteligjentë me nd](https://businessmag.al/perdoruesit-po-heqin-reklamat-nga-televizoret-inteligjente-me-ndihmen-e-inteligjences-artificiale/) | 1&nbsp;Nov |
 | Ora News | [Mjaft me reklamat! Inteligjenca artificiale po ndryshon mënyrën si përdorim televizorin](https://www.oranews.tv/mjaft-me-reklamat-inteligjenca-artificiale-po-ndryshon-menyren-si-perdorim-televizorin-i1363765) | 1&nbsp;Nov |
+| Press Online | [Mjaft me reklamat! Inteligjenca artificiale po ndryshon mënyrën si përdorim televizorin](https://pressonline.al/2026/11/01/mjaft-me-reklamat-inteligjenca-artificiale-po-ndryshon-menyren-si-perdorim-televizorin/) | 1&nbsp;Nov |
+
+## North Macedonia
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| Trn.mk | [Доста од реклами на паметниот телевизор: Бесплатна алатка го менува интерфејсот без „рутирање“](https://trn.mk/dosta-od-reklami-na-pametniot-televizor-besplatna-alatka-go-menuva-interfejsot-bez-rutiranje/) | 22&nbsp;Oct |
 
 ## Online (newsletters, blogs, AI news)
 
@@ -838,686 +891,960 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Parade (Medium) | [Debloat Your TCL Smart TV in One Afternoon With an AI Agent](https://medium.com/@parade4940/debloat-your-tcl-smart-tv-in-one-afternoon-with-an-ai-agent-ec641abace22) | 31&nbsp;Oct |
 | Open-source Projects | [De-bloat any Android TV over Wi-Fi, no root, one-line restore](https://www.opensourceprojects.dev/post/cleanyourtv) | 3&nbsp;Nov |
 | えーAIニュースレター (Substack) | [Claude Codeでテレビの広告を消す人が続出｜2日で数千人、ソニー・TCL製も対象](https://eaiformal.substack.com/p/claude-code2tcl) | 19&nbsp;Oct |
+| AINews (Latent Space) | [&#91;AINews&#93; OpenAI's Patch the Planet program is 1 of 2 parties to discover PHP2Shell vulnerabilities in core PHP affecting 70% of the web, using GPT-5.6 Sol; coordinated response over 2 months](https://swyx.substack.com/p/ainews-openais-patch-the-planet-program) | 22&nbsp;Oct |
+| Roland Eisenbrand | [500 Milliarden weg: Google hinkt mit der KI-Vermarktung hinterher](https://rolandeisenbrand.substack.com/p/500-milliarden-weg-google-hinkt-mit) | 5&nbsp;Nov |
+| Web Reactiva | [Cuánto cuesta que la IA programe sola en un loop infinito](https://webreactiva.substack.com/p/cuanto-cuesta-que-la-ia-programe) | 8&nbsp;Nov |
+| EdTech Situation Room | [EdTechSR Ep 384: Command Line Superpowers](https://edtechsr.substack.com/p/edtechsr-ep-384-command-line-superpowers) | 19&nbsp;Nov |
 
 ## Videos
 
-On YouTube and Bilibili, newest first; views as of 14 Nov.
+On YouTube and Bilibili, newest first; views as of 23 Nov.
 
 | Channel | Video | Date | Views |
 | --- | --- | --- | --- |
-| Tamil Tech - MrTT | [😱 END of TV Brands⁉️ இத பண்ணா, இனி புது TV-யே தேவையில்ல 🔥](https://www.youtube.com/watch?v=BnYCCrD8wF4) | 14&nbsp;Nov | 4,507 |
-| Zadrig Technology | [Claude Code puede quitarle los anuncios a tu Smart TV](https://www.youtube.com/watch?v=EQz7yhYnEwM) | 12&nbsp;Nov | 18 |
-| Георгий Ривера | [Как убрать рекламу с Android TV: нейросеть сделает сама  #chatgpt #claude](https://www.youtube.com/watch?v=ouMz_gnMWPQ) | 10&nbsp;Nov | 7,022 |
-| Ринат Сулейманов &#124; AITron | [Clean Your TV: превратите Smart TV в Apple TV без рекламы и слежки](https://www.youtube.com/watch?v=w70FSk0OuSs) | 9&nbsp;Nov | 2,480 |
-| Shadab Shams | [Claude Code removed the ads from a smart TV (Clean Your TV, how to do it)](https://www.youtube.com/watch?v=hGfbGLpRLZk) | 9&nbsp;Nov | 1,439 |
-| 準時下班研究所 | [你家電視開機先看廣告？這個月 GitHub 爆紅的 5 個工具](https://www.youtube.com/watch?v=YLcNMvKT6mE) | 9&nbsp;Nov | 748 |
-| Ринат Шакиров | [Как взломать свой телевизор с помощью Claude Code](https://www.youtube.com/watch?v=Ap8xBHPgv-g) | 9&nbsp;Nov | 574 |
-| RepoQuarry | [CleanYourTV for Android & Google TV &#124; Declutter Your Home Screen #Shorts](https://www.youtube.com/watch?v=upIeUFEWkZM) | 9&nbsp;Nov | 134 |
-| Fernando Godinho | [Como deixar a TV limpa e bonita com IA (Google TV/Android TV) - (POR SUA CONTA E RISCO)](https://www.youtube.com/watch?v=-7igoQgE1hE) | 8&nbsp;Nov | 10,552 |
-| Fixs and Tricks | [ОЧИСТИ свой Android TV от РЕКЛАМЫ и МУСОРА! Без компьютера!](https://www.youtube.com/watch?v=gIl3dX6Jy10) | 8&nbsp;Nov | 7,992 |
-| Carlos Correia | [MALWARE A INFETAR A TUA TV BOX? Como Detetar e Resolver com IA!](https://www.youtube.com/watch?v=MTn_WrXzEeA) | 8&nbsp;Nov | 5,933 |
-| Ken Khamphiphone | [Claude Code on Your TV: What It Removes and What It Doesn't](https://www.youtube.com/watch?v=vxoUGSRPQzE) | 8&nbsp;Nov | 1,721 |
-| Paul Automatise | [CleanYourTV : enlever les pubs de l'écran d'accueil de ta télé](https://www.youtube.com/watch?v=YvtzArki_Yk) | 8&nbsp;Nov | 1,351 |
-| Wlad &#124; Ai & Startups | [Claude Code вычистил рекламу из телевизора #shorts](https://www.youtube.com/watch?v=IA1qdvtQCyc) | 8&nbsp;Nov | 1,326 |
-| Midas IA | [Así le quitas los anuncios a tu tele Android con Claude Code](https://www.youtube.com/watch?v=6t8x3bzH_YA) | 8&nbsp;Nov | 1,226 |
-| Wlad CEO &#124; Ai tools & Startups | [Claude Code killed the ads on his parents' TV #shorts](https://www.youtube.com/watch?v=QKb8ghtZCqk) | 8&nbsp;Nov | 1,022 |
-| Ezequiel Brusco &#124; IA para negocios | [Podés eliminar los anuncios de tu Smart TV con IA](https://www.youtube.com/watch?v=UY9iuTA-xcA) | 8&nbsp;Nov | 503 |
-| AI Top 5 | [Remove the ads from your smart TV (free repo) #shorts](https://www.youtube.com/watch?v=-KPUaVcAJqQ) | 8&nbsp;Nov | 419 |
-| The AI Doctor | [Your Android TV without ads: Claude Code cleans it up](https://www.youtube.com/watch?v=O8S1RlHi7Uc) | 8&nbsp;Nov | 419 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Clean Your TV: the deep clean #shorts](https://www.youtube.com/watch?v=_XmSottAP08) | 8&nbsp;Nov | 135 |
-| Tit Creates | [Your TV is slow and full of ads — the fix is FREE 📺](https://www.youtube.com/watch?v=UDoAPHhJzTU) | 8&nbsp;Nov | 128 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: What they share #shorts](https://www.youtube.com/watch?v=XU8uv9uedAw) | 8&nbsp;Nov | 122 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Getting started #shorts](https://www.youtube.com/watch?v=A1o1Qw7W1QM) | 8&nbsp;Nov | 85 |
-| Fixs and Tricks ENG | [Clean Your Android TV & REMOVE ADS! No PC Needed! (2026)](https://www.youtube.com/watch?v=bespZeMG2WA) | 8&nbsp;Nov | 77 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Who should pick which #shorts](https://www.youtube.com/watch?v=wk9QuMnErMw) | 8&nbsp;Nov | 62 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Where each one wins #shorts](https://www.youtube.com/watch?v=G63u8IvlTbY) | 8&nbsp;Nov | 56 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Which one should you use #shorts](https://www.youtube.com/watch?v=0UuUi3p0bmU) | 8&nbsp;Nov | 53 |
-| Mellow World | [Claude Code le quitó los anuncios a la tele de sus papás #shorts](https://www.youtube.com/watch?v=N53l-tWYTmY) | 8&nbsp;Nov | 9 |
-| Techy Druid | [I Removed Google TV Ads & Bloatware Using AI!](https://www.youtube.com/watch?v=DdgI0IAHNYk) | 7&nbsp;Nov | 8,761 |
-| Tv Box & Multimedia | [Revive tu AndroidTV y GoogleTV con CleanMyTV](https://www.youtube.com/watch?v=3CgPlPdwbIE) | 7&nbsp;Nov | 1,487 |
-| Jay E &#124; RoboNuggets | [People are using Claude to strip the ads off their TVs #shorts](https://www.youtube.com/watch?v=HPZILs6sqhY) | 7&nbsp;Nov | 735 |
-| Adam Souza &#124; IA na Prática | [Sua TV com uma tela inicial mais limpa usando IA 📺 &#124; CleanYourTV](https://www.youtube.com/watch?v=b1UkxGjl3l0) | 7&nbsp;Nov | 683 |
-| Mastering Computer Skills | [Android TV Ads & Bloatware Remove Karo - 5 Minute Mein Mobile se bina AI ke madad se.](https://www.youtube.com/watch?v=iM1cZvcB3iw) | 7&nbsp;Nov | 220 |
-| Zappel erklärt | [Die KI räumt deinen FERNSEHER auf #fernseher #androidtv #ki](https://www.youtube.com/watch?v=h4E5ZvDIMW8) | 7&nbsp;Nov | 177 |
-| Zappel explains | [AI kicks the ADS off your TV's home screen #smarttv #androidtv #ai](https://www.youtube.com/watch?v=itH43AksYDg) | 7&nbsp;Nov | 154 |
-| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: What are they #shorts](https://www.youtube.com/watch?v=LeLBDYck5F4) | 7&nbsp;Nov | 129 |
-| vc.sab.ia? | [IA faxina sua TV: sem anúncio, com cara de Apple TV (CleanYourTV)](https://www.youtube.com/watch?v=SG3c13JTqL4) | 7&nbsp;Nov | 76 |
-| Sourav Sec | [Transform Your Android TV! Make It Faster, Cleaner & Ad-Free &#124; CleanYourTV Tutorial](https://www.youtube.com/watch?v=u75rcyGPfpg) | 7&nbsp;Nov | 74 |
-| Adem Yaşar &#124; Yazılım ve Teknoloji | [Herkes TV’sini Claude’a Hackletti. Ben Daha Fazlasını Yaptım!](https://www.youtube.com/watch?v=YwMeQmT768A) | 6&nbsp;Nov | 46,581 |
-| Pro100tehnika | [Clean your TV уже на IPhone!?](https://www.youtube.com/watch?v=YL_1pFTbYws) | 6&nbsp;Nov | 34,739 |
-| JEYLINI | [¡LIBERA tu Smart TV LG webOS! 🔥 ROOT + Homebrew + CleanYourTV (2026)](https://www.youtube.com/watch?v=wIQENbWFy6w) | 6&nbsp;Nov | 10,060 |
-| Code & Compass | [Clean Your TV in Minutes &#124; Remove ads in TV and Bloatware &#124; Make TV Faster #cleanyourtv #claudeai](https://www.youtube.com/watch?v=cC6b1eKZjuk) | 6&nbsp;Nov | 3,376 |
-| IAenlinea | [Claude Code · limpia tu Smart TV](https://www.youtube.com/watch?v=IEmdmRJVM5k) | 6&nbsp;Nov | 1,332 |
-| Code & Compass | [I Cleaned My TV With AI and It Feels Brand New &#124; Remove Ads &#124; No Coding (Free Prompt)](https://www.youtube.com/watch?v=ndjvB_KAWJc) | 6&nbsp;Nov | 1,220 |
-| AppDroides | [CleanYourTV: Elimina Aplicaciones de Fábrica y Optimiza tu Android TV ¡GUÍA COMPLETA!](https://www.youtube.com/watch?v=VizVLPkE5zs) | 6&nbsp;Nov | 464 |
-| Dot SM | [Apple TV Glass UI on Android TV 😍 No Laptop, No AI Needed!](https://www.youtube.com/watch?v=2O9RbfVRdR8) | 6&nbsp;Nov | 447 |
-| AI Insider | [Убери рекламу с телевизора за 15 минут — CleanYourTV #shorts](https://www.youtube.com/watch?v=v7eJwvH77mk) | 6&nbsp;Nov | 287 |
-| TheSkillDrop | [People Are Using Claude Code to Kill the Ads on Their Smart TV - CleanYourTV](https://www.youtube.com/watch?v=E1jseEE7gnI) | 6&nbsp;Nov | 279 |
+| JaelClick | [🔥 Usé CHATGPT para LIMPIAR y ACELERAR mi GOOGLE TV 🤖 &#124; Agente IA (2026)](https://www.youtube.com/watch?v=9T3V-08ZjH0) | 23&nbsp;Nov | 258 |
+| Aerram Tech Telugu | [Smart TV Undo Button! 🔁 CleanYourTV Remove Cheyadam Ela? &#124; Part 2 Telugu](https://www.youtube.com/watch?v=efyyLijlEB0) | 23&nbsp;Nov | 240 |
+| KEYKEY TV | [How Vibe Coding With Claude Code Is Revolutionizing Everyday Gadgets, Smart TVs, and Hardw](https://www.youtube.com/watch?v=wy10dcxsnO8) | 23&nbsp;Nov | 11 |
+| Trinath Reddy | [AI Cleaned My Android TV: No More Sponsored Ads + Apple TV Look (Free, No Root)](https://www.youtube.com/watch?v=T5sWG5EgJYg) | 23&nbsp;Nov | 11 |
+| Unsupervised Botwatch | [GitHub's 470K-Star AI Tool Lets Agents Hack Your Smart TV](https://www.youtube.com/watch?v=B3-sLTsw9yE) | 23&nbsp;Nov | 8 |
+| JEYLINI | [📺 ¡LIBERA toda la Potencia de tu Smart TV LG webOS! &#124; Homebrew + CleanYourTV (2026)](https://www.youtube.com/watch?v=JZEHBIiqZ-g) | 22&nbsp;Nov | 718 |
+| 奶盖碎月光 | [电脑和电视连同一个 WiFi，就能净化安卓电视？关广告、换极简桌面](https://www.bilibili.com/video/BV1LoyGzZEYD/) | 22&nbsp;Nov | 414 |
+| Streamza Tv | [🔥 𝐑𝐞𝐦𝐨𝐯𝐞 𝐇𝐨𝐦𝐞 𝐒𝐜𝐫𝐞𝐞𝐧 𝐀𝐝𝐬 𝐨𝐧 𝐀𝐧𝐝𝐫𝐨𝐢𝐝 𝐓𝐕! 𝐂𝐥𝐞𝐚𝐧 & 𝐒𝐩𝐞𝐞𝐝 𝐔𝐩 𝐘𝐨𝐮𝐫 𝐓𝐕 𝐔𝐬𝐢𝐧𝐠 𝐘𝐨𝐮𝐫 𝐏𝐡𝐨𝐧𝐞 (𝟐𝟎𝟐𝟔) #tv #tvk](https://www.youtube.com/watch?v=uuL3OmhS72o) | 22&nbsp;Nov | 253 |
+| 大大大佬2674 | [【cleanyourtv使用教程】帮你电视去广告超牛开源神器保姆式安装教程](https://www.bilibili.com/video/BV1bjyLzXEXy/) | 22&nbsp;Nov | 197 |
+| 软糯桃啵啵 | [【安卓电视净化】同 WiFi 一键关广告卸预装，换极简桌面媲美 Apple TV](https://www.bilibili.com/video/BV1LoyGzZEff/) | 22&nbsp;Nov | 136 |
+| 𝙍𝙐𝙏𝙃𝙇𝙀𝙎𝙎 𝘿𝙀𝙑𝙄𝙇 | [Mobile తో Android TV Home Screen మార్చండిలా! &#124; Clean UI & No Ads (Telugu) #telugutech](https://www.youtube.com/watch?v=nGHj3dKaJSA) | 22&nbsp;Nov | 16 |
+| Hard-Reset_it | [JVC Android TV – Come rimuovere la pubblicità dalla schermata principale](https://www.youtube.com/watch?v=94VjEiaSbeU) | 22&nbsp;Nov | 6 |
+| Orba Tech | [Orba 3.7 : bilingue, Infos sur l'appli et plus de télés compatibles (Google TV)](https://www.youtube.com/watch?v=NZnyyk_HJ5g) | 22&nbsp;Nov | 2 |
+| Sinetech | [EN KOLAY YÖNTEM! Yapay Zeka Destekli Clean Your TV ile Android TV'nizi Uçurun](https://www.youtube.com/watch?v=NcuHMpSWzH8) | 21&nbsp;Nov | 10,833 |
+| Allen Butts | [Clean the ads and junk apps off your own TV's home screen with one Claude Code prompt.](https://www.youtube.com/watch?v=rSNEmUrgb3Q) | 21&nbsp;Nov | 9,769 |
+| The Tech Think | [Android TV Slow Hai? AI Wala Jugaad Karne Se Pehle Ye Dekh Lo! &#124; Google TV Fast Kaise Kare](https://www.youtube.com/watch?v=vK7vlVfI8oY) | 21&nbsp;Nov | 150 |
+| 单核苷酸 | [sony劈了腿并且小米出了轨，我让sony电视用上小米蓝牙遥控器](https://www.bilibili.com/video/BV1fuyYznEDM/) | 21&nbsp;Nov | 110 |
+| Its Unique Bro | [I Tried the Internet's Viral TV Hack... Turn Your Laggy Google TV into Apple TV (NO ADS!)](https://www.youtube.com/watch?v=DmmCwe9suAg) | 21&nbsp;Nov | 83 |
+| DHub | [Remove Ads From Smart TV With AI: 3 Agents Tested](https://www.youtube.com/watch?v=ApM5e_ghTRM) | 21&nbsp;Nov | 52 |
+| Hard-Reset_it | [XIAOMI TV X Mini – Come velocizzare e rimuovere gli annunci con Claude Code](https://www.youtube.com/watch?v=7wTVKAEdNjE) | 21&nbsp;Nov | 3 |
+| Hard-Reset_it | [XIAOMI TV X Mini – Come rimuovere gli annunci e velocizzare Google TV con Claude Code](https://www.youtube.com/watch?v=4L5c0KY7OO8) | 21&nbsp;Nov | 2 |
+| 宝藏研究社 | [夯到爆！Github 又出狠活神器！！电视桌面改造这块最高的山来了，6款开源软件，能去广告、换电视桌面、手机遥控、播放4K航拍屏保，还能把旧显示器变信息面板！](https://www.bilibili.com/video/BV1i1y4zaEwy/) | 20&nbsp;Nov | 3,847 |
+| SimplyExplain | [17 Crazy Ways People Actually Use Claude](https://www.youtube.com/watch?v=hCMDbAebKf8) | 20&nbsp;Nov | 864 |
+| DK Tech Hindi | [Android TV ko Apple TV Banao or Ads Hatao Free Mein! CleanYourTV #shorts #tv](https://www.youtube.com/watch?v=CnWSz_rbnSI) | 20&nbsp;Nov | 278 |
+| SahainTJ | [I Hacked My TV With Claude...](https://www.youtube.com/watch?v=7l4EUKa7VsA) | 20&nbsp;Nov | 223 |
+| Viviendo en el Futuro | [CleanYourTV con IA GRATIS: tu Google TV sin anuncios (sin pagar Claude)](https://www.youtube.com/watch?v=2vbA6KjspoE) | 20&nbsp;Nov | 147 |
+| chatgpt问答助手 | [AI把电视广告全删了，开源免费不用刷机](https://www.bilibili.com/video/BV1HTyxzzEDp/) | 20&nbsp;Nov | 11 |
+| HardReset_info Deutsch | [XIAOMI TV X Mini – Werbung entfernen & mit Claude Code beschleunigen](https://www.youtube.com/watch?v=RtCgbnhcQGs) | 20&nbsp;Nov | 10 |
+| ІТ Навиворіт | [Мій Sony TV стежив за мною. Claude вимкнув 18 трекерів за 1 розмову](https://www.youtube.com/watch?v=udMEnJYmOx8) | 20&nbsp;Nov | 9 |
+| HardReset_info Deutsch | [JVC Android TV – Custom Launcher mit Claude Code installieren](https://www.youtube.com/watch?v=LtoXxfpl2iU) | 20&nbsp;Nov | 7 |
+| Andys KI-Klasse | [Cleanyourtv: Android TV werbefrei in 10 Minuten – gratis](https://www.youtube.com/watch?v=G7WebR0igLQ) | 20&nbsp;Nov | 5 |
+| DK Tech Hindi | [Clean Your TV Hindi: Android TV Se Ads Kaise Hataye (Free Claude Se Kiya)](https://www.youtube.com/watch?v=mqG2NRjAcEU) | 19&nbsp;Nov | 446 |
+| HotCommit | [AI is hacking things by itself now…](https://www.youtube.com/watch?v=agn87Ft304w) | 19&nbsp;Nov | 204 |
+| Matthew Explains AI | [People Are Building INSANE Things With Claude (20 Real Examples)](https://www.youtube.com/watch?v=fd7tms7EByQ) | 19&nbsp;Nov | 49 |
+| NineAgents | [Claude Code Switched Off the Ads on My Android TV](https://www.youtube.com/watch?v=U7O-QM3Cd6I) | 19&nbsp;Nov | 10 |
+| Hard-Reset_it | [Claude Code – Ottimizza la tua JVC Android TV](https://www.youtube.com/watch?v=bSKa0DGLD6s) | 19&nbsp;Nov | 4 |
+| Android Faithful | [Google Voice Finally "Getting the Message?" - Android Faithful  #177](https://www.youtube.com/watch?v=mPGh-JW9C10) | 18&nbsp;Nov | 1,798 |
+| Promptovna | [Pomalá Android televize a Claude Code: video Filipa Oborníka a bezpečnostní checklist (komentář)](https://www.youtube.com/watch?v=97vmB2Eb30A) | 18&nbsp;Nov | 326 |
+| 沃克_Lee | [电视开机先看30秒广告？一通电话＋一个免费桌面，10分钟清净](https://www.bilibili.com/video/BV1rVs368Ecd/) | 18&nbsp;Nov | 273 |
+| Android Faithful | [How CleanYourTV Took Back the Smart TV Home Screen](https://www.youtube.com/watch?v=FkWC9eE0tQ4) | 18&nbsp;Nov | 265 |
+| reason211 | [【开源神器第99期】电视广告多还卡顿？同一WiFi停掉广告、换572KB清爽桌面、31套主题、随时还原，5.8万星CleanYourTV｜Android TV](https://www.bilibili.com/video/BV1P6su6PEQC/) | 18&nbsp;Nov | 160 |
+| 马丁没有早晨zZ | [Claude Code 改造电视：广告全关，自建主界面](https://www.bilibili.com/video/BV1b8sr6cEeU/) | 18&nbsp;Nov | 144 |
+| 青九归途 | [夯爆了！Github 又出狠活神器！电视改造：CleanYourTV 部署，干净无广告 TV](https://www.bilibili.com/video/BV1cnsS6gEuL/) | 18&nbsp;Nov | 81 |
+| 墨央未柒 | [【第12期】电视优化开源工具！禁用系统广告、清理预装软件、替换超轻量桌面，支持多款电视机型！老电视机也能重获流畅体验](https://www.bilibili.com/video/BV1LhsS6aEZH/) | 18&nbsp;Nov | 44 |
+| Promptovna | [Zrychlení Android televize s Claude Code: na co nezapomenout #shorts](https://www.youtube.com/watch?v=38qjeF56wks) | 18&nbsp;Nov | 36 |
+| 陌叁拾光 | [【第1期】电视优化开源工具！禁用系统广告、清理预装软件、替换超轻量桌面，支持多款电视机型！老电视机也能重获流畅体验](https://www.bilibili.com/video/BV1j8sS6AEXH/) | 18&nbsp;Nov | 26 |
+| Hard-Reset_it | [JVC Android TV – Installare un launcher personalizzato con Claude Code](https://www.youtube.com/watch?v=74pXRmXEiiM) | 18&nbsp;Nov | 12 |
+| 진형랩 &#124; AI 바이브코딩 | [구글TV 광고·버벅임 없애기 &#124; 클로드가 15분 만에 정리해 주는 무료 오픈소스 (안드로이드TV)](https://www.youtube.com/watch?v=JTCCrarcLG0) | 18&nbsp;Nov | 12 |
+| HardReset_jp | [JVC Android TV – 初期化せずに遅いテレビを高速化する手順](https://www.youtube.com/watch?v=J0Ap1iPUTIc) | 18&nbsp;Nov | 2 |
+| HardReset_jp | [XIAOMI TV X Mini – Claude Codeを使用して広告を削除しTVを高速化する](https://www.youtube.com/watch?v=J4PbjFXJTTc) | 18&nbsp;Nov | 0 |
+| GEEKrar | [FreeMyTV: A FREE Home Screen for Samsung, LG & Google TV](https://www.youtube.com/watch?v=DU1F6s23ux4) | 17&nbsp;Nov | 3,657 |
+| The Tech Think | [Android TV Slow Hai? Speed Up Your Tv &#124; How to Speed Up Smart Tv&#124; Google TV Fast Kaise Kare](https://www.youtube.com/watch?v=eJqvakSDqO0) | 17&nbsp;Nov | 799 |
+| Aashish Bhandari | [I Turned My Old Fire TV Into This With AI](https://www.youtube.com/watch?v=V--nmvzCk6k) | 17&nbsp;Nov | 637 |
+| Анна Любашкина &#124; ИИ-новости | [Как убрать рекламу с Android TV через Claude: бесплатный проект Clean Your TV](https://www.youtube.com/watch?v=Q1jfQb9VRHc) | 17&nbsp;Nov | 100 |
+| devshipit | [Ads on a TV you paid for? Try a clean home screen](https://www.youtube.com/watch?v=912tGEhgdJA) | 17&nbsp;Nov | 60 |
+| HardReset_tr | [XIAOMI TV X Mini – Reklamları Kaldırma ve Hızlandırma](https://www.youtube.com/watch?v=IxMoBZg7lRM) | 17&nbsp;Nov | 19 |
+| HardReset_jp | [JVC Android TV – クロードコードでカスタムランチャーをインストールする方法](https://www.youtube.com/watch?v=GbDBRggGYFo) | 17&nbsp;Nov | 0 |
+| Filip Oborník &#124; AI s rozumem | [Pomalá Android televize? Vyřešíte to jednoduše pomocí Claude Code](https://www.youtube.com/watch?v=4Ws_QFBDyrI) | 16&nbsp;Nov | 166,224 |
+| Vishhh89 | [Clean your tv with app no ads and bloatware just clean launcher on your TV no Claude/terminal needed](https://www.youtube.com/watch?v=Zb5xMq8pf3o) | 16&nbsp;Nov | 58 |
+| 1112 Project | [Bersihkan Iklan & Bloatware Android TV Tanpa Root (CleanYourTV)](https://www.youtube.com/watch?v=U30ATEK9nPU) | 16&nbsp;Nov | 25 |
+| Harsh Tech | [How to Make ANY Slow Android TV Fast & Ad-Free (Apple TV Style)](https://www.youtube.com/watch?v=SyVqQhVcwmY) | 16&nbsp;Nov | 10 |
+| HardReset_info Deutsch | [XIAOMI TV X Mini – Langsamkeit beheben & Werbung entfernen mit Claude Code](https://www.youtube.com/watch?v=przuQswGNOc) | 16&nbsp;Nov | 6 |
+| RelfWolf | [Everyone’s Letting AI Hack Their TVs… So I Tried It](https://www.youtube.com/watch?v=aN-65z6bvKk) | 15&nbsp;Nov | 1,119,660 |
+| SSTec Tutorials | [Clean Up Your Smart TV By Debloating with Your Phone!](https://www.youtube.com/watch?v=K3upOFAFKdQ) | 15&nbsp;Nov | 1,242 |
+| kaboratech | [How I Safely Debloated My Google TV & Got an Apple TV-Style Home Screen (No Bootloops!)](https://www.youtube.com/watch?v=JPxEHukECEQ) | 15&nbsp;Nov | 591 |
+| 隨 Hsin 所欲 | [GitHub 本週最紅！CleanYourTV 29 天 5.8 萬星｜Android TV 去廣告、換成 Apple TV 桌面](https://www.youtube.com/watch?v=wfUMMXm9UhY) | 15&nbsp;Nov | 300 |
+| Tamil Tech - MrTT | [😱 END of TV Brands⁉️ இத பண்ணா, இனி புது TV-யே தேவையில்ல 🔥](https://www.youtube.com/watch?v=BnYCCrD8wF4) | 14&nbsp;Nov | 564,882 |
+| Aditya Bharti | [50 Surprising Things People Created With Claude & ChatGPT](https://www.youtube.com/watch?v=_ThmtYNEUns) | 14&nbsp;Nov | 615 |
+| Man & Gears &#124; Cars, Tech & Lifestyle | [I Made My Android TV 10X BETTER with AI! 😍 Apple TV Look + Remove Ads (Hindi) #cleanyourtv](https://www.youtube.com/watch?v=TejOmgwNsk0) | 14&nbsp;Nov | 178 |
+| 小莫聊 | [CleanYourTV 之后又有新玩法！6 款开源电视工具，老电视和盒子怎么选？](https://www.bilibili.com/video/BV1FtWs6eEmU/) | 14&nbsp;Nov | 122 |
+| claudia mauri | [La smart TV dei genitori, e Claude Code per censurare le pubblicità](https://www.youtube.com/watch?v=BR161MGrFqQ) | 14&nbsp;Nov | 7 |
+| SimpleGhar Telugu | [I Let Claude Fix My Slow Smart TV! 🤯](https://www.youtube.com/watch?v=7wvU2IdZn9c) | 13&nbsp;Nov | 72,402 |
+| 电话v波炉 | [教你打开adb并用WorkBuddy爆改Tv极简桌面【适用投影，盒子】](https://www.bilibili.com/video/BV1ZGWq6cEJa/) | 13&nbsp;Nov | 1,765 |
+| Nithin Raaj | [I used AI to make my TV 10x Better in simple two steps](https://www.youtube.com/watch?v=su5d9ql6Gnw) | 13&nbsp;Nov | 62 |
+| OwnGalaxy | [Darum hacken alle ihren TV! (Selbstexperiment)](https://www.youtube.com/watch?v=smXsVgJmrTs) | 12&nbsp;Nov | 285,734 |
+| sutu | [Le pedí a la IA que convirtiera mi TV Box en una Wii](https://www.youtube.com/watch?v=zDjJspEoxwM) | 12&nbsp;Nov | 72,744 |
+| ASHRAF ZONE | [تلفازي صار مدريدياً! 43 تطبيقاً أقل، ولا إعلانات، وبطاقة المباراة القادمة عن طريق Claude Code](https://www.youtube.com/watch?v=tVgf7X0GrmI) | 12&nbsp;Nov | 40,019 |
+| All about Android | [Ускоряем Android TV в 1 клик! Удаляем мусор, рекламу и лаги без ПК](https://www.youtube.com/watch?v=eBF4ljhpDRU) | 12&nbsp;Nov | 13,262 |
+| Tech Trailing | [Clean Your Smart TV Without Claude Pro?! 😱🔥 &#124; Remove Bloatware & Speed Up Your TV](https://www.youtube.com/watch?v=0har-48BSg0) | 12&nbsp;Nov | 272 |
+| HardReset_tr | [XIAOMI TV X Mini – Claude Code ile Hızlandırma ve Reklam Kaldırma](https://www.youtube.com/watch?v=z_F7V0gt6d0) | 12&nbsp;Nov | 76 |
+| trendinggverse | [GitHub's Most Starred Projects of 2026, Explained in 3 Minute](https://www.youtube.com/watch?v=DPsIfUQSgwA) | 12&nbsp;Nov | 63 |
+| 老苏拆AI | [开机先看广告？有人一句话让 AI 把智能电视「变笨」了](https://www.youtube.com/watch?v=iK16b3WIsro) | 12&nbsp;Nov | 61 |
+| HardReset_tr | [Claude Code ile JVC Android TV Optimizasyonu](https://www.youtube.com/watch?v=JTmisy001Zg) | 12&nbsp;Nov | 39 |
+| Zadrig Technology | [Claude Code puede quitarle los anuncios a tu Smart TV](https://www.youtube.com/watch?v=EQz7yhYnEwM) | 12&nbsp;Nov | 39 |
+| HardReset_tr | [JVC Android TV – Özel Başlatıcı Nasıl Kurulur](https://www.youtube.com/watch?v=OpyHMKfuUeA) | 12&nbsp;Nov | 12 |
+| HardReset_jp | [XIAOMI TV X Mini – Claude Codeを使用して速度向上と広告削除を行う方法](https://www.youtube.com/watch?v=pigmHZkOV2U) | 12&nbsp;Nov | 1 |
+| Benny亂買隊長（杯妮子） | [告別電視ㄉ醜系統！免費裝APPLE TV！？現省9900元！？](https://www.youtube.com/watch?v=gxsAbxe_6Bk) | 11&nbsp;Nov | 98,368 |
+| 爱分享的老李 | [只需一部手机！0代码彻底榨干安卓电视性能：去广告、杀后台、精简桌面保姆级教程（以英伟达 Shield TV 为例）](https://www.youtube.com/watch?v=-t8x8uac9xQ) | 11&nbsp;Nov | 35,207 |
+| Sachdeva AI | [I Turned My Old LAGGY Android TV Into Apple TV Look!](https://www.youtube.com/watch?v=ZCkCrwB2cHs) | 11&nbsp;Nov | 9,222 |
+| Julian West | [Remove Unwanted TV Apps Over Wi-Fi With CleanYourTV](https://www.youtube.com/watch?v=U0ndh5vmulA) | 11&nbsp;Nov | 1,414 |
+| Home Automations | [Make Your Android TV 10–20x Faster! (Try This Method)](https://www.youtube.com/watch?v=FS5mskIdkPE) | 11&nbsp;Nov | 691 |
+| 赛博Tpro | [旧电视盒子别扔：3个开源项目实测（Aerial/CleanYourTV/FongMi）](https://www.bilibili.com/video/BV1rUW26bEJr/) | 11&nbsp;Nov | 488 |
+| void ai | [CleanYourTV: Debloat Android TV](https://www.youtube.com/watch?v=o5v-56L379E) | 11&nbsp;Nov | 277 |
+| techit | [7 أشياء في بيتك يصلّحها Claude ببلاش](https://www.youtube.com/watch?v=giZSVBmU0oE) | 11&nbsp;Nov | 158 |
+| BEEFR | [People Gave Claude Their Homes 😳](https://www.youtube.com/watch?v=5VGT0pf0JXc) | 11&nbsp;Nov | 96 |
+| Георгий Ривера | [Как убрать рекламу с Android TV: нейросеть сделает сама  #chatgpt #claude](https://www.youtube.com/watch?v=ouMz_gnMWPQ) | 10&nbsp;Nov | 8,048 |
+| 水墨青竹Aql | [小米/红米电视如何使用三方桌面？/禁用系统桌面/如何让小米电视/红米电视使用Clean your TV/Aerial TV/Emotion UI](https://www.bilibili.com/video/BV1FFWM6UExg/) | 10&nbsp;Nov | 4,347 |
+| NewTechWorld with Tej | [Slow Fire TV Stick? Make It 10X FASTER! 🔥 100% FREE Method](https://www.youtube.com/watch?v=KmhkP7y9XXo) | 10&nbsp;Nov | 3,306 |
+| 水墨青竹 | [小米/红米电视如何使用三方桌面？/禁用系统桌面/如何让小米电视/红米电视使用Clean your TV/Aerial TV/Emotion UI](https://www.youtube.com/watch?v=m5K7xQoMrOQ) | 10&nbsp;Nov | 2,626 |
+| TECH ZONE UNIQUE | [Make Your TV 10X Faster & Better! 🤯 &#124; No Claude, No AI Needed](https://www.youtube.com/watch?v=FasMkfoBd-Y) | 10&nbsp;Nov | 1,370 |
+| CyberShoal | [Speed Up ANY Android TV or Firestick - Fully Debloated in 2 Minutes! - Tellyscope](https://www.youtube.com/watch?v=87shJGWUh9s) | 10&nbsp;Nov | 499 |
+| Luiz Pereira | [Claude Code tirou os ANÚNCIOS da TV](https://www.youtube.com/watch?v=24lkUAB5lQc) | 10&nbsp;Nov | 112 |
+| HardReset_jp | [JVC Android TV – カスタムランチャーの導入方法](https://www.youtube.com/watch?v=CMPW7IMXJnM) | 10&nbsp;Nov | 5 |
+| HardReset_jp | [JVC Android TV – Claude Codeで最適化する方法](https://www.youtube.com/watch?v=3TDuh92-KyY) | 10&nbsp;Nov | 0 |
+| Ринат Сулейманов &#124; AITron | [Clean Your TV: превратите Smart TV в Apple TV без рекламы и слежки](https://www.youtube.com/watch?v=w70FSk0OuSs) | 9&nbsp;Nov | 2,579 |
+| Shadab Shams | [Claude Code removed the ads from a smart TV (Clean Your TV, how to do it)](https://www.youtube.com/watch?v=hGfbGLpRLZk) | 9&nbsp;Nov | 1,680 |
+| 準時下班研究所 | [你家電視開機先看廣告？這個月 GitHub 爆紅的 5 個工具](https://www.youtube.com/watch?v=YLcNMvKT6mE) | 9&nbsp;Nov | 752 |
+| Ринат Шакиров | [Как взломать свой телевизор с помощью Claude Code](https://www.youtube.com/watch?v=Ap8xBHPgv-g) | 9&nbsp;Nov | 689 |
+| Michele Mossali | [19 modi di usare Claude che ti cambiano la vita](https://www.youtube.com/watch?v=J1M94kyiOsc) | 9&nbsp;Nov | 547 |
+| RepoQuarry | [CleanYourTV for Android & Google TV &#124; Declutter Your Home Screen #Shorts](https://www.youtube.com/watch?v=upIeUFEWkZM) | 9&nbsp;Nov | 173 |
+| DotTech | [RDR2 on Android TV Home? How to Do It! 😨🔥&#124; Malayalam](https://www.youtube.com/watch?v=Bj3XHsdoL2g) | 9&nbsp;Nov | 104 |
+| 青临同学 | [GitHub届又传来喜讯！老电视系统优化+电视桌面改造最高的山来了。6款把「无广告桌面+ADB系统精简+防沉迷+Apple TV液态玻璃」全安排上](https://www.bilibili.com/video/BV1QHWW6UEk6/) | 8&nbsp;Nov | 17,494 |
+| Fixs and Tricks | [ОЧИСТИ свой Android TV от РЕКЛАМЫ и МУСОРА! Без компьютера!](https://www.youtube.com/watch?v=gIl3dX6Jy10) | 8&nbsp;Nov | 16,417 |
+| Fernando Godinho | [Como deixar a TV limpa e bonita com IA (Google TV/Android TV) - (POR SUA CONTA E RISCO)](https://www.youtube.com/watch?v=-7igoQgE1hE) | 8&nbsp;Nov | 12,564 |
+| Carlos Correia | [MALWARE A INFETAR A TUA TV BOX? Como Detetar e Resolver com IA!](https://www.youtube.com/watch?v=MTn_WrXzEeA) | 8&nbsp;Nov | 6,468 |
+| Ken Khamphiphone | [Claude Code on Your TV: What It Removes and What It Doesn't](https://www.youtube.com/watch?v=vxoUGSRPQzE) | 8&nbsp;Nov | 1,799 |
+| NOAD | [Limpié mi TV box con IA: el resultado es LA CABRA](https://www.youtube.com/watch?v=I_JTKj46BsA) | 8&nbsp;Nov | 1,444 |
+| Paul Automatise | [CleanYourTV : enlever les pubs de l'écran d'accueil de ta télé](https://www.youtube.com/watch?v=YvtzArki_Yk) | 8&nbsp;Nov | 1,389 |
+| Wlad &#124; Ai & Startups | [Claude Code вычистил рекламу из телевизора #shorts](https://www.youtube.com/watch?v=IA1qdvtQCyc) | 8&nbsp;Nov | 1,361 |
+| Midas IA | [Así le quitas los anuncios a tu tele Android con Claude Code](https://www.youtube.com/watch?v=6t8x3bzH_YA) | 8&nbsp;Nov | 1,241 |
+| ByteForward | [Claude Code Hacked a TV... Then Claude Did This..](https://www.youtube.com/watch?v=RGW9Z6LUepo) | 8&nbsp;Nov | 1,206 |
+| Wlad CEO &#124; Ai tools & Startups | [Claude Code killed the ads on his parents' TV #shorts](https://www.youtube.com/watch?v=QKb8ghtZCqk) | 8&nbsp;Nov | 1,025 |
+| Ezequiel Brusco &#124; IA para negocios | [Podés eliminar los anuncios de tu Smart TV con IA](https://www.youtube.com/watch?v=UY9iuTA-xcA) | 8&nbsp;Nov | 535 |
+| AI Top 5 | [Remove the ads from your smart TV (free repo) #shorts](https://www.youtube.com/watch?v=-KPUaVcAJqQ) | 8&nbsp;Nov | 439 |
+| The AI Doctor | [Your Android TV without ads: Claude Code cleans it up](https://www.youtube.com/watch?v=O8S1RlHi7Uc) | 8&nbsp;Nov | 435 |
+| Random Fact Devta | [Apne smart TV ko banaye fast? #androidtv #googletv #ai #chatgpt #claude #mitv #smarttv #techhacks](https://www.youtube.com/watch?v=qv0eBpyr7Bo) | 8&nbsp;Nov | 225 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Clean Your TV: the deep clean #shorts](https://www.youtube.com/watch?v=_XmSottAP08) | 8&nbsp;Nov | 176 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: What they share #shorts](https://www.youtube.com/watch?v=XU8uv9uedAw) | 8&nbsp;Nov | 151 |
+| Techy Akki | [Smart TV Ke Ads Kaise Hataye? &#124; ADB TV + Projectivy Hindi &#124; Android TV Ads Band Kaise Kare 2026](https://www.youtube.com/watch?v=LTvTx30wn5A) | 8&nbsp;Nov | 147 |
+| 棋哥资源库AI翻译组 | [【AI实战】让 AI 亲手删掉 Google TV 的广告和预装软件，主页瞬间清爽](https://www.bilibili.com/video/BV1B1WH6sEQx/) | 8&nbsp;Nov | 144 |
+| Tit Creates | [Your TV is slow and full of ads — the fix is FREE 📺](https://www.youtube.com/watch?v=UDoAPHhJzTU) | 8&nbsp;Nov | 135 |
+| Fixs and Tricks ENG | [Clean Your Android TV & REMOVE ADS! No PC Needed! (2026)](https://www.youtube.com/watch?v=bespZeMG2WA) | 8&nbsp;Nov | 132 |
+| 我不是一只大肥鱼 | [花钱买电视，开机先替别人放 15 秒广告](https://www.bilibili.com/video/BV111WE6oEAW/) | 8&nbsp;Nov | 104 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Where each one wins #shorts](https://www.youtube.com/watch?v=G63u8IvlTbY) | 8&nbsp;Nov | 93 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Getting started #shorts](https://www.youtube.com/watch?v=A1o1Qw7W1QM) | 8&nbsp;Nov | 92 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Who should pick which #shorts](https://www.youtube.com/watch?v=wk9QuMnErMw) | 8&nbsp;Nov | 78 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: Which one should you use #shorts](https://www.youtube.com/watch?v=0UuUi3p0bmU) | 8&nbsp;Nov | 72 |
+| Mellow World | [Claude Code le quitó los anuncios a la tele de sus papás #shorts](https://www.youtube.com/watch?v=N53l-tWYTmY) | 8&nbsp;Nov | 12 |
+| Techy Druid | [I Removed Google TV Ads & Bloatware Using AI!](https://www.youtube.com/watch?v=DdgI0IAHNYk) | 7&nbsp;Nov | 10,579 |
+| 折腾不动了 | [【第6期】电视广告全关掉！换上黑色桌面！电视去广告、电视开机广告一次清干净！小米、TCL、海信、创维近500款智能电视有清单！不用刷机！GitHub开源！](https://www.bilibili.com/video/BV1b64j6PECB/) | 7&nbsp;Nov | 5,426 |
+| Tv Box & Multimedia | [Revive tu AndroidTV y GoogleTV con CleanMyTV](https://www.youtube.com/watch?v=3CgPlPdwbIE) | 7&nbsp;Nov | 1,930 |
+| Maxi Rubio | [Tu Google TV está lleno de anuncios: apaga esto HOY](https://www.youtube.com/watch?v=9DLAF34umVg) | 7&nbsp;Nov | 1,224 |
+| Jay E &#124; RoboNuggets | [People are using Claude to strip the ads off their TVs #shorts](https://www.youtube.com/watch?v=HPZILs6sqhY) | 7&nbsp;Nov | 933 |
+| Adam Souza &#124; IA na Prática | [Sua TV com uma tela inicial mais limpa usando IA 📺 &#124; CleanYourTV](https://www.youtube.com/watch?v=b1UkxGjl3l0) | 7&nbsp;Nov | 704 |
+| SYMI亖米 | [【开源】干掉电视开机广告！净屏 CleanYourTV 中文版讲解](https://www.bilibili.com/video/BV12g4E6aEDk/) | 7&nbsp;Nov | 569 |
+| Mastering Computer Skills | [Android TV Ads & Bloatware Remove Karo - 5 Minute Mein Mobile se bina AI ke madad se.](https://www.youtube.com/watch?v=iM1cZvcB3iw) | 7&nbsp;Nov | 300 |
+| 金牛村丶 | [夯爆了！Github 又出狠活神器！安卓电视一秒变身Apple TV，开机广告秒清除！](https://www.bilibili.com/video/BV1n24J6oEgU/) | 7&nbsp;Nov | 238 |
+| Jaruphat J. | [จับโปรเจคเตอร์ Android เก่ามา Clean ด้วย Claude AI + CleanYourTV &#124; จะรอดหรือจะร่วง?](https://www.youtube.com/watch?v=Il7USTsDPcQ) | 7&nbsp;Nov | 210 |
+| Zappel erklärt | [Die KI räumt deinen FERNSEHER auf #fernseher #androidtv #ki](https://www.youtube.com/watch?v=h4E5ZvDIMW8) | 7&nbsp;Nov | 182 |
+| Science and Technology News | [Tired of Fire TV Ads? What People Did With AI + Safe Settings to Fix It](https://www.youtube.com/watch?v=gdR45XpOBtQ) | 7&nbsp;Nov | 167 |
+| Zappel explains | [AI kicks the ADS off your TV's home screen #smarttv #androidtv #ai](https://www.youtube.com/watch?v=itH43AksYDg) | 7&nbsp;Nov | 161 |
+| Tech On Cue | [Clean up your smart TV: cleanyourtv vs free-my-tv: What are they #shorts](https://www.youtube.com/watch?v=LeLBDYck5F4) | 7&nbsp;Nov | 136 |
+| Sourav Sec | [Transform Your Android TV! Make It Faster, Cleaner & Ad-Free &#124; CleanYourTV Tutorial](https://www.youtube.com/watch?v=u75rcyGPfpg) | 7&nbsp;Nov | 113 |
+| vc.sab.ia? | [IA faxina sua TV: sem anúncio, com cara de Apple TV (CleanYourTV)](https://www.youtube.com/watch?v=SG3c13JTqL4) | 7&nbsp;Nov | 99 |
+| Rénald Vie | [Voici ce que l'IA vient de trouver dans nos télés](https://www.youtube.com/watch?v=RLa0d6x8d5g) | 6&nbsp;Nov | 267,579 |
+| Adem Yaşar &#124; Yazılım ve Teknoloji | [Herkes TV’sini Claude’a Hackletti. Ben Daha Fazlasını Yaptım!](https://www.youtube.com/watch?v=YwMeQmT768A) | 6&nbsp;Nov | 58,231 |
+| Pro100tehnika | [Clean your TV уже на IPhone!?](https://www.youtube.com/watch?v=YL_1pFTbYws) | 6&nbsp;Nov | 38,934 |
+| WukongDaily | [夺回 Fire TV 的控制权！汉化系统、更换桌面、屏蔽广告与遥测 ｜CleanYourTV &#124; AI Agent](https://www.youtube.com/watch?v=fZYpjae3zJo) | 6&nbsp;Nov | 25,405 |
+| JEYLINI | [¡LIBERA tu Smart TV LG webOS! 🔥 ROOT + Homebrew + CleanYourTV (2026)](https://www.youtube.com/watch?v=wIQENbWFy6w) | 6&nbsp;Nov | 14,654 |
+| Code & Compass | [Clean Your TV in Minutes &#124; Remove ads in TV and Bloatware &#124; Make TV Faster #cleanyourtv #claudeai](https://www.youtube.com/watch?v=cC6b1eKZjuk) | 6&nbsp;Nov | 3,906 |
+| NewTechWorld with Tej | [🚀पुराने Android TV को बनाएं 10X FASTER!🔥 100% FREE Method](https://www.youtube.com/watch?v=hzh0wgn0uGQ) | 6&nbsp;Nov | 2,619 |
+| Code & Compass | [I Cleaned My TV With AI and It Feels Brand New &#124; Remove Ads &#124; No Coding (Free Prompt)](https://www.youtube.com/watch?v=ndjvB_KAWJc) | 6&nbsp;Nov | 1,979 |
+| IAenlinea | [Claude Code · limpia tu Smart TV](https://www.youtube.com/watch?v=IEmdmRJVM5k) | 6&nbsp;Nov | 1,433 |
+| Dot SM | [Apple TV Glass UI on Android TV 😍 No Laptop, No AI Needed!](https://www.youtube.com/watch?v=2O9RbfVRdR8) | 6&nbsp;Nov | 684 |
+| AppDroides | [CleanYourTV: Elimina Aplicaciones de Fábrica y Optimiza tu Android TV ¡GUÍA COMPLETA!](https://www.youtube.com/watch?v=VizVLPkE5zs) | 6&nbsp;Nov | 680 |
+| Gointopc | [I Installed an Apple TV OS on an Android TV!](https://www.youtube.com/watch?v=4mToe6xppYU) | 6&nbsp;Nov | 623 |
+| Sanju Pal | [MAKE YOUR TV FASTER - THE TRUTH ! CLEAR YOUR TV NOW](https://www.youtube.com/watch?v=Fy1hOiiAahI) | 6&nbsp;Nov | 343 |
+| AI Insider | [Убери рекламу с телевизора за 15 минут — CleanYourTV #shorts](https://www.youtube.com/watch?v=v7eJwvH77mk) | 6&nbsp;Nov | 319 |
+| TheSkillDrop | [People Are Using Claude Code to Kill the Ads on Their Smart TV - CleanYourTV](https://www.youtube.com/watch?v=E1jseEE7gnI) | 6&nbsp;Nov | 317 |
+| 新城大红 | [电视机魔改成答题系统，电视已经被玩成这样了嘛，必须去给我儿子装一个，或许这就是魔改电视的意义吧😁  #电视魔改答题系统 #电视 #CleanyourTV](https://www.bilibili.com/video/BV1TA4z6ZEiB/) | 6&nbsp;Nov | 298 |
+| Alex Hitt | [CleanYourTV GitHub Explained: Android TV Privacy Audits, AppOps, and Drift Checks](https://www.youtube.com/watch?v=u9d_HVHJ1DY) | 6&nbsp;Nov | 242 |
+| Stack Underflowed | [Engineers Are Letting Claude Code Reverse-Engineer Their Hardware](https://www.youtube.com/watch?v=XNwNJh59GWE) | 6&nbsp;Nov | 168 |
+| 我超爱吃瓜嘻嘻 | [测评打假 cleanyourtv净化桌面 电视桌面净化效果   cleanyourtv实测#真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV1X84q6hExi/) | 6&nbsp;Nov | 130 |
 | Useful website, explained | [Day 5/100: You paid for this TV. Why does it show ads? (CleanYourTV) #shorts](https://www.youtube.com/watch?v=IqzsET_5Fbo) | 6&nbsp;Nov | 121 |
-| Harshith Sai Batthini | [Your smart TV is slow, full of ads, and tracking you. #shorts](https://www.youtube.com/watch?v=iaCqqvHx5rQ) | 6&nbsp;Nov | 47 |
-| SoyAlonso | [#claude #ia #androidtv Claude le quitó la publicidad a la tele](https://www.youtube.com/watch?v=0JZYnZQFtok) | 6&nbsp;Nov | 42 |
-| IT-Connect - Florian | [J'ai supprimé les bloatwares d'Android TV avec Clean Your TV](https://www.youtube.com/watch?v=wi27YkNB1H0) | 5&nbsp;Nov | 49,455 |
-| Tech Gyaan By Shashank | [I Made My Old Android TV 10X Faster By This Simple Trick](https://www.youtube.com/watch?v=jmW0MBS2ihQ) | 5&nbsp;Nov | 2,892 |
-| Anton - IA para todos | [Quita los anuncios de tu tele con Claude Code](https://www.youtube.com/watch?v=AM2J3SfdO5Q) | 5&nbsp;Nov | 2,615 |
-| Riccardo Belli Contarini | [Clean your TV: Claude Code toglie la pubblicità dalla TV #Shorts](https://www.youtube.com/watch?v=GPvIyNfJE8Q) | 5&nbsp;Nov | 2,375 |
-| Matheus Pessoa &#124; Ninja das Automações | [Tire os anúncios da sua TV com o Claude Code #shorts](https://www.youtube.com/watch?v=jvDZeNHq-0g) | 5&nbsp;Nov | 1,499 |
-| Bakery | [Claude Code deleted the ads on this TV](https://www.youtube.com/watch?v=SjrMye6j17o) | 5&nbsp;Nov | 1,491 |
-| Fabiano Carvalho | [CleanYourTV: o Claude Code limpando a sua Android TV pelo Wi-Fi](https://www.youtube.com/watch?v=3wKlmrx_CpI) | 5&nbsp;Nov | 1,433 |
-| Thomas Colombo | [Ho tolto la pubblicità dalla mia TV con l'AI (funziona?)](https://www.youtube.com/watch?v=ks-3Kiqv22M) | 5&nbsp;Nov | 1,279 |
-| Sumit Paul | [Clean Your TV with Phone: Remove Android TV Ads (No PC, No Claude Code)](https://www.youtube.com/watch?v=4283d2YqLJ8) | 5&nbsp;Nov | 714 |
-| Bot al Grano | [CleanYourTV: un proyecto para limpiar tu Android TV](https://www.youtube.com/watch?v=kx8ByaWLd-U) | 5&nbsp;Nov | 238 |
-| Alex Hitt | [CleanYourTV GitHub Overview: How Add-ons Stay Separate from the TV Launcher](https://www.youtube.com/watch?v=qUsqk63H0Qs) | 5&nbsp;Nov | 232 |
-| Kairn | [Claude Code Can Strip Smart TV Ads. Here's the Catch.](https://www.youtube.com/watch?v=-qc5PNU86XI) | 5&nbsp;Nov | 169 |
-| 0xraj | [CleanYourTV Explained – How Does It Work](https://www.youtube.com/watch?v=ZFXVzJ63hX8) | 5&nbsp;Nov | 57 |
-| Бизнес на нейросетях | [Clean Your TV: телевизор без рекламы](https://www.youtube.com/watch?v=UCgQkZqdVG8) | 5&nbsp;Nov | 29 |
-| 바이트체크 | [TV만 켜면 광고부터 뜨죠? AI 코딩 도우미로 홈 화면 정리](https://www.youtube.com/watch?v=h8Ma32Bu3QA) | 5&nbsp;Nov | 16 |
-| Tech It Before You Wreck It | [Forget Claude - the EASY way to CLEAN UP a SmartTV](https://www.youtube.com/watch?v=XClfk2Ha1oA) | 4&nbsp;Nov | 218,114 |
-| Techy Druid | [Clean Up Your Smart TV using Your Phone!](https://www.youtube.com/watch?v=fK-AUABKAWY) | 4&nbsp;Nov | 96,848 |
-| 花墨世界 | [电视首页太乱？CleanYourTV 实测：用 AI 换上极简桌面](https://www.youtube.com/watch?v=N07AYJfn1JA) | 4&nbsp;Nov | 15,250 |
-| Hrishikesh Roy | [Claude replaces TV and Internet Technicians #claude #chatgpt #ai](https://www.youtube.com/watch?v=biK-LCv9mNA) | 4&nbsp;Nov | 11,560 |
-| Jr Dev vs Tech Lead | [This GitHub prompt kills the ads on your Android TV.](https://www.youtube.com/watch?v=FnPEdyL_NUU) | 4&nbsp;Nov | 1,726 |
-| The Tech Equation | [Claude Code Gave This Android TV an Apple TV Makeover 🤯](https://www.youtube.com/watch?v=hUGVtR3c8wg) | 4&nbsp;Nov | 1,109 |
-| DevTools Hub | [Clean Your Smart TV Using Just Your Phone! 🤯 No PC, No Claude,FREE #androidtv #cleanyourtv #smarttv](https://www.youtube.com/watch?v=9S-ZeJsm-QI) | 4&nbsp;Nov | 820 |
-| DevTools Hub | [This FREE App Cleans Your Android TV Using Your Phone! &#124; DevTools Hub](https://www.youtube.com/watch?v=m7_5ug0iByw) | 4&nbsp;Nov | 482 |
-| Federico Donatone | [Claude Code TV: This Free AI Turns Off Your Smart TV Ads (Clean Your TV)](https://www.youtube.com/watch?v=gxvdpcf0ZfI) | 4&nbsp;Nov | 468 |
-| Tech On Cue | [cleanyourtv vs free-my-tv: Which One Fits You? (Ad-Free Smart TV, Fit Check)](https://www.youtube.com/watch?v=nCb_y0YS_GM) | 4&nbsp;Nov | 438 |
-| Sergio Rojas | [Clean Your TV: repo para limpiar tu TV (Parte 1)](https://www.youtube.com/watch?v=ETui_yNUA3s) | 4&nbsp;Nov | 366 |
+| Harshith Sai Batthini | [Your smart TV is slow, full of ads, and tracking you. #shorts](https://www.youtube.com/watch?v=iaCqqvHx5rQ) | 6&nbsp;Nov | 49 |
+| SoyAlonso | [#claude #ia #androidtv Claude le quitó la publicidad a la tele](https://www.youtube.com/watch?v=0JZYnZQFtok) | 6&nbsp;Nov | 46 |
+| Robert InnD | [Tutorial Completo: Optimiza y Personaliza Cualquier Pantalla con Claude IA](https://www.youtube.com/watch?v=LEl8j3YP0GU) | 5&nbsp;Nov | 123,263 |
+| Thalena Lima | [10 Repositórios Grátis do GitHub que Estão Bombando](https://www.youtube.com/watch?v=A6eT7871kVI) | 5&nbsp;Nov | 97,798 |
+| IT-Connect - Florian | [J'ai supprimé les bloatwares d'Android TV avec Clean Your TV](https://www.youtube.com/watch?v=wi27YkNB1H0) | 5&nbsp;Nov | 55,847 |
+| Jonatan Castro | [Le di el control de mi Google TV a ChatGPT (y lo dejó sin basura)](https://www.youtube.com/watch?v=MPACcgXbm0w) | 5&nbsp;Nov | 49,788 |
+| ssktechy | [15 Crazy Things People Built With Claude](https://www.youtube.com/watch?v=lFledhrU10o) | 5&nbsp;Nov | 22,690 |
+| Tech Gyaan By Shashank | [I Made My Old Android TV 10X Faster By This Simple Trick](https://www.youtube.com/watch?v=jmW0MBS2ihQ) | 5&nbsp;Nov | 3,156 |
+| Anton - IA para todos | [Quita los anuncios de tu tele con Claude Code](https://www.youtube.com/watch?v=AM2J3SfdO5Q) | 5&nbsp;Nov | 2,679 |
+| Riccardo Belli Contarini | [Clean your TV: Claude Code toglie la pubblicità dalla TV #Shorts](https://www.youtube.com/watch?v=GPvIyNfJE8Q) | 5&nbsp;Nov | 2,611 |
+| Matheus Pessoa &#124; Ninja das Automações | [Tire os anúncios da sua TV com o Claude Code #shorts](https://www.youtube.com/watch?v=jvDZeNHq-0g) | 5&nbsp;Nov | 1,539 |
+| Bakery | [Claude Code deleted the ads on this TV](https://www.youtube.com/watch?v=SjrMye6j17o) | 5&nbsp;Nov | 1,497 |
+| Fabiano Carvalho | [CleanYourTV: o Claude Code limpando a sua Android TV pelo Wi-Fi](https://www.youtube.com/watch?v=3wKlmrx_CpI) | 5&nbsp;Nov | 1,475 |
+| Sumit Paul | [Clean Your TV with Phone: Remove Android TV Ads (No PC, No Claude Code)](https://www.youtube.com/watch?v=4283d2YqLJ8) | 5&nbsp;Nov | 1,384 |
+| Thomas Colombo | [Ho tolto la pubblicità dalla mia TV con l'AI (funziona?)](https://www.youtube.com/watch?v=ks-3Kiqv22M) | 5&nbsp;Nov | 1,374 |
+| 苗啊喵1234 | [用clearyourtv爆改小米电视桌面](https://www.bilibili.com/video/BV1Vz486GETY/) | 5&nbsp;Nov | 374 |
+| Alex Hitt | [CleanYourTV GitHub Overview: How Add-ons Stay Separate from the TV Launcher](https://www.youtube.com/watch?v=qUsqk63H0Qs) | 5&nbsp;Nov | 294 |
+| Bot al Grano | [CleanYourTV: un proyecto para limpiar tu Android TV](https://www.youtube.com/watch?v=kx8ByaWLd-U) | 5&nbsp;Nov | 254 |
+| Raghu Tech Telugu | [Clean Your TV GitHub Tool 😱 వాడే ముందు ఈ 3 Issues తెలుసుకోండి!](https://www.youtube.com/watch?v=BGNECsBTfPs) | 5&nbsp;Nov | 196 |
+| Kairn | [Claude Code Can Strip Smart TV Ads. Here's the Catch.](https://www.youtube.com/watch?v=-qc5PNU86XI) | 5&nbsp;Nov | 186 |
+| AI知遥 | [cleanyourtv 电视开机广告是你电视自己放的｜不刷机、不插线，同一 WiFi 就能关，还能一键还原](https://www.bilibili.com/video/BV1Yi4865EqP/) | 5&nbsp;Nov | 166 |
+| 0xraj | [CleanYourTV Explained – How Does It Work](https://www.youtube.com/watch?v=ZFXVzJ63hX8) | 5&nbsp;Nov | 94 |
+| Бизнес на нейросетях | [Clean Your TV: телевизор без рекламы](https://www.youtube.com/watch?v=UCgQkZqdVG8) | 5&nbsp;Nov | 37 |
+| 바이트체크 | [TV만 켜면 광고부터 뜨죠? AI 코딩 도우미로 홈 화면 정리](https://www.youtube.com/watch?v=h8Ma32Bu3QA) | 5&nbsp;Nov | 21 |
+| Tech It Before You Wreck It | [Forget Claude - the EASY way to CLEAN UP a SmartTV](https://www.youtube.com/watch?v=XClfk2Ha1oA) | 4&nbsp;Nov | 306,047 |
+| Beau Johnson | [20 Insane Things People Built With Claude in 2026](https://www.youtube.com/watch?v=eADL9qFrLPs) | 4&nbsp;Nov | 175,989 |
+| Techy Druid | [Clean Up Your Smart TV using Your Phone!](https://www.youtube.com/watch?v=fK-AUABKAWY) | 4&nbsp;Nov | 122,305 |
+| Ryan的奇妙世界 | [运行内存只有512MB的创维老电视，我用AI把它救活了，告别开机广告](https://www.bilibili.com/video/BV1q5xS6TEnX/) | 4&nbsp;Nov | 29,522 |
+| 花墨世界 | [电视首页太乱？CleanYourTV 实测：用 AI 换上极简桌面](https://www.youtube.com/watch?v=N07AYJfn1JA) | 4&nbsp;Nov | 17,464 |
+| Hrishikesh Roy | [Claude replaces TV and Internet Technicians #claude #chatgpt #ai](https://www.youtube.com/watch?v=biK-LCv9mNA) | 4&nbsp;Nov | 11,910 |
+| 花墨世界 | [电视首页太乱？CleanYourTV 实测：用 AI 换上极简桌面](https://www.bilibili.com/video/BV1sgx96xEjV/) | 4&nbsp;Nov | 2,523 |
+| Jr Dev vs Tech Lead | [This GitHub prompt kills the ads on your Android TV.](https://www.youtube.com/watch?v=FnPEdyL_NUU) | 4&nbsp;Nov | 1,771 |
+| 凯文数字生活 | [电视开机全是广告？让AI动手清干净｜CleanYourTV实测](https://www.youtube.com/watch?v=QIqACxdTOFs) | 4&nbsp;Nov | 1,360 |
+| The Tech Equation | [Claude Code Gave This Android TV an Apple TV Makeover 🤯](https://www.youtube.com/watch?v=hUGVtR3c8wg) | 4&nbsp;Nov | 1,318 |
+| 家电渣渣辉 | [用豆包一键去除电视系统广告＆换上AppleTV UI界面](https://www.bilibili.com/video/BV1BWxd6sE68/) | 4&nbsp;Nov | 1,190 |
+| DevTools Hub | [Clean Your Smart TV Using Just Your Phone! 🤯 No PC, No Claude,FREE #androidtv #cleanyourtv #smarttv](https://www.youtube.com/watch?v=9S-ZeJsm-QI) | 4&nbsp;Nov | 913 |
+| DevTools Hub | [This FREE App Cleans Your Android TV Using Your Phone! &#124; DevTools Hub](https://www.youtube.com/watch?v=m7_5ug0iByw) | 4&nbsp;Nov | 754 |
+| Tech On Cue | [cleanyourtv vs free-my-tv: Which One Fits You? (Ad-Free Smart TV, Fit Check)](https://www.youtube.com/watch?v=nCb_y0YS_GM) | 4&nbsp;Nov | 701 |
+| Federico Donatone | [Claude Code TV: This Free AI Turns Off Your Smart TV Ads (Clean Your TV)](https://www.youtube.com/watch?v=gxvdpcf0ZfI) | 4&nbsp;Nov | 489 |
+| Sergio Rojas | [Clean Your TV: repo para limpiar tu TV (Parte 1)](https://www.youtube.com/watch?v=ETui_yNUA3s) | 4&nbsp;Nov | 483 |
+| E-comWithrahul | [Make ANY Android TV Faster! Remove Ads & Bloatware Using ChatGPT + Antigravity (FREE) in Hindi](https://www.youtube.com/watch?v=W70arFVwyiM) | 4&nbsp;Nov | 411 |
 | Super Intelligence | [People Use Claude Code to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=ebtIcdkF6v8) | 4&nbsp;Nov | 234 |
-| Soham Umap | [Remove the ads from your Android TV with Claude Code (Clean Your TV)](https://www.youtube.com/watch?v=EwZR-MlOjh0) | 4&nbsp;Nov | 146 |
-| Tech_Creates | [48,204 Stars in 14 Days: How to Clean Your Android TV Without Rooting](https://www.youtube.com/watch?v=ek_YBavHwmY) | 4&nbsp;Nov | 70 |
-| AppMillers | [One Prompt Removed Every Ad From My TV (Claude Code)](https://www.youtube.com/watch?v=0FqUwJdIOnA) | 4&nbsp;Nov | 67 |
-| Tech by Thilak | [Claude Code cleaned up a slow Android TV #shorts](https://www.youtube.com/watch?v=_5KqNwL7Z6o) | 4&nbsp;Nov | 58 |
-| Barbellsoft | [Your smart TV isn't slow, it's crowded: clean it up with Claude Code](https://www.youtube.com/watch?v=v5uhv6rCCqg) | 4&nbsp;Nov | 51 |
-| rick & morty tech | [Strip bloatware and sponsored ads from smart TVs using cleanyourtv paired with Claude Code](https://www.youtube.com/watch?v=lJFfKwcsabw) | 4&nbsp;Nov | 37 |
-| bigdealdoug | [Remove Your TV's Ads With Claude Code 📺](https://www.youtube.com/watch?v=OTPcg0IJp94) | 4&nbsp;Nov | 28 |
-| Lessons | [Remove your TV's ads with Claude Code - #claude #usecase 2 #vibes #ai](https://www.youtube.com/watch?v=9ow4xWpb9Mw) | 4&nbsp;Nov | 21 |
-| Barbellsoft | [스마트 TV가 느린 건 앱 때문? Claude Code로 정리하는 방법](https://www.youtube.com/watch?v=VmrcczWdO04) | 4&nbsp;Nov | 11 |
-| ลองให้ | [วิธีแก้ Android TV และกล่อง Android ช้าหน่วงด้วย AI และลงแอป Clean Your TV ทำยังไง &#124; ลองให้](https://www.youtube.com/watch?v=i61LYMIoU7A) | 3&nbsp;Nov | 89,830 |
-| Kevin Chromik | [Alle hacken ihre Fernseher – Es ist so einfach! (Android TV)](https://www.youtube.com/watch?v=fI0OPkdxyoA) | 3&nbsp;Nov | 59,748 |
-| Нейросети, Дизайн и Деньги Creativo Pro | [ChatGPT Codex переделал мой телевизор. Тормоза исчезли за 1 запрос в Нейросети!](https://www.youtube.com/watch?v=XjDqxu5A52M) | 3&nbsp;Nov | 49,660 |
-| Carlos Correia | [TV 10x MAIS RÁPIDA com IA! Como Fazer na Android e Google TV](https://www.youtube.com/watch?v=-Xe5admIFG0) | 3&nbsp;Nov | 47,763 |
-| AI With Abhijay &#124; Master Gemini, ChatGPT & Claude | [Use Claude Code To Make Your TV Ad Free &#124; Complete guide!](https://www.youtube.com/watch?v=5CXcfiMW3wY) | 3&nbsp;Nov | 20,050 |
-| LegacyTechTips | [I Transformed My Android TV into Apple TV Style Using Phone in Telugu #androidtv #appletv #tv #phone](https://www.youtube.com/watch?v=kz70irXptYI) | 3&nbsp;Nov | 6,535 |
-| Komunitech | [Claude bisa Bersihkan TV kamu dari Sampah dan Iklan dengan modal prompt](https://www.youtube.com/watch?v=dAlZLnx5PHM) | 3&nbsp;Nov | 3,278 |
-| Alok Verma | [Make Your TV 10x Faster (Free, 5 Minutes) ⚡](https://www.youtube.com/watch?v=KMTQED1YSX4) | 3&nbsp;Nov | 1,930 |
-| Takneek Shorts | [Clean Your Android TV with AI! 🤯](https://www.youtube.com/watch?v=yq3X9dSA3T8) | 3&nbsp;Nov | 1,930 |
-| Token | [Нейросеть убрала рекламу с телевизора за 15 минут](https://www.youtube.com/watch?v=h9IXPaIPZTc) | 3&nbsp;Nov | 1,617 |
-| nontox1c | [Turn your Smart TV into 'Dumb' TV with Claude Code and CleanYourTV.](https://www.youtube.com/watch?v=wX_bqyg7kbI) | 3&nbsp;Nov | 1,537 |
-| vektorfm | [Claude Code takes the ads off your TV (CleanYourTV) #shorts](https://www.youtube.com/watch?v=2-aALA2X5OE) | 3&nbsp;Nov | 1,424 |
-| Oops Everything | [My Android TV Was SO SLOW… I Fixed It With AI.](https://www.youtube.com/watch?v=zFSdL1WyvBk) | 3&nbsp;Nov | 1,066 |
-| The Handbook | [Google TV Home Screen Ads: How to Switch Them Off With ADB](https://www.youtube.com/watch?v=FiaUvQEnF-Q) | 3&nbsp;Nov | 482 |
-| Sandboxed | [Claude Code fixed my used Sony TV](https://www.youtube.com/watch?v=mIviMpf5DVg) | 3&nbsp;Nov | 439 |
-| Techy karttik | [Finally! An Easy Way to Debloat Your Smart TV From Your Phone](https://www.youtube.com/watch?v=6wAXz_pWWDI) | 3&nbsp;Nov | 403 |
-| HKT 線上教室 | [電視越用越卡？使用 AI 大掃除！Android TV / Google TV 去廣告變順暢讓舊電視重生，免 Root 開源專案 CleanYourTV 介紹教學 &#124; HKT線上教室](https://www.youtube.com/watch?v=-NTGdv4M2nc) | 3&nbsp;Nov | 322 |
-| AI Tech With Randy | [Remove Smart TV Ads and Bloatware with AI](https://www.youtube.com/watch?v=ye9hzOdpTqY) | 3&nbsp;Nov | 283 |
-| MyToolster | [Make Your Android TV Faster & Remove Home Screen Ads — CleanYourTV](https://www.youtube.com/watch?v=tFT4HFWmWWE) | 3&nbsp;Nov | 247 |
-| Muddaser Altaf - Ai mastermind | [Purana TV Rocket Jaisa Tez — AI Se #shorts](https://www.youtube.com/watch?v=heZz_leXqOs) | 3&nbsp;Nov | 165 |
-| Web Lab | [Claude Code Removes the Ads From Your TV (Free Repo)](https://www.youtube.com/watch?v=kGC4fCaA7WI) | 3&nbsp;Nov | 162 |
-| Sourcerer | [Strip the ads and tracking out of your Android TV](https://www.youtube.com/watch?v=aLBwh_31cYM) | 3&nbsp;Nov | 136 |
-| MyToolster | [Clean Your Android TV From Your Phone — No Laptop Needed (Free App)](https://www.youtube.com/watch?v=vsWxw7Fs_Pw) | 3&nbsp;Nov | 118 |
-| RepoRadar | [Your TV is full of ads. This free tool deletes them #shorts](https://www.youtube.com/watch?v=bzeej0kvXjU) | 3&nbsp;Nov | 90 |
-| НейроСила | [Clean Your TV: меньше рекламы на телевизоре](https://www.youtube.com/watch?v=yCuwh8i_mOs) | 3&nbsp;Nov | 85 |
-| Prof prompt Pro | [tv-vibehack : nettoyer sa télé des pubs avec Claude Code](https://www.youtube.com/watch?v=eI59V4cUvxw) | 3&nbsp;Nov | 72 |
+| Soham Umap | [Remove the ads from your Android TV with Claude Code (Clean Your TV)](https://www.youtube.com/watch?v=EwZR-MlOjh0) | 4&nbsp;Nov | 147 |
+| 硅基头目-孟波 | [AI替天行道，电视广告被干掉了！](https://www.bilibili.com/video/BV1toxD64EYQ/) | 4&nbsp;Nov | 127 |
+| ExplainBot | [Your Smart TV isn't old, it's full: what Claude does (and how without it)](https://www.youtube.com/watch?v=iLFBinuJO94) | 4&nbsp;Nov | 91 |
+| Tech by Thilak | [Claude Code cleaned up a slow Android TV #shorts](https://www.youtube.com/watch?v=_5KqNwL7Z6o) | 4&nbsp;Nov | 76 |
+| Tech_Creates | [48,204 Stars in 14 Days: How to Clean Your Android TV Without Rooting](https://www.youtube.com/watch?v=ek_YBavHwmY) | 4&nbsp;Nov | 71 |
+| AppMillers | [One Prompt Removed Every Ad From My TV (Claude Code)](https://www.youtube.com/watch?v=0FqUwJdIOnA) | 4&nbsp;Nov | 70 |
+| NaderVerse | [Claude Helped Hack This Smart TV](https://www.youtube.com/watch?v=gPwLxh6reuo) | 4&nbsp;Nov | 58 |
+| Barbellsoft | [Your smart TV isn't slow, it's crowded: clean it up with Claude Code](https://www.youtube.com/watch?v=v5uhv6rCCqg) | 4&nbsp;Nov | 52 |
+| rick & morty tech | [Strip bloatware and sponsored ads from smart TVs using cleanyourtv paired with Claude Code](https://www.youtube.com/watch?v=lJFfKwcsabw) | 4&nbsp;Nov | 39 |
+| bigdealdoug | [Remove Your TV's Ads With Claude Code 📺](https://www.youtube.com/watch?v=OTPcg0IJp94) | 4&nbsp;Nov | 32 |
+| ExplicaBot | [Sua TV não é velha, está cheia: o que o Claude faz (e como fazer sem)](https://www.youtube.com/watch?v=YJJh9xrnwdQ) | 4&nbsp;Nov | 30 |
+| Byte Cortes | [5 apps grátis para tirar anúncio e lixo de fábrica da TV Android, sem root](https://www.youtube.com/watch?v=4MhDAkKncSE) | 4&nbsp;Nov | 27 |
+| Lessons | [Remove your TV's ads with Claude Code - #claude #usecase 2 #vibes #ai](https://www.youtube.com/watch?v=9ow4xWpb9Mw) | 4&nbsp;Nov | 27 |
+| Barbellsoft | [스마트 TV가 느린 건 앱 때문? Claude Code로 정리하는 방법](https://www.youtube.com/watch?v=VmrcczWdO04) | 4&nbsp;Nov | 12 |
+| Prodigeek | [STAVO PER CAMBIARE TV. L’HO RIFATTA GRATIS IN 30 MINUTI!](https://www.youtube.com/watch?v=_w9sGmXpmPY) | 3&nbsp;Nov | 298,996 |
+| ODORIZZI | [TRANSFORME SUA TV PELO CELULAR! 🔥 REMOVA ANÚNCIOS E DEIXE SUPER RÁPIDA](https://www.youtube.com/watch?v=uQ58SgszCN0) | 3&nbsp;Nov | 129,547 |
+| Smettere di lavorare | [Spegni subito questa impostazione o la tua Smart TV registrerà TUTTO quello che fai](https://www.youtube.com/watch?v=B5jQoJ0Bff0) | 3&nbsp;Nov | 121,575 |
+| ลองให้ | [วิธีแก้ Android TV และกล่อง Android ช้าหน่วงด้วย AI และลงแอป Clean Your TV ทำยังไง &#124; ลองให้](https://www.youtube.com/watch?v=i61LYMIoU7A) | 3&nbsp;Nov | 103,506 |
+| Kevin Chromik | [Alle hacken ihre Fernseher – Es ist so einfach! (Android TV)](https://www.youtube.com/watch?v=fI0OPkdxyoA) | 3&nbsp;Nov | 79,365 |
+| Нейросети, Дизайн и Деньги Creativo Pro | [ChatGPT Codex переделал мой телевизор. Тормоза исчезли за 1 запрос в Нейросети!](https://www.youtube.com/watch?v=XjDqxu5A52M) | 3&nbsp;Nov | 61,699 |
+| Carlos Correia | [TV 10x MAIS RÁPIDA com IA! Como Fazer na Android e Google TV](https://www.youtube.com/watch?v=-Xe5admIFG0) | 3&nbsp;Nov | 52,120 |
+| AI With Abhijay &#124; Master Gemini, ChatGPT & Claude | [Use Claude Code To Make Your TV Ad Free &#124; Complete guide!](https://www.youtube.com/watch?v=5CXcfiMW3wY) | 3&nbsp;Nov | 20,129 |
+| LegacyTechTips | [I Transformed My Android TV into Apple TV Style Using Phone in Telugu #androidtv #appletv #tv #phone](https://www.youtube.com/watch?v=kz70irXptYI) | 3&nbsp;Nov | 8,152 |
+| Komunitech | [Claude bisa Bersihkan TV kamu dari Sampah dan Iklan dengan modal prompt](https://www.youtube.com/watch?v=dAlZLnx5PHM) | 3&nbsp;Nov | 3,283 |
+| Takneek Shorts | [Clean Your Android TV with AI! 🤯](https://www.youtube.com/watch?v=yq3X9dSA3T8) | 3&nbsp;Nov | 2,281 |
+| Alok Verma | [Make Your TV 10x Faster (Free, 5 Minutes) ⚡](https://www.youtube.com/watch?v=KMTQED1YSX4) | 3&nbsp;Nov | 1,999 |
+| Token | [Нейросеть убрала рекламу с телевизора за 15 минут](https://www.youtube.com/watch?v=h9IXPaIPZTc) | 3&nbsp;Nov | 1,863 |
+| nontox1c | [Turn your Smart TV into 'Dumb' TV with Claude Code and CleanYourTV.](https://www.youtube.com/watch?v=wX_bqyg7kbI) | 3&nbsp;Nov | 1,855 |
+| Oops Everything | [My Android TV Was SO SLOW… I Fixed It With AI.](https://www.youtube.com/watch?v=zFSdL1WyvBk) | 3&nbsp;Nov | 1,477 |
+| vektorfm | [Claude Code takes the ads off your TV (CleanYourTV) #shorts](https://www.youtube.com/watch?v=2-aALA2X5OE) | 3&nbsp;Nov | 1,430 |
+| Actualisite | [Google TV sin anuncios: lo que hizo ChatGPT con Codex](https://www.youtube.com/watch?v=l5rDZa8bpjU) | 3&nbsp;Nov | 940 |
+| Sandboxed | [Claude Code fixed my used Sony TV](https://www.youtube.com/watch?v=mIviMpf5DVg) | 3&nbsp;Nov | 851 |
+| 阿聪聊电器 | [索尼电视cleanyour tv 教程，纯净无广 #索尼电视](https://www.bilibili.com/video/BV1ij4g6xEzU/) | 3&nbsp;Nov | 727 |
+| The Handbook | [Google TV Home Screen Ads: How to Switch Them Off With ADB](https://www.youtube.com/watch?v=FiaUvQEnF-Q) | 3&nbsp;Nov | 568 |
+| HKT 線上教室 | [電視越用越卡？使用 AI 大掃除！Android TV / Google TV 去廣告變順暢讓舊電視重生，免 Root 開源專案 CleanYourTV 介紹教學 &#124; HKT線上教室](https://www.youtube.com/watch?v=-NTGdv4M2nc) | 3&nbsp;Nov | 497 |
+| Techy karttik | [Finally! An Easy Way to Debloat Your Smart TV From Your Phone](https://www.youtube.com/watch?v=6wAXz_pWWDI) | 3&nbsp;Nov | 472 |
+| AI Tech With Randy | [Remove Smart TV Ads and Bloatware with AI](https://www.youtube.com/watch?v=ye9hzOdpTqY) | 3&nbsp;Nov | 457 |
+| Glitch & Go | [Every Harry Potter Fan Needs This on Their Smart TV! 🪄 (Custom Launcher Setup)](https://www.youtube.com/watch?v=xS191q7wzY4) | 3&nbsp;Nov | 431 |
+| sky_sad | [电视去广告神器 CleanYourTV！局域网 ADB 操作，免 root，清爽桌面教程](https://www.bilibili.com/video/BV1Cr4g6uEKx/) | 3&nbsp;Nov | 377 |
+| Tobias Simonetti &#124; IA y Tecnología | [Hackea tu Smart TV con IA (sin anuncios)](https://www.youtube.com/watch?v=YwsJ3Yaoc1c) | 3&nbsp;Nov | 373 |
+| MyToolster | [Make Your Android TV Faster & Remove Home Screen Ads — CleanYourTV](https://www.youtube.com/watch?v=tFT4HFWmWWE) | 3&nbsp;Nov | 371 |
+| Technical Mundeer | [AI Se Apne Smart TV Ko FAST & ADS FREE Bana Do! 😱 &#124; Android TV Speed Boost 2026](https://www.youtube.com/watch?v=28utZWHIezI) | 3&nbsp;Nov | 248 |
+| MyToolster | [Clean Your Android TV From Your Phone — No Laptop Needed (Free App)](https://www.youtube.com/watch?v=vsWxw7Fs_Pw) | 3&nbsp;Nov | 206 |
+| Muddaser Altaf - Ai mastermind | [Purana TV Rocket Jaisa Tez — AI Se #shorts](https://www.youtube.com/watch?v=heZz_leXqOs) | 3&nbsp;Nov | 173 |
+| Web Lab | [Claude Code Removes the Ads From Your TV (Free Repo)](https://www.youtube.com/watch?v=kGC4fCaA7WI) | 3&nbsp;Nov | 169 |
+| Sourcerer | [Strip the ads and tracking out of your Android TV](https://www.youtube.com/watch?v=aLBwh_31cYM) | 3&nbsp;Nov | 139 |
+| RepoRadar | [Your TV is full of ads. This free tool deletes them #shorts](https://www.youtube.com/watch?v=bzeej0kvXjU) | 3&nbsp;Nov | 101 |
+| НейроСила | [Clean Your TV: меньше рекламы на телевизоре](https://www.youtube.com/watch?v=yCuwh8i_mOs) | 3&nbsp;Nov | 95 |
+| Prof prompt Pro | [tv-vibehack : nettoyer sa télé des pubs avec Claude Code](https://www.youtube.com/watch?v=eI59V4cUvxw) | 3&nbsp;Nov | 88 |
 | AI Radar – Tin AI Mỗi Ngày | [Tắt quảng cáo trên ti vi Android, miễn phí: CleanYourTV 47.024 sao #shorts](https://www.youtube.com/watch?v=t0TxcogZ68s) | 3&nbsp;Nov | 68 |
-| winson-DIY | [Debloat a Sony BRAVIA TV Remotely: Raspberry Pi 4 + ADB &#124; 遠端幫 Sony 電視去肥 #Shorts](https://www.youtube.com/watch?v=5gm7NNQ0peE) | 3&nbsp;Nov | 14 |
-| Нейродайджест &#124; ИИ-фишки | [Claude Code очистил телевизор от рекламы и мусора #shorts](https://www.youtube.com/watch?v=PPagpnwVy7k) | 3&nbsp;Nov | 7 |
-| Typo Media | [Addio TV LENTE: basta Claude Code per VELOCIZZARLE (quasi tutte)](https://www.youtube.com/watch?v=nqsUZwvPBxA) | 2&nbsp;Nov | 140,833 |
-| Pro100tehnika | [Лучшая настройка для тв в 2026г!](https://www.youtube.com/watch?v=fzc3rJZLuBY) | 2&nbsp;Nov | 79,152 |
-| TechVOID | [Finally! An Easy Way to Debloat Your Smart TV From Your Phone](https://www.youtube.com/watch?v=wmNaesYNQ6U) | 2&nbsp;Nov | 23,059 |
-| Max Fröhlich | [TV hacken mit Claude](https://www.youtube.com/watch?v=42nTegfC3nM) | 2&nbsp;Nov | 14,644 |
-| Aerram Tech Telugu | [Google TV 10X Faster! 🔥 Remove Ads & Bloatware &#124; Speed Up Your Smart TV in Telugu](https://www.youtube.com/watch?v=DFvQjxqxUBA) | 2&nbsp;Nov | 10,331 |
-| Agile Singh | [This GitHub Tool Hacks Your TV](https://www.youtube.com/watch?v=pZX6E-bU9QE) | 2&nbsp;Nov | 2,667 |
-| UnboxByJ3 | [🔥 CLEAN YOUR ANDROID TV — NO PC NEEDED! NO SUBSCRIPTION NEEDED! ❌](https://www.youtube.com/watch?v=Y1wx4IcMVbY) | 2&nbsp;Nov | 2,149 |
-| Udit Agarwal | [AI to Make My TV 10x Better!](https://www.youtube.com/watch?v=zjyk8DiqrVA) | 2&nbsp;Nov | 1,410 |
-| Build With Neej | [This free app clears the sponsored ads off your TV's home screen 📺](https://www.youtube.com/watch?v=hpSp7AKak6A) | 2&nbsp;Nov | 1,131 |
-| E-comWithrahul | [How to Clean & Speed Up ANY Android TV! Using ChatGPT + Antigravity (All Brands)](https://www.youtube.com/watch?v=UyMnvDZRtsw) | 2&nbsp;Nov | 1,123 |
-| SerendipityS | [Claude Turned My Old Mi TV Into an Apple TV 🤯 #shorts](https://www.youtube.com/watch?v=d9RB1f5F4lQ) | 2&nbsp;Nov | 567 |
-| EL MAPA DEL DEV | [La IA le quitó TODOS los anuncios a la tele 📺 #claudecode #shorts](https://www.youtube.com/watch?v=yZGHqz2kqng) | 2&nbsp;Nov | 280 |
-| Muaz KADAN | [People Are Using AI to Delete the Ads From Their TVs #shorts](https://www.youtube.com/watch?v=RpKB5tkc_dk) | 2&nbsp;Nov | 272 |
-| Patch the Hype | [Claude Code Can Kill TV Ads. Will Yours Work?](https://www.youtube.com/watch?v=9-PP2XaaPx0) | 2&nbsp;Nov | 264 |
-| Luis Saucedo | [Quitar anuncios de tu Smart TV SIN pagar Claude: respondo todas sus preguntas](https://www.youtube.com/watch?v=Fm6zlNh7dqA) | 2&nbsp;Nov | 227 |
-| MoGinger Studios | [cleanyourtv: Gaining 1,574 stars a day](https://www.youtube.com/watch?v=8-cF14KySb8) | 2&nbsp;Nov | 217 |
-| Будущее уже здесь | [Clean Your TV: телевизор без рекламы через Claude Code](https://www.youtube.com/watch?v=JwLH8dQ4-FQ) | 2&nbsp;Nov | 86 |
-| Umer Does AI &#124; Marketing with AI | [Claude Code Removed the Ads From My Smart TV](https://www.youtube.com/watch?v=ZdjQidDff18) | 2&nbsp;Nov | 56 |
+| CRTL+LOL | [Why Is My Google TV Full of Ads? Here's How to Stop It](https://www.youtube.com/watch?v=LPhfJddRbL8) | 3&nbsp;Nov | 63 |
+| TecnoInfo Digital | [Revive tu Smart TV Lento con IA y Elimina Anuncios (Seguro)](https://www.youtube.com/watch?v=0QolJxrAY14) | 3&nbsp;Nov | 58 |
+| Latest Build | [18 Real Ways People Used Claude This Month](https://www.youtube.com/watch?v=FQ4FMZRn7Hw) | 3&nbsp;Nov | 42 |
+| winson-DIY | [Debloat a Sony BRAVIA TV Remotely: Raspberry Pi 4 + ADB &#124; 遠端幫 Sony 電視去肥 #Shorts](https://www.youtube.com/watch?v=5gm7NNQ0peE) | 3&nbsp;Nov | 18 |
+| Нейродайджест &#124; ИИ-фишки | [Claude Code очистил телевизор от рекламы и мусора #shorts](https://www.youtube.com/watch?v=PPagpnwVy7k) | 3&nbsp;Nov | 9 |
+| Screen Tech Guide2027 | [Organize Your Android TV From Your Mobile! &#124; CleanYourTV](https://www.youtube.com/watch?v=vLJa1iGY4Qg) | 3&nbsp;Nov | 5 |
+| Typo Media | [Addio TV LENTE: basta Claude Code per VELOCIZZARLE (quasi tutte)](https://www.youtube.com/watch?v=nqsUZwvPBxA) | 2&nbsp;Nov | 143,228 |
+| Pro100tehnika | [Лучшая настройка для тв в 2026г!](https://www.youtube.com/watch?v=fzc3rJZLuBY) | 2&nbsp;Nov | 93,561 |
+| TechVOID | [Finally! An Easy Way to Debloat Your Smart TV From Your Phone](https://www.youtube.com/watch?v=wmNaesYNQ6U) | 2&nbsp;Nov | 28,504 |
+| Berko | [Claude ile Eski TV'ni Hızlandır (Android ve Google TV)](https://www.youtube.com/watch?v=3nODuM4ihnk) | 2&nbsp;Nov | 16,109 |
+| Crack Heros | [COMO OPTIMIZAR TV BOX Y SMARTTV CON IA Proyecto](https://www.youtube.com/watch?v=PTl-CU-uQ0E) | 2&nbsp;Nov | 15,771 |
+| Max Fröhlich | [TV hacken mit Claude](https://www.youtube.com/watch?v=42nTegfC3nM) | 2&nbsp;Nov | 15,064 |
+| Aerram Tech Telugu | [Google TV 10X Faster! 🔥 Remove Ads & Bloatware &#124; Speed Up Your Smart TV in Telugu](https://www.youtube.com/watch?v=DFvQjxqxUBA) | 2&nbsp;Nov | 11,151 |
+| 大亨2017 | [一个视频讲明白！最近爆火的 4 个电视优化开源项目，全平台适用应用](https://www.bilibili.com/video/BV1eA4w6AEbZ/) | 2&nbsp;Nov | 3,844 |
+| Agile Singh | [This GitHub Tool Hacks Your TV](https://www.youtube.com/watch?v=pZX6E-bU9QE) | 2&nbsp;Nov | 2,970 |
+| UnboxByJ3 | [🔥 CLEAN YOUR ANDROID TV — NO PC NEEDED! NO SUBSCRIPTION NEEDED! ❌](https://www.youtube.com/watch?v=Y1wx4IcMVbY) | 2&nbsp;Nov | 2,622 |
+| E-comWithrahul | [How to Clean & Speed Up ANY Android TV! Using ChatGPT + Antigravity (All Brands)](https://www.youtube.com/watch?v=UyMnvDZRtsw) | 2&nbsp;Nov | 2,371 |
+| Udit Agarwal | [AI to Make My TV 10x Better!](https://www.youtube.com/watch?v=zjyk8DiqrVA) | 2&nbsp;Nov | 1,446 |
+| Build With Neej | [This free app clears the sponsored ads off your TV's home screen 📺](https://www.youtube.com/watch?v=hpSp7AKak6A) | 2&nbsp;Nov | 1,134 |
+| How to Everything | [How To Clean Your Smart TV With AI (12X FASTER)](https://www.youtube.com/watch?v=kzi5k04hN2I) | 2&nbsp;Nov | 973 |
+| DD TechTV | [Claude Refused 2 Things on My 2016 Fire TV Stick](https://www.youtube.com/watch?v=zPORab60SXo) | 2&nbsp;Nov | 969 |
+| SerendipityS | [Claude Turned My Old Mi TV Into an Apple TV 🤯 #shorts](https://www.youtube.com/watch?v=d9RB1f5F4lQ) | 2&nbsp;Nov | 579 |
+| Ai for Accounting | [กล่องทีวีเก่าอืด อย่าเพิ่งทิ้ง! ลบแอปขยะ 5 นาที ลื่นเหมือนใหม่ (ไม่ต้องรูท) ← แนะนำ](https://www.youtube.com/watch?v=O-kL8KXyJg4) | 2&nbsp;Nov | 566 |
+| BitFlip | [Ep. 18 - Smart TV, Dumb Idea](https://www.youtube.com/watch?v=alWIpWjSefc) | 2&nbsp;Nov | 446 |
+| Luis Saucedo | [Quitar anuncios de tu Smart TV SIN pagar Claude: respondo todas sus preguntas](https://www.youtube.com/watch?v=Fm6zlNh7dqA) | 2&nbsp;Nov | 329 |
+| EL MAPA DEL DEV | [La IA le quitó TODOS los anuncios a la tele 📺 #claudecode #shorts](https://www.youtube.com/watch?v=yZGHqz2kqng) | 2&nbsp;Nov | 292 |
+| Muaz KADAN | [People Are Using AI to Delete the Ads From Their TVs #shorts](https://www.youtube.com/watch?v=RpKB5tkc_dk) | 2&nbsp;Nov | 284 |
+| Patch the Hype | [Claude Code Can Kill TV Ads. Will Yours Work?](https://www.youtube.com/watch?v=9-PP2XaaPx0) | 2&nbsp;Nov | 266 |
+| 羽头呆毛呆_DEMO | [支持安卓4.4!寰宇电视-Lite2.0拯救你的旧电视](https://www.bilibili.com/video/BV1zA4K6UEFR/) | 2&nbsp;Nov | 249 |
+| MoGinger Studios | [cleanyourtv: Gaining 1,574 stars a day](https://www.youtube.com/watch?v=8-cF14KySb8) | 2&nbsp;Nov | 219 |
+| BuildWithHudden | [My Android TV Home Screen Is Now Naruto (No Ads, No Bloat) Part  1](https://www.youtube.com/watch?v=VmHX5rdOyMQ) | 2&nbsp;Nov | 160 |
+| Будущее уже здесь | [Clean Your TV: телевизор без рекламы через Claude Code](https://www.youtube.com/watch?v=JwLH8dQ4-FQ) | 2&nbsp;Nov | 134 |
+| Irmão Pobre | [Limpar a Smart TV com IA: na LG e Samsung muda só o visual?](https://www.youtube.com/watch?v=FWvsBv6hzyw) | 2&nbsp;Nov | 76 |
+| Umer Does AI &#124; Marketing with AI | [Claude Code Removed the Ads From My Smart TV](https://www.youtube.com/watch?v=ZdjQidDff18) | 2&nbsp;Nov | 58 |
 | Mr MP &#124; هوش مصنوعی و کسب‌وکار | [تبلیغای تلویزیون رو با Claude پاک کرد! ۴۱ هزار ستاره در ۱۰ روز](https://www.youtube.com/watch?v=6ZD2X-pN35g) | 2&nbsp;Nov | 55 |
-| Automizza | [Togli la pubblicità dalla TV con Claude Code](https://www.youtube.com/watch?v=bXxNWWOZGCM) | 2&nbsp;Nov | 34 |
-| WorldScreen Hub | [Tidy Up Your Google TV Using Your Phone! &#124; CleanYourTV](https://www.youtube.com/watch?v=iDC_wPRk4eQ) | 2&nbsp;Nov | 26 |
-| Venom's Tech | [I Used AI to Make My TV 10X Better!](https://www.youtube.com/watch?v=GuCcvLNa-6s) | 1&nbsp;Nov | 1,263,201 |
-| DanieloTech | [ChatGPT dejó mi Google TV como NUEVO y SIN ANUNCIOS!](https://www.youtube.com/watch?v=-HJ8Ad8Rpvo) | 1&nbsp;Nov | 752,268 |
-| Дневник Сисадмина | [КАК УСКОРИТЬ ANDROID TV С ПОМОЩЬЮ ИИ? CleanYour TV — ЭТО НУЖНО ПОПРОБОВАТЬ!](https://www.youtube.com/watch?v=2gd5-yrBW68) | 1&nbsp;Nov | 22,874 |
-| 瞎折騰吧 | [CleanYourTV？ 靠边站！TV Studio才是电视优化的天花板！AI自动精简、桌面更换、应用管理、投屏录屏、遥控全搞定](https://www.youtube.com/watch?v=TDOmv45A0f8) | 1&nbsp;Nov | 22,171 |
-| Jay E &#124; RoboNuggets | [People are using Claude to strip the ads off their TVs #shorts](https://www.youtube.com/watch?v=L-YeJqL73-I) | 1&nbsp;Nov | 8,057 |
-| AI Automation Station | [I Fixed My Android TV With Claude Code + CleanYourTV](https://www.youtube.com/watch?v=0iTOlQjNdhs) | 1&nbsp;Nov | 4,322 |
-| Seby Rock | [Smart TV senza pubblicità grazie a Claude Code](https://www.youtube.com/watch?v=BwIsfDvPEI8) | 1&nbsp;Nov | 3,705 |
-| Andrea Abbondanza AI | [Claude Code toglie la pubblicità dalla home della TV: CleanYourTV per Android TV e Google TV](https://www.youtube.com/watch?v=d-60JQifaA8) | 1&nbsp;Nov | 1,730 |
-| Adrià Estévez | [Limpia tu tele de anuncios con Claude Code #shorts](https://www.youtube.com/watch?v=6uwQTzfo_Ao) | 1&nbsp;Nov | 1,685 |
-| AI Automation Station | [Claude Codex Fixed My Android TV](https://www.youtube.com/watch?v=3YgUJvrpHzo) | 1&nbsp;Nov | 1,438 |
-| Critter vibecoding | [Strip bloatware and sponsored ads from smart TVs using cleanyourtv paired with Claude Code](https://www.youtube.com/watch?v=KrhKACE8FdY) | 1&nbsp;Nov | 1,406 |
-| AI Tools Radars | [Free open-source Android TV cleaner (CleanYourTV)](https://www.youtube.com/watch?v=bx44DfkrbfU) | 1&nbsp;Nov | 634 |
-| CambIA | [Ya hay un repo gratis que deja tu tele como un Apple TV (Clean Your TV)](https://www.youtube.com/watch?v=NUXU_YyHvvM) | 1&nbsp;Nov | 586 |
-| Odisys | [Claude Code tira os anúncios da smart TV: o repositório grátis que viralizou](https://www.youtube.com/watch?v=ELojQFgnC30) | 1&nbsp;Nov | 335 |
-| XHEART | [GitHub Top 5 #1: CleanYourTV debloats your Android TV over Wi-Fi, 33K stars #Shorts](https://www.youtube.com/watch?v=RnReGQfBRAU) | 1&nbsp;Nov | 319 |
-| AI → AGI → ASI | [Claude Code Can Make Your Old TV Fast Again](https://www.youtube.com/watch?v=O___ARHk1pA) | 1&nbsp;Nov | 169 |
-| WhateverItIs | [I Debloated Every Screen I Own With Claude &#124; Fire TV, Android TV, Galaxy Watch and LG G8X](https://www.youtube.com/watch?v=vZuZx1rwq7U) | 1&nbsp;Nov | 145 |
-| Madruga Sabia | [CleanYourTV: organize a tela inicial da Android TV](https://www.youtube.com/watch?v=Hnt8mc5nFPM) | 1&nbsp;Nov | 130 |
-| INDEXIA DATA | [AN AI CLEANED HIS PARENTS' TV — 40,000 PEOPLE COPIED HIM](https://www.youtube.com/watch?v=Z2e3E2IzHNw) | 1&nbsp;Nov | 21 |
-| AI with Venky | [Claude vs Your Smart TV: Why Does It Show Ads? #Shorts](https://www.youtube.com/watch?v=zdhRFqeSlFc) | 1&nbsp;Nov | 21 |
-| UFD Tech | [CleanYourTV 3.0](https://www.youtube.com/watch?v=3r4WjMC1KO0) | 31&nbsp;Oct | 167,391 |
-| Techy Pathshala | [Speed Up Android TV Using Claude AI – No Ads, No Lag, Apple TV UI](https://www.youtube.com/watch?v=rGG3xbmkbCI) | 31&nbsp;Oct | 137,477 |
-| 悟空的日常 | [电视盒子桌面自由！交给 AI Agent 学习 CleanYourTV 就能搞定 Google TV](https://www.youtube.com/watch?v=rlIxpaP1sr8) | 31&nbsp;Oct | 52,685 |
-| Xabi &#124; Inteligencia Artificial | [🤯 Un loco usó Claude Code con la TV de sus PADRES para esto](https://www.youtube.com/watch?v=tXEc02iavDY) | 31&nbsp;Oct | 16,820 |
-| ClassAI | [Cara Hapus Iklan Android TV Pakai Claude Code #Shorts](https://www.youtube.com/watch?v=Jr9A89N-wg0) | 31&nbsp;Oct | 2,745 |
-| Sir Gamba | [CUIDADO ¿Limpiar tu Smart TV con la IA? Te cuento TODO lo que tienes que saber](https://www.youtube.com/watch?v=NrcWCBJGyh8) | 31&nbsp;Oct | 2,352 |
-| NOAD | [Hackeé mi TV box con Claude Code y quedó volando](https://www.youtube.com/watch?v=5JHWnnK2_yk) | 31&nbsp;Oct | 2,297 |
-| techit | [شاشتك بدون إعلانات مع Claude Code و CleanYourTV #shorts](https://www.youtube.com/watch?v=6afC3xQpssU) | 31&nbsp;Oct | 2,122 |
-| AI Hacks | [Android TV से Ads हटਾओ, सिर्फ फोन से 📺 &#124; Clean Your TV (Free App)](https://www.youtube.com/watch?v=ejZaGGynj24) | 31&nbsp;Oct | 1,814 |
-| Ozzibig &#124; AI Business Accelerator | [Come togliere la pubblicità dalla smart tv Android con Claude Code](https://www.youtube.com/watch?v=of8RlFtoo14) | 31&nbsp;Oct | 645 |
-| Jacky West — IA, Business & Automatisation | [Claude Code transforme ta vieille télé en Apple TV](https://www.youtube.com/watch?v=1QrZP10jimE) | 31&nbsp;Oct | 545 |
-| あかりのAIアップデート | [Claude Codeでテレビの広告を止める？cleanyourtvの仕組みと試せる範囲](https://www.youtube.com/watch?v=fzCqg7OpwGE) | 31&nbsp;Oct | 513 |
-| Ctrl+Tech+AI | [Slow TV Full of Ads? He Fixed It With Claude Code 📺 #shorts](https://www.youtube.com/watch?v=ZTALg8ufdzs) | 31&nbsp;Oct | 497 |
-| Dev Tools daily | [Turn Your Ad-Filled Android TV Into an Apple TV — CleanYourTV](https://www.youtube.com/watch?v=EmR4f3t84Og) | 31&nbsp;Oct | 421 |
-| Saqer AlSabri | [Google TV full of ads? CleanYourTV removes them](https://www.youtube.com/watch?v=OHHHn6EsnRw) | 31&nbsp;Oct | 287 |
-| Mybestia | [1.300 estrellas: Claude Code quita anuncios de Android TV](https://www.youtube.com/watch?v=km9ptk7xOPs) | 31&nbsp;Oct | 136 |
-| Hypeless Ai | [Android TV debloat: remove ads over Wi-Fi, no root](https://www.youtube.com/watch?v=aXQiA0silLA) | 31&nbsp;Oct | 112 |
-| pradeep kumar | [Clean Your TV Malayalam](https://www.youtube.com/watch?v=CENG-J3LLv8) | 31&nbsp;Oct | 97 |
-| Меньше вкладок | [Clean Your TV: телевизор без рекламы в меню](https://www.youtube.com/watch?v=cUgYtKt1pxk) | 31&nbsp;Oct | 94 |
-| Techy Akki | [Claude Code Se TV Ke Ads Kaise Hataye? Full Step by Step (2026)](https://www.youtube.com/watch?v=n0IO9g7dAiU) | 31&nbsp;Oct | 74 |
-| ProffandSpark | [People Are Using AI to Kill the Ads on Their TVs (cleanyourtv)](https://www.youtube.com/watch?v=cpR7-Oh8X7g) | 31&nbsp;Oct | 30 |
-| Simone Rizzo | [Ho collegato Claude Code alla mia vecchia Android TV: ecco cosa è successo](https://www.youtube.com/watch?v=nFxwqU3gCB8) | 30&nbsp;Oct | 212,510 |
-| Tech Thunder | [Removed Ads & Bloatware From My Android TV Using ONLY My Phone!](https://www.youtube.com/watch?v=7i_9vufDjco) | 30&nbsp;Oct | 56,385 |
-| NotebookSPEC | [ไล่เบาทีวีให้ลื่นขึ้น ลบโฆษณา แล้วสวยเหมือน Apple TV ! #cleanyourtv #tvsony #tv](https://www.youtube.com/watch?v=PnYEKeGybEE) | 30&nbsp;Oct | 3,949 |
-| HardReset.Info | [Xiaomi TV — How to Remove Ads & Make TV Faster Using Claude Code](https://www.youtube.com/watch?v=f6MLL6gSzHU) | 30&nbsp;Oct | 2,365 |
-| Michele Parigi | [Claude Code ha ripulito la mia smart TV](https://www.youtube.com/watch?v=kRMAYzSlgPM) | 30&nbsp;Oct | 2,361 |
-| wetclaude | [How to Stop Your Smart TV From Tracking What You Watch (Fire TV + Claude Code)](https://www.youtube.com/watch?v=QXWwYfDu1ZM) | 30&nbsp;Oct | 1,821 |
-| Pinned With Prashant | [Fix Your Slow TV Free &#124; CleanYourTV Android TV Debloat With AI #Shorts](https://www.youtube.com/watch?v=aMkW8grVgJE) | 30&nbsp;Oct | 1,570 |
-| Нейросети по-русски | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=QXHfw2l_5AQ) | 30&nbsp;Oct | 1,186 |
-| LatestAgent | [Free Repo Turns Off Ads on 359 Android TV Models #shorts](https://www.youtube.com/watch?v=uRJxs6xqYHg) | 30&nbsp;Oct | 924 |
-| DD TechTV | [No Claude, No Root: Clean Up Your 2016 Fire TV Stick](https://www.youtube.com/watch?v=pi4gBkLQ80s) | 30&nbsp;Oct | 814 |
-| ИИ-помощник | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=Ewb3sCHAFlA) | 30&nbsp;Oct | 755 |
-| Infrastructure in Minutes | [Fire TV Stick Debloat: Remove Bloatware Safely](https://www.youtube.com/watch?v=kd97DUl33GU) | 30&nbsp;Oct | 652 |
-| 新物种说 | [小米Redmi电视去广告：让AI自动装CleanYourTV+Aerial屏保](https://www.youtube.com/watch?v=Ej7LJgjCTTo) | 30&nbsp;Oct | 644 |
-| Sascha Böge &#124; KI-Praxis | [Claude Code räumt meinen Android TV auf (Werbung weg)](https://www.youtube.com/watch?v=8Qtb5EVD0HA) | 30&nbsp;Oct | 453 |
-| IZLSoundworks | [EASIEST WAY TO DEBLOAT YOUR ANDROID TV #cleanyourtv #tvlauncher #androidtvlauncher](https://www.youtube.com/watch?v=sNZ22LgbaRU) | 30&nbsp;Oct | 396 |
-| Ai_ush | [Claude Code ne Mera Purana Android TV Naya Bana Diya (Hindi)](https://www.youtube.com/watch?v=plrXa3C5hRo) | 30&nbsp;Oct | 381 |
-| SelfHost Pilot | [Can CleanYourTV Replace Your TV's Home Screen? What You Give Up](https://www.youtube.com/watch?v=1TbSXilBRvU) | 30&nbsp;Oct | 278 |
-| Harshith Sai Batthini | [Wipe the Ads Off Your Smart TV With Claude Code](https://www.youtube.com/watch?v=TjEkCB0BBX4) | 30&nbsp;Oct | 276 |
-| AI каждый день | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=MKRuzmPyLfw) | 30&nbsp;Oct | 274 |
-| TelugustuffSk | [#cleanyourtv #tech #androidtv #viral #trending clean your Androidtv without any claud ai prompt #fyp](https://www.youtube.com/watch?v=_u7aEPxeuRw) | 30&nbsp;Oct | 253 |
-| Maikel Sanz | [Quita los anuncios de tu tele con IA (y déjala como un Apple TV)](https://www.youtube.com/watch?v=VkASd-ifocI) | 30&nbsp;Oct | 244 |
-| MJ Learning AI | [Android TV 去廣告工具 CleanYourTV：不用 root、不刪 app，首頁換成乾淨主畫面](https://www.youtube.com/watch?v=FBYRNeG6rtY) | 30&nbsp;Oct | 242 |
-| MJ Learning AI | [Google TV 去廣告：CleanYourTV 3 步驟，一行還原](https://www.youtube.com/watch?v=hxtRstrueCE) | 30&nbsp;Oct | 77 |
+| Automizza | [Togli la pubblicità dalla TV con Claude Code](https://www.youtube.com/watch?v=bXxNWWOZGCM) | 2&nbsp;Nov | 38 |
+| WorldScreen Hub | [Tidy Up Your Google TV Using Your Phone! &#124; CleanYourTV](https://www.youtube.com/watch?v=iDC_wPRk4eQ) | 2&nbsp;Nov | 38 |
+| Cyan Nova AI | [Remove Ads From Your Smart TV With Claude Code? We Read 300+ Lists: Does It Work, Is It Safe?](https://www.youtube.com/watch?v=OvGDH1vSJOM) | 2&nbsp;Nov | 31 |
+| AI Stack Lab | [People Are Vibe-Coding Their TVs to Remove Ads — 41,000 Stars in 10 Days](https://www.youtube.com/watch?v=3jrQg52evcA) | 2&nbsp;Nov | 11 |
+| Venom's Tech | [I Used AI to Make My TV 10X Better!](https://www.youtube.com/watch?v=GuCcvLNa-6s) | 1&nbsp;Nov | 1,468,761 |
+| DanieloTech | [ChatGPT dejó mi Google TV como NUEVO y SIN ANUNCIOS!](https://www.youtube.com/watch?v=-HJ8Ad8Rpvo) | 1&nbsp;Nov | 872,057 |
+| Дневник Сисадмина | [КАК УСКОРИТЬ ANDROID TV С ПОМОЩЬЮ ИИ? CleanYour TV — ЭТО НУЖНО ПОПРОБОВАТЬ!](https://www.youtube.com/watch?v=2gd5-yrBW68) | 1&nbsp;Nov | 27,668 |
+| 瞎折騰吧 | [CleanYourTV？ 靠边站！TV Studio才是电视优化的天花板！AI自动精简、桌面更换、应用管理、投屏录屏、遥控全搞定](https://www.youtube.com/watch?v=TDOmv45A0f8) | 1&nbsp;Nov | 24,967 |
+| 悟空的日常 | [电视盒子还能换桌面？用千问办公 AI 跑通 CleanYourTV 项目 还你干净桌面](https://www.bilibili.com/video/BV1AfxW63EMp/) | 1&nbsp;Nov | 9,221 |
+| Jay E &#124; RoboNuggets | [People are using Claude to strip the ads off their TVs #shorts](https://www.youtube.com/watch?v=L-YeJqL73-I) | 1&nbsp;Nov | 8,213 |
+| Aditya Pramana | [🔥 DEBLOAT ANDROID TV & GOOGLE TV! Pakai CleanTV, Goodbye LEMOT! Bikin TV Lebih Ngebut (2026)](https://www.youtube.com/watch?v=WyTTj5IU3pk) | 1&nbsp;Nov | 6,079 |
+| AI Automation Station | [I Fixed My Android TV With Claude Code + CleanYourTV](https://www.youtube.com/watch?v=0iTOlQjNdhs) | 1&nbsp;Nov | 5,116 |
+| Seby Rock | [Smart TV senza pubblicità grazie a Claude Code](https://www.youtube.com/watch?v=BwIsfDvPEI8) | 1&nbsp;Nov | 3,816 |
+| Andrea Abbondanza AI | [Claude Code toglie la pubblicità dalla home della TV: CleanYourTV per Android TV e Google TV](https://www.youtube.com/watch?v=d-60JQifaA8) | 1&nbsp;Nov | 1,781 |
+| Adrià Estévez | [Limpia tu tele de anuncios con Claude Code #shorts](https://www.youtube.com/watch?v=6uwQTzfo_Ao) | 1&nbsp;Nov | 1,714 |
+| AI Automation Station | [Claude Codex Fixed My Android TV](https://www.youtube.com/watch?v=3YgUJvrpHzo) | 1&nbsp;Nov | 1,466 |
+| Critter vibecoding | [Strip bloatware and sponsored ads from smart TVs using cleanyourtv paired with Claude Code](https://www.youtube.com/watch?v=KrhKACE8FdY) | 1&nbsp;Nov | 1,440 |
+| CambIA | [Ya hay un repo gratis que deja tu tele como un Apple TV (Clean Your TV)](https://www.youtube.com/watch?v=NUXU_YyHvvM) | 1&nbsp;Nov | 694 |
+| AI Tools Radars | [Free open-source Android TV cleaner (CleanYourTV)](https://www.youtube.com/watch?v=bx44DfkrbfU) | 1&nbsp;Nov | 681 |
+| Beyond The Build Podcast | [Your Smart TV Is Full of Ads. People Are Using AI to Turn Them Off. &#124; LWIT Clips](https://www.youtube.com/watch?v=vD-PuMpxFs4) | 1&nbsp;Nov | 421 |
+| Odisys | [Claude Code tira os anúncios da smart TV: o repositório grátis que viralizou](https://www.youtube.com/watch?v=ELojQFgnC30) | 1&nbsp;Nov | 361 |
+| XHEART | [GitHub Top 5 #1: CleanYourTV debloats your Android TV over Wi-Fi, 33K stars #Shorts](https://www.youtube.com/watch?v=RnReGQfBRAU) | 1&nbsp;Nov | 328 |
+| XplorasiX | [How to Install Ad-Free debloat Android TV with AI &#124; Glass TV Enhanced Tutorial](https://www.youtube.com/watch?v=3FASfWTmOJM) | 1&nbsp;Nov | 253 |
+| WhateverItIs | [I Debloated Every Screen I Own With Claude &#124; Fire TV, Android TV, Galaxy Watch and LG G8X](https://www.youtube.com/watch?v=vZuZx1rwq7U) | 1&nbsp;Nov | 210 |
+| Madruga Sabia | [CleanYourTV: organize a tela inicial da Android TV](https://www.youtube.com/watch?v=Hnt8mc5nFPM) | 1&nbsp;Nov | 186 |
+| AI → AGI → ASI | [Claude Code Can Make Your Old TV Fast Again](https://www.youtube.com/watch?v=O___ARHk1pA) | 1&nbsp;Nov | 181 |
+| AI with Venky | [Claude vs Your Smart TV: Why Does It Show Ads? #Shorts](https://www.youtube.com/watch?v=zdhRFqeSlFc) | 1&nbsp;Nov | 23 |
+| INDEXIA DATA | [AN AI CLEANED HIS PARENTS' TV — 40,000 PEOPLE COPIED HIM](https://www.youtube.com/watch?v=Z2e3E2IzHNw) | 1&nbsp;Nov | 22 |
+| Byte Cortes | [Especial: apps grátis para PC, celular e TV &#124; Top 10 Vol. 11](https://www.youtube.com/watch?v=HT8GhKgI8FI) | 1&nbsp;Nov | 21 |
+| UFD Tech | [CleanYourTV 3.0](https://www.youtube.com/watch?v=3r4WjMC1KO0) | 31&nbsp;Oct | 169,885 |
+| Techy Pathshala | [Speed Up Android TV Using Claude AI – No Ads, No Lag, Apple TV UI](https://www.youtube.com/watch?v=rGG3xbmkbCI) | 31&nbsp;Oct | 150,385 |
+| 悟空的日常 | [电视盒子桌面自由！交给 AI Agent 学习 CleanYourTV 就能搞定 Google TV](https://www.youtube.com/watch?v=rlIxpaP1sr8) | 31&nbsp;Oct | 58,997 |
+| 宝藏研究社 | [夯到爆！Github 又出狠活神器！电视桌面改造最高的山来了，CleanYourTV爆火后又冒出6款开源电视软件](https://www.bilibili.com/video/BV1xKxJ6cEb3/) | 31&nbsp;Oct | 37,776 |
+| Xabi &#124; Inteligencia Artificial | [🤯 Un loco usó Claude Code con la TV de sus PADRES para esto](https://www.youtube.com/watch?v=tXEc02iavDY) | 31&nbsp;Oct | 17,272 |
+| ClassAI | [Cara Hapus Iklan Android TV Pakai Claude Code #Shorts](https://www.youtube.com/watch?v=Jr9A89N-wg0) | 31&nbsp;Oct | 4,066 |
+| techkk | [【AerialTV】成功让乐视X40老电视起死回生](https://www.bilibili.com/video/BV1jTx16xESy/) | 31&nbsp;Oct | 3,286 |
+| NOAD | [Hackeé mi TV box con Claude Code y quedó volando](https://www.youtube.com/watch?v=5JHWnnK2_yk) | 31&nbsp;Oct | 2,941 |
+| Sir Gamba | [CUIDADO ¿Limpiar tu Smart TV con la IA? Te cuento TODO lo que tienes que saber](https://www.youtube.com/watch?v=NrcWCBJGyh8) | 31&nbsp;Oct | 2,525 |
+| techit | [شاشتك بدون إعلانات مع Claude Code و CleanYourTV #shorts](https://www.youtube.com/watch?v=6afC3xQpssU) | 31&nbsp;Oct | 2,167 |
+| AI Hacks | [Android TV से Ads हटਾओ, सिर्फ फोन से 📺 &#124; Clean Your TV (Free App)](https://www.youtube.com/watch?v=ejZaGGynj24) | 31&nbsp;Oct | 2,120 |
+| 星海分享 | [据说这是现在智能电视界最后的一块净土。电视优化开源工具！禁用系统广告、清理预装软件、替换超轻量桌面，支持多款电视机型！老电视机也能重获流畅体验！](https://www.bilibili.com/video/BV1Z6xr6jE73/) | 31&nbsp;Oct | 1,517 |
+| Шредер | [ИИ вместо нового телевизора? Что реально можно улучшить &#124; Шредер](https://www.youtube.com/watch?v=_bYEfXv2ZDc) | 31&nbsp;Oct | 1,116 |
+| Bitwise AI | [Claude Code Can Strip Ads Off Your Android TV, 46k Stars](https://www.youtube.com/watch?v=i8eKbvbUBXk) | 31&nbsp;Oct | 1,036 |
+| Jacky West — IA, Business & Automatisation | [Claude Code transforme ta vieille télé en Apple TV](https://www.youtube.com/watch?v=1QrZP10jimE) | 31&nbsp;Oct | 837 |
+| Ozzibig &#124; AI Business Accelerator | [Come togliere la pubblicità dalla smart tv Android con Claude Code](https://www.youtube.com/watch?v=of8RlFtoo14) | 31&nbsp;Oct | 662 |
+| あかりのAIアップデート | [Claude Codeでテレビの広告を止める？cleanyourtvの仕組みと試せる範囲](https://www.youtube.com/watch?v=fzCqg7OpwGE) | 31&nbsp;Oct | 516 |
+| Ctrl+Tech+AI | [Slow TV Full of Ads? He Fixed It With Claude Code 📺 #shorts](https://www.youtube.com/watch?v=ZTALg8ufdzs) | 31&nbsp;Oct | 498 |
+| Dev Tools daily | [Turn Your Ad-Filled Android TV Into an Apple TV — CleanYourTV](https://www.youtube.com/watch?v=EmR4f3t84Og) | 31&nbsp;Oct | 442 |
+| Saqer AlSabri | [Google TV full of ads? CleanYourTV removes them](https://www.youtube.com/watch?v=OHHHn6EsnRw) | 31&nbsp;Oct | 290 |
+| techkk | [【AerialTV】成功让乐视X40老电视起死回生](https://www.youtube.com/watch?v=mI4i5s2zwuo) | 31&nbsp;Oct | 205 |
+| Меньше вкладок | [Clean Your TV: телевизор без рекламы в меню](https://www.youtube.com/watch?v=cUgYtKt1pxk) | 31&nbsp;Oct | 179 |
+| 大头Doy | [电视开机先看广告?开源CleanYourTV:两周4.7万星,不用root也能换干净主页](https://www.bilibili.com/video/BV1hLxr6eEvH/) | 31&nbsp;Oct | 156 |
+| Mybestia | [1.300 estrellas: Claude Code quita anuncios de Android TV](https://www.youtube.com/watch?v=km9ptk7xOPs) | 31&nbsp;Oct | 147 |
+| Streaming Tv Tips | [Tidy Up Your Google TV With a Phone! &#124; CleanYourTV](https://www.youtube.com/watch?v=40UueqxEp7M) | 31&nbsp;Oct | 138 |
+| Hypeless Ai | [Android TV debloat: remove ads over Wi-Fi, no root](https://www.youtube.com/watch?v=aXQiA0silLA) | 31&nbsp;Oct | 126 |
+| pradeep kumar | [Clean Your TV Malayalam](https://www.youtube.com/watch?v=CENG-J3LLv8) | 31&nbsp;Oct | 104 |
+| Techy Akki | [Claude Code Se TV Ke Ads Kaise Hataye? Full Step by Step (2026)](https://www.youtube.com/watch?v=n0IO9g7dAiU) | 31&nbsp;Oct | 77 |
+| ProffandSpark | [People Are Using AI to Kill the Ads on Their TVs (cleanyourtv)](https://www.youtube.com/watch?v=cpR7-Oh8X7g) | 31&nbsp;Oct | 32 |
+| AI with Venky | [Why Does a TV You Paid For Show Ads? Claude Turned Them Off](https://www.youtube.com/watch?v=waqlYFiGT7M) | 31&nbsp;Oct | 18 |
+| AI 未来 | [📺 テレビの広告掃除をAIに任せる時代が来た](https://www.youtube.com/watch?v=Wrdwy-QzkD8) | 31&nbsp;Oct | 4 |
+| Simone Rizzo | [Ho collegato Claude Code alla mia vecchia Android TV: ecco cosa è successo](https://www.youtube.com/watch?v=nFxwqU3gCB8) | 30&nbsp;Oct | 224,859 |
+| Tech Thunder | [Removed Ads & Bloatware From My Android TV Using ONLY My Phone!](https://www.youtube.com/watch?v=7i_9vufDjco) | 30&nbsp;Oct | 60,230 |
+| NotebookSPEC | [ไล่เบาทีวีให้ลื่นขึ้น ลบโฆษณา แล้วสวยเหมือน Apple TV ! #cleanyourtv #tvsony #tv](https://www.youtube.com/watch?v=PnYEKeGybEE) | 30&nbsp;Oct | 4,338 |
+| HardReset.Info | [Xiaomi TV — How to Remove Ads & Make TV Faster Using Claude Code](https://www.youtube.com/watch?v=f6MLL6gSzHU) | 30&nbsp;Oct | 3,721 |
+| Saymon Avila | [Tirei os anúncios da minha Google TV em 30 minutos! Faça isso (grátis)](https://www.youtube.com/watch?v=8DRlBFF8L9M) | 30&nbsp;Oct | 3,182 |
+| Michele Parigi | [Claude Code ha ripulito la mia smart TV](https://www.youtube.com/watch?v=kRMAYzSlgPM) | 30&nbsp;Oct | 2,587 |
+| wetclaude | [How to Stop Your Smart TV From Tracking What You Watch (Fire TV + Claude Code)](https://www.youtube.com/watch?v=QXWwYfDu1ZM) | 30&nbsp;Oct | 1,920 |
+| Pinned With Prashant | [Fix Your Slow TV Free &#124; CleanYourTV Android TV Debloat With AI #Shorts](https://www.youtube.com/watch?v=aMkW8grVgJE) | 30&nbsp;Oct | 1,618 |
+| Нейросети по-русски | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=QXHfw2l_5AQ) | 30&nbsp;Oct | 1,200 |
+| DD TechTV | [No Claude, No Root: Clean Up Your 2016 Fire TV Stick](https://www.youtube.com/watch?v=pi4gBkLQ80s) | 30&nbsp;Oct | 1,191 |
+| Infrastructure in Minutes | [Fire TV Stick Debloat: Remove Bloatware Safely](https://www.youtube.com/watch?v=kd97DUl33GU) | 30&nbsp;Oct | 1,080 |
+| Viviendo en el Futuro | [Fire TV Stick sin anuncios: cómo poner un inicio limpio (2026, sin root)](https://www.youtube.com/watch?v=Ur5yY7pFbbE) | 30&nbsp;Oct | 969 |
+| LatestAgent | [Free Repo Turns Off Ads on 359 Android TV Models #shorts](https://www.youtube.com/watch?v=uRJxs6xqYHg) | 30&nbsp;Oct | 931 |
+| 新物种说 | [小米Redmi电视去广告：让AI自动装CleanYourTV+Aerial屏保](https://www.youtube.com/watch?v=Ej7LJgjCTTo) | 30&nbsp;Oct | 898 |
+| smog | [Making my TV Usable Again](https://www.youtube.com/watch?v=BiRZeuJzYXE) | 30&nbsp;Oct | 837 |
+| ИИ-помощник | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=Ewb3sCHAFlA) | 30&nbsp;Oct | 766 |
+| 可可吧唧 | [搞定了极米投影仪的clean your tv部署，就是极米的系统开adb太麻烦](https://www.bilibili.com/video/BV1bxxe6CE2c/) | 30&nbsp;Oct | 724 |
+| Sascha Böge &#124; KI-Praxis | [Claude Code räumt meinen Android TV auf (Werbung weg)](https://www.youtube.com/watch?v=8Qtb5EVD0HA) | 30&nbsp;Oct | 508 |
+| HardReset.Info | [GOOGLE TV — How to Remove Ads & Speed Up TV Using Claude Code](https://www.youtube.com/watch?v=shQRQjBMaj0) | 30&nbsp;Oct | 434 |
+| IZLSoundworks | [EASIEST WAY TO DEBLOAT YOUR ANDROID TV #cleanyourtv #tvlauncher #androidtvlauncher](https://www.youtube.com/watch?v=sNZ22LgbaRU) | 30&nbsp;Oct | 409 |
+| Ai_ush | [Claude Code ne Mera Purana Android TV Naya Bana Diya (Hindi)](https://www.youtube.com/watch?v=plrXa3C5hRo) | 30&nbsp;Oct | 388 |
+| MJ Learning AI | [Android TV 去廣告工具 CleanYourTV：不用 root、不刪 app，首頁換成乾淨主畫面](https://www.youtube.com/watch?v=FBYRNeG6rtY) | 30&nbsp;Oct | 383 |
+| TelugustuffSk | [#cleanyourtv #tech #androidtv #viral #trending clean your Androidtv without any claud ai prompt #fyp](https://www.youtube.com/watch?v=_u7aEPxeuRw) | 30&nbsp;Oct | 313 |
+| Harshith Sai Batthini | [Wipe the Ads Off Your Smart TV With Claude Code](https://www.youtube.com/watch?v=TjEkCB0BBX4) | 30&nbsp;Oct | 293 |
+| SelfHost Pilot | [Can CleanYourTV Replace Your TV's Home Screen? What You Give Up](https://www.youtube.com/watch?v=1TbSXilBRvU) | 30&nbsp;Oct | 284 |
+| AI каждый день | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=MKRuzmPyLfw) | 30&nbsp;Oct | 280 |
+| Maikel Sanz | [Quita los anuncios de tu tele con IA (y déjala como un Apple TV)](https://www.youtube.com/watch?v=VkASd-ifocI) | 30&nbsp;Oct | 270 |
+| 黑科技仓库 | [【CleanYourTV】别再找了，最细电视瘦身教程，电脑一条指令清预装关广告，电视盒子都能用](https://www.bilibili.com/video/BV1GZxF69Eyb/) | 30&nbsp;Oct | 189 |
+| 小悦发布 | [CleanYourTV 到底强在哪？两百多 KB 极简桌面、界面媲美 Apple TV，装完随时能恢复出厂丨老电视也能跑](https://www.bilibili.com/video/BV1Tuxc6jEy3/) | 30&nbsp;Oct | 122 |
+| El Día Tech | [CleanYourTV: el cambio que despeja tu pantalla de inicio](https://www.youtube.com/watch?v=kgZzlRrVNYo) | 30&nbsp;Oct | 94 |
+| MJ Learning AI | [Google TV 去廣告：CleanYourTV 3 步驟，一行還原](https://www.youtube.com/watch?v=hxtRstrueCE) | 30&nbsp;Oct | 90 |
+| TelugustuffSk | [Android TV ని మీ మొబైల్‌తోనే Clean చేయండి! No PC Needed &#124; Telugu Tech Tips#androidtv #tips #technews](https://www.youtube.com/watch?v=MjOqubDSIgU) | 30&nbsp;Oct | 66 |
 | Repo Digest | [Remove All Ads From Your Android TV](https://www.youtube.com/watch?v=9mxTbLT4D84) | 30&nbsp;Oct | 54 |
-| GEEKrar | [Clean Up Your Google TV From Your Phone! &#124; CleanYourTV](https://www.youtube.com/watch?v=ZefYOxl-cYs) | 29&nbsp;Oct | 91,557 |
-| Всё сам — как перестать тащить бизнес на себе | [CleanYourTV — бесплатный открытый проект на GitHub.](https://www.youtube.com/watch?v=8phS4FzRtwk) | 29&nbsp;Oct | 10,029 |
-| Venoms Tech AI | [Android TV Lag Fix 🤯 Claude AI ne Ads + Bloatware Hata Diye #shorts](https://www.youtube.com/watch?v=fw_1KLOIDms) | 29&nbsp;Oct | 7,459 |
-| Lakeer Kukadia | [Make Your Android TV Look Like Apple TV for FREE! 🍎 (No Root Required)](https://www.youtube.com/watch?v=pC53fJQOauc) | 29&nbsp;Oct | 3,305 |
-| Эдвард Гришин &#124; AI  и автоматизация бизнеса | [Этот репозиторий отключит слежку, рекламу на вашем телевизоре! Ваш телевизор СЛЕДИТ за вами!](https://www.youtube.com/watch?v=V8cpKXNZLLs) | 29&nbsp;Oct | 3,253 |
+| TechBox科技盒 | [【CleanYourTV】老电视又卡又有广告？最详细的电视瘦身教程！两百多 KB 极简桌面！！附带 AI 装技能步骤！](https://www.bilibili.com/video/BV18Axc6nESv/) | 30&nbsp;Oct | 51 |
+| AppZone资源库 | [电视瘦身合集来了！CleanYourTV 开源工具，清预装关广告换桌面，报个型号 AI 给你出完整步骤](https://www.bilibili.com/video/BV1bTxc6mEKC/) | 30&nbsp;Oct | 36 |
+| 老K分享 | [不废话，CleanYourTV 直接上！电脑连同一 WiFi 清预装关广告，家里电视老的新的都合适](https://www.bilibili.com/video/BV1GFxc6pEcG/) | 30&nbsp;Oct | 34 |
+| 量子分享站 | [【网友推荐】CleanYourTV 电视优化工具上线！电脑连同一 WiFi 清预装去广告 附带 AI 一步装好教程！【电视瘦身】](https://www.bilibili.com/video/BV1gAxc6nEqQ/) | 30&nbsp;Oct | 32 |
+| TwinTorqueBuilds | [Bloatware removal in TV using Claude](https://www.youtube.com/watch?v=WCzL9Wi12GU) | 30&nbsp;Oct | 18 |
+| nullmicgo | [電視機廣告太多？一個開源工具幫你清乾淨 #Shorts](https://www.youtube.com/watch?v=qTgFVUtgEcI) | 30&nbsp;Oct | 16 |
+| 熬夜分享君 | [【保姆级最新教程】电视卡顿广告多？CleanYourTV 开源工具，电脑连同一 WiFi 就能清理预装软件，老电视也能重获流畅](https://www.bilibili.com/video/BV1MPxc6SE1Z/) | 30&nbsp;Oct | 9 |
+| GEEKrar | [Clean Up Your Google TV From Your Phone! &#124; CleanYourTV](https://www.youtube.com/watch?v=ZefYOxl-cYs) | 29&nbsp;Oct | 99,027 |
+| Gostavo | [Deixei minha Android TV mais rápida com IA pelo celular!](https://www.youtube.com/watch?v=HaW13jqMNao) | 29&nbsp;Oct | 37,541 |
+| Всё сам — как перестать тащить бизнес на себе | [CleanYourTV — бесплатный открытый проект на GitHub.](https://www.youtube.com/watch?v=8phS4FzRtwk) | 29&nbsp;Oct | 11,473 |
+| Venoms Tech AI | [Android TV Lag Fix 🤯 Claude AI ne Ads + Bloatware Hata Diye #shorts](https://www.youtube.com/watch?v=fw_1KLOIDms) | 29&nbsp;Oct | 7,697 |
+| Эдвард Гришин &#124; AI  и автоматизация бизнеса | [Этот репозиторий отключит слежку, рекламу на вашем телевизоре! Ваш телевизор СЛЕДИТ за вами!](https://www.youtube.com/watch?v=V8cpKXNZLLs) | 29&nbsp;Oct | 3,441 |
+| Lakeer Kukadia | [Make Your Android TV Look Like Apple TV for FREE! 🍎 (No Root Required)](https://www.youtube.com/watch?v=pC53fJQOauc) | 29&nbsp;Oct | 3,432 |
 | Unique Verse | [Clean Your Android Tv &#124; Remove background Unwanted Apps #AndroidTv #UIchange #Cleanyourtv](https://www.youtube.com/watch?v=YLT2jggm79g) | 29&nbsp;Oct | 3,139 |
-| Нейроотдел | [Телевизор Сбер как Apple TV: нейросеть выключает лишнее по Wi-Fi (CleanYourTV)](https://www.youtube.com/watch?v=T0yNP5xVZnU) | 29&nbsp;Oct | 2,544 |
-| GenAI Unplugged | [I Let Claude Code Take Control Of My Android TV And It Built Me A Custom Home Screen](https://www.youtube.com/watch?v=tzTWkMyK2gM) | 29&nbsp;Oct | 1,851 |
-| Bhupesh Thukral | [Remove Ads From Your Smart TV With AI (Free, No Root)](https://www.youtube.com/watch?v=GDL6uUpplb4) | 29&nbsp;Oct | 1,738 |
-| CryptoMax | [Нейросеть взломала телевизор: что произошло?](https://www.youtube.com/watch?v=mQgqK6f53J0) | 29&nbsp;Oct | 1,550 |
-| Бизнес на Автомате | [Телевизор до и после Claude Code: минус вся реклама](https://www.youtube.com/watch?v=wL9Ku3dyWIg) | 29&nbsp;Oct | 1,271 |
-| Omer Bin Saleem | [Same TV. Ads gone. How Claude switched off the TV ads #shorts](https://www.youtube.com/watch?v=gGEjk2XttXQ) | 29&nbsp;Oct | 1,166 |
-| ИИ-помощник | [Как Claude Code вычистил рекламу с телевизора](https://www.youtube.com/watch?v=Vs4JmkIXrt0) | 29&nbsp;Oct | 1,142 |
-| AI-старт с нуля | [Телевизор без рекламы за один промпт в Claude Code](https://www.youtube.com/watch?v=ba2IImG21YY) | 29&nbsp;Oct | 1,103 |
-| Saurabh | [Remove ads / Bloatwares from Your Android TV](https://www.youtube.com/watch?v=qX3A5g2Jwks) | 29&nbsp;Oct | 1,020 |
-| Рилсы на потоке | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=4WubxOi_7aE) | 29&nbsp;Oct | 1,010 |
-| Fork This. | [Remove Ads From Android TV: CleanYourTV](https://www.youtube.com/watch?v=BupUXmyVnGs) | 29&nbsp;Oct | 957 |
-| ИИ без воды | [Как вычистить рекламу из телевизора через Claude Code](https://www.youtube.com/watch?v=mlwmCVMGTfQ) | 29&nbsp;Oct | 914 |
-| gitfinds io &#124; Zoe | [Clean up a bloated Android TV, no root needed](https://www.youtube.com/watch?v=v-jj1xVM1NY) | 29&nbsp;Oct | 552 |
+| Нейроотдел | [Телевизор Сбер как Apple TV: нейросеть выключает лишнее по Wi-Fi (CleanYourTV)](https://www.youtube.com/watch?v=T0yNP5xVZnU) | 29&nbsp;Oct | 2,909 |
+| 发肥的包子 | [Aerial TV替换桌面白名单版本最终解决方案及教程](https://www.bilibili.com/video/BV1LCsd6mERT/) | 29&nbsp;Oct | 2,334 |
+| GenAI Unplugged | [I Let Claude Code Take Control Of My Android TV And It Built Me A Custom Home Screen](https://www.youtube.com/watch?v=tzTWkMyK2gM) | 29&nbsp;Oct | 1,927 |
+| Bhupesh Thukral | [Remove Ads From Your Smart TV With AI (Free, No Root)](https://www.youtube.com/watch?v=GDL6uUpplb4) | 29&nbsp;Oct | 1,890 |
+| CryptoMax | [Нейросеть взломала телевизор: что произошло?](https://www.youtube.com/watch?v=mQgqK6f53J0) | 29&nbsp;Oct | 1,570 |
+| Бизнес на Автомате | [Телевизор до и после Claude Code: минус вся реклама](https://www.youtube.com/watch?v=wL9Ku3dyWIg) | 29&nbsp;Oct | 1,273 |
+| Omer Bin Saleem | [Same TV. Ads gone. How Claude switched off the TV ads #shorts](https://www.youtube.com/watch?v=gGEjk2XttXQ) | 29&nbsp;Oct | 1,171 |
+| ИИ-помощник | [Как Claude Code вычистил рекламу с телевизора](https://www.youtube.com/watch?v=Vs4JmkIXrt0) | 29&nbsp;Oct | 1,156 |
+| AI-старт с нуля | [Телевизор без рекламы за один промпт в Claude Code](https://www.youtube.com/watch?v=ba2IImG21YY) | 29&nbsp;Oct | 1,138 |
+| Fork This. | [Remove Ads From Android TV: CleanYourTV](https://www.youtube.com/watch?v=BupUXmyVnGs) | 29&nbsp;Oct | 1,042 |
+| Saurabh | [Remove ads / Bloatwares from Your Android TV](https://www.youtube.com/watch?v=qX3A5g2Jwks) | 29&nbsp;Oct | 1,026 |
+| Рилсы на потоке | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=4WubxOi_7aE) | 29&nbsp;Oct | 1,016 |
+| ИИ без воды | [Как вычистить рекламу из телевизора через Claude Code](https://www.youtube.com/watch?v=mlwmCVMGTfQ) | 29&nbsp;Oct | 918 |
+| Déclic Pratique | [Claude transforme des TV : nouvel OS ou nouvel accueil ?](https://www.youtube.com/watch?v=9aTdeeurUd4) | 29&nbsp;Oct | 703 |
+| gitfinds io &#124; Zoe | [Clean up a bloated Android TV, no root needed](https://www.youtube.com/watch?v=v-jj1xVM1NY) | 29&nbsp;Oct | 564 |
+| HardReset.Info | [I Let Claude Code Optimize My Android TV — Before vs After](https://www.youtube.com/watch?v=0txQbaHjdDA) | 29&nbsp;Oct | 510 |
 | AiWorkFlowTips | [cleanyourtv 1분 분석 &#124; 광고 홈을 깔끔한 홈으로 (깃허브 주간 1위)](https://www.youtube.com/watch?v=evvAUoqSmvI) | 29&nbsp;Oct | 504 |
-| HardReset.Info | [I Let Claude Code Optimize My Android TV — Before vs After](https://www.youtube.com/watch?v=0txQbaHjdDA) | 29&nbsp;Oct | 493 |
-| Déclic Pratique | [Claude transforme des TV : nouvel OS ou nouvel accueil ?](https://www.youtube.com/watch?v=9aTdeeurUd4) | 29&nbsp;Oct | 426 |
-| HardReset.Info | [Android TV — How to Remove Ads from the Home Screen](https://www.youtube.com/watch?v=7MVgWacyV7s) | 29&nbsp;Oct | 386 |
-| Next Tab | [Remove Ads from Your Android TV Without Root! #github #opensource](https://www.youtube.com/watch?v=v7KTaSGZ52g) | 29&nbsp;Oct | 347 |
-| Evolution with AI | [Clean Your TV - Debloat any Android TV over Wi-Fi (29k stars)](https://www.youtube.com/watch?v=f_HHibzKgVc) | 29&nbsp;Oct | 294 |
-| Awesome Git | [CleanYourTV vs Aerial: which one dumbs your TV down?](https://www.youtube.com/watch?v=Ne5cC0BkLAk) | 29&nbsp;Oct | 181 |
-| Crossover | [Le pidió a una IA que HACKEARA su TV. Lo que quitó explica tu TELE](https://www.youtube.com/watch?v=MK5ZPTC9gRg) | 28&nbsp;Oct | 284,325 |
-| Hackers pedia | [നിങ്ങളുടെ TV ഇനി പുതിയത് പോലെ Clean Your TV: Remove Ads & Bloatware from Android TV Using AI](https://www.youtube.com/watch?v=fBvo05Li4To) | 28&nbsp;Oct | 124,303 |
-| AuraBox 360 | [clean your android TV in 3 mins! ✨ (new easy method)](https://www.youtube.com/watch?v=eGhoRMAqvtc) | 28&nbsp;Oct | 44,480 |
-| Ayush AI | [ChatGPT Struggled, Claude Nailed It: My Android TV Now Looks Like Apple TV](https://www.youtube.com/watch?v=_OyZUhFfB-c) | 28&nbsp;Oct | 27,916 |
-| LegacyTechTips | [I Transformed My Android TV into Apple TV Style Using ChatGPT in Telugu 🔥#androidtv #appletv #tv](https://www.youtube.com/watch?v=1nn0Mw4HKK4) | 28&nbsp;Oct | 23,557 |
-| Максим Самусь &#124; Нейросети и AI-агенты для бизнеса | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=vz2hwAWWU3o) | 28&nbsp;Oct | 13,854 |
-| Максим Ромазанов | [Лучший способ ХАКНУТЬ свой телевизор через Claude и ChatGPT.](https://www.youtube.com/watch?v=P7NIB7m6gmo) | 28&nbsp;Oct | 12,796 |
-| HardReset.Info | [Android TV — How to Use CleanYourTV to Remove Ads & Bloatware](https://www.youtube.com/watch?v=mEYFZdfLJds) | 28&nbsp;Oct | 3,182 |
-| Volkan Barbaros Gürcan | [Reklamlı Akıllı TV'nizi Yapay Zekâyla "Aptal" TV'ye Çevirmek Mümkün mü?](https://www.youtube.com/watch?v=yxrV9L04sCs) | 28&nbsp;Oct | 3,146 |
-| AKIN YILMAZ | [Televizyonundaki Reklamları Claude Code ile Temizle (CleanYourTV) #shorts](https://www.youtube.com/watch?v=dJMvJ6QZNKs) | 28&nbsp;Oct | 2,216 |
-| Arvind's Tech Stories (Hindi) | [Claude Code se TV ke ads hataye, par risk bhi hai](https://www.youtube.com/watch?v=5aRHNVIktLw) | 28&nbsp;Oct | 1,659 |
-| Mad.Gadgetz | [AI Can Remove All Ads from your TV &#124; Clean Your TV Step by Step](https://www.youtube.com/watch?v=JFlJSfkGNxk) | 28&nbsp;Oct | 1,612 |
-| Olek &#124; AI i automatyzacja dla firm | [Ludzie hakują telewizory przez Claude Code](https://www.youtube.com/watch?v=hxhf-orGQTQ) | 28&nbsp;Oct | 1,453 |
-| Абузим сервисы &#124; ИИ бесплатно | [Claude Code сделал умный телевизор тупым](https://www.youtube.com/watch?v=HIgid2DQfQ0) | 28&nbsp;Oct | 1,443 |
-| عبدالرحمن AI | [الجزء 2: شاشة سامسونج وإل جي بدون إعلانات مع Claude Code وCodex &#124; Free My TV](https://www.youtube.com/watch?v=kOIrGGfGItw) | 28&nbsp;Oct | 1,406 |
-| HassanTechFlow | [People Are Hacking Their TVs With Claude Code](https://www.youtube.com/watch?v=Vv4AMis_oNo) | 28&nbsp;Oct | 1,277 |
-| Studiotom | [This Free App Wipes Every Ad Off Your Google TV (20k Stars)](https://www.youtube.com/watch?v=5RndkswQd1w) | 28&nbsp;Oct | 1,198 |
-| TechyMek | [AI Made My Tv Faster and Ad-Free! 🤯 #shorts #viral #androidtv](https://www.youtube.com/watch?v=tFXPgyXKja0) | 28&nbsp;Oct | 1,169 |
-| Divy Explains | [Claude Made My Android TV Super Fast & Ad-Free](https://www.youtube.com/watch?v=-6NxCu1fHX0) | 28&nbsp;Oct | 1,103 |
-| Ролики на автомате | [Телевизор до и после Claude Code](https://www.youtube.com/watch?v=xi8BvW_V0LU) | 28&nbsp;Oct | 774 |
+| 猴子AI笔记 | [电视广告太多？试试这套开源方案](https://www.bilibili.com/video/BV1X5sZ6LEPh/) | 29&nbsp;Oct | 416 |
+| Next Tab | [Remove Ads from Your Android TV Without Root! #github #opensource](https://www.youtube.com/watch?v=v7KTaSGZ52g) | 29&nbsp;Oct | 400 |
+| HardReset.Info | [Android TV — How to Remove Ads from the Home Screen](https://www.youtube.com/watch?v=7MVgWacyV7s) | 29&nbsp;Oct | 395 |
+| HardReset.Info | [Android TV — How to Speed Up a Slow TV Without Factory Reset](https://www.youtube.com/watch?v=992f57TVn9w) | 29&nbsp;Oct | 325 |
+| Evolution with AI | [Clean Your TV - Debloat any Android TV over Wi-Fi (29k stars)](https://www.youtube.com/watch?v=f_HHibzKgVc) | 29&nbsp;Oct | 298 |
+| Awesome Git | [CleanYourTV vs Aerial: which one dumbs your TV down?](https://www.youtube.com/watch?v=Ne5cC0BkLAk) | 29&nbsp;Oct | 222 |
+| Corinne &#124; MTD etc. | [I Removed the Ads From My Living Room TV (2026)](https://www.youtube.com/watch?v=H089japVSUw) | 29&nbsp;Oct | 53 |
+| Crossover | [Le pidió a una IA que HACKEARA su TV. Lo que quitó explica tu TELE](https://www.youtube.com/watch?v=MK5ZPTC9gRg) | 28&nbsp;Oct | 307,851 |
+| Hackers pedia | [നിങ്ങളുടെ TV ഇനി പുതിയത് പോലെ Clean Your TV: Remove Ads & Bloatware from Android TV Using AI](https://www.youtube.com/watch?v=fBvo05Li4To) | 28&nbsp;Oct | 130,674 |
+| SaddyTech | [HO FATTO ENTRARE UN’IA NELLA MIA SMART TV... GUARDATE COSA HA TROVATO!](https://www.youtube.com/watch?v=uYP1XwHunUI) | 28&nbsp;Oct | 84,271 |
+| AuraBox 360 | [clean your android TV in 3 mins! ✨ (new easy method)](https://www.youtube.com/watch?v=eGhoRMAqvtc) | 28&nbsp;Oct | 49,493 |
+| Ayush AI | [ChatGPT Struggled, Claude Nailed It: My Android TV Now Looks Like Apple TV](https://www.youtube.com/watch?v=_OyZUhFfB-c) | 28&nbsp;Oct | 29,042 |
+| LegacyTechTips | [I Transformed My Android TV into Apple TV Style Using ChatGPT in Telugu 🔥#androidtv #appletv #tv](https://www.youtube.com/watch?v=1nn0Mw4HKK4) | 28&nbsp;Oct | 25,411 |
+| Максим Самусь &#124; Нейросети и AI-агенты для бизнеса | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=vz2hwAWWU3o) | 28&nbsp;Oct | 20,074 |
+| Максим Ромазанов | [Лучший способ ХАКНУТЬ свой телевизор через Claude и ChatGPT.](https://www.youtube.com/watch?v=P7NIB7m6gmo) | 28&nbsp;Oct | 14,897 |
+| 板橋阿陞聊科技 | [小米電視一開機就是廣告？我家 2 台這樣清，還踩了 3 個坑｜Google TV／Android TV](https://www.youtube.com/watch?v=obPzX9rhP4E) | 28&nbsp;Oct | 4,190 |
+| HardReset.Info | [Android TV — How to Use CleanYourTV to Remove Ads & Bloatware](https://www.youtube.com/watch?v=mEYFZdfLJds) | 28&nbsp;Oct | 3,499 |
+| Volkan Barbaros Gürcan | [Reklamlı Akıllı TV'nizi Yapay Zekâyla "Aptal" TV'ye Çevirmek Mümkün mü?](https://www.youtube.com/watch?v=yxrV9L04sCs) | 28&nbsp;Oct | 3,211 |
+| AKIN YILMAZ | [Televizyonundaki Reklamları Claude Code ile Temizle (CleanYourTV) #shorts](https://www.youtube.com/watch?v=dJMvJ6QZNKs) | 28&nbsp;Oct | 2,328 |
+| Arvind's Tech Stories (Hindi) | [Claude Code se TV ke ads hataye, par risk bhi hai](https://www.youtube.com/watch?v=5aRHNVIktLw) | 28&nbsp;Oct | 1,661 |
+| Mad.Gadgetz | [AI Can Remove All Ads from your TV &#124; Clean Your TV Step by Step](https://www.youtube.com/watch?v=JFlJSfkGNxk) | 28&nbsp;Oct | 1,640 |
+| عبدالرحمن AI | [الجزء 2: شاشة سامسونج وإل جي بدون إعلانات مع Claude Code وCodex &#124; Free My TV](https://www.youtube.com/watch?v=kOIrGGfGItw) | 28&nbsp;Oct | 1,522 |
+| Абузим сервисы &#124; ИИ бесплатно | [Claude Code сделал умный телевизор тупым](https://www.youtube.com/watch?v=HIgid2DQfQ0) | 28&nbsp;Oct | 1,515 |
+| Olek &#124; AI i automatyzacja dla firm | [Ludzie hakują telewizory przez Claude Code](https://www.youtube.com/watch?v=hxhf-orGQTQ) | 28&nbsp;Oct | 1,479 |
+| Divy Explains | [Claude Made My Android TV Super Fast & Ad-Free](https://www.youtube.com/watch?v=-6NxCu1fHX0) | 28&nbsp;Oct | 1,433 |
+| HassanTechFlow | [People Are Hacking Their TVs With Claude Code](https://www.youtube.com/watch?v=Vv4AMis_oNo) | 28&nbsp;Oct | 1,342 |
+| Studiotom | [This Free App Wipes Every Ad Off Your Google TV (20k Stars)](https://www.youtube.com/watch?v=5RndkswQd1w) | 28&nbsp;Oct | 1,222 |
+| TechyMek | [AI Made My Tv Faster and Ad-Free! 🤯 #shorts #viral #androidtv](https://www.youtube.com/watch?v=tFXPgyXKja0) | 28&nbsp;Oct | 1,175 |
+| Ролики на автомате | [Телевизор до и после Claude Code](https://www.youtube.com/watch?v=xi8BvW_V0LU) | 28&nbsp;Oct | 779 |
+| SANJAY UGHREJA | [I Made My Slow Android TV 10X Faster With Just My Phone!](https://www.youtube.com/watch?v=d5xuw6EsELE) | 28&nbsp;Oct | 760 |
+| HardReset.Info | [JVC Android TV — How to Install a Custom Launcher](https://www.youtube.com/watch?v=tHZX5Ww2Rx8) | 28&nbsp;Oct | 711 |
 | IA En Claro | [Le pedí a una IA que limpiara mi televisor 😱📺 &#124; CleanYourTV (42 mil estrellas)](https://www.youtube.com/watch?v=XC97Cv2-Xs4) | 28&nbsp;Oct | 681 |
-| HardReset.Info | [JVC Android TV — How to Install a Custom Launcher](https://www.youtube.com/watch?v=tHZX5Ww2Rx8) | 28&nbsp;Oct | 659 |
-| AI with Faisal | [Claude Code Removed Every Ad From This TV 🤯](https://www.youtube.com/watch?v=MMG26X-C7Kg) | 28&nbsp;Oct | 620 |
-| Chu Wei &#124; AI | [Hack your TV with Claude Code #claudeai](https://www.youtube.com/watch?v=lcIRLi0phDk) | 28&nbsp;Oct | 565 |
-| Tool tested | [Make Your Android TV Feel Brand New! 📺 &#124; CleanYourTV](https://www.youtube.com/watch?v=kY7SFx2XBuM) | 28&nbsp;Oct | 478 |
-| AI Tools Tested · Dude Mode | [Smart TV Ads: What AI Can Change (and What It Can't)](https://www.youtube.com/watch?v=iNCBXDgpG9U) | 28&nbsp;Oct | 386 |
-| Matheus Tilli | [O Claude Code tira as propagandas da sua TV](https://www.youtube.com/watch?v=wZLpUpr3jq0) | 28&nbsp;Oct | 375 |
-| LookOnThisGit | [Clean Your Android TV Right From Your Phone 📺](https://www.youtube.com/watch?v=vIO631-wpYw) | 28&nbsp;Oct | 350 |
-| AVALoK | [Kya Crazy Ban Gaya Hai! 🤯🔥 Android TV- Personal Apple TV #cleanyourtv #appletv #crazy #debloat](https://www.youtube.com/watch?v=pVZcfnCon8k) | 28&nbsp;Oct | 330 |
-| Christopher Franke | [KI räumt den Smart-TV auf: Werbung raus, eigene Startseite rein](https://www.youtube.com/watch?v=WPWyxIUb44E) | 28&nbsp;Oct | 292 |
+| AI with Faisal | [Claude Code Removed Every Ad From This TV 🤯](https://www.youtube.com/watch?v=MMG26X-C7Kg) | 28&nbsp;Oct | 623 |
+| Chu Wei &#124; AI | [Hack your TV with Claude Code #claudeai](https://www.youtube.com/watch?v=lcIRLi0phDk) | 28&nbsp;Oct | 585 |
+| Tool tested | [Make Your Android TV Feel Brand New! 📺 &#124; CleanYourTV](https://www.youtube.com/watch?v=kY7SFx2XBuM) | 28&nbsp;Oct | 508 |
+| Comrad404 &#124; Обзор ИИ инструментов и новости | [Твой телевизор ОХ*ЕЛ. Владельцы пошли против Samsung](https://www.youtube.com/watch?v=zLQOhqgdKh4) | 28&nbsp;Oct | 472 |
+| AI Tools Tested · Dude Mode | [Smart TV Ads: What AI Can Change (and What It Can't)](https://www.youtube.com/watch?v=iNCBXDgpG9U) | 28&nbsp;Oct | 410 |
+| Matheus Tilli | [O Claude Code tira as propagandas da sua TV](https://www.youtube.com/watch?v=wZLpUpr3jq0) | 28&nbsp;Oct | 394 |
+| LookOnThisGit | [Clean Your Android TV Right From Your Phone 📺](https://www.youtube.com/watch?v=vIO631-wpYw) | 28&nbsp;Oct | 391 |
+| Christopher Franke | [KI räumt den Smart-TV auf: Werbung raus, eigene Startseite rein](https://www.youtube.com/watch?v=WPWyxIUb44E) | 28&nbsp;Oct | 346 |
+| AVALoK | [Kya Crazy Ban Gaya Hai! 🤯🔥 Android TV- Personal Apple TV #cleanyourtv #appletv #crazy #debloat](https://www.youtube.com/watch?v=pVZcfnCon8k) | 28&nbsp;Oct | 332 |
 | 苏大讲AI | [全球电视解放运动：一句话让 AI 干掉电视开机广告！](https://www.bilibili.com/video/BV1Psxj6HEs6/) | 28&nbsp;Oct | 189 |
 | 老王效率手册 | [74期 安卓电视首页太乱 常用应用收纳与预装内容整理一次看清](https://www.bilibili.com/video/BV1xcx76dEdM/) | 28&nbsp;Oct | 132 |
 | 浴缸里的蜗牛 | [有了Ai，确实门槛低了很多，电视简洁到爆炸，好看又快捷](https://www.bilibili.com/video/BV1mYsX6ZEjd/) | 28&nbsp;Oct | 104 |
-| Noticias con IA 2050 | [¿Cómo puedes hacer tu Smart TV más rápida y sin anuncios usando IA?](https://www.youtube.com/watch?v=y_lrx9X0zbI) | 28&nbsp;Oct | 83 |
+| Noticias con IA 2050 | [¿Cómo puedes hacer tu Smart TV más rápida y sin anuncios usando IA?](https://www.youtube.com/watch?v=y_lrx9X0zbI) | 28&nbsp;Oct | 88 |
 | Model Math | [He Disabled TV Ads With One Number. 34,800 Stars in 5 Days](https://www.youtube.com/watch?v=Ao7i736lsPY) | 28&nbsp;Oct | 64 |
-| Awesome Git | [Your Smart TV, Without Ads? Meet CleanYourTV](https://www.youtube.com/watch?v=7m98EuprJ68) | 28&nbsp;Oct | 60 |
+| Awesome Git | [Your Smart TV, Without Ads? Meet CleanYourTV](https://www.youtube.com/watch?v=7m98EuprJ68) | 28&nbsp;Oct | 63 |
+| The Dev Tools Hub | [I Transformed My 7-Year-Old TV for FREE! 🤯 No Claude, No Paid AI &#124; More Than a Cleanup! No Bricking!](https://www.youtube.com/watch?v=3HX77-eTSuM) | 28&nbsp;Oct | 53 |
 | Arcwingtech | [Did Anthropic Just DESTROY OpenAI? 🤯 Claude Duet, Grok iPhone Apps & Vibe Coding TV!](https://www.youtube.com/watch?v=W2j0LHwfjkY) | 28&nbsp;Oct | 1 |
-| Влад &#124; Про нейросети | [Как подключить ТВ к ChatGPT / Claude: Ускоряем Android TV и убираем рекламу в меню &#124; ИИ к ТВ](https://www.youtube.com/watch?v=WATs7gxnJkg) | 27&nbsp;Oct | 182,061 |
-| Cyon tech | [Turn Any Google TV into Real Apple TV! (No PC, No CLAUDE)](https://www.youtube.com/watch?v=y5oXyxKyF4k) | 27&nbsp;Oct | 60,643 |
-| MinuteTech | [Ma télé était devenue un panneau publicitaire… j'ai réglé ça avec Claude Code](https://www.youtube.com/watch?v=kaTm78_VW18) | 27&nbsp;Oct | 51,813 |
-| El Alquimista de Bits | [Hackea tu Smart TV con IA🔥](https://www.youtube.com/watch?v=qYuoAyeTW70) | 27&nbsp;Oct | 45,428 |
-| 小樹洞 | [2分鐘教學｜Clean Your TV｜電視開機畫面重設｜電視刷機｜國外爆紅](https://www.youtube.com/watch?v=0ZSXTdf4Q1g) | 27&nbsp;Oct | 41,493 |
-| Kenny | [Remove Your TV’s Ads With ChatGPT](https://www.youtube.com/watch?v=y03W6_1r3Yw) | 27&nbsp;Oct | 8,951 |
-| Talha Ünüvar | [Claude ile televizyon hackle](https://www.youtube.com/watch?v=gCDwJmTS2vo) | 27&nbsp;Oct | 8,046 |
-| Lusty | [MARRE des PUBS sur sa TV : il utilise CLAUDE AI pour TOUT SUPPRIMER !](https://www.youtube.com/watch?v=VASawJq_85s) | 27&nbsp;Oct | 7,406 |
-| Rajen Purohit | [Claude Se TV Ke Ads Delete Karo FREE Me &#124; No Root 😱](https://www.youtube.com/watch?v=tkV1FDTTqyE) | 27&nbsp;Oct | 5,935 |
-| The AI Surfer | [A guy gave Claude Code his parent's TV model number and it wiped out the ads and junk apps](https://www.youtube.com/watch?v=42c-Fl-ojpI) | 27&nbsp;Oct | 1,751 |
-| Techworthy | [Remove Ads From Your TV and Make It Fast (Samsung, LG, Xiaomi, Google TV, Fire TV)](https://www.youtube.com/watch?v=TGwzhZKViqg) | 27&nbsp;Oct | 1,735 |
-| AI да Бумагин! | [Claude Code вычистил всю рекламу с телевизора](https://www.youtube.com/watch?v=sZOuO_EGvZs) | 27&nbsp;Oct | 1,521 |
-| TechitEZ | [Android TV Slow & Ads से परेशान? 📺 CleanYourTV से बनाएं Clean UI &#124; No PC!](https://www.youtube.com/watch?v=3maMZYHeypE) | 27&nbsp;Oct | 1,418 |
-| Mykhailo Koblychenko | [ИИ вычистил рекламу из телевизора. Что дальше?](https://www.youtube.com/watch?v=w_K4OXYG3nU) | 27&nbsp;Oct | 1,307 |
-| 小樹洞 | [電視開機全是廣告？交給 AI 兩分鐘清乾淨｜CleanYourTV #Shorts](https://www.youtube.com/watch?v=LDeojoaQcBU) | 27&nbsp;Oct | 1,243 |
-| ABCNT MNDED | [How to Hack Your TV With Claude Code (Goodbye, Home Screen Ads)](https://www.youtube.com/watch?v=4LmNLzwKTwM) | 27&nbsp;Oct | 1,226 |
-| AI-услуги | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=fm_6ys-gnsY) | 27&nbsp;Oct | 1,041 |
-| Tech Takneek | [This Made My Android TV Faster & Ads Free ⚡️](https://www.youtube.com/watch?v=Y3d5havVXgE) | 27&nbsp;Oct | 890 |
-| OpenSoft | [The Secret Way to Clean Up Your TV Interface #CleanYourTV #TechTips #Shorts](https://www.youtube.com/watch?v=hO7aLnLwPw4) | 27&nbsp;Oct | 829 |
-| Hidden Settings | [AI Deleted the Ads on This TV (40,000 GitHub Stars)](https://www.youtube.com/watch?v=Zh1ALN3Tkc4) | 27&nbsp;Oct | 586 |
-| Zeit Sprüng | [Smart-TV mit Claude KI aufräumen?! Der virale ADB-Trick & die große Falle (AKTE #03) #Shorts](https://www.youtube.com/watch?v=gF9xARdznVM) | 27&nbsp;Oct | 564 |
-| HardReset.Info | [Android TV — How to Install Custom Launcher Using Claude Code](https://www.youtube.com/watch?v=g70qwT2kcBk) | 27&nbsp;Oct | 537 |
-| Huhbyte | [Claude Code Smart TV Hack: Remove Ads From Android TV With One Free Prompt 📺 #shorts](https://www.youtube.com/watch?v=ZUOD-Z_vO9U) | 27&nbsp;Oct | 385 |
-| Piper Tech | [Claude Makes Your Smart TV Faster Samsung, LG, Google & Fire TV](https://www.youtube.com/watch?v=JigLJ70ckgk) | 27&nbsp;Oct | 371 |
-| 苏大讲AI | [全球电视解放运动：一句话让 AI 干掉电视开机广告！ #CleanYourTV #千问工作助理 #电视去广告 #开源项目 #GitHub开源](https://www.youtube.com/watch?v=Heplml3FnZI) | 27&nbsp;Oct | 360 |
-| Curious PM - AI for Product Managers | [Claude Code took over his TV](https://www.youtube.com/watch?v=Dfi24qBs0qE) | 27&nbsp;Oct | 339 |
-| Cauhi Jr &#124; IA na prática | [Claude Code tirando os anúncios da Smart TV 📺 (CleanYourTV)](https://www.youtube.com/watch?v=tGUddaOY5g8) | 27&nbsp;Oct | 333 |
-| Tech with Jaloudi | [Why Claude loses your TV halfway through](https://www.youtube.com/watch?v=gy3Bk_xr8h8) | 27&nbsp;Oct | 324 |
-| Opensrcs | [How to Remove Ads From Your Smart TV (Android & Google TV)](https://www.youtube.com/watch?v=--MSEo-xffA) | 27&nbsp;Oct | 292 |
-| Cường IT | [Dọn sạch quảng cáo, app rác trên tivi Android với CleanYourTV](https://www.youtube.com/watch?v=PJ3dD6OQO1k) | 27&nbsp;Oct | 277 |
-| Armelix | [Claude Code le quita la publicidad a tu Smart TV 📺 #shortscleanyourtv](https://www.youtube.com/watch?v=AYK71x6drpY) | 27&nbsp;Oct | 274 |
-| Tech with Jaloudi | [Before Claude Code Debloats Your TV, Read These 8 Rules](https://www.youtube.com/watch?v=n1mRAw6n3Qo) | 27&nbsp;Oct | 261 |
-| Нейро-практик | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=rGW_mOtv6Wo) | 27&nbsp;Oct | 194 |
-| Sharan Labs | [People Let Claude Hack Their Smart TVs. Here's What Actually Happened.](https://www.youtube.com/watch?v=8VHxxtm_-4k) | 27&nbsp;Oct | 194 |
-| winson-DIY | [Clean Up Sony BRAVIA TV Remotely: Raspberry Pi 4 + ADB (cleanyourtv) &#124; 遠端清理 Sony 電視](https://www.youtube.com/watch?v=48AKXRb3W8Y) | 27&nbsp;Oct | 165 |
-| TechitEZ | [🔥Android TV Slow & Ads से परेशान? 📺 CleanYourTV से बनाएं Clean UI &#124; No PC! #Shorts](https://www.youtube.com/watch?v=_amEFQDO1bM) | 27&nbsp;Oct | 135 |
-| HGW Channel | [HIMEDIA H8 Pro 上古神器 AI 助力復活](https://www.youtube.com/watch?v=1bG0x9M7znA) | 27&nbsp;Oct | 125 |
-| Max Tsygankov | [He let Claude Code hack his parents' TV #shorts](https://www.youtube.com/watch?v=xtdTXleFLZA) | 27&nbsp;Oct | 116 |
+| Влад &#124; Про нейросети | [Как подключить ТВ к ChatGPT / Claude: Ускоряем Android TV и убираем рекламу в меню &#124; ИИ к ТВ](https://www.youtube.com/watch?v=WATs7gxnJkg) | 27&nbsp;Oct | 197,074 |
+| Cyon tech | [Turn Any Google TV into Real Apple TV! (No PC, No CLAUDE)](https://www.youtube.com/watch?v=y5oXyxKyF4k) | 27&nbsp;Oct | 67,277 |
+| MinuteTech | [Ma télé était devenue un panneau publicitaire… j'ai réglé ça avec Claude Code](https://www.youtube.com/watch?v=kaTm78_VW18) | 27&nbsp;Oct | 55,593 |
+| El Alquimista de Bits | [Hackea tu Smart TV con IA🔥](https://www.youtube.com/watch?v=qYuoAyeTW70) | 27&nbsp;Oct | 48,385 |
+| 小樹洞 | [2分鐘教學｜Clean Your TV｜電視開機畫面重設｜電視刷機｜國外爆紅](https://www.youtube.com/watch?v=0ZSXTdf4Q1g) | 27&nbsp;Oct | 43,488 |
+| Kevin Hou | [I Tried the Viral AI Smart TV Hack — With Just an App!](https://www.youtube.com/watch?v=JpcrM1_GzDg) | 27&nbsp;Oct | 24,596 |
+| Kenny | [Remove Your TV’s Ads With ChatGPT](https://www.youtube.com/watch?v=y03W6_1r3Yw) | 27&nbsp;Oct | 9,356 |
+| Talha Ünüvar | [Claude ile televizyon hackle](https://www.youtube.com/watch?v=gCDwJmTS2vo) | 27&nbsp;Oct | 8,322 |
+| Lusty | [MARRE des PUBS sur sa TV : il utilise CLAUDE AI pour TOUT SUPPRIMER !](https://www.youtube.com/watch?v=VASawJq_85s) | 27&nbsp;Oct | 7,716 |
+| Rajen Purohit | [Claude Se TV Ke Ads Delete Karo FREE Me &#124; No Root 😱](https://www.youtube.com/watch?v=tkV1FDTTqyE) | 27&nbsp;Oct | 6,175 |
+| Bura Tech | [People Are Vibe Coding Their TVs to Remove the Ads](https://www.youtube.com/watch?v=EglQwsOOFhE) | 27&nbsp;Oct | 2,905 |
+| Techworthy | [Remove Ads From Your TV and Make It Fast (Samsung, LG, Xiaomi, Google TV, Fire TV)](https://www.youtube.com/watch?v=TGwzhZKViqg) | 27&nbsp;Oct | 2,446 |
+| ABCNT MNDED | [How to Hack Your TV With Claude Code (Goodbye, Home Screen Ads)](https://www.youtube.com/watch?v=4LmNLzwKTwM) | 27&nbsp;Oct | 1,958 |
+| The AI Surfer | [A guy gave Claude Code his parent's TV model number and it wiped out the ads and junk apps](https://www.youtube.com/watch?v=42c-Fl-ojpI) | 27&nbsp;Oct | 1,775 |
+| AI да Бумагин! | [Claude Code вычистил всю рекламу с телевизора](https://www.youtube.com/watch?v=sZOuO_EGvZs) | 27&nbsp;Oct | 1,546 |
+| TechitEZ | [Android TV Slow & Ads से परेशान? 📺 CleanYourTV से बनाएं Clean UI &#124; No PC!](https://www.youtube.com/watch?v=3maMZYHeypE) | 27&nbsp;Oct | 1,437 |
+| Mykhailo Koblychenko | [ИИ вычистил рекламу из телевизора. Что дальше?](https://www.youtube.com/watch?v=w_K4OXYG3nU) | 27&nbsp;Oct | 1,335 |
+| 小樹洞 | [電視開機全是廣告？交給 AI 兩分鐘清乾淨｜CleanYourTV #Shorts](https://www.youtube.com/watch?v=LDeojoaQcBU) | 27&nbsp;Oct | 1,298 |
+| AI-услуги | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=fm_6ys-gnsY) | 27&nbsp;Oct | 1,049 |
+| Tech Takneek | [This Made My Android TV Faster & Ads Free ⚡️](https://www.youtube.com/watch?v=Y3d5havVXgE) | 27&nbsp;Oct | 923 |
+| OpenSoft | [The Secret Way to Clean Up Your TV Interface #CleanYourTV #TechTips #Shorts](https://www.youtube.com/watch?v=hO7aLnLwPw4) | 27&nbsp;Oct | 922 |
+| HardReset.Info | [Android TV — How to Install Custom Launcher Using Claude Code](https://www.youtube.com/watch?v=g70qwT2kcBk) | 27&nbsp;Oct | 625 |
+| Hidden Settings | [AI Deleted the Ads on This TV (40,000 GitHub Stars)](https://www.youtube.com/watch?v=Zh1ALN3Tkc4) | 27&nbsp;Oct | 609 |
+| DreamDesigner | [米家激光投影一代 ADB 去广告｜安装 Aerial‑TV 纯净桌面｜Android9 无需 ROOT](https://www.bilibili.com/video/BV14ExT6eEvX/) | 27&nbsp;Oct | 593 |
+| Ai Tuco | [Tiraram os anúncios da TV com IA (e ela ficou mais rápida)](https://www.youtube.com/watch?v=fn861-g5yhs) | 27&nbsp;Oct | 587 |
+| Zeit Sprüng | [Smart-TV mit Claude KI aufräumen?! Der virale ADB-Trick & die große Falle (AKTE #03) #Shorts](https://www.youtube.com/watch?v=gF9xARdznVM) | 27&nbsp;Oct | 577 |
+| 马小帮 | [把小米、TCL电视改造为AppleTV风格](https://www.bilibili.com/video/BV1NWxT6cEnk/) | 27&nbsp;Oct | 513 |
+| Piper Tech | [Claude Makes Your Smart TV Faster Samsung, LG, Google & Fire TV](https://www.youtube.com/watch?v=JigLJ70ckgk) | 27&nbsp;Oct | 501 |
+| 苏大讲AI | [全球电视解放运动：一句话让 AI 干掉电视开机广告！ #CleanYourTV #千问工作助理 #电视去广告 #开源项目 #GitHub开源](https://www.youtube.com/watch?v=Heplml3FnZI) | 27&nbsp;Oct | 409 |
+| Huhbyte | [Claude Code Smart TV Hack: Remove Ads From Android TV With One Free Prompt 📺 #shorts](https://www.youtube.com/watch?v=ZUOD-Z_vO9U) | 27&nbsp;Oct | 402 |
+| Automated Impact | ['Black October' in cybersecurity, remove 'Spyware' from Your Tv & KIMI K3.1 is only paid hype?](https://www.youtube.com/watch?v=O5biUfwg8kM) | 27&nbsp;Oct | 399 |
+| Curious PM - AI for Product Managers | [Claude Code took over his TV](https://www.youtube.com/watch?v=Dfi24qBs0qE) | 27&nbsp;Oct | 368 |
+| Cauhi Jr &#124; IA na prática | [Claude Code tirando os anúncios da Smart TV 📺 (CleanYourTV)](https://www.youtube.com/watch?v=tGUddaOY5g8) | 27&nbsp;Oct | 364 |
+| Tech with Jaloudi | [Why Claude loses your TV halfway through](https://www.youtube.com/watch?v=gy3Bk_xr8h8) | 27&nbsp;Oct | 329 |
+| Cường IT | [Dọn sạch quảng cáo, app rác trên tivi Android với CleanYourTV](https://www.youtube.com/watch?v=PJ3dD6OQO1k) | 27&nbsp;Oct | 307 |
+| Opensrcs | [How to Remove Ads From Your Smart TV (Android & Google TV)](https://www.youtube.com/watch?v=--MSEo-xffA) | 27&nbsp;Oct | 295 |
+| Armelix | [Claude Code le quita la publicidad a tu Smart TV 📺 #shortscleanyourtv](https://www.youtube.com/watch?v=AYK71x6drpY) | 27&nbsp;Oct | 294 |
+| Tech with Jaloudi | [Before Claude Code Debloats Your TV, Read These 8 Rules](https://www.youtube.com/watch?v=n1mRAw6n3Qo) | 27&nbsp;Oct | 287 |
+| Нейро-практик | [Как убрать рекламу с телевизора через Claude Code](https://www.youtube.com/watch?v=rGW_mOtv6Wo) | 27&nbsp;Oct | 206 |
+| 启航致明_AI共创 | [用豆包给安卓旧电视换个清爽桌面，做出Apple TV的感觉](https://www.bilibili.com/video/BV1XtxK6BE6v/) | 27&nbsp;Oct | 204 |
+| Sharan Labs | [People Let Claude Hack Their Smart TVs. Here's What Actually Happened.](https://www.youtube.com/watch?v=8VHxxtm_-4k) | 27&nbsp;Oct | 204 |
+| winson-DIY | [Clean Up Sony BRAVIA TV Remotely: Raspberry Pi 4 + ADB (cleanyourtv) &#124; 遠端清理 Sony 電視](https://www.youtube.com/watch?v=48AKXRb3W8Y) | 27&nbsp;Oct | 192 |
+| TechitEZ | [🔥Android TV Slow & Ads से परेशान? 📺 CleanYourTV से बनाएं Clean UI &#124; No PC! #Shorts](https://www.youtube.com/watch?v=_amEFQDO1bM) | 27&nbsp;Oct | 165 |
+| Hyzee AI | [People Used Claude to Hack TVs. Why Does It Stop Halfway?](https://www.youtube.com/watch?v=X_lMH7Alyq8) | 27&nbsp;Oct | 155 |
+| Shots With AI | [Claude Code can FIX your Slow TV?](https://www.youtube.com/watch?v=NUnuE6NXxJw) | 27&nbsp;Oct | 145 |
+| HGW Channel | [HIMEDIA H8 Pro 上古神器 AI 助力復活](https://www.youtube.com/watch?v=1bG0x9M7znA) | 27&nbsp;Oct | 132 |
+| Max Tsygankov | [He let Claude Code hack his parents' TV #shorts](https://www.youtube.com/watch?v=xtdTXleFLZA) | 27&nbsp;Oct | 117 |
 | Repo Radar | [Personalize Your TV with Claude and Ditch the Ads](https://www.youtube.com/watch?v=9imyUTQpzVM) | 27&nbsp;Oct | 115 |
-| Carter - AI Agency | [I Removed All Ads From My TV With 1 Claude Code Prompt (It Works!)](https://www.youtube.com/watch?v=bepZawmAacg) | 27&nbsp;Oct | 109 |
-| Inspiriflow &#124; Use AI creatively | [Claude Code took the ads off his parents' TV](https://www.youtube.com/watch?v=kcKY1EqQjAk) | 27&nbsp;Oct | 97 |
+| Carter - AI Agency | [I Removed All Ads From My TV With 1 Claude Code Prompt (It Works!)](https://www.youtube.com/watch?v=bepZawmAacg) | 27&nbsp;Oct | 111 |
+| Inspiriflow &#124; Use AI creatively | [Claude Code took the ads off his parents' TV](https://www.youtube.com/watch?v=kcKY1EqQjAk) | 27&nbsp;Oct | 101 |
 | Suresh kumar | [Claude Code removed the ads from this smart TV (free repo, Android TV) #shorts](https://www.youtube.com/watch?v=5Fu1-aHNWBM) | 27&nbsp;Oct | 92 |
-| Half Rendered Studios | [People are using AI to make smart TVs dumb again. One robot is worried.](https://www.youtube.com/watch?v=mQmNNE-pFNg) | 27&nbsp;Oct | 76 |
-| AI Diggest | [CleanYourTV: Hermes Wiped 11 Trackers Off a Cheap TV #shorts](https://www.youtube.com/watch?v=A4TwjvmEe3g) | 27&nbsp;Oct | 57 |
+| Half Rendered Studios | [People are using AI to make smart TVs dumb again. One robot is worried.](https://www.youtube.com/watch?v=mQmNNE-pFNg) | 27&nbsp;Oct | 78 |
+| AI Diggest | [CleanYourTV: Hermes Wiped 11 Trackers Off a Cheap TV #shorts](https://www.youtube.com/watch?v=A4TwjvmEe3g) | 27&nbsp;Oct | 60 |
 | Repo Rush | [Remove the Ads From Your Smart TV #shorts](https://www.youtube.com/watch?v=4I7h_jx6QcA) | 27&nbsp;Oct | 20 |
-| AI Diggest Español | [CleanYourTV: Hermes quita 11 rastreadores a una tele barata #shorts](https://www.youtube.com/watch?v=uTQG168qYB8) | 27&nbsp;Oct | 13 |
+| AI Diggest Español | [CleanYourTV: Hermes quita 11 rastreadores a una tele barata #shorts](https://www.youtube.com/watch?v=uTQG168qYB8) | 27&nbsp;Oct | 15 |
+| AI 资讯 | [CleanYourTV：Hermes 清掉便宜电视 11 个追踪器 #shorts](https://www.youtube.com/watch?v=l2SoJhX7DK8) | 27&nbsp;Oct | 14 |
+| 王Ray说 | [电视首页全是广告？一句话让 AI 帮你关掉（不卸载、随时还原）](https://www.bilibili.com/video/BV12dxN68Eoz/) | 27&nbsp;Oct | 4 |
 | AI Diggest Portugues | [CleanYourTV: Hermes tirou 11 rastreadores de uma TV barata #shorts](https://www.youtube.com/watch?v=GT_TgJfx8Ag) | 27&nbsp;Oct | 3 |
-| VaasuTechVlogs | [Android TV Slow & Ads? ఈ ఒక్క Trick తో కొత్త TV లా! &#124; Debloat + Apple TV Launcher &#124;&#124; In Telugu &#124;&#124;](https://www.youtube.com/watch?v=tpif2AP59Qg) | 26&nbsp;Oct | 477,530 |
-| Worth Making &#124; KI. Produkt. Business. | [Claude Code löscht die Werbung von deinem TV](https://www.youtube.com/watch?v=74ANEMK4s5w) | 26&nbsp;Oct | 403,222 |
-| VaasuTechVlogs | [Same TV, ₹0 — Ads అన్నీ పోయాయి! 🤯 Apple TV Look #shorts](https://www.youtube.com/watch?v=HFs_QPIBz78) | 26&nbsp;Oct | 227,530 |
-| NG Gadget | [I Found a FREE App to Debloat Your Smart TV!🤯  (Hindi)](https://www.youtube.com/watch?v=mdMfkor-mvA) | 26&nbsp;Oct | 172,732 |
-| Code Bear | [Did Claude Really Ban REA? (Fact-Check)](https://www.youtube.com/watch?v=eYFiyX0ew7A) | 26&nbsp;Oct | 89,795 |
-| Ceyhun Tokgezer | [Claude Code ile TV'ndeki Reklamları ve Gereksiz Uygulamaları Temizle!](https://www.youtube.com/watch?v=9WPpJeLi7Z0) | 26&nbsp;Oct | 33,576 |
-| Coffee Now | [CleanYourTV: LG WebOS debloat your LG TV!](https://www.youtube.com/watch?v=MTZEQ_0sa5Y) | 26&nbsp;Oct | 29,058 |
-| 爱分享的老李 | [别再忍受Google TV广告了！用 AI 几行代码，把我的 ONN 4K Pro 变成“Apple TV”！（保姆级教程）](https://www.youtube.com/watch?v=v2YMR4ettHs) | 26&nbsp;Oct | 28,283 |
-| Nid Academy | [Claude Code &#124; ها كيفاش بدّلت واجهة التلفاز ديالي بالذكاء الاصطناعي](https://www.youtube.com/watch?v=H--r-EG_Q3g) | 26&nbsp;Oct | 25,907 |
-| PrivateKey AI | [Claude Code вычистил рекламу с телевизора за 15 минут](https://www.youtube.com/watch?v=ICnj1y0huac) | 26&nbsp;Oct | 23,837 |
+| VaasuTechVlogs | [Android TV Slow & Ads? ఈ ఒక్క Trick తో కొత్త TV లా! &#124; Debloat + Apple TV Launcher &#124;&#124; In Telugu &#124;&#124;](https://www.youtube.com/watch?v=tpif2AP59Qg) | 26&nbsp;Oct | 498,346 |
+| Worth Making &#124; KI. Produkt. Business. | [Claude Code löscht die Werbung von deinem TV](https://www.youtube.com/watch?v=74ANEMK4s5w) | 26&nbsp;Oct | 425,948 |
+| VaasuTechVlogs | [Same TV, ₹0 — Ads అన్నీ పోయాయి! 🤯 Apple TV Look #shorts](https://www.youtube.com/watch?v=HFs_QPIBz78) | 26&nbsp;Oct | 228,430 |
+| NG Gadget | [I Found a FREE App to Debloat Your Smart TV!🤯  (Hindi)](https://www.youtube.com/watch?v=mdMfkor-mvA) | 26&nbsp;Oct | 194,350 |
+| Code Bear | [Did Claude Really Ban REA? (Fact-Check)](https://www.youtube.com/watch?v=eYFiyX0ew7A) | 26&nbsp;Oct | 93,097 |
+| Coffee Now | [CleanYourTV: LG WebOS debloat your LG TV!](https://www.youtube.com/watch?v=MTZEQ_0sa5Y) | 26&nbsp;Oct | 36,701 |
+| Ceyhun Tokgezer | [Claude Code ile TV'ndeki Reklamları ve Gereksiz Uygulamaları Temizle!](https://www.youtube.com/watch?v=9WPpJeLi7Z0) | 26&nbsp;Oct | 36,604 |
+| 爱分享的老李 | [别再忍受Google TV广告了！用 AI 几行代码，把我的 ONN 4K Pro 变成“Apple TV”！（保姆级教程）](https://www.youtube.com/watch?v=v2YMR4ettHs) | 26&nbsp;Oct | 29,378 |
+| Nid Academy | [Claude Code &#124; ها كيفاش بدّلت واجهة التلفاز ديالي بالذكاء الاصطناعي](https://www.youtube.com/watch?v=H--r-EG_Q3g) | 26&nbsp;Oct | 26,857 |
+| PrivateKey AI | [Claude Code вычистил рекламу с телевизора за 15 минут](https://www.youtube.com/watch?v=ICnj1y0huac) | 26&nbsp;Oct | 24,986 |
+| Appscribed &#124; AI and How | [People Are Redesigning Their TVs With Claude Code](https://www.youtube.com/watch?v=YG4GF64-6lk) | 26&nbsp;Oct | 23,809 |
+| Techy Akki | [Smart TV Ke Ads Kaise Hataye? Sirf Phone Se, No Laptop (2026) &#124; Clean Your TV](https://www.youtube.com/watch?v=1xQ8E96bWco) | 26&nbsp;Oct | 16,741 |
 | 星海分享 | [夯爆了！Github 又出狠活神器！CleanYourTV 是 GitHub 上一个开源的电视清理项目，专门收拾电视上那些关不掉的预装应用和开机广告。](https://www.bilibili.com/video/BV1punR67E9a/) | 26&nbsp;Oct | 16,656 |
-| Techy Akki | [Smart TV Ke Ads Kaise Hataye? Sirf Phone Se, No Laptop (2026) &#124; Clean Your TV](https://www.youtube.com/watch?v=1xQ8E96bWco) | 26&nbsp;Oct | 16,452 |
-| Appscribed &#124; AI and How | [People Are Redesigning Their TVs With Claude Code](https://www.youtube.com/watch?v=YG4GF64-6lk) | 26&nbsp;Oct | 15,405 |
-| Hermann Ott &#124; KI auf Deutsch | [Fernseher ohne Werbung: Claude Code räumt deinen Smart-TV auf #shorts](https://www.youtube.com/watch?v=Pce9cwi7-5s) | 26&nbsp;Oct | 11,930 |
-| Артём Максименко — AI для бизнеса | [Что нового в мире ИИ на этой неделе?](https://www.youtube.com/watch?v=HyOmD6Xe8Cw) | 26&nbsp;Oct | 11,455 |
-| TechyMek | [I Made My Android TV FASTER With One Prompt! (Completely FREE)](https://www.youtube.com/watch?v=55a4eXQFuE0) | 26&nbsp;Oct | 10,921 |
-| Нейроотдел | [Телевизор без рекламы через Claude Code: CleanYourTV с GitHub](https://www.youtube.com/watch?v=051fTYA9Oto) | 26&nbsp;Oct | 10,344 |
-| GEEKrar | [CleanYourTV Add-ons Guide: Themes, Settings & More](https://www.youtube.com/watch?v=5jLTsunWLiw) | 26&nbsp;Oct | 9,744 |
-| Pentiminax | [Transforme ta Google TV avec cette IA (CleanYourTV)](https://www.youtube.com/watch?v=UOEXWFcc0VU) | 26&nbsp;Oct | 9,524 |
-| Viviendo en el Futuro | [CleanYourTV: cómo quitar los anuncios de tu Google TV / Android TV (gratis y open source)](https://www.youtube.com/watch?v=Sb4WNWU0NOA) | 26&nbsp;Oct | 6,656 |
-| Cerqueira Tech | [Fiz um SISTEMA NOVO na minha TV com IA e ficou muito mais RÁPIDA e INTELIGENTE! (Claude Code)](https://www.youtube.com/watch?v=46qfaPg4C-M) | 26&nbsp;Oct | 5,445 |
-| Ramzi Gößing | [Mit Clean Your TV entfernt Claude Code Werbung und vorinstallierte Apps von deinem Fernseher](https://www.youtube.com/watch?v=2vElYKfCEJI) | 26&nbsp;Oct | 2,888 |
-| Github Signals | [Clean Your TV](https://www.youtube.com/watch?v=IVkuMfIJwsY) | 26&nbsp;Oct | 2,851 |
-| Natthawut Saisamut | [เปิดทีวีทีไร เจอแต่โฆษณา วันนี้เลยล้างทิ้งให้หมด! CleanYourTV](https://www.youtube.com/watch?v=lxEKbrB88PQ) | 26&nbsp;Oct | 2,249 |
-| Marchal Mboumba | [How To Remove TV Ads & Bloatware With Claude Code](https://www.youtube.com/watch?v=QrDh7LtzD1A) | 26&nbsp;Oct | 2,109 |
-| Un Poco de Tecnología | [¡Elimina anuncios de tu TV con IA en 5 min! 📺🤖](https://www.youtube.com/watch?v=383FuZNeEPg) | 26&nbsp;Oct | 1,599 |
-| TechTippr | [Your TV Can Run a Whole New OS. Here's How!](https://www.youtube.com/watch?v=s8MWwfKJ_lc) | 26&nbsp;Oct | 1,456 |
+| Hermann Ott &#124; KI auf Deutsch | [Fernseher ohne Werbung: Claude Code räumt deinen Smart-TV auf #shorts](https://www.youtube.com/watch?v=Pce9cwi7-5s) | 26&nbsp;Oct | 12,762 |
+| TechyMek | [I Made My Android TV FASTER With One Prompt! (Completely FREE)](https://www.youtube.com/watch?v=55a4eXQFuE0) | 26&nbsp;Oct | 11,613 |
+| Артём Максименко — AI для бизнеса | [Что нового в мире ИИ на этой неделе?](https://www.youtube.com/watch?v=HyOmD6Xe8Cw) | 26&nbsp;Oct | 11,506 |
+| Нейроотдел | [Телевизор без рекламы через Claude Code: CleanYourTV с GitHub](https://www.youtube.com/watch?v=051fTYA9Oto) | 26&nbsp;Oct | 11,058 |
+| GEEKrar | [CleanYourTV Add-ons Guide: Themes, Settings & More](https://www.youtube.com/watch?v=5jLTsunWLiw) | 26&nbsp;Oct | 10,765 |
+| Pentiminax | [Transforme ta Google TV avec cette IA (CleanYourTV)](https://www.youtube.com/watch?v=UOEXWFcc0VU) | 26&nbsp;Oct | 10,306 |
+| Viviendo en el Futuro | [CleanYourTV: cómo quitar los anuncios de tu Google TV / Android TV (gratis y open source)](https://www.youtube.com/watch?v=Sb4WNWU0NOA) | 26&nbsp;Oct | 7,043 |
+| SyahZal96 | [Android TV LEMOT? Ini Cara Bikin Ngebut Pakai HP Saja!](https://www.youtube.com/watch?v=AUdCyT43wjI) | 26&nbsp;Oct | 6,733 |
+| 发肥的包子 | [Aerial TV完全解决按home 键闪现原厂桌面的问题，小米电视spro 2026测试功能一切正常。](https://www.bilibili.com/video/BV1hcno6hEJw/) | 26&nbsp;Oct | 5,710 |
+| Cerqueira Tech | [Fiz um SISTEMA NOVO na minha TV com IA e ficou muito mais RÁPIDA e INTELIGENTE! (Claude Code)](https://www.youtube.com/watch?v=46qfaPg4C-M) | 26&nbsp;Oct | 5,565 |
+| Github Signals | [Clean Your TV](https://www.youtube.com/watch?v=IVkuMfIJwsY) | 26&nbsp;Oct | 3,550 |
+| Ramzi Gößing | [Mit Clean Your TV entfernt Claude Code Werbung und vorinstallierte Apps von deinem Fernseher](https://www.youtube.com/watch?v=2vElYKfCEJI) | 26&nbsp;Oct | 3,025 |
+| Natthawut Saisamut | [เปิดทีวีทีไร เจอแต่โฆษณา วันนี้เลยล้างทิ้งให้หมด! CleanYourTV](https://www.youtube.com/watch?v=lxEKbrB88PQ) | 26&nbsp;Oct | 2,544 |
+| Marchal Mboumba | [How To Remove TV Ads & Bloatware With Claude Code](https://www.youtube.com/watch?v=QrDh7LtzD1A) | 26&nbsp;Oct | 2,297 |
+| 大鹏数智 | [两个AI接力改掉小米电视开机广告：DeepSeek卡住那步，Claude翻了系统代码](https://www.bilibili.com/video/BV1Rmn96aEEo/) | 26&nbsp;Oct | 2,264 |
+| GatoIsHacker | [Creé mi propio menú para mi Samsung con IA](https://www.youtube.com/watch?v=eh4LmB74mIk) | 26&nbsp;Oct | 2,027 |
+| Un Poco de Tecnología | [¡Elimina anuncios de tu TV con IA en 5 min! 📺🤖](https://www.youtube.com/watch?v=383FuZNeEPg) | 26&nbsp;Oct | 1,663 |
+| TechTippr | [Your TV Can Run a Whole New OS. Here's How!](https://www.youtube.com/watch?v=s8MWwfKJ_lc) | 26&nbsp;Oct | 1,563 |
+| cleanyourtv使用教程 | [【cleanyourtv使用教程】帮你电视去广告超牛开源神器保姆式安装教程](https://www.bilibili.com/video/BV18Zn96RE91/) | 26&nbsp;Oct | 1,256 |
 | 极刻推荐 | [夯到爆！CleanYourTV，一款能自动删除电视中的广告组件的开源项目，无需root和数据线，只需连同一个WiFi即可实现媲美Apple tv的极品电视。](https://www.bilibili.com/video/BV1uJn96QEEb/) | 26&nbsp;Oct | 1,185 |
-| All Gen Tech | [Why does your TV have so many ads? Here is the fix #SmartTV #Privacy](https://www.youtube.com/watch?v=nKwhbMaxH5g) | 26&nbsp;Oct | 1,160 |
-| Fushi IA | [CleanYourTV : Claude Code vire les pubs de ta télé Android TV / Google TV](https://www.youtube.com/watch?v=Z-btVdKB88U) | 26&nbsp;Oct | 1,016 |
-| Natthawut Saisamut | [เปิดทีวีทีไร เจอแต่โฆษณา  วันนี้เลยล้างทิ้งให้หมด! CleanYourTV](https://www.youtube.com/watch?v=pLjEKlLqHlY) | 26&nbsp;Oct | 897 |
-| Haidar Ali | [Claude Code just fixed the worst thing about your TV](https://www.youtube.com/watch?v=rBhVvKvGDk0) | 26&nbsp;Oct | 828 |
-| Tech Gamer Family | [Make Your Slow Android TV 10x Faster with ONE AI Prompt (No Root)](https://www.youtube.com/watch?v=J4sr1D4dc54) | 26&nbsp;Oct | 544 |
-| AI dabbler | [Wipe the Ads Off Your Android TV From Your Phone #shorts](https://www.youtube.com/watch?v=AOogkaJko7E) | 26&nbsp;Oct | 505 |
-| Свой ИИ-ассистент | [Claude Code убрал рекламу с телевизора за вечер](https://www.youtube.com/watch?v=SvbgFX9hx2U) | 26&nbsp;Oct | 469 |
-| SL Labs | [Android TV-യിലെ ads ഒക്കെ Claude കളഞ്ഞു! 4 steps, no root 📺 &#124; Mi TV + CleanYourTV](https://www.youtube.com/watch?v=pdEIWRf_Ys8) | 26&nbsp;Oct | 422 |
-| AJ TECH BLOGS | [How to Remove Ads from Android TV Using Claude Code &#124; CleanYourTV Tutorial](https://www.youtube.com/watch?v=p6oBIzy_KEI) | 26&nbsp;Oct | 420 |
-| Tokenizados - Podcast de Inteligencia Artificial | [Hackea tu tele, tu Kindle y tu aspiradora con Claude Code](https://www.youtube.com/watch?v=1XYpNW5jScs) | 26&nbsp;Oct | 399 |
-| Berozgaarkalakaar (Puneet) | [How Claude Code Cleans Android TV Bloatware (Without Root) #technews #claudecode #claude](https://www.youtube.com/watch?v=-AVRLqBZfCk) | 26&nbsp;Oct | 344 |
-| Aykut ÜÇEŞ | [Televizyonundaki reklamları Claude Code ile kapatabiliyorsun. #claudecode #yapayzeka](https://www.youtube.com/watch?v=HNU02BF9HUg) | 26&nbsp;Oct | 343 |
+| Natthawut Saisamut | [เปิดทีวีทีไร เจอแต่โฆษณา  วันนี้เลยล้างทิ้งให้หมด! CleanYourTV](https://www.youtube.com/watch?v=pLjEKlLqHlY) | 26&nbsp;Oct | 1,179 |
+| All Gen Tech | [Why does your TV have so many ads? Here is the fix #SmartTV #Privacy](https://www.youtube.com/watch?v=nKwhbMaxH5g) | 26&nbsp;Oct | 1,176 |
+| Fushi IA | [CleanYourTV : Claude Code vire les pubs de ta télé Android TV / Google TV](https://www.youtube.com/watch?v=Z-btVdKB88U) | 26&nbsp;Oct | 1,070 |
+| Haidar Ali | [Claude Code just fixed the worst thing about your TV](https://www.youtube.com/watch?v=rBhVvKvGDk0) | 26&nbsp;Oct | 909 |
+| Glitch & Go | [I Cleaned My Smart TV Using This Viral GitHub Tool (Zero Ads!, Check description)](https://www.youtube.com/watch?v=HPouM4BkKoY) | 26&nbsp;Oct | 746 |
+| SL Labs | [Android TV-യിലെ ads ഒക്കെ Claude കളഞ്ഞു! 4 steps, no root 📺 &#124; Mi TV + CleanYourTV](https://www.youtube.com/watch?v=pdEIWRf_Ys8) | 26&nbsp;Oct | 700 |
+| Tech Gamer Family | [Make Your Slow Android TV 10x Faster with ONE AI Prompt (No Root)](https://www.youtube.com/watch?v=J4sr1D4dc54) | 26&nbsp;Oct | 584 |
+| AJ TECH BLOGS | [How to Remove Ads from Android TV Using Claude Code &#124; CleanYourTV Tutorial](https://www.youtube.com/watch?v=p6oBIzy_KEI) | 26&nbsp;Oct | 536 |
+| AI dabbler | [Wipe the Ads Off Your Android TV From Your Phone #shorts](https://www.youtube.com/watch?v=AOogkaJko7E) | 26&nbsp;Oct | 514 |
+| Свой ИИ-ассистент | [Claude Code убрал рекламу с телевизора за вечер](https://www.youtube.com/watch?v=SvbgFX9hx2U) | 26&nbsp;Oct | 477 |
+| Tokenizados - Podcast de Inteligencia Artificial | [Hackea tu tele, tu Kindle y tu aspiradora con Claude Code](https://www.youtube.com/watch?v=1XYpNW5jScs) | 26&nbsp;Oct | 438 |
+| Aykut ÜÇEŞ | [Televizyonundaki reklamları Claude Code ile kapatabiliyorsun. #claudecode #yapayzeka](https://www.youtube.com/watch?v=HNU02BF9HUg) | 26&nbsp;Oct | 422 |
+| Berozgaarkalakaar (Puneet) | [How Claude Code Cleans Android TV Bloatware (Without Root) #technews #claudecode #claude](https://www.youtube.com/watch?v=-AVRLqBZfCk) | 26&nbsp;Oct | 350 |
+| Atajo IA | [La IA puede limpiar tu Android TV, pero tiene un límite](https://www.youtube.com/watch?v=A5aqaebxOm4) | 26&nbsp;Oct | 345 |
 | 盛弘科技 | [电视优化开源神器cleanyourtv，告别电视弹窗广告、清除预装广告与臃肿软件、替换极简桌面，对标AppleTV！随时可恢复原厂设置，让老电视重获流畅！](https://www.bilibili.com/video/BV1fenQ6YEgt/) | 26&nbsp;Oct | 338 |
-| Atajo IA | [La IA puede limpiar tu Android TV, pero tiene un límite](https://www.youtube.com/watch?v=A5aqaebxOm4) | 26&nbsp;Oct | 305 |
-| 罗叨叨 | [电视开机后的广告，真的能自己关掉吗？ #cleanYourTV #tvvibehack #电视去广告 #豆包 #解锁电视新功能](https://www.youtube.com/watch?v=n2bxxufIC_c) | 26&nbsp;Oct | 291 |
-| The Tech Drop | [People Are Using AI to “Fix” Their Smart TVs. Start Here First.](https://www.youtube.com/watch?v=-2jEQ1gw_vU) | 26&nbsp;Oct | 226 |
+| 罗叨叨 | [电视开机后的广告，真的能自己关掉吗？ #cleanYourTV #tvvibehack #电视去广告 #豆包 #解锁电视新功能](https://www.youtube.com/watch?v=n2bxxufIC_c) | 26&nbsp;Oct | 300 |
+| The Tech Drop | [People Are Using AI to “Fix” Their Smart TVs. Start Here First.](https://www.youtube.com/watch?v=-2jEQ1gw_vU) | 26&nbsp;Oct | 234 |
 | 脏脏朱古力_ | [真没想到国产电视也能对面Apple TV了，没有广告，界面干净整洁，他就是GitHub 上一位大神开源的cleanyourtv！](https://www.bilibili.com/video/BV1QnnZ6iEf6/) | 26&nbsp;Oct | 208 |
-| Claude Noticias | [CleanYourTV 3.0: TV sin anuncios y apps innecesarias](https://www.youtube.com/watch?v=ri3r17YcE6o) | 26&nbsp;Oct | 168 |
-| Одна кнопка — сто роликов | [Claude Code вычистил рекламу из телевизора родителей](https://www.youtube.com/watch?v=GS99mQm5Vlk) | 26&nbsp;Oct | 161 |
-| En Pixeles Media | [Quita los anuncios de tu tele con Claude Code 📺 #shorts](https://www.youtube.com/watch?v=SaOmUlAC-C0) | 26&nbsp;Oct | 132 |
+| Claude Noticias | [CleanYourTV 3.0: TV sin anuncios y apps innecesarias](https://www.youtube.com/watch?v=ri3r17YcE6o) | 26&nbsp;Oct | 175 |
+| Одна кнопка — сто роликов | [Claude Code вычистил рекламу из телевизора родителей](https://www.youtube.com/watch?v=GS99mQm5Vlk) | 26&nbsp;Oct | 165 |
+| En Pixeles Media | [Quita los anuncios de tu tele con Claude Code 📺 #shorts](https://www.youtube.com/watch?v=SaOmUlAC-C0) | 26&nbsp;Oct | 147 |
+| 爆爆668 | [1分钟学会帮父母家里老电视去除广告和没用的软件。#电视优化 #电视  #办公就用dumate #电视去广告](https://www.bilibili.com/video/BV1eDn968E7D/) | 26&nbsp;Oct | 138 |
 | Ask Nicely | [How People Are Taking the Ads Off Their TVs With Claude Code](https://www.youtube.com/watch?v=BOawxXqt1sc) | 26&nbsp;Oct | 127 |
-| jeet soni | [Android TV ke saare ads hatao, Claude Code se 📺 #Shorts](https://www.youtube.com/watch?v=I2YLT-16g7I) | 26&nbsp;Oct | 99 |
+| jeet soni | [Android TV ke saare ads hatao, Claude Code se 📺 #Shorts](https://www.youtube.com/watch?v=I2YLT-16g7I) | 26&nbsp;Oct | 108 |
 | 罗叨叨叨数码 | [电视开机后的广告，真的能自己关掉吗？](https://www.bilibili.com/video/BV1VjnZ6gE4N/) | 26&nbsp;Oct | 95 |
-| Tec_1explains | [Don’t Debloat Your Smart TV Until You See This](https://www.youtube.com/watch?v=iEKDwPjKP54) | 26&nbsp;Oct | 41 |
-| 딸깍연구소 | [아직 TV 광고 보세요? 클로드가 꺼 줍니다](https://www.youtube.com/watch?v=AAXpvWYMMf0) | 26&nbsp;Oct | 23 |
-| Beebom | [This Makes Any Android TV 10x Faster!](https://www.youtube.com/watch?v=ckw_amuisog) | 25&nbsp;Oct | 716,454 |
-| Sarcastic Sindhi | [CLAUDE AI Changed My Android TV’s Vibe! (Full Tutorial - HINDI)](https://www.youtube.com/watch?v=dCS4er4Xcjo) | 25&nbsp;Oct | 391,103 |
-| Muhamad Solahudin | [Tutorial Debloat Android TV via phone &#124; lewat HP](https://www.youtube.com/watch?v=yC0uzCdTU94) | 25&nbsp;Oct | 16,256 |
-| Code Bear | [Claude can now "Hack"  your TV!](https://www.youtube.com/watch?v=WfNAexMzn68) | 25&nbsp;Oct | 15,619 |
-| SigmaFlow AI | [People are using Claude Code to strip the ads off their TVs](https://www.youtube.com/watch?v=mli1QxgwD54) | 25&nbsp;Oct | 15,612 |
+| Tec_1explains | [Don’t Debloat Your Smart TV Until You See This](https://www.youtube.com/watch?v=iEKDwPjKP54) | 26&nbsp;Oct | 43 |
+| 딸깍연구소 | [아직 TV 광고 보세요? 클로드가 꺼 줍니다](https://www.youtube.com/watch?v=AAXpvWYMMf0) | 26&nbsp;Oct | 25 |
+| Descodificado | [IA para limpiar tu Smart TV: choca con los filtros de ciberseguridad de OpenAI y Anthropic](https://www.youtube.com/watch?v=1lhDjBJuQTA) | 26&nbsp;Oct | 14 |
+| Beebom | [This Makes Any Android TV 10x Faster!](https://www.youtube.com/watch?v=ckw_amuisog) | 25&nbsp;Oct | 752,037 |
+| Sarcastic Sindhi | [CLAUDE AI Changed My Android TV’s Vibe! (Full Tutorial - HINDI)](https://www.youtube.com/watch?v=dCS4er4Xcjo) | 25&nbsp;Oct | 407,874 |
+| fuhvgonv | [用了7年的小米电视4A，  AI去广告之后的效果一镜到底。](https://www.bilibili.com/video/BV1jcH56sEbc/) | 25&nbsp;Oct | 21,267 |
+| Muhamad Solahudin | [Tutorial Debloat Android TV via phone &#124; lewat HP](https://www.youtube.com/watch?v=yC0uzCdTU94) | 25&nbsp;Oct | 17,148 |
+| Code Bear | [Claude can now "Hack"  your TV!](https://www.youtube.com/watch?v=WfNAexMzn68) | 25&nbsp;Oct | 16,330 |
+| SigmaFlow AI | [People are using Claude Code to strip the ads off their TVs](https://www.youtube.com/watch?v=mli1QxgwD54) | 25&nbsp;Oct | 15,633 |
 | 山海之花 | [你家电视终于有救了！GitHub大佬把“cleanyourtv”做成了手机APP，一键清理Android TV预装、广告和追踪，还能随时全部恢复](https://www.bilibili.com/video/BV1ajHT6cE3V/) | 25&nbsp;Oct | 8,142 |
 | 念心小站 | [最近爆火的这两款 GitHub 开源神器CleanYourTV+Aerial，彻底净化安卓电视广告，秒变 Apple TV！](https://www.bilibili.com/video/BV1yAHV6PEyA/) | 25&nbsp;Oct | 7,867 |
-| GitTube | [cleanyourtv Tutorial — What It Is & How To Use It](https://www.youtube.com/watch?v=ltLmuMkT5go) | 25&nbsp;Oct | 4,472 |
-| Kris &#124; AI, Practically | [Claude can wipe the ads off your TV, but close this port](https://www.youtube.com/watch?v=CIWa9aJSjhE) | 25&nbsp;Oct | 4,197 |
-| Techworthy | [Remove Ads From Samsung, LG & Fire TV (Not Just Google TV)](https://www.youtube.com/watch?v=TJV4o6Cbw_A) | 25&nbsp;Oct | 4,027 |
-| Prince Gupta | [Your AI Agent Can Rip the Ads Out of Your Smart TV](https://www.youtube.com/watch?v=H7mNVMpvPKo) | 25&nbsp;Oct | 3,910 |
-| David Zedan | [How Claude Code Stripped Every Ad Off a Smart TV #SmartTV #ClaudeCode #AndroidTV #TechHacks #NoAds](https://www.youtube.com/watch?v=5bqa7CMoVTM) | 25&nbsp;Oct | 2,978 |
-| James Herr - Gamedev & Full Stack Engineer | [cleanyour.tv is so cool 🤩 #shorts](https://www.youtube.com/watch?v=cJo4c5CLBhA) | 25&nbsp;Oct | 2,756 |
-| Carlos Vaquero | [Cómo Eliminar la PUBLICIDAD de tu Smart TV y Dejarla RÁPIDA (Sin Cables ni Root)](https://www.youtube.com/watch?v=_tnk1B-aDSE) | 25&nbsp;Oct | 2,071 |
-| Rik &#124; AI & Vibecoding | [Claude Code Smart TV Hack: Ole Lehmann's 3 Steps](https://www.youtube.com/watch?v=Z09W1hztBcw) | 25&nbsp;Oct | 1,678 |
-| Electronic Secret | [CleanYourTV! Use Claude Code to Transform Your Android TV!](https://www.youtube.com/watch?v=F-m88oJxL3k) | 25&nbsp;Oct | 1,658 |
-| Eu Aprendi Na Internet | [SMART TV LENTA FICOU MELHOR QUE NOVA EM 5 MINUTOS COM CLAUDE CODE](https://www.youtube.com/watch?v=-Vrtz5u7lZ8) | 25&nbsp;Oct | 1,593 |
-| LookOnThisGit | [Debloat any Android TV straight from your phone ⚡](https://www.youtube.com/watch?v=ydwqRiVN0Nw) | 25&nbsp;Oct | 1,542 |
-| Faloe Lab | [¿Y si lo mejor para tu tele es hacerla más TONTA?](https://www.youtube.com/watch?v=-q_TJuaGnbo) | 25&nbsp;Oct | 1,408 |
-| Renato Dinis &#124; Build With AI | [The Viral Claude Code TV Cleaner Keeps Your YouTube Ads](https://www.youtube.com/watch?v=3rBilhaTGfY) | 25&nbsp;Oct | 1,280 |
-| Amine AI | [How To Claude Code Your TV (Setup + 4 Use Cases)](https://www.youtube.com/watch?v=mVazf38N7Y8) | 25&nbsp;Oct | 1,236 |
-| Shreehari Ajith | [How People Are Removing Smart TV Ads With AI](https://www.youtube.com/watch?v=xiQNOMhg8hY) | 25&nbsp;Oct | 1,194 |
+| Kris &#124; AI, Practically | [Claude can wipe the ads off your TV, but close this port](https://www.youtube.com/watch?v=CIWa9aJSjhE) | 25&nbsp;Oct | 5,050 |
+| GitTube | [cleanyourtv Tutorial — What It Is & How To Use It](https://www.youtube.com/watch?v=ltLmuMkT5go) | 25&nbsp;Oct | 4,918 |
+| Techworthy | [Remove Ads From Samsung, LG & Fire TV (Not Just Google TV)](https://www.youtube.com/watch?v=TJV4o6Cbw_A) | 25&nbsp;Oct | 4,718 |
+| Prince Gupta | [Your AI Agent Can Rip the Ads Out of Your Smart TV](https://www.youtube.com/watch?v=H7mNVMpvPKo) | 25&nbsp;Oct | 4,082 |
+| James Herr - Gamedev & Full Stack Engineer | [cleanyour.tv is so cool 🤩 #shorts](https://www.youtube.com/watch?v=cJo4c5CLBhA) | 25&nbsp;Oct | 3,180 |
+| David Zedan | [How Claude Code Stripped Every Ad Off a Smart TV #SmartTV #ClaudeCode #AndroidTV #TechHacks #NoAds](https://www.youtube.com/watch?v=5bqa7CMoVTM) | 25&nbsp;Oct | 3,174 |
+| Carlos Vaquero | [Cómo Eliminar la PUBLICIDAD de tu Smart TV y Dejarla RÁPIDA (Sin Cables ni Root)](https://www.youtube.com/watch?v=_tnk1B-aDSE) | 25&nbsp;Oct | 2,258 |
+| Electronic Secret | [CleanYourTV! Use Claude Code to Transform Your Android TV!](https://www.youtube.com/watch?v=F-m88oJxL3k) | 25&nbsp;Oct | 1,835 |
+| Rik &#124; AI & Vibecoding | [Claude Code Smart TV Hack: Ole Lehmann's 3 Steps](https://www.youtube.com/watch?v=Z09W1hztBcw) | 25&nbsp;Oct | 1,729 |
+| Eu Aprendi Na Internet | [SMART TV LENTA FICOU MELHOR QUE NOVA EM 5 MINUTOS COM CLAUDE CODE](https://www.youtube.com/watch?v=-Vrtz5u7lZ8) | 25&nbsp;Oct | 1,700 |
+| LookOnThisGit | [Debloat any Android TV straight from your phone ⚡](https://www.youtube.com/watch?v=ydwqRiVN0Nw) | 25&nbsp;Oct | 1,625 |
+| Faloe Lab | [¿Y si lo mejor para tu tele es hacerla más TONTA?](https://www.youtube.com/watch?v=-q_TJuaGnbo) | 25&nbsp;Oct | 1,598 |
+| Amine AI | [How To Claude Code Your TV (Setup + 4 Use Cases)](https://www.youtube.com/watch?v=mVazf38N7Y8) | 25&nbsp;Oct | 1,457 |
+| Renato Dinis &#124; Build With AI | [The Viral Claude Code TV Cleaner Keeps Your YouTube Ads](https://www.youtube.com/watch?v=3rBilhaTGfY) | 25&nbsp;Oct | 1,370 |
+| Shreehari Ajith | [How People Are Removing Smart TV Ads With AI](https://www.youtube.com/watch?v=xiQNOMhg8hY) | 25&nbsp;Oct | 1,203 |
 | 李鹏亮 | [怎么给电视去广告？#AI #vibecoding  #AI编程 #电视 #cleanyourtv #ai](https://www.youtube.com/watch?v=fe7rQXMLyJk) | 25&nbsp;Oct | 1,053 |
-| TechkySkills | [Before You Debloat Your TV: CleanYourTV & DumbTV Risks](https://www.youtube.com/watch?v=JjBlTjuD7zM) | 25&nbsp;Oct | 734 |
-| Myth & Machine | [How to Debloat Android Smart TV Free, No Root (Disable Bloatware Safely with ADB)](https://www.youtube.com/watch?v=mUokZxM9XVs) | 25&nbsp;Oct | 657 |
-| Online Tech Tips | [Google TV Home Screen Ads: Remove Them for Free](https://www.youtube.com/watch?v=ff4Oj_FW0QM) | 25&nbsp;Oct | 626 |
-| Viviendo en el Futuro | [CleanYourTV: adiós a los anuncios de tu Google TV o Android TV 📺](https://www.youtube.com/watch?v=tSTmto1PbEE) | 25&nbsp;Oct | 580 |
-| Hey Utsho | [Remove the ads from your Android TV with Claude Code (free repo) #claudecode #androidtv](https://www.youtube.com/watch?v=nuCLehiGU4s) | 25&nbsp;Oct | 554 |
+| 撑伞君desu | [AI爆改电视？老玩家早就这么干了](https://www.bilibili.com/video/BV1RzHG6SErN/) | 25&nbsp;Oct | 900 |
+| TechkySkills | [Before You Debloat Your TV: CleanYourTV & DumbTV Risks](https://www.youtube.com/watch?v=JjBlTjuD7zM) | 25&nbsp;Oct | 876 |
+| Myth & Machine | [How to Debloat Android Smart TV Free, No Root (Disable Bloatware Safely with ADB)](https://www.youtube.com/watch?v=mUokZxM9XVs) | 25&nbsp;Oct | 774 |
+| Online Tech Tips | [Google TV Home Screen Ads: Remove Them for Free](https://www.youtube.com/watch?v=ff4Oj_FW0QM) | 25&nbsp;Oct | 690 |
+| Viviendo en el Futuro | [CleanYourTV: adiós a los anuncios de tu Google TV o Android TV 📺](https://www.youtube.com/watch?v=tSTmto1PbEE) | 25&nbsp;Oct | 626 |
+| Hey Utsho | [Remove the ads from your Android TV with Claude Code (free repo) #claudecode #androidtv](https://www.youtube.com/watch?v=nuCLehiGU4s) | 25&nbsp;Oct | 575 |
 | 十一有数 | [我让 AI 给小米电视收拾了一下，终于想开机了](https://www.bilibili.com/video/BV1XcnS67Evt/) | 25&nbsp;Oct | 537 |
-| THE ENGINEER BHAI | [I Removed Google TV Bloat & Built My Own Home Screen!](https://www.youtube.com/watch?v=2mbucw9O1o4) | 25&nbsp;Oct | 482 |
-| GeekyLax | [He Gave Claude Control of His Parents’ TV](https://www.youtube.com/watch?v=bOcgEee6O04) | 25&nbsp;Oct | 431 |
-| TÍ AI | [Nhờ Claude AI "giải phóng" chiếc TV Xiaomi – màn hình mới, không cần biết code](https://www.youtube.com/watch?v=fkfDp24X5Mo) | 25&nbsp;Oct | 392 |
-| Rakhul Karthick | [AI News This Week: Claude Duet, Notion Agents and Claude Code Mods](https://www.youtube.com/watch?v=X1-Nlp07DFw) | 25&nbsp;Oct | 391 |
-| PaidFreeDroid | [Remove Smart TV Ads for FREE?! 🤯 No Root Needed! #Shorts](https://www.youtube.com/watch?v=xfUpbPwMByM) | 25&nbsp;Oct | 360 |
-| Chad &#124; Desk Daemon | [Repo of the Week: CleanYourTV](https://www.youtube.com/watch?v=5sGI3h00Yt8) | 25&nbsp;Oct | 331 |
+| TÍ AI | [Nhờ Claude AI "giải phóng" chiếc TV Xiaomi – màn hình mới, không cần biết code](https://www.youtube.com/watch?v=fkfDp24X5Mo) | 25&nbsp;Oct | 517 |
+| THE ENGINEER BHAI | [I Removed Google TV Bloat & Built My Own Home Screen!](https://www.youtube.com/watch?v=2mbucw9O1o4) | 25&nbsp;Oct | 485 |
+| GeekyLax | [He Gave Claude Control of His Parents’ TV](https://www.youtube.com/watch?v=bOcgEee6O04) | 25&nbsp;Oct | 471 |
+| Rakhul Karthick | [AI News This Week: Claude Duet, Notion Agents and Claude Code Mods](https://www.youtube.com/watch?v=X1-Nlp07DFw) | 25&nbsp;Oct | 450 |
+| PaidFreeDroid | [Remove Smart TV Ads for FREE?! 🤯 No Root Needed! #Shorts](https://www.youtube.com/watch?v=xfUpbPwMByM) | 25&nbsp;Oct | 388 |
+| Chad &#124; Desk Daemon | [Repo of the Week: CleanYourTV](https://www.youtube.com/watch?v=5sGI3h00Yt8) | 25&nbsp;Oct | 339 |
 | You Invented That | [AI Made Smart TVs Dumb Again](https://www.youtube.com/watch?v=IuBZKzZfkkc) | 25&nbsp;Oct | 296 |
+| RepoExplained | [Clean the Ads Off Your Smart TV With One Open-Source Repo (Clean Your TV)](https://www.youtube.com/watch?v=MVFWtqzVSfI) | 25&nbsp;Oct | 231 |
 | 一键知源 | [老旧电视满血复活！开源神器 CleanYourTV，支持手机直接操作，免 Root 免刷机，清掉开机广告和预装应用，一键安装第三方应用](https://www.bilibili.com/video/BV1zyHu6SEkc/) | 25&nbsp;Oct | 210 |
 | AI on the go | [Dùng Claude Code gỡ quảng cáo khỏi TV của bố mẹ #Shorts](https://www.youtube.com/watch?v=ZWAxKD_e8-A) | 25&nbsp;Oct | 201 |
-| RepoExplained | [Clean the Ads Off Your Smart TV With One Open-Source Repo (Clean Your TV)](https://www.youtube.com/watch?v=MVFWtqzVSfI) | 25&nbsp;Oct | 188 |
-| Morten Steensgaard | [Forslag: what's on your streaming services, on one Android TV screen (CleanYourTV add-on)](https://www.youtube.com/watch?v=KY-__0FU64A) | 25&nbsp;Oct | 133 |
-| GitNova | [Remove the ads from your Android TV over Wi-Fi (open source) #Shorts](https://www.youtube.com/watch?v=JehrbMp0nsw) | 25&nbsp;Oct | 127 |
-| RepoExplained | [Clean the Ads Off Your Smart TV 📺 (free, open source) #shorts](https://www.youtube.com/watch?v=C7ByxDlm10U) | 25&nbsp;Oct | 102 |
-| SmartAiHub | [Claude Code TV: it switched off 25 apps. Will it work on your TV? #ClaudeCode #SmartTV #AI](https://www.youtube.com/watch?v=luRi-TrfvOs) | 25&nbsp;Oct | 95 |
-| Fascinating facts | [Why Your $1,000 Smart TV Still Lags](https://www.youtube.com/watch?v=n0IKUnx6WIU) | 25&nbsp;Oct | 86 |
-| KEYKEY TV | [How AI Vibe Coding Is Stripping Intrusive Ads Off Smart TVs! &#124; People are vibe coding thei](https://www.youtube.com/watch?v=gHZakf1Fyqs) | 25&nbsp;Oct | 85 |
-| Hallucination Station | [I Reverse-Engineered My Fridge - Claude Opus 5.5 Music Video](https://www.youtube.com/watch?v=xx-VxMhXJCo) | 25&nbsp;Oct | 22 |
+| 粉粉小安 | [【第四期】电视优化开源工具！禁用系统广告、清理各种预装软件、替换超轻量桌面，支持超多款电视机型！老电视机也能重获流畅体验！](https://www.bilibili.com/video/BV1HgHL6ME27/) | 25&nbsp;Oct | 190 |
+| Morten Steensgaard | [Forslag: what's on your streaming services, on one Android TV screen (CleanYourTV add-on)](https://www.youtube.com/watch?v=KY-__0FU64A) | 25&nbsp;Oct | 157 |
+| GitNova | [Remove the ads from your Android TV over Wi-Fi (open source) #Shorts](https://www.youtube.com/watch?v=JehrbMp0nsw) | 25&nbsp;Oct | 130 |
+| RepoExplained | [Clean the Ads Off Your Smart TV 📺 (free, open source) #shorts](https://www.youtube.com/watch?v=C7ByxDlm10U) | 25&nbsp;Oct | 105 |
+| SmartAiHub | [Claude Code TV: it switched off 25 apps. Will it work on your TV? #ClaudeCode #SmartTV #AI](https://www.youtube.com/watch?v=luRi-TrfvOs) | 25&nbsp;Oct | 102 |
+| KEYKEY TV | [How AI Vibe Coding Is Stripping Intrusive Ads Off Smart TVs! &#124; People are vibe coding thei](https://www.youtube.com/watch?v=gHZakf1Fyqs) | 25&nbsp;Oct | 95 |
+| Fascinating facts | [Why Your $1,000 Smart TV Still Lags](https://www.youtube.com/watch?v=n0IKUnx6WIU) | 25&nbsp;Oct | 89 |
+| GitNova | [GitHub Trending Oct 25: +80% BF16 on RTX 3090 Ti, ad-free Android TV, Cloudflare AI auditor](https://www.youtube.com/watch?v=M6qgXoZfG70) | 25&nbsp;Oct | 33 |
+| Hallucination Station | [I Reverse-Engineered My Fridge - Claude Opus 5.5 Music Video](https://www.youtube.com/watch?v=xx-VxMhXJCo) | 25&nbsp;Oct | 23 |
+| NewsDrop KR | [내 돈 주고 산 스마트TV인데, 광고 봐야해? AI로 싹 지웠다](https://www.youtube.com/watch?v=75OVt7HxcCE) | 25&nbsp;Oct | 4 |
 | Casey Garcia | [CleanYourTV is an open-source TV cleaning tool designed to remove unwanted pre-installed application](https://www.youtube.com/watch?v=27mu7l8Eesc) | 25&nbsp;Oct | 2 |
 | BETHEMA | [Why People Are Using AI to Take Back Their TVs](https://www.youtube.com/watch?v=tm2qLCnfiHA) | 25&nbsp;Oct | 2 |
-| Nick Automates | [Remove all Ads and Bloatware Apps from your TV With Claude Code and this Github Repo](https://www.youtube.com/watch?v=-s8wFpNUd9Y) | 24&nbsp;Oct | 450,474 |
-| Evakdo | [O que ninguém te conta sobre otimizar sua TV com IA](https://www.youtube.com/watch?v=v13KTYfH-3k) | 24&nbsp;Oct | 213,236 |
-| Andhika Yudha | [Cara Debloat Android TV / Box / Stick / STB pakai Ai Gratis, Ganti Launcher Apple TV](https://www.youtube.com/watch?v=NoSi2layd2w) | 24&nbsp;Oct | 118,219 |
-| Gizmoddict | [Remove Ads and Bloatware from Your Android TV/Firestick for FREE!](https://www.youtube.com/watch?v=6I6wzCDz2Cc) | 24&nbsp;Oct | 101,290 |
-| Macks Wendhell I Inteligência Aplicada | [O Claude deixou minha TV velha parecendo nova](https://www.youtube.com/watch?v=_QDhmmKB530) | 24&nbsp;Oct | 69,087 |
-| Luis Saucedo | [Adiós anuncios en Android TV: limpié mi TCL con Claude Code y ganó +56 % de RAM](https://www.youtube.com/watch?v=FLTld9RAL5Q) | 24&nbsp;Oct | 13,618 |
-| Sumit Paul | [How to Remove Ads from Android TV (No Root) with Claude Code](https://www.youtube.com/watch?v=uI3Ah3U-YpU) | 24&nbsp;Oct | 11,407 |
+| Nick Automates | [Remove all Ads and Bloatware Apps from your TV With Claude Code and this Github Repo](https://www.youtube.com/watch?v=-s8wFpNUd9Y) | 24&nbsp;Oct | 473,426 |
+| Evakdo | [O que ninguém te conta sobre otimizar sua TV com IA](https://www.youtube.com/watch?v=v13KTYfH-3k) | 24&nbsp;Oct | 248,249 |
+| Andhika Yudha | [Cara Debloat Android TV / Box / Stick / STB pakai Ai Gratis, Ganti Launcher Apple TV](https://www.youtube.com/watch?v=NoSi2layd2w) | 24&nbsp;Oct | 123,590 |
+| Gizmoddict | [Remove Ads and Bloatware from Your Android TV/Firestick for FREE!](https://www.youtube.com/watch?v=6I6wzCDz2Cc) | 24&nbsp;Oct | 106,816 |
+| Macks Wendhell I Inteligência Aplicada | [O Claude deixou minha TV velha parecendo nova](https://www.youtube.com/watch?v=_QDhmmKB530) | 24&nbsp;Oct | 70,214 |
+| 风清残豆 | [小米电视   deepseek harness教你焕然一新！](https://www.bilibili.com/video/BV1VgHN6tEf5/) | 24&nbsp;Oct | 21,065 |
+| Luis Saucedo | [Adiós anuncios en Android TV: limpié mi TCL con Claude Code y ganó +56 % de RAM](https://www.youtube.com/watch?v=FLTld9RAL5Q) | 24&nbsp;Oct | 15,228 |
+| Sumit Paul | [How to Remove Ads from Android TV (No Root) with Claude Code](https://www.youtube.com/watch?v=uI3Ah3U-YpU) | 24&nbsp;Oct | 12,260 |
 | 轩歌科技站 | [安装CleanYourTV+Aerial一键优化电视，替换桌面home，精简无用程序，打造纯净桌面，清爽大屏！](https://www.bilibili.com/video/BV1pTHP66EVs/) | 24&nbsp;Oct | 8,120 |
-| Chris Waite | [❌ WARNING: Watch This Video Before Letting AI De-bloat Your Google TV ❌](https://www.youtube.com/watch?v=VZZNbh8gTYI) | 24&nbsp;Oct | 6,973 |
-| Secretofnet | [هل الذكاء الاصطناعي ينظف تلفازك فعلاً؟ 🤯 الحقيقة وراء CleanYourTV!](https://www.youtube.com/watch?v=JzyBG_pnJcQ) | 24&nbsp;Oct | 6,567 |
-| Shafa' Rizky Fandestika | [Membersihkan Home Screen Android/Google TV dari Iklan dan Bloatware Menggunakan CleanYourTV](https://www.youtube.com/watch?v=sf6d903J5OY) | 24&nbsp;Oct | 5,243 |
-| OpenSoft | [CleanYourTV: Declutter Your Android TV Over Wi-Fi](https://www.youtube.com/watch?v=wJTx6k13V68) | 24&nbsp;Oct | 3,984 |
-| CharlixAI | [Claude Code Can Remove Ads From Your Smart TV 🤯📺](https://www.youtube.com/watch?v=m7ZQc2z-W60) | 24&nbsp;Oct | 3,371 |
+| Chris Waite | [❌ WARNING: Watch This Video Before Letting AI De-bloat Your Google TV ❌](https://www.youtube.com/watch?v=VZZNbh8gTYI) | 24&nbsp;Oct | 7,641 |
+| Shafa' Rizky Fandestika | [Membersihkan Home Screen Android/Google TV dari Iklan dan Bloatware Menggunakan CleanYourTV](https://www.youtube.com/watch?v=sf6d903J5OY) | 24&nbsp;Oct | 7,442 |
+| Secretofnet | [هل الذكاء الاصطناعي ينظف تلفازك فعلاً؟ 🤯 الحقيقة وراء CleanYourTV!](https://www.youtube.com/watch?v=JzyBG_pnJcQ) | 24&nbsp;Oct | 6,836 |
+| OpenSoft | [CleanYourTV: Declutter Your Android TV Over Wi-Fi](https://www.youtube.com/watch?v=wJTx6k13V68) | 24&nbsp;Oct | 4,250 |
+| CharlixAI | [Claude Code Can Remove Ads From Your Smart TV 🤯📺](https://www.youtube.com/watch?v=m7ZQc2z-W60) | 24&nbsp;Oct | 3,543 |
+| КиберПоток &#124; ИИ & Нейросети | [Люди делают умные ТВ тупыми обратно через Claude Code #ИИ #Claude #SmartTV #нейросети #КиберПоток](https://www.youtube.com/watch?v=0oIInH8G3xw) | 24&nbsp;Oct | 3,210 |
 | 青临同学 | [来自民间大佬制作APP，Github上爆火的电视优化开源工具，CleanYour TV终于有了APP版，不用AI、不用电脑，禁用系统广告，清理预装软件](https://www.bilibili.com/video/BV1wLHM6DExS/) | 24&nbsp;Oct | 2,998 |
-| КиберПоток &#124; ИИ & Нейросети | [Люди делают умные ТВ тупыми обратно через Claude Code #ИИ #Claude #SmartTV #нейросети #КиберПоток](https://www.youtube.com/watch?v=0oIInH8G3xw) | 24&nbsp;Oct | 2,948 |
-| Xouryn Signal | [This GitHub Repo Removes all Ads and Bloatware Apps from your TV](https://www.youtube.com/watch?v=XYv9oTTKMFQ) | 24&nbsp;Oct | 1,895 |
-| Andy Caseres &#124; IA + Tech | [Smart TV SIN ANUNCIOS usando IA](https://www.youtube.com/watch?v=-DtSozDzL0g) | 24&nbsp;Oct | 1,882 |
-| 老陈打分 | [電視開機全是廣告？GitHub 3 個開源神器，交給 AI 一鍵清乾淨 #ai工具 #github#去广告](https://www.youtube.com/watch?v=QbWXUeXteFs) | 24&nbsp;Oct | 1,743 |
-| TechLab Daily | [Claude Code Can Remove Ads From Your Smart TV! 😱](https://www.youtube.com/watch?v=KZiNfi82_wc) | 24&nbsp;Oct | 1,700 |
-| 沐言 | [【8期】Clean your TV：一键清掉安卓电视广告 #CleanYourTV教程 #优化电视 #电视去广告](https://www.youtube.com/watch?v=eU4RAEpHSbk) | 24&nbsp;Oct | 1,162 |
-| Indiana Tempié | [CleanYourTV : ta télé Android sans pubs, nettoyée par l'IA](https://www.youtube.com/watch?v=k9N2ndZ33CI) | 24&nbsp;Oct | 1,043 |
-| FutureScope Telugu | [AI తో Smart TV Ads తీసేశారు! కానీ ఇది Hacking కాదు &#124; Claude Code & AI Reverse Engineering Telugu](https://www.youtube.com/watch?v=jNh4TowXJk8) | 24&nbsp;Oct | 987 |
-| Money Meets Tech | [People Are Using AI to Remove Ads From Their Smart TVs 📺 #Shorts](https://www.youtube.com/watch?v=5J-BBgtDMFE) | 24&nbsp;Oct | 974 |
-| Вайбкод &#124; Claude Code и ИИ-агенты | [Claude убрал рекламу с телевизора родителей](https://www.youtube.com/watch?v=DnrIDUtv8YU) | 24&nbsp;Oct | 894 |
-| JohnyTechReview | [Sony X90CH Customization: Remove Bloat & Try a New Home Screen](https://www.youtube.com/watch?v=9YpOOYS4yvw) | 24&nbsp;Oct | 698 |
-| 猴哥 | [电视广告太烦？用AI给电视减负！换干净桌面可还原，不用Root也能搞定！#电视直播 #电视点播 #电视应用 #电视软件](https://www.youtube.com/watch?v=At1lLwg_CsI) | 24&nbsp;Oct | 583 |
-| Mani Tech | [📺🔥 Remove Ads from Android TV & Get an Apple TV-Style Experience!](https://www.youtube.com/watch?v=FXyvYdLXvhk) | 24&nbsp;Oct | 473 |
-| Yevheniya | [How to Remove the Ads From Your TV With Claude for Free](https://www.youtube.com/watch?v=YIYQMJn4D4g) | 24&nbsp;Oct | 471 |
+| Xouryn Signal | [This GitHub Repo Removes all Ads and Bloatware Apps from your TV](https://www.youtube.com/watch?v=XYv9oTTKMFQ) | 24&nbsp;Oct | 2,129 |
+| Andy Caseres &#124; IA + Tech | [Smart TV SIN ANUNCIOS usando IA](https://www.youtube.com/watch?v=-DtSozDzL0g) | 24&nbsp;Oct | 1,993 |
+| 老陈打分 | [電視開機全是廣告？GitHub 3 個開源神器，交給 AI 一鍵清乾淨 #ai工具 #github#去广告](https://www.youtube.com/watch?v=QbWXUeXteFs) | 24&nbsp;Oct | 1,779 |
+| TechLab Daily | [Claude Code Can Remove Ads From Your Smart TV! 😱](https://www.youtube.com/watch?v=KZiNfi82_wc) | 24&nbsp;Oct | 1,711 |
+| 沐言 | [【8期】Clean your TV：一键清掉安卓电视广告 #CleanYourTV教程 #优化电视 #电视去广告](https://www.youtube.com/watch?v=eU4RAEpHSbk) | 24&nbsp;Oct | 1,405 |
+| Indiana Tempié | [CleanYourTV : ta télé Android sans pubs, nettoyée par l'IA](https://www.youtube.com/watch?v=k9N2ndZ33CI) | 24&nbsp;Oct | 1,129 |
+| FutureScope Telugu | [AI తో Smart TV Ads తీసేశారు! కానీ ఇది Hacking కాదు &#124; Claude Code & AI Reverse Engineering Telugu](https://www.youtube.com/watch?v=jNh4TowXJk8) | 24&nbsp;Oct | 991 |
+| Money Meets Tech | [People Are Using AI to Remove Ads From Their Smart TVs 📺 #Shorts](https://www.youtube.com/watch?v=5J-BBgtDMFE) | 24&nbsp;Oct | 975 |
+| Вайбкод &#124; Claude Code и ИИ-агенты | [Claude убрал рекламу с телевизора родителей](https://www.youtube.com/watch?v=DnrIDUtv8YU) | 24&nbsp;Oct | 929 |
+| JohnyTechReview | [Sony X90CH Customization: Remove Bloat & Try a New Home Screen](https://www.youtube.com/watch?v=9YpOOYS4yvw) | 24&nbsp;Oct | 738 |
+| 猴哥 | [电视广告太烦？用AI给电视减负！换干净桌面可还原，不用Root也能搞定！#电视直播 #电视点播 #电视应用 #电视软件](https://www.youtube.com/watch?v=At1lLwg_CsI) | 24&nbsp;Oct | 597 |
+| Mani Tech | [📺🔥 Remove Ads from Android TV & Get an Apple TV-Style Experience!](https://www.youtube.com/watch?v=FXyvYdLXvhk) | 24&nbsp;Oct | 534 |
+| Yevheniya | [How to Remove the Ads From Your TV With Claude for Free](https://www.youtube.com/watch?v=YIYQMJn4D4g) | 24&nbsp;Oct | 478 |
+| 人民资讯 | [最近AI改安卓电视桌面火啦！你改了吗！？去广告更简洁！](https://www.bilibili.com/video/BV1deHM6BExe/) | 24&nbsp;Oct | 434 |
 | 孤独なプログラマー | [【AIでテレビの広告を消す】Claude Codeの草の根ブームとDumbTVをやさしく解説・あなたの家電も作り替え](https://www.youtube.com/watch?v=q2igeTRx-CY) | 24&nbsp;Oct | 362 |
-| Zapwise | [Google TV Ads? Claude Code Can Remove Them 📺](https://www.youtube.com/watch?v=78oSTAliqX0) | 24&nbsp;Oct | 298 |
-| Vibe DevOps | [098 — Dọn rác TV TCL bằng AI: tắt app & quảng cáo qua ADB, không cần root #Shorts](https://www.youtube.com/watch?v=DVzkyVBo-wc) | 24&nbsp;Oct | 243 |
-| Anylancer | [Claude Code Removed This TV's Ads (Here's the Catch)](https://www.youtube.com/watch?v=F2b0QYLZGeQ) | 24&nbsp;Oct | 223 |
-| AI Trend Brief | [How to delete your TV's bloatware with Claude AI 📺🤖 #ClaudeCode #AndroidTV #SmartTV](https://www.youtube.com/watch?v=OIwW6IUkOgI) | 24&nbsp;Oct | 212 |
-| 辰星說Github | [本週新建開源專案星數 TOP 5：AI 幫你把電視清乾淨、DeepSeek 推論引擎開源｜GitHub 新星週報 #3](https://www.youtube.com/watch?v=s2c5wKWUtw8) | 24&nbsp;Oct | 192 |
-| TheOneAndOnlyW3azle | [Smart-TV Detox: Werbefrei & 3x schneller per ADB & KI-Agent (Ohne Root)](https://www.youtube.com/watch?v=pFOFXJsdi1o) | 24&nbsp;Oct | 177 |
-| TECH NOW & NEXT | [CleanYourTV: How ADB Over Wi-Fi Cured My Smart TV's 1.2GB RAM Drain](https://www.youtube.com/watch?v=50KDUb_o3n8) | 24&nbsp;Oct | 174 |
+| 辰星說Github | [本週新建開源專案星數 TOP 5：AI 幫你把電視清乾淨、DeepSeek 推論引擎開源｜GitHub 新星週報 #3](https://www.youtube.com/watch?v=s2c5wKWUtw8) | 24&nbsp;Oct | 311 |
+| Zapwise | [Google TV Ads? Claude Code Can Remove Them 📺](https://www.youtube.com/watch?v=78oSTAliqX0) | 24&nbsp;Oct | 301 |
+| Vibe DevOps | [098 — Dọn rác TV TCL bằng AI: tắt app & quảng cáo qua ADB, không cần root #Shorts](https://www.youtube.com/watch?v=DVzkyVBo-wc) | 24&nbsp;Oct | 258 |
+| Anylancer | [Claude Code Removed This TV's Ads (Here's the Catch)](https://www.youtube.com/watch?v=F2b0QYLZGeQ) | 24&nbsp;Oct | 230 |
+| AI Trend Brief | [How to delete your TV's bloatware with Claude AI 📺🤖 #ClaudeCode #AndroidTV #SmartTV](https://www.youtube.com/watch?v=OIwW6IUkOgI) | 24&nbsp;Oct | 225 |
+| TheOneAndOnlyW3azle | [Smart-TV Detox: Werbefrei & 3x schneller per ADB & KI-Agent (Ohne Root)](https://www.youtube.com/watch?v=pFOFXJsdi1o) | 24&nbsp;Oct | 190 |
+| TECH NOW & NEXT | [CleanYourTV: How ADB Over Wi-Fi Cured My Smart TV's 1.2GB RAM Drain](https://www.youtube.com/watch?v=50KDUb_o3n8) | 24&nbsp;Oct | 188 |
 | MYTHRIG | [Ludzie każą AI ZHAKOWAĆ telewizor. Reklamy znikają](https://www.youtube.com/watch?v=V_jDfEuJKnw) | 24&nbsp;Oct | 170 |
+| KAVUN | [kavunOS Kurulumu: Xiaomi Mi TV Stick’i 2–3 Kat Hızlandırın (Adım Adım)](https://www.youtube.com/watch?v=Gy8BThr06KA) | 24&nbsp;Oct | 157 |
 | 骋风算力 | [开源工具 CleanYourTV，一键清除电视开机广告](https://www.bilibili.com/video/BV15Bn469Epx/) | 24&nbsp;Oct | 156 |
-| Dervonte &#124; AI WIRE | [Remove Android TV Home-Screen Ads with CleanYourTV](https://www.youtube.com/watch?v=s3UwXXlpiMU) | 24&nbsp;Oct | 149 |
-| KAVUN | [kavunOS Kurulumu: Xiaomi Mi TV Stick’i 2–3 Kat Hızlandırın (Adım Adım)](https://www.youtube.com/watch?v=Gy8BThr06KA) | 24&nbsp;Oct | 133 |
-| NINA BRIEF | [Vibe Coding ทีวี เทรนด์ผู้ใช้ AI ลบโฆษณาและปรับแต่งหน้าจอสมาร์ททีวี](https://www.youtube.com/watch?v=9poLR415DTQ) | 24&nbsp;Oct | 30 |
+| Dervonte &#124; AI WIRE | [Remove Android TV Home-Screen Ads with CleanYourTV](https://www.youtube.com/watch?v=s3UwXXlpiMU) | 24&nbsp;Oct | 153 |
+| NINA BRIEF | [Vibe Coding ทีวี เทรนด์ผู้ใช้ AI ลบโฆษณาและปรับแต่งหน้าจอสมาร์ททีวี](https://www.youtube.com/watch?v=9poLR415DTQ) | 24&nbsp;Oct | 43 |
 | Kadoook | [Refine , Rebuilt with CleanyourTV](https://www.youtube.com/watch?v=BGrDGGghryU) | 24&nbsp;Oct | 21 |
-| AI mit Arnie | [Claude hat meinen Fernseher wie neu gemacht](https://www.youtube.com/watch?v=MM3Y2NKoUxY) | 23&nbsp;Oct | 136,740 |
-| Paul J Lipsky | [AI News: Claude Duet Crushes; Amazing Grok Bot Updates; and NotebookLM Upgrade](https://www.youtube.com/watch?v=vDYqh1FGrgQ) | 23&nbsp;Oct | 136,052 |
-| The Next New Thing | [Copy viral videos, change your TV’s OS, free MailChimp and all the top repos](https://www.youtube.com/watch?v=BrBQRNIDRS8) | 23&nbsp;Oct | 79,512 |
-| Gostavo | [DEIXEI MINHA ANDROID TV MAIS RÁPIDA COM IA! Sem root](https://www.youtube.com/watch?v=-jM_fb4e-IY) | 23&nbsp;Oct | 74,229 |
-| 1995 VLOG | [Tôi Dùng CleanTV và Claude AI "Lột Xác" Chiếc Android TV Củ Mượt Như Mới:  Quá Ngỡ Ngàng!](https://www.youtube.com/watch?v=risNojDx6hA) | 23&nbsp;Oct | 24,777 |
-| متعلم - MOTALIM | [من تلفزيون مليء بالإعلانات إلى شاشة عربية إسلامية… بمحادثة مع Claude](https://www.youtube.com/watch?v=fjzb5xZlENE) | 23&nbsp;Oct | 11,891 |
-| Bhupesh Thukral | [Claude Code Removed Every Ad From This Mi TV](https://www.youtube.com/watch?v=jG0KItNP68E) | 23&nbsp;Oct | 5,996 |
+| AI mit Arnie | [Claude hat meinen Fernseher wie neu gemacht](https://www.youtube.com/watch?v=MM3Y2NKoUxY) | 23&nbsp;Oct | 144,912 |
+| Paul J Lipsky | [AI News: Claude Duet Crushes; Amazing Grok Bot Updates; and NotebookLM Upgrade](https://www.youtube.com/watch?v=vDYqh1FGrgQ) | 23&nbsp;Oct | 136,958 |
+| The Next New Thing | [Copy viral videos, change your TV’s OS, free MailChimp and all the top repos](https://www.youtube.com/watch?v=BrBQRNIDRS8) | 23&nbsp;Oct | 82,020 |
+| Gostavo | [DEIXEI MINHA ANDROID TV MAIS RÁPIDA COM IA! Sem root](https://www.youtube.com/watch?v=-jM_fb4e-IY) | 23&nbsp;Oct | 78,969 |
+| 1995 VLOG | [Tôi Dùng CleanTV và Claude AI "Lột Xác" Chiếc Android TV Củ Mượt Như Mới:  Quá Ngỡ Ngàng!](https://www.youtube.com/watch?v=risNojDx6hA) | 23&nbsp;Oct | 25,586 |
+| 发肥的包子 | [还在部署cleanyourtv吗？我选择用aerial tv！](https://www.bilibili.com/video/BV1Tdn46GEkX/) | 23&nbsp;Oct | 16,985 |
+| متعلم - MOTALIM | [من تلفزيون مليء بالإعلانات إلى شاشة عربية إسلامية… بمحادثة مع Claude](https://www.youtube.com/watch?v=fjzb5xZlENE) | 23&nbsp;Oct | 12,437 |
+| 发肥的包子 | [Aerial TV的部署教程，听一遍就会，有手就行！](https://www.bilibili.com/video/BV1h9nb6HEPS/) | 23&nbsp;Oct | 11,222 |
+| Bhupesh Thukral | [Claude Code Removed Every Ad From This Mi TV](https://www.youtube.com/watch?v=jG0KItNP68E) | 23&nbsp;Oct | 6,536 |
+| Presto | [Samsung, LG, Google TV and Fire TV. Here's the free, open source tool that gets the ads off yours.](https://www.youtube.com/watch?v=Pho1RgNRFa0) | 23&nbsp;Oct | 6,126 |
 | 码聋 | [clean your tv，一键清理你的电视系统自带应用，打造极简数字人生](https://www.bilibili.com/video/BV1b3n46GEzC/) | 23&nbsp;Oct | 5,825 |
-| Presto | [Samsung, LG, Google TV and Fire TV. Here's the free, open source tool that gets the ads off yours.](https://www.youtube.com/watch?v=Pho1RgNRFa0) | 23&nbsp;Oct | 5,374 |
-| PrompTactic | [Developer used claude code to hack his tv into an ad-free apple tv? 🤯](https://www.youtube.com/watch?v=JZJxxo_OLQ0) | 23&nbsp;Oct | 5,366 |
-| GSM Fix | [Clean Up Sony Android TV! Remove Ads & Bloatware Using Your Phone](https://www.youtube.com/watch?v=cvsUNGdzPKc) | 23&nbsp;Oct | 4,888 |
-| Alex Hitt | [CleanYourTV GitHub Overview: Reversible Android TV Debloating Over Wi-Fi](https://www.youtube.com/watch?v=LhY7uQqIbUE) | 23&nbsp;Oct | 4,776 |
-| Le Bretzel | [Actus IA : ChatGPT permet enfin de VERROUILLER vos conversations ! (+ Claude, Google, Mistral…)](https://www.youtube.com/watch?v=b4rR5VJvY8Y) | 23&nbsp;Oct | 4,041 |
-| Beeknoee AI | [Claude Code "đột nhập" TV qua Wi-Fi, xoá sạch quảng cáo: 20K sao sau 5 ngày  #ai](https://www.youtube.com/watch?v=-yPL8r6I-zA) | 23&nbsp;Oct | 2,783 |
-| git.clipper | [Clean Android TVs over Wi-Fi in one line.](https://www.youtube.com/watch?v=48kspaAlMZc) | 23&nbsp;Oct | 2,297 |
-| Daily Tool Discovery | [CleanYourTV: Debloat Android TV over Wi-Fi #Shorts](https://www.youtube.com/watch?v=utbAfMd_ORI) | 23&nbsp;Oct | 2,140 |
-| Indian Sensei | [OneplusTV home screen cleaned Github Free Repo.#oneplustv #androidtv #cleanyourtv #shorts](https://www.youtube.com/watch?v=wtsMqsLl1KY) | 23&nbsp;Oct | 1,535 |
-| Honest Output | [Claude Code removed 25 apps from a smart TV](https://www.youtube.com/watch?v=w6G7ASxt0ng) | 23&nbsp;Oct | 1,521 |
-| Fanko AI範式 | [800 萬人看過的 AI 用法：不會寫程式，也能叫 AI 把電視廣告清掉](https://www.youtube.com/watch?v=6lxr1yESHhE) | 23&nbsp;Oct | 1,397 |
-| The Builder Mindset | [I Turned My Bloated Google TV Into an Apple TV (For Free, With AI)](https://www.youtube.com/watch?v=a7_451PqEQ0) | 23&nbsp;Oct | 1,232 |
+| PrompTactic | [Developer used claude code to hack his tv into an ad-free apple tv? 🤯](https://www.youtube.com/watch?v=JZJxxo_OLQ0) | 23&nbsp;Oct | 5,679 |
+| GSM Fix | [Clean Up Sony Android TV! Remove Ads & Bloatware Using Your Phone](https://www.youtube.com/watch?v=cvsUNGdzPKc) | 23&nbsp;Oct | 5,189 |
+| Alex Hitt | [CleanYourTV GitHub Overview: Reversible Android TV Debloating Over Wi-Fi](https://www.youtube.com/watch?v=LhY7uQqIbUE) | 23&nbsp;Oct | 5,122 |
+| Le Bretzel | [Actus IA : ChatGPT permet enfin de VERROUILLER vos conversations ! (+ Claude, Google, Mistral…)](https://www.youtube.com/watch?v=b4rR5VJvY8Y) | 23&nbsp;Oct | 4,115 |
+| Beeknoee AI | [Claude Code "đột nhập" TV qua Wi-Fi, xoá sạch quảng cáo: 20K sao sau 5 ngày  #ai](https://www.youtube.com/watch?v=-yPL8r6I-zA) | 23&nbsp;Oct | 2,897 |
+| git.clipper | [Clean Android TVs over Wi-Fi in one line.](https://www.youtube.com/watch?v=48kspaAlMZc) | 23&nbsp;Oct | 2,313 |
+| Daily Tool Discovery | [CleanYourTV: Debloat Android TV over Wi-Fi #Shorts](https://www.youtube.com/watch?v=utbAfMd_ORI) | 23&nbsp;Oct | 2,224 |
+| Indian Sensei | [OneplusTV home screen cleaned Github Free Repo.#oneplustv #androidtv #cleanyourtv #shorts](https://www.youtube.com/watch?v=wtsMqsLl1KY) | 23&nbsp;Oct | 1,736 |
+| The Builder Mindset | [I Turned My Bloated Google TV Into an Apple TV (For Free, With AI)](https://www.youtube.com/watch?v=a7_451PqEQ0) | 23&nbsp;Oct | 1,665 |
+| Honest Output | [Claude Code removed 25 apps from a smart TV](https://www.youtube.com/watch?v=w6G7ASxt0ng) | 23&nbsp;Oct | 1,560 |
+| Fanko AI範式 | [800 萬人看過的 AI 用法：不會寫程式，也能叫 AI 把電視廣告清掉](https://www.youtube.com/watch?v=6lxr1yESHhE) | 23&nbsp;Oct | 1,418 |
 | Simracing1ionxD | [AI 全程编写！透明 Dock + 扫码传文件 + 自动装应用，这台电视被我改造成这样](https://www.bilibili.com/video/BV1PDnp6FEd4/) | 23&nbsp;Oct | 1,102 |
-| 오늘 뜬 레포 | [부모님 TV인데, 애플TV가 됩니다 &#124; cleanyourtv](https://www.youtube.com/watch?v=8FVYLpw_h6s) | 23&nbsp;Oct | 1,021 |
+| 李白 AI 创造营 | [电视首页全是广告？不用刷机的开源解法](https://www.youtube.com/watch?v=ujFtiedeOrc) | 23&nbsp;Oct | 1,058 |
+| 오늘 뜬 레포 | [부모님 TV인데, 애플TV가 됩니다 &#124; cleanyourtv](https://www.youtube.com/watch?v=8FVYLpw_h6s) | 23&nbsp;Oct | 1,024 |
 | 生产力助手 | [CleanYourTV电视去广告教程](https://www.bilibili.com/video/BV1iFnb6tEiL/) | 23&nbsp;Oct | 656 |
 | Lucas-Rising | [【小米四+安卓6.0】豆包自动安装Clean your Tv](https://www.bilibili.com/video/BV1HQnn6DEpL/) | 23&nbsp;Oct | 621 |
 | 鸽的Ai | [拯救老电视，clean your tv安装使用教程，去掉电视广告和预装的应用app,实测使用设置跟风避雷](https://www.bilibili.com/video/BV1qZn86qECd/) | 23&nbsp;Oct | 486 |
-| Ronak Shishangia | [He let Claude Code clean his parents' TV 📺 #shorts](https://www.youtube.com/watch?v=aDVZnm5HzoM) | 23&nbsp;Oct | 353 |
-| Sridhar Rajagopalsetty | [Why Your TV Is So Slow — And How to Fix It](https://www.youtube.com/watch?v=9FM-bUAQnhc) | 23&nbsp;Oct | 336 |
+| 深夜科技食堂 | [小米電視一開機就賣廣告？AI 免費清走，TCL、Sony 都用得](https://www.youtube.com/watch?v=FsCFwrXm-6s) | 23&nbsp;Oct | 463 |
+| Ronak Shishangia | [He let Claude Code clean his parents' TV 📺 #shorts](https://www.youtube.com/watch?v=aDVZnm5HzoM) | 23&nbsp;Oct | 354 |
+| Sridhar Rajagopalsetty | [Why Your TV Is So Slow — And How to Fix It](https://www.youtube.com/watch?v=9FM-bUAQnhc) | 23&nbsp;Oct | 340 |
 | uch0028 | [电视优化开源工具！教你用Ai帮你部署cleanyourtv](https://www.bilibili.com/video/BV1KFn86EE8M/) | 23&nbsp;Oct | 316 |
-| GitHub Unboxed | [This Free Tool Removes Ads From Your Smart TV #AndroidTV  #SmartTV #GitHub #OpenSource #CleanYourTV](https://www.youtube.com/watch?v=CMj-kGLj3bM) | 23&nbsp;Oct | 265 |
+| GitHub Unboxed | [This Free Tool Removes Ads From Your Smart TV #AndroidTV  #SmartTV #GitHub #OpenSource #CleanYourTV](https://www.youtube.com/watch?v=CMj-kGLj3bM) | 23&nbsp;Oct | 286 |
 | 可乐不能加 | [CleanYourTV 电视去广告完整教程｜一键清理电视弹窗广告](https://www.bilibili.com/video/BV1eonx6QEnN/) | 23&nbsp;Oct | 241 |
 | 影宝吖吖 | [百度搭子爆改安卓老电视剧对标apple TV #科技#ai tv- vibehack#github #百度搭子#电视](https://www.bilibili.com/video/BV1bRnb6DEcL/) | 23&nbsp;Oct | 197 |
 | 十一生产力 | [CleanYourTV，能自动删除电视中的广告组件](https://www.bilibili.com/video/BV15pnt69EH4/) | 23&nbsp;Oct | 175 |
 | Fankoai范式 | [800万人看过的AI用法：电视广告全清了](https://www.bilibili.com/video/BV11En46qEgA/) | 23&nbsp;Oct | 174 |
 | 四季啥子 | [[001期】电视优化开源神器cleanyourtv使用教程，告别电视弹窗广告、清除预装广告与臃肿软件，对标AppleTV!随时可恢复原厂设置，让老电视重获流畅!](https://www.bilibili.com/video/BV15pnt69EMC/) | 23&nbsp;Oct | 155 |
+| Ronak Shishangia | [He Let Claude Code Clean His Parents' Smart TV. 25 Apps Switched Off.](https://www.youtube.com/watch?v=iYQSFlsqayA) | 23&nbsp;Oct | 149 |
+| Adventures of a Digital Explorer | [People Are Using AI to Make Smart TVs Dumb Again](https://www.youtube.com/watch?v=ZXYau3F5vM0) | 23&nbsp;Oct | 145 |
 | 社会七彩 | [智能电视太卡太卡？GitHub热榜教你一键去广告瘦身](https://www.bilibili.com/video/BV12Bnt6kE48/) | 23&nbsp;Oct | 139 |
-| Ronak Shishangia | [He Let Claude Code Clean His Parents' Smart TV. 25 Apps Switched Off.](https://www.youtube.com/watch?v=iYQSFlsqayA) | 23&nbsp;Oct | 136 |
+| AI熊o | [GitHub 飙升榜 TOP6 · 2026-10-23｜AI熊](https://www.bilibili.com/video/BV1iGnx6XErs/) | 23&nbsp;Oct | 137 |
 | 春秋大大梦 | [电视改造｜部署 CleanYourTV，告别弹窗广告，清爽看电视 改造干净观影端](https://www.bilibili.com/video/BV1qqnb6AEh8/) | 23&nbsp;Oct | 121 |
-| Adventures of a Digital Explorer | [People Are Using AI to Make Smart TVs Dumb Again](https://www.youtube.com/watch?v=ZXYau3F5vM0) | 23&nbsp;Oct | 101 |
-| Max Yao | [cleanyour.tv 佈景主題的優化,隱藏標題,dock半透明,縮小圖示](https://www.youtube.com/watch?v=dWwuzGoOnTA) | 23&nbsp;Oct | 98 |
-| Без переработок | [ИИ убирает рекламу со Smart TV одним промптом](https://www.youtube.com/watch?v=G9Gpwg8wvaM) | 23&nbsp;Oct | 91 |
-| Nhân | [Why Your Android TV Lags & The 300 KB tvOS Fix! #Shorts](https://www.youtube.com/watch?v=DyMzKAs0XwU) | 23&nbsp;Oct | 90 |
-| Ask Nicely | [AI Can Now Hack Your Smart TV. 7 Real Examples](https://www.youtube.com/watch?v=CUHVS5XquMI) | 23&nbsp;Oct | 83 |
-| The AI Reporter | [Remove Smart TV Ads With AI? Here's What Can Go Wrong](https://www.youtube.com/watch?v=R48P0Jlwjvw) | 23&nbsp;Oct | 43 |
-| Raman Makkar AI | [AI Killed TV Ads, Built a Free Photoshop & Found a 10-Year Bug](https://www.youtube.com/watch?v=nvSq8ssxXD0) | 23&nbsp;Oct | 42 |
-| Second Date Diaries | [This Free AI Prompt Removes the Ads From Your Smart TV 📺 #shorts](https://www.youtube.com/watch?v=DhuQ21tEivI) | 23&nbsp;Oct | 29 |
-| Raio-X da IA | [Pediram para uma IA limpar a smart TV. Ela tirou os anúncios e o programa que vigia o que você vê.](https://www.youtube.com/watch?v=ABcprZV_b_s) | 23&nbsp;Oct | 22 |
-| learnwithaitools | [People Are Using AI to Make Smart TVs Dumb Again 📺 #shorts](https://www.youtube.com/watch?v=UONgCGkPLIk) | 23&nbsp;Oct | 21 |
-| NUANIA | [ทีวีช้า กระตุก? แก้ได้ด้วย AI &#124; Clean Your TV ปิดแอปขยะ Android TV ไม่ต้อง root](https://www.youtube.com/watch?v=Sh29R9v2G-4) | 22&nbsp;Oct | 76,877 |
-| Secretofnet | [ودّع واجهة تلفازك القديمة! 🔥 لانشر مجاني وخفيف يدعم العربية &#124; Android TV](https://www.youtube.com/watch?v=s-J6N-k_zjc) | 22&nbsp;Oct | 67,890 |
-| Tech Fire | [I Removed Every Ad From My TV With One AI Prompt](https://www.youtube.com/watch?v=MFY88kCiUNI) | 22&nbsp;Oct | 52,315 |
-| TabSheer Tech & Reviews | [I Cleaned Up My Android TV Using AI! 😱 Removed Bloatware, Ads & More &#124; Codex + CleanYourTV](https://www.youtube.com/watch?v=HVfzeM6rFg8) | 22&nbsp;Oct | 45,973 |
-| Github Trending Repos | [Debloat Your Smart TV Over Wi-Fi With AI, Get an Apple TV-Style Home - cleanyourtv (Android TV)](https://www.youtube.com/watch?v=hO3rH-GC-t4) | 22&nbsp;Oct | 23,732 |
-| AISeeKing | [People are using this Claude Code Repo to REVERSE ENGINEER Their Android TVs!](https://www.youtube.com/watch?v=XuVY5cV7o1w) | 22&nbsp;Oct | 18,214 |
-| GEEKrar | [I Removed the Clutter From Google TV &#124; CleanYourTV](https://www.youtube.com/watch?v=HKYb49vftqk) | 22&nbsp;Oct | 10,854 |
-| 曹一凡 | [安卓电视，过上苹果生活？我让 AI 帮它改了个造。去掉那些烦人的ad，干净清爽。](https://www.youtube.com/watch?v=Fb6ktrim7v8) | 22&nbsp;Oct | 6,394 |
-| Lem. | [Before You Let Claude Clean Up Your Android TV (Read This)](https://www.youtube.com/watch?v=ZetTMsMW2Ck) | 22&nbsp;Oct | 5,335 |
-| 机器之心 | [Github 1.3万星！AI 干掉电视广告，秒变干净苹果风](https://www.youtube.com/watch?v=Z04OH8aEZYc) | 22&nbsp;Oct | 4,737 |
+| Ask Nicely | [AI Can Now Hack Your Smart TV. 7 Real Examples](https://www.youtube.com/watch?v=CUHVS5XquMI) | 23&nbsp;Oct | 113 |
+| Без переработок | [ИИ убирает рекламу со Smart TV одним промптом](https://www.youtube.com/watch?v=G9Gpwg8wvaM) | 23&nbsp;Oct | 107 |
+| Max Yao | [cleanyour.tv 佈景主題的優化,隱藏標題,dock半透明,縮小圖示](https://www.youtube.com/watch?v=dWwuzGoOnTA) | 23&nbsp;Oct | 100 |
+| Nhân | [Why Your Android TV Lags & The 300 KB tvOS Fix! #Shorts](https://www.youtube.com/watch?v=DyMzKAs0XwU) | 23&nbsp;Oct | 91 |
+| 主播录播姬回放 | [治理国产智能电视的开机广告和推荐位的解决方法，官方实测覆盖42品牌123款机型，小米/TCL/索尼六款机型已验证](https://www.bilibili.com/video/BV1x5ns6aETy/) | 23&nbsp;Oct | 84 |
+| Tech Unstacked | [Use Claude to Fix Your Android TV (No More Ads)](https://www.youtube.com/watch?v=VfKi23L4P1E) | 23&nbsp;Oct | 60 |
+| The AI Reporter | [Remove Smart TV Ads With AI? Here's What Can Go Wrong](https://www.youtube.com/watch?v=R48P0Jlwjvw) | 23&nbsp;Oct | 53 |
+| Raman Makkar AI | [AI Killed TV Ads, Built a Free Photoshop & Found a 10-Year Bug](https://www.youtube.com/watch?v=nvSq8ssxXD0) | 23&nbsp;Oct | 43 |
+| Second Date Diaries | [This Free AI Prompt Removes the Ads From Your Smart TV 📺 #shorts](https://www.youtube.com/watch?v=DhuQ21tEivI) | 23&nbsp;Oct | 30 |
+| Raio-X da IA | [Pediram para uma IA limpar a smart TV. Ela tirou os anúncios e o programa que vigia o que você vê.](https://www.youtube.com/watch?v=ABcprZV_b_s) | 23&nbsp;Oct | 23 |
+| The Mr. Ozz | [GitHub Top 10 This Week — Week of October 23, 2026 (Ep. 007) &#124; Best New Open Source Repos](https://www.youtube.com/watch?v=qgpXDC9IbTs) | 23&nbsp;Oct | 22 |
+| learnwithaitools | [People Are Using AI to Make Smart TVs Dumb Again 📺 #shorts](https://www.youtube.com/watch?v=UONgCGkPLIk) | 23&nbsp;Oct | 22 |
+| Dhananjay Bhosale | [no bloat, no ads, much less RAM usage, and extra storage freed -- that's what Claude did to my TV](https://www.youtube.com/watch?v=5sV2MJ5jRNo) | 22&nbsp;Oct | 105,533 |
+| NUANIA | [ทีวีช้า กระตุก? แก้ได้ด้วย AI &#124; Clean Your TV ปิดแอปขยะ Android TV ไม่ต้อง root](https://www.youtube.com/watch?v=Sh29R9v2G-4) | 22&nbsp;Oct | 78,822 |
+| Secretofnet | [ودّع واجهة تلفازك القديمة! 🔥 لانشر مجاني وخفيف يدعم العربية &#124; Android TV](https://www.youtube.com/watch?v=s-J6N-k_zjc) | 22&nbsp;Oct | 72,120 |
+| Tech Fire | [I Removed Every Ad From My TV With One AI Prompt](https://www.youtube.com/watch?v=MFY88kCiUNI) | 22&nbsp;Oct | 52,768 |
+| TabSheer Tech & Reviews | [I Cleaned Up My Android TV Using AI! 😱 Removed Bloatware, Ads & More &#124; Codex + CleanYourTV](https://www.youtube.com/watch?v=HVfzeM6rFg8) | 22&nbsp;Oct | 46,809 |
+| Github Trending Repos | [Debloat Your Smart TV Over Wi-Fi With AI, Get an Apple TV-Style Home - cleanyourtv (Android TV)](https://www.youtube.com/watch?v=hO3rH-GC-t4) | 22&nbsp;Oct | 26,740 |
+| 荧幕玩家 | [AI爆改电视系统？我来泼盆冷水](https://www.bilibili.com/video/BV1aCni6GE7L/) | 22&nbsp;Oct | 22,187 |
+| The Next New Thing | [Make your AI agent pay for itself (and this week's biggest AI news)](https://www.youtube.com/watch?v=tqpOfHS5-VY) | 22&nbsp;Oct | 20,984 |
+| AISeeKing | [People are using this Claude Code Repo to REVERSE ENGINEER Their Android TVs!](https://www.youtube.com/watch?v=XuVY5cV7o1w) | 22&nbsp;Oct | 18,715 |
+| GEEKrar | [I Removed the Clutter From Google TV &#124; CleanYourTV](https://www.youtube.com/watch?v=HKYb49vftqk) | 22&nbsp;Oct | 11,330 |
+| 曹一凡 | [安卓电视，过上苹果生活？我让 AI 帮它改了个造。去掉那些烦人的ad，干净清爽。](https://www.youtube.com/watch?v=Fb6ktrim7v8) | 22&nbsp;Oct | 6,987 |
+| Lem. | [Before You Let Claude Clean Up Your Android TV (Read This)](https://www.youtube.com/watch?v=ZetTMsMW2Ck) | 22&nbsp;Oct | 5,955 |
+| 机器之心 | [Github 1.3万星！AI 干掉电视广告，秒变干净苹果风](https://www.youtube.com/watch?v=Z04OH8aEZYc) | 22&nbsp;Oct | 4,950 |
 | 我超爱吃瓜嘻嘻 | [测评打假 cleanyourtv净化桌面到底是不是真的， 实测 电视桌面净化效果 cleanyourtv实测#真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV1Uwn16cE6n/) | 22&nbsp;Oct | 4,683 |
-| Dann Paker AI | [CleanYourTV - Streamline Your Android TV](https://www.youtube.com/watch?v=GUJ6UgrO5aQ) | 22&nbsp;Oct | 4,239 |
-| Prosper Flow IO | [cleanyourtv: Debloat your Android TV into an Apple TV look](https://www.youtube.com/watch?v=xn_5M3RMBP8) | 22&nbsp;Oct | 2,179 |
-| Laternenparker | [KI befreit Smart-TV von Werbung: 4 Millionen Downloads! Dann lügt die KI…](https://www.youtube.com/watch?v=ObfQuceFtiU) | 22&nbsp;Oct | 1,840 |
-| AIDev | [CleanYourTV: xóa quảng cáo Smart TV Android bằng Claude Code, 23 nghìn sao sau 6 ngày #Shorts](https://www.youtube.com/watch?v=GZnlKryNQ5U) | 22&nbsp;Oct | 1,796 |
-| Open Source Repositories | [This Free Project Removes the Ads From Your Android TV](https://www.youtube.com/watch?v=d4yk-xI6prs) | 22&nbsp;Oct | 1,604 |
-| AI & Automations | [AI Just Removed the Ads From a Smart TV 💀](https://www.youtube.com/watch?v=lPASdR8V5eU) | 22&nbsp;Oct | 1,590 |
-| LookOnThisGit | [Debloat Your TV: Get an Apple TV UI on Android 📺](https://www.youtube.com/watch?v=Bvivx5aBStg) | 22&nbsp;Oct | 1,581 |
-| AI Bros Shorts | [People are using Claude to strip ads off their smart TVs](https://www.youtube.com/watch?v=_mwsqKraulQ) | 22&nbsp;Oct | 1,299 |
-| Simply AI | [Claude Code Wrote This Android TV a New Home Screen With No Ads](https://www.youtube.com/watch?v=NIp4iX7kipw) | 22&nbsp;Oct | 1,155 |
-| Github Trending Repos | [Turn Any Android TV Into an Apple TV Style Home Over Wi-Fi: cleanyourtv Deep Dive](https://www.youtube.com/watch?v=apE40gXzz2A) | 22&nbsp;Oct | 1,153 |
-| Repo_AI_Review | [CleanYourTV: 22K Stars Insane Apple TV Hack [2026] #Shorts](https://www.youtube.com/watch?v=F37197aS-hA) | 22&nbsp;Oct | 996 |
-| Hidden Repos - GitHub gems nobody talks about | [Clean Your TV: Debloat Any Android TV With Your AI Agent](https://www.youtube.com/watch?v=XH9VlRWKPUs) | 22&nbsp;Oct | 964 |
-| Repo_AI_Review | [22K Stars: Turn Any Android TV Into Apple TV [2026]](https://www.youtube.com/watch?v=BhguEwXKOyE) | 22&nbsp;Oct | 886 |
-| Hang around | [📺🍎 เปลี่ยน Android TV ให้หน้าตาคล้าย Apple TV ทำได้จริง!  #androidbox #cleanyourtv](https://www.youtube.com/watch?v=kasGmaCKmF0) | 22&nbsp;Oct | 794 |
-| The Daily Commit | [cleanyourtv: Rip the Ads Off Your Android TV Home Screen (Free)](https://www.youtube.com/watch?v=YsPXGLlbA-o) | 22&nbsp;Oct | 781 |
+| Dann Paker AI | [CleanYourTV - Streamline Your Android TV](https://www.youtube.com/watch?v=GUJ6UgrO5aQ) | 22&nbsp;Oct | 4,457 |
+| Prosper Flow IO | [cleanyourtv: Debloat your Android TV into an Apple TV look](https://www.youtube.com/watch?v=xn_5M3RMBP8) | 22&nbsp;Oct | 2,527 |
+| AIDev | [CleanYourTV: xóa quảng cáo Smart TV Android bằng Claude Code, 23 nghìn sao sau 6 ngày #Shorts](https://www.youtube.com/watch?v=GZnlKryNQ5U) | 22&nbsp;Oct | 2,022 |
+| Laternenparker | [KI befreit Smart-TV von Werbung: 4 Millionen Downloads! Dann lügt die KI…](https://www.youtube.com/watch?v=ObfQuceFtiU) | 22&nbsp;Oct | 1,858 |
+| LookOnThisGit | [Debloat Your TV: Get an Apple TV UI on Android 📺](https://www.youtube.com/watch?v=Bvivx5aBStg) | 22&nbsp;Oct | 1,786 |
+| Open Source Repositories | [This Free Project Removes the Ads From Your Android TV](https://www.youtube.com/watch?v=d4yk-xI6prs) | 22&nbsp;Oct | 1,737 |
+| AI & Automations | [AI Just Removed the Ads From a Smart TV 💀](https://www.youtube.com/watch?v=lPASdR8V5eU) | 22&nbsp;Oct | 1,599 |
+| Department of Product | [Claude Duet, Google's new Shopping Agent + more  &#124; This Week in AI](https://www.youtube.com/watch?v=RBMHGMSi3PE) | 22&nbsp;Oct | 1,509 |
+| AI Bros Shorts | [People are using Claude to strip ads off their smart TVs](https://www.youtube.com/watch?v=_mwsqKraulQ) | 22&nbsp;Oct | 1,379 |
+| Github Trending Repos | [Turn Any Android TV Into an Apple TV Style Home Over Wi-Fi: cleanyourtv Deep Dive](https://www.youtube.com/watch?v=apE40gXzz2A) | 22&nbsp;Oct | 1,230 |
+| Simply AI | [Claude Code Wrote This Android TV a New Home Screen With No Ads](https://www.youtube.com/watch?v=NIp4iX7kipw) | 22&nbsp;Oct | 1,181 |
+| Repo_AI_Review | [CleanYourTV: 22K Stars Insane Apple TV Hack [2026] #Shorts](https://www.youtube.com/watch?v=F37197aS-hA) | 22&nbsp;Oct | 999 |
+| Hidden Repos - GitHub gems nobody talks about | [Clean Your TV: Debloat Any Android TV With Your AI Agent](https://www.youtube.com/watch?v=XH9VlRWKPUs) | 22&nbsp;Oct | 993 |
+| Hang around | [📺🍎 เปลี่ยน Android TV ให้หน้าตาคล้าย Apple TV ทำได้จริง!  #androidbox #cleanyourtv](https://www.youtube.com/watch?v=kasGmaCKmF0) | 22&nbsp;Oct | 926 |
+| Repo_AI_Review | [22K Stars: Turn Any Android TV Into Apple TV [2026]](https://www.youtube.com/watch?v=BhguEwXKOyE) | 22&nbsp;Oct | 894 |
+| The Daily Commit | [cleanyourtv: Rip the Ads Off Your Android TV Home Screen (Free)](https://www.youtube.com/watch?v=YsPXGLlbA-o) | 22&nbsp;Oct | 814 |
 | 陌陌动漫同学 | [[001期】电视优化开源神器cleanyourtv使用教程，清除预装广告与臃肿软件、替换极简桌面，对标AppleTV!随时可恢复原厂设置，让老电视重获流畅!](https://www.bilibili.com/video/BV1mTnm6vEL2/) | 22&nbsp;Oct | 751 |
-| Techworthy | [One AI Prompt Just Killed Smart TV Home Screen Ads](https://www.youtube.com/watch?v=spYzueTL3-Q) | 22&nbsp;Oct | 662 |
-| Daily Tool Discovery | [CleanYourTV：Wi-Fi 遠端清理 Android TV #Shorts](https://www.youtube.com/watch?v=Hx2dPt17BPU) | 22&nbsp;Oct | 555 |
-| Ibrahim &#124; AI & Tech Explained | [This free GitHub repo removes the ads from your Android TV 📺](https://www.youtube.com/watch?v=P_pTYwTc-ME) | 22&nbsp;Oct | 553 |
-| Galaximar | [¿Y si una IA pudiera hacer más rápido ese televisor que ya tarda en responder?](https://www.youtube.com/watch?v=PyhY6Ur474g) | 22&nbsp;Oct | 525 |
-| Nờ Ham Học | [cleanyourtv: Dọn Android TV qua Wi-Fi, đổi giao diện kiểu Apple TV](https://www.youtube.com/watch?v=lX0q25kDSb4) | 22&nbsp;Oct | 490 |
-| AILoop | [Claude Code Removed 25 Ad Apps From This Smart TV](https://www.youtube.com/watch?v=kz0M13iCOx8) | 22&nbsp;Oct | 391 |
+| Techworthy | [One AI Prompt Just Killed Smart TV Home Screen Ads](https://www.youtube.com/watch?v=spYzueTL3-Q) | 22&nbsp;Oct | 694 |
+| Ibrahim &#124; AI & Tech Explained | [This free GitHub repo removes the ads from your Android TV 📺](https://www.youtube.com/watch?v=P_pTYwTc-ME) | 22&nbsp;Oct | 601 |
+| Daily Tool Discovery | [CleanYourTV：Wi-Fi 遠端清理 Android TV #Shorts](https://www.youtube.com/watch?v=Hx2dPt17BPU) | 22&nbsp;Oct | 575 |
+| Nờ Ham Học | [cleanyourtv: Dọn Android TV qua Wi-Fi, đổi giao diện kiểu Apple TV](https://www.youtube.com/watch?v=lX0q25kDSb4) | 22&nbsp;Oct | 560 |
+| Galaximar | [¿Y si una IA pudiera hacer más rápido ese televisor que ya tarda en responder?](https://www.youtube.com/watch?v=PyhY6Ur474g) | 22&nbsp;Oct | 537 |
+| 沙士比亚的猫 | [电视优化开源神器！禁用系统广告，清理预装垃圾软件，换上轻量桌面，支持多款电视，老电视也能重回流畅！#真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV1kqnW6oEPD/) | 22&nbsp;Oct | 431 |
+| AILoop | [Claude Code Removed 25 Ad Apps From This Smart TV](https://www.youtube.com/watch?v=kz0M13iCOx8) | 22&nbsp;Oct | 396 |
 | git分享老张 | [第006期：【tv电视去广告教程】 CleanYourTV 是 GitHub 上一个开源的电视清理项目，专门收拾电视上那些关不掉的预装应用和开机广告。](https://www.bilibili.com/video/BV1winH6DE7K/) | 22&nbsp;Oct | 362 |
-| codeExplainedBadly | [cleanyourtv is trending on GitHub #Shorts](https://www.youtube.com/watch?v=j4-Ngv8FZC8) | 22&nbsp;Oct | 359 |
-| bytesidekick | [Over 24,000 developers just starred CleanYourTV, an open-source tool #googletv #androidtv #tech](https://www.youtube.com/watch?v=b6uTeXyfjSA) | 22&nbsp;Oct | 355 |
-| Nextworthy | [AI can switch off the junk on old Android TVs](https://www.youtube.com/watch?v=Fb18z0Y1km8) | 22&nbsp;Oct | 327 |
-| Bryam CIO (bbuestan) | [Smart TV: la IA le QUITA los anuncios en 15 min](https://www.youtube.com/watch?v=wg0N8AkK_Zg) | 22&nbsp;Oct | 291 |
-| Varun Bhambhani | [I Removed Every Ad From My Xiaomi TV Home Screen #Shorts](https://www.youtube.com/watch?v=0Q87uzfEWNY) | 22&nbsp;Oct | 285 |
-| MeowStar TV &#124; Local AI | [Someone Used Claude Code to Make a Smart TV Dumb Again (Android TV Only) #Shorts](https://www.youtube.com/watch?v=VpwblagirU4) | 22&nbsp;Oct | 278 |
-| AI Bros Podcast | [People are using Claude to strip ads off their smart TVs](https://www.youtube.com/watch?v=AwaI_VvKhsg) | 22&nbsp;Oct | 253 |
+| codeExplainedBadly | [cleanyourtv is trending on GitHub #Shorts](https://www.youtube.com/watch?v=j4-Ngv8FZC8) | 22&nbsp;Oct | 362 |
+| bytesidekick | [Over 24,000 developers just starred CleanYourTV, an open-source tool #googletv #androidtv #tech](https://www.youtube.com/watch?v=b6uTeXyfjSA) | 22&nbsp;Oct | 358 |
+| Nextworthy | [AI can switch off the junk on old Android TVs](https://www.youtube.com/watch?v=Fb18z0Y1km8) | 22&nbsp;Oct | 346 |
+| Varun Bhambhani | [I Removed Every Ad From My Xiaomi TV Home Screen #Shorts](https://www.youtube.com/watch?v=0Q87uzfEWNY) | 22&nbsp;Oct | 330 |
+| Bryam CIO (bbuestan) | [Smart TV: la IA le QUITA los anuncios en 15 min](https://www.youtube.com/watch?v=wg0N8AkK_Zg) | 22&nbsp;Oct | 324 |
+| MeowStar TV &#124; Local AI | [Someone Used Claude Code to Make a Smart TV Dumb Again (Android TV Only) #Shorts](https://www.youtube.com/watch?v=VpwblagirU4) | 22&nbsp;Oct | 282 |
+| AI Bros Podcast | [People are using Claude to strip ads off their smart TVs](https://www.youtube.com/watch?v=AwaI_VvKhsg) | 22&nbsp;Oct | 255 |
+| DY Playbook | [How to Remove Ads From Your Smart TV With AI](https://www.youtube.com/watch?v=WPPJ3H4OtYg) | 22&nbsp;Oct | 238 |
 | 恐怖如斯可达鸭 | [cleanyourtv电视去广告教程，专门收拾电视上那些关不掉的预装应用和开机广告。#百度搭子 #办公就用dumate #真干活用搭子](https://www.bilibili.com/video/BV1sMnp6ZEQT/) | 22&nbsp;Oct | 236 |
-| DY Playbook | [How to Remove Ads From Your Smart TV With AI](https://www.youtube.com/watch?v=WPPJ3H4OtYg) | 22&nbsp;Oct | 228 |
-| AI Inside | [AI Agents Are Stripping Advertising From Smart TVs](https://www.youtube.com/watch?v=vUfdRl6ASYY) | 22&nbsp;Oct | 206 |
+| AI Inside | [AI Agents Are Stripping Advertising From Smart TVs](https://www.youtube.com/watch?v=vUfdRl6ASYY) | 22&nbsp;Oct | 209 |
 | Krishna Shrestha | [Your Android TV Has Too Many Ads? AI Can Help! 🤯📺](https://www.youtube.com/watch?v=aRhX8XkSFg0) | 22&nbsp;Oct | 200 |
 | Bryam CIO (bbuestan) | [Smart TV: la IA le QUITA los anuncios en 15 min 📺 #Shorts #SmartTV](https://www.youtube.com/watch?v=EvyD2T8lzBU) | 22&nbsp;Oct | 179 |
-| Olha O detalhe | [Transformei minha TV numa Apple TV (sem anúncios) com IA](https://www.youtube.com/watch?v=OLJgyVycq5I) | 22&nbsp;Oct | 140 |
+| 露诺姐 | [无线ADB净化安卓电视，清除预装冗余软件，告别开机广告！#安卓电视 #电视优化 #广告拦截  #Github#真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV1utn26AEAZ/) | 22&nbsp;Oct | 167 |
+| Olha O detalhe | [Transformei minha TV numa Apple TV (sem anúncios) com IA](https://www.youtube.com/watch?v=OLJgyVycq5I) | 22&nbsp;Oct | 153 |
+| 量子泡沫未必不是真的 | [这个开源电视优化工具太夯了！告别开机广告！#安卓电视 #电视优化 #广告拦截  #Github #真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV1qQnW67EF9/) | 22&nbsp;Oct | 126 |
 | Pulso IA | [Le quitan los anuncios a la tele con una IA que programa](https://www.youtube.com/watch?v=kfWvqyw3Bpg) | 22&nbsp;Oct | 83 |
-| BumBum | [AI hồi sinh TV cũ vừa chậm vừa lag: Xóa 25 app rác! #Shorts](https://www.youtube.com/watch?v=jE-txiAdCbI) | 22&nbsp;Oct | 68 |
+| 青檀同学 | [开源电视优化神器，老电视的救星，告别弹窗广告。#真干活用搭子 #办公就用dumate #百度搭子 #Github](https://www.bilibili.com/video/BV1TGnm6AEg2/) | 22&nbsp;Oct | 78 |
+| BumBum | [AI hồi sinh TV cũ vừa chậm vừa lag: Xóa 25 app rác! #Shorts](https://www.youtube.com/watch?v=jE-txiAdCbI) | 22&nbsp;Oct | 70 |
 | Tess Tests AI | [4 free AI tools that actually passed my test — and the catch for each one](https://www.youtube.com/watch?v=1AMPYrQrlCI) | 22&nbsp;Oct | 54 |
-| Nhân | [AI Revives Slow Smart TVs: 25 Junk Apps Disabled! #Shorts](https://www.youtube.com/watch?v=8DS_EBbSfho) | 22&nbsp;Oct | 49 |
-| The Agent Workshop | [6 Free AI Tools Worth Using Right Now (October 2026)](https://www.youtube.com/watch?v=W3nVNvO1AGM) | 22&nbsp;Oct | 49 |
-| AI News U Can Use - CH 7 | [People Are Using AI to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=8_EQsIsZxrM) | 22&nbsp;Oct | 48 |
-| Lukas Margerie | [I Built My Own TV Operating System With Claude Code](https://www.youtube.com/watch?v=i0ytu6k8uac) | 21&nbsp;Oct | 513,583 |
+| The Agent Workshop | [6 Free AI Tools Worth Using Right Now (October 2026)](https://www.youtube.com/watch?v=W3nVNvO1AGM) | 22&nbsp;Oct | 51 |
+| Nhân | [AI Revives Slow Smart TVs: 25 Junk Apps Disabled! #Shorts](https://www.youtube.com/watch?v=8DS_EBbSfho) | 22&nbsp;Oct | 50 |
+| AI News U Can Use - CH 7 | [People Are Using AI to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=8_EQsIsZxrM) | 22&nbsp;Oct | 49 |
+| 小鹏观天下 | [Claude 爆改安卓老电视机成apple TV #科技 #真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV13Hn26TECa/) | 22&nbsp;Oct | 30 |
+| 小白互联网神器店 | [电视开机广告终于能关了！免root、免刷机，小白也能搞定 &#124; 小白神器商店](https://www.youtube.com/watch?v=4EQHCYHO_I8) | 22&nbsp;Oct | 26 |
+| 沐言AI创业 | [【8期】CleanYourTV:一键清掉安卓电视广告](https://www.bilibili.com/video/BV1vDnH6gEh4/) | 22&nbsp;Oct | 19 |
+| Lukas Margerie | [I Built My Own TV Operating System With Claude Code](https://www.youtube.com/watch?v=i0ytu6k8uac) | 21&nbsp;Oct | 546,510 |
 | 歸藏的AI工具箱 | [有了AI，终于不用忍受满是广告的电视界面了](https://www.bilibili.com/video/BV1SYnz61Enp/) | 21&nbsp;Oct | 126,263 |
-| JustUser | [Проект, который сегодня на первом месте в трендах. Он чистит TV от рекламы и мусора за 15 минут 📺](https://www.youtube.com/watch?v=e9tO6o5HV1I) | 21&nbsp;Oct | 51,793 |
+| JustUser | [Проект, который сегодня на первом месте в трендах. Он чистит TV от рекламы и мусора за 15 минут 📺](https://www.youtube.com/watch?v=e9tO6o5HV1I) | 21&nbsp;Oct | 57,363 |
+| 独库车神 | [教你用Codex爆改电视，删 App 去广告，改后清新无比](https://www.bilibili.com/video/BV1gKnB6LEyj/) | 21&nbsp;Oct | 43,655 |
 | 梨落less | [cleanyourtv安装教程](https://www.bilibili.com/video/BV1tbnq66Exn/) | 21&nbsp;Oct | 37,577 |
-| GPT Akademi | [Claude Code Android Tv'yi duzene soktu. Kumanda tuşlarını değiştirdi...](https://www.youtube.com/watch?v=P0cdXNgxj_s) | 21&nbsp;Oct | 34,335 |
-| Chase AI | [Claude Can Hack Your TV With This Prompt](https://www.youtube.com/watch?v=CIgifJGiCcI) | 21&nbsp;Oct | 14,207 |
+| GPT Akademi | [Claude Code Android Tv'yi duzene soktu. Kumanda tuşlarını değiştirdi...](https://www.youtube.com/watch?v=P0cdXNgxj_s) | 21&nbsp;Oct | 35,998 |
+| Chase AI | [Claude Can Hack Your TV With This Prompt](https://www.youtube.com/watch?v=CIgifJGiCcI) | 21&nbsp;Oct | 14,979 |
+| Javier Ponce 🎃 &#124; Trucos y Tecnologia | [Claude elimina los anuncios de tu Televisión 🙌🏻😮](https://www.youtube.com/watch?v=4k0ZNtb5eGo) | 21&nbsp;Oct | 14,528 |
 | 可乐不能加 | [电视改造：CleanYourTV 部署，干净无广告 TV](https://www.bilibili.com/video/BV1HFnA6YECT/) | 21&nbsp;Oct | 13,465 |
-| Javier Ponce 🎃 &#124; Trucos y Tecnologia | [Claude elimina los anuncios de tu Televisión 🙌🏻😮](https://www.youtube.com/watch?v=4k0ZNtb5eGo) | 21&nbsp;Oct | 11,597 |
 | 铂金小鸟 | [AI帮你电视去广告？秒变Apple TV风格](https://www.bilibili.com/video/BV1tenT6REEr/) | 21&nbsp;Oct | 10,275 |
-| n8nWithPatrick | [CleanYourTV: Debloat Any Android TV With One Prompt (16.5k Stars)](https://www.youtube.com/watch?v=UjJwamPBEAg) | 21&nbsp;Oct | 8,330 |
-| AI懶人報 | [CleanYourTV：電視廣告一次清光，型號丟給 Claude Code 就好 #shorts](https://www.youtube.com/watch?v=6VzJZg8WR-E) | 21&nbsp;Oct | 5,396 |
-| Under the Hood - Илья Утов | [Claude убрал рекламу с телевизора за 15 минут](https://www.youtube.com/watch?v=vpOuoB43J3Q) | 21&nbsp;Oct | 3,711 |
+| n8nWithPatrick | [CleanYourTV: Debloat Any Android TV With One Prompt (16.5k Stars)](https://www.youtube.com/watch?v=UjJwamPBEAg) | 21&nbsp;Oct | 8,416 |
+| AI懶人報 | [CleanYourTV：電視廣告一次清光，型號丟給 Claude Code 就好 #shorts](https://www.youtube.com/watch?v=6VzJZg8WR-E) | 21&nbsp;Oct | 5,536 |
+| Under the Hood - Илья Утов | [Claude убрал рекламу с телевизора за 15 минут](https://www.youtube.com/watch?v=vpOuoB43J3Q) | 21&nbsp;Oct | 3,974 |
+| 日暮听秋雨 | [小米电视改造：桌面换成苹果风，米家还能用](https://www.bilibili.com/video/BV1CMnr66EwJ/) | 21&nbsp;Oct | 3,648 |
 | 十一生产力 | [cleanyourtv电视去广告软件，专门收拾电视上那些关不掉的预装应用和开机广告](https://www.bilibili.com/video/BV1AsnB6PED6/) | 21&nbsp;Oct | 3,134 |
-| НейроПрактика &#124; ИИ для контента | [DeepSeek и Claude убирают рекламу с умных телевизоров](https://www.youtube.com/watch?v=Ln3fZ-xKstk) | 21&nbsp;Oct | 2,568 |
+| НейроПрактика &#124; ИИ для контента | [DeepSeek и Claude убирают рекламу с умных телевизоров](https://www.youtube.com/watch?v=Ln3fZ-xKstk) | 21&nbsp;Oct | 2,798 |
 | 豪不敷衍 | [电视优化开源神器cleanyourtv完整使用教程告别电视弹窗广告清除预装广告与臃肿软件直接替换极简桌面，对标AppleTV，随时可以恢复原厂设置](https://www.bilibili.com/video/BV1Sdn66UEww/) | 21&nbsp;Oct | 2,374 |
-| Ultrafast AI | [AI Is Removing Ads From Smart TVs](https://www.youtube.com/watch?v=9z1vqNl96Cs) | 21&nbsp;Oct | 2,133 |
-| GitHunt | [CleanYourTV: Turn Your Smart TV Into an Ad-Free Apple TV](https://www.youtube.com/watch?v=jquqVD-NtUA) | 21&nbsp;Oct | 1,977 |
-| Myth & Machine | [Slow Android TV? Don't bin it - debloat it with Claude Code](https://www.youtube.com/watch?v=1xLpesxv-5Q) | 21&nbsp;Oct | 1,956 |
-| Maestros.mp4 | [O fim dos anúncios na TV: o Claude Code limpa sua Android TV (Clean Your TV, 19 mil estrelas)](https://www.youtube.com/watch?v=CDwFME3OtO8) | 21&nbsp;Oct | 1,932 |
-| AK Bytes | [AI Ne Purane Mi TV Ko Apple TV Jaisa Bana Diya! 🤯 #shorts #ai #aivideo #freefire #biggboss #aiindia](https://www.youtube.com/watch?v=dJlavaVE0t0) | 21&nbsp;Oct | 1,468 |
-| Farid Talks AI & Tech | [His Parents' TV Showed an Ad Before Netflix. So He Let Claude In.](https://www.youtube.com/watch?v=kMRHnluPZds) | 21&nbsp;Oct | 1,352 |
-| Rik &#124; AI & Vibecoding | [Claude Code Removed the Ads From His Parents' TV](https://www.youtube.com/watch?v=tKcZTBr-7t0) | 21&nbsp;Oct | 1,326 |
-| Thân | [[Đã có tool ở mô tả] Cách cài cleanyourtv lên android tv](https://www.youtube.com/watch?v=v8rQO404DW4) | 21&nbsp;Oct | 1,141 |
-| Urbietisscale | [Claude removed the ads from his parents TV](https://www.youtube.com/watch?v=f5a5VVybK2s) | 21&nbsp;Oct | 1,120 |
-| Fecoxa | [Smart TV sem anúncios? 📺 CleanYourTV promete acabar com propagandas na sua televisão! #SmartTV](https://www.youtube.com/watch?v=ja1IW48YQ-c) | 21&nbsp;Oct | 1,027 |
-| Okay, but simple? | [I Used Claude Code to Remove Ads From My Smart TV](https://www.youtube.com/watch?v=mzG1l_rnFlM) | 21&nbsp;Oct | 981 |
-| iGeeksBlog AI | [This Trending Repo Removes Ads and Junk from Your Smart TV](https://www.youtube.com/watch?v=1VUtaY_Jaok) | 21&nbsp;Oct | 815 |
-| Android Faithful | [People Are Using AI to Strip Ads From Google TV](https://www.youtube.com/watch?v=CoCGgImxJjs) | 21&nbsp;Oct | 753 |
-| The Tech Courier | [People Are Using AI to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=p7tmCHSJqQ8) | 21&nbsp;Oct | 727 |
-| LeafBox | [CleanYourTV ให้ Claude Code ล้างโฆษณาบน Android TV ให้เหมือน Apple TV](https://www.youtube.com/watch?v=gAClQ1tnPE4) | 21&nbsp;Oct | 718 |
-| อ้ายหมีแบร์แบร์ | [Smart TV โฆษณาเต็มจอ? Dev ใช้ Claude Code สั่งคลีนเรียบ! &#124; #MeeBearBear #Shorts #TechNews #AICoding](https://www.youtube.com/watch?v=99XnlZCKbC8) | 21&nbsp;Oct | 644 |
-| Chuột Coder | [Nhờ AI dẹp quảng cáo TV Sony, TCL, Xiaomi](https://www.youtube.com/watch?v=rKcVCWgAoTw) | 21&nbsp;Oct | 545 |
-| Forkcast | [A simpler TV home screen — CleanYourTV #Shorts](https://www.youtube.com/watch?v=g9imxlgOIGk) | 21&nbsp;Oct | 534 |
-| Repo Radar | [CleanYourTV: Android TV Reklamlarını Devre Dışı Bırakan Açık Kaynak Araç](https://www.youtube.com/watch?v=fyg1hHQcQzw) | 21&nbsp;Oct | 474 |
-| Barely Bullish | [Your TV Is Cheap Because of Ads. Claude Code Turns Them Off.](https://www.youtube.com/watch?v=yvg55BfTT9Y) | 21&nbsp;Oct | 357 |
-| The Agent Workshop | [I Removed Every Ad From My Smart TV With AI (No Root)](https://www.youtube.com/watch?v=GVRMF4pULVk) | 21&nbsp;Oct | 317 |
-| Zane AI | [Claude Code Removes Android TV Ads](https://www.youtube.com/watch?v=r8ONgRyhfHM) | 21&nbsp;Oct | 244 |
-| Under the Hood - Илья Утов | [Телевизор показал рекламу. Claude её выключил](https://www.youtube.com/watch?v=Ma8Wsotaj2Q) | 21&nbsp;Oct | 165 |
-| Mario Vasques | [SUA SMART TV TE VIGIA? A IA ESTÁ MUDANDO TUDO!](https://www.youtube.com/watch?v=ZcwY92tHZYc) | 21&nbsp;Oct | 99 |
-| 人間不要新聞 | [【現場10/21】テレビの広告をClaude Codeで消すの、3日半でスター1.19万｜AIの現場 2026年10月21日](https://www.youtube.com/watch?v=JCBI-WfWBpU) | 21&nbsp;Oct | 77 |
-| syahdandev | [Orang Ramai Suruh Claude Code Buang Iklan dari Smart TV, Ribuan Ikut Coba](https://www.youtube.com/watch?v=dinwm7aYehQ) | 21&nbsp;Oct | 69 |
-| No Humans Needed | [[EN 10/21] Killing TV ads with Claude Code: 11.9K stars &#124; AI in the Field · Nohumans, Oct 21, 2026](https://www.youtube.com/watch?v=mYdDj3tXqFA) | 21&nbsp;Oct | 63 |
-| Repo Rush | [10 New GitHub Repos You Should Know (An AI Uses a Real iPhone & More)](https://www.youtube.com/watch?v=KYk-cKF1g6Y) | 21&nbsp;Oct | 41 |
-| atyourfingertips | [Your TV Is Watching You. So People Got AI to Fight Back.](https://www.youtube.com/watch?v=DQPSM5gK2TU) | 21&nbsp;Oct | 40 |
-| Akanda Ashraf, PhD | [People Are Using AI to Kill Their TV Ads](https://www.youtube.com/watch?v=_aWZ5uI130M) | 21&nbsp;Oct | 32 |
+| Ultrafast AI | [AI Is Removing Ads From Smart TVs](https://www.youtube.com/watch?v=9z1vqNl96Cs) | 21&nbsp;Oct | 2,264 |
+| Maestros.mp4 | [O fim dos anúncios na TV: o Claude Code limpa sua Android TV (Clean Your TV, 19 mil estrelas)](https://www.youtube.com/watch?v=CDwFME3OtO8) | 21&nbsp;Oct | 2,178 |
+| GitHunt | [CleanYourTV: Turn Your Smart TV Into an Ad-Free Apple TV](https://www.youtube.com/watch?v=jquqVD-NtUA) | 21&nbsp;Oct | 2,141 |
+| Myth & Machine | [Slow Android TV? Don't bin it - debloat it with Claude Code](https://www.youtube.com/watch?v=1xLpesxv-5Q) | 21&nbsp;Oct | 2,056 |
+| Android Faithful | [Lobotomize Your Google TV - Android Faithful #173](https://www.youtube.com/watch?v=hUg7dGaSnT0) | 21&nbsp;Oct | 1,887 |
+| AK Bytes | [AI Ne Purane Mi TV Ko Apple TV Jaisa Bana Diya! 🤯 #shorts #ai #aivideo #freefire #biggboss #aiindia](https://www.youtube.com/watch?v=dJlavaVE0t0) | 21&nbsp;Oct | 1,513 |
+| Farid Talks AI & Tech | [His Parents' TV Showed an Ad Before Netflix. So He Let Claude In.](https://www.youtube.com/watch?v=kMRHnluPZds) | 21&nbsp;Oct | 1,366 |
+| Rik &#124; AI & Vibecoding | [Claude Code Removed the Ads From His Parents' TV](https://www.youtube.com/watch?v=tKcZTBr-7t0) | 21&nbsp;Oct | 1,329 |
+| Fecoxa | [Smart TV sem anúncios? 📺 CleanYourTV promete acabar com propagandas na sua televisão! #SmartTV](https://www.youtube.com/watch?v=ja1IW48YQ-c) | 21&nbsp;Oct | 1,294 |
+| Thân | [[Đã có tool ở mô tả] Cách cài cleanyourtv lên android tv](https://www.youtube.com/watch?v=v8rQO404DW4) | 21&nbsp;Oct | 1,187 |
+| Urbietisscale | [Claude removed the ads from his parents TV](https://www.youtube.com/watch?v=f5a5VVybK2s) | 21&nbsp;Oct | 1,121 |
+| Okay, but simple? | [I Used Claude Code to Remove Ads From My Smart TV](https://www.youtube.com/watch?v=mzG1l_rnFlM) | 21&nbsp;Oct | 1,003 |
+| iGeeksBlog AI | [This Trending Repo Removes Ads and Junk from Your Smart TV](https://www.youtube.com/watch?v=1VUtaY_Jaok) | 21&nbsp;Oct | 844 |
+| LeafBox | [CleanYourTV ให้ Claude Code ล้างโฆษณาบน Android TV ให้เหมือน Apple TV](https://www.youtube.com/watch?v=gAClQ1tnPE4) | 21&nbsp;Oct | 805 |
+| Android Faithful | [People Are Using AI to Strip Ads From Google TV](https://www.youtube.com/watch?v=CoCGgImxJjs) | 21&nbsp;Oct | 772 |
+| The Tech Courier | [People Are Using AI to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=p7tmCHSJqQ8) | 21&nbsp;Oct | 745 |
+| อ้ายหมีแบร์แบร์ | [Smart TV โฆษณาเต็มจอ? Dev ใช้ Claude Code สั่งคลีนเรียบ! &#124; #MeeBearBear #Shorts #TechNews #AICoding](https://www.youtube.com/watch?v=99XnlZCKbC8) | 21&nbsp;Oct | 674 |
+| Repo Radar | [CleanYourTV: Android TV Reklamlarını Devre Dışı Bırakan Açık Kaynak Araç](https://www.youtube.com/watch?v=fyg1hHQcQzw) | 21&nbsp;Oct | 596 |
+| Chuột Coder | [Nhờ AI dẹp quảng cáo TV Sony, TCL, Xiaomi](https://www.youtube.com/watch?v=rKcVCWgAoTw) | 21&nbsp;Oct | 569 |
+| Forkcast | [A simpler TV home screen — CleanYourTV #Shorts](https://www.youtube.com/watch?v=g9imxlgOIGk) | 21&nbsp;Oct | 543 |
+| Max Yao | [透過 cleanyour.tv 打造自己的 Android TV 桌面與背景](https://www.youtube.com/watch?v=cZLZNJGWIQ0) | 21&nbsp;Oct | 520 |
+| Barely Bullish | [Your TV Is Cheap Because of Ads. Claude Code Turns Them Off.](https://www.youtube.com/watch?v=yvg55BfTT9Y) | 21&nbsp;Oct | 404 |
+| The Agent Workshop | [I Removed Every Ad From My Smart TV With AI (No Root)](https://www.youtube.com/watch?v=GVRMF4pULVk) | 21&nbsp;Oct | 329 |
+| 飞科赢 | [Github上的这个开源电视优化工具太夯了！无线ADB净化安卓电视，清除预装冗余软件，纯净桌面，告别开机广告！ #百度搭子 #Github#办公就用dumate](https://www.bilibili.com/video/BV1X1nB6mETa/) | 21&nbsp;Oct | 323 |
+| 智东西 | [一句话指挥AI 一键清除电视广告 改造方案还开源了](https://www.bilibili.com/video/BV1wHnB6NEia/) | 21&nbsp;Oct | 262 |
+| Zane AI | [Claude Code Removes Android TV Ads](https://www.youtube.com/watch?v=r8ONgRyhfHM) | 21&nbsp;Oct | 245 |
+| Under the Hood - Илья Утов | [Телевизор показал рекламу. Claude её выключил](https://www.youtube.com/watch?v=Ma8Wsotaj2Q) | 21&nbsp;Oct | 174 |
+| 小美爆爆 | [仅需电脑和电视在同一WiFi，就能净化所有安卓电视桌面的开源项目#真干活用搭子 #办公就用dumate #百度搭子  #安卓电视](https://www.bilibili.com/video/BV1rPnq6oEBp/) | 21&nbsp;Oct | 160 |
+| 爆爆668 | [1分钟学会帮父母家里老电视去除广告和没用的软件、清除预装广告与臃肿软件、让老电视重获流畅!  #电视优化  #真干活用搭子 #办公就用dumate #百度搭子](https://www.bilibili.com/video/BV1vsnr6fEJC/) | 21&nbsp;Oct | 149 |
+| 徵音1112 | [仅需电脑和电视在同一WiFi下，就能净化所有安卓电视桌面的教程来了！ #办公就用dumate  #百度搭子 #电视桌面 #安卓电视](https://www.bilibili.com/video/BV1rMnr66E42/) | 21&nbsp;Oct | 112 |
+| Mario Vasques | [SUA SMART TV TE VIGIA? A IA ESTÁ MUDANDO TUDO!](https://www.youtube.com/watch?v=ZcwY92tHZYc) | 21&nbsp;Oct | 101 |
+| 人間不要新聞 | [【現場10/21】テレビの広告をClaude Codeで消すの、3日半でスター1.19万｜AIの現場 2026年10月21日](https://www.youtube.com/watch?v=JCBI-WfWBpU) | 21&nbsp;Oct | 78 |
+| syahdandev | [Orang Ramai Suruh Claude Code Buang Iklan dari Smart TV, Ribuan Ikut Coba](https://www.youtube.com/watch?v=dinwm7aYehQ) | 21&nbsp;Oct | 77 |
+| No Humans Needed | [[EN 10/21] Killing TV ads with Claude Code: 11.9K stars &#124; AI in the Field · Nohumans, Oct 21, 2026](https://www.youtube.com/watch?v=mYdDj3tXqFA) | 21&nbsp;Oct | 65 |
+| Repo Rush | [10 New GitHub Repos You Should Know (An AI Uses a Real iPhone & More)](https://www.youtube.com/watch?v=KYk-cKF1g6Y) | 21&nbsp;Oct | 47 |
+| atyourfingertips | [Your TV Is Watching You. So People Got AI to Fight Back.](https://www.youtube.com/watch?v=DQPSM5gK2TU) | 21&nbsp;Oct | 43 |
+| Akanda Ashraf, PhD | [People Are Using AI to Kill Their TV Ads](https://www.youtube.com/watch?v=_aWZ5uI130M) | 21&nbsp;Oct | 35 |
 | Нейро-Радио | [Нейро-Радио, 21 октября: Claude придумал белки против яда скорпиона](https://www.youtube.com/watch?v=r__WxDOVjmM) | 21&nbsp;Oct | 9 |
-| Navy Geeks | [I Removed Every Ad From My Google TV using Claude and No Root](https://www.youtube.com/watch?v=dpOjBS1FAxg) | 20&nbsp;Oct | 329,652 |
-| AwesomeFOSS | [CleanYourTV: 6,000 Stars in 3 Days to Kill Smart TV Ads](https://www.youtube.com/watch?v=-u2FuQZ9HsU) | 20&nbsp;Oct | 23,223 |
-| Carlos Cuamatzin | [Hackeé mi TV con IA: así usé Claude Code y Codex](https://www.youtube.com/watch?v=O5Ls8FGfnoo) | 20&nbsp;Oct | 11,156 |
-| Prism Labs | [CleanYourTV Strips Ads From 54 Smart TVs Free](https://www.youtube.com/watch?v=lHonkeutGvg) | 20&nbsp;Oct | 8,925 |
+| 无巧不成书吖 | [【第12期】电视优化开源工具！禁用系统广告、清理预装软件、替换超轻量桌面，支持多款电视机型！老电视机也能重获流畅体验](https://www.bilibili.com/video/BV1a5nc65Eo5/) | 20&nbsp;Oct | 371,090 |
+| Navy Geeks | [I Removed Every Ad From My Google TV using Claude and No Root](https://www.youtube.com/watch?v=dpOjBS1FAxg) | 20&nbsp;Oct | 331,572 |
+| AwesomeFOSS | [CleanYourTV: 6,000 Stars in 3 Days to Kill Smart TV Ads](https://www.youtube.com/watch?v=-u2FuQZ9HsU) | 20&nbsp;Oct | 23,470 |
+| Carlos Cuamatzin | [Hackeé mi TV con IA: así usé Claude Code y Codex](https://www.youtube.com/watch?v=O5Ls8FGfnoo) | 20&nbsp;Oct | 12,953 |
+| 青青王-AI | [电视被破解！老电视变Apple TV！！ #AI工具 #老电视改造 #智能电视 #开源项目 #数码干货](https://www.bilibili.com/video/BV1ycnN6zEEp/) | 20&nbsp;Oct | 12,266 |
+| Prism Labs | [CleanYourTV Strips Ads From 54 Smart TVs Free](https://www.youtube.com/watch?v=lHonkeutGvg) | 20&nbsp;Oct | 9,006 |
 | 新智元AIEra | [把电视丢给Claude问"能黑了它吗"，当天广告和预装全没了](https://www.bilibili.com/video/BV1a7nc6GEoS/) | 20&nbsp;Oct | 8,774 |
-| Cloud Codes | [Hack Your Smart TV with AI (No Ads)](https://www.youtube.com/watch?v=daW8bKZOS34) | 20&nbsp;Oct | 7,775 |
-| Nafay 3D | [Faster Android TV in 60 Seconds #androidtv #techtips #lifehacks](https://www.youtube.com/watch?v=NdcrG9NOo9c) | 20&nbsp;Oct | 6,383 |
-| Alta Media | [CleanYourTV — Remove TV Ads & Bloatware, Get an Apple TV-Style Home (Full Tutorial)](https://www.youtube.com/watch?v=oLasOtMhiBE) | 20&nbsp;Oct | 3,198 |
-| Garlex AI &#124; Боты, сайты, автоматизации | [Claude Code убрал рекламу с телевизора #shorts](https://www.youtube.com/watch?v=B_z8XEtxNKE) | 20&nbsp;Oct | 3,172 |
-| Daily Tech News Show | [Vibe Code Ads Right Off of Your TV - DTNS 5377](https://www.youtube.com/watch?v=x1EcnYPAHb8) | 20&nbsp;Oct | 2,903 |
-| Open Source AI Trends | [cleanyourtv: Debloat your Android TV](https://www.youtube.com/watch?v=G_TPL2ff3xc) | 20&nbsp;Oct | 2,847 |
-| AI Anytime | [Vibe coding reached your TV now. #tv #vibecoding #aiagents #cleanyourtv #viral #shorts #aishorts](https://www.youtube.com/watch?v=zsah85KcyTQ) | 20&nbsp;Oct | 2,604 |
-| Prinon Turio | [Replace Android & Google TV Ads with an Apple TV-Style Home Screen](https://www.youtube.com/watch?v=HWaceIUDVfI) | 20&nbsp;Oct | 2,402 |
-| Carlos &#124; IA para Marcas | [Quita los anuncios de tu tele con una IA en 15 minutos (CleanYourTV)](https://www.youtube.com/watch?v=LsK-peC3Fvw) | 20&nbsp;Oct | 1,991 |
-| ITG Now | [cleanyourtv: Free on GitHub. Netflix, minus the ads](https://www.youtube.com/watch?v=ymcdZRfBgDQ) | 20&nbsp;Oct | 1,963 |
-| โทเคนยังเหลือ | [EP2 สอนล้างโฆษณาทีวีด้วย AI ทีละขั้น ทำตามได้เลย! #Shorts](https://www.youtube.com/watch?v=tXTWP1jCFOQ) | 20&nbsp;Oct | 1,962 |
-| AI Pulse Labs | [People are using AI coding agents to make their Smart TVs dumb again. 🤯](https://www.youtube.com/watch?v=oif1j8fwtF4) | 20&nbsp;Oct | 1,783 |
-| Fire of AI | [Why are people hacking their own TVs with Claude?](https://www.youtube.com/watch?v=kyL5fqX6fOI) | 20&nbsp;Oct | 1,715 |
-| Bytecut | [Debloat an Android TV without root: CleanYourTV](https://www.youtube.com/watch?v=PMiugRgkRYg) | 20&nbsp;Oct | 1,669 |
-| Explain Fold | [People Are Hacking Their TVs With Claude](https://www.youtube.com/watch?v=jAyqKeLNvQs) | 20&nbsp;Oct | 1,440 |
-| internetartsy | [He Removed Ads From His TV Using AI 📺 #shorts](https://www.youtube.com/watch?v=KrOtiA9CvuI) | 20&nbsp;Oct | 1,368 |
-| AI with Akshat | [He told AI to delete the ads on his TV #Shorts](https://www.youtube.com/watch?v=P4K-D48Iqho) | 20&nbsp;Oct | 1,181 |
-| 人間不要新聞 | [Claude Codeでテレビの広告を消す人が急増、cleanyourtvは3日半でスター1.19万、文鎮化の報告も](https://www.youtube.com/watch?v=0gF5tYNhZeA) | 20&nbsp;Oct | 973 |
-| AI Bytes Lab | [叫 Claude Code 清掉電視廣告｜CleanYourTV](https://www.youtube.com/watch?v=r8G4_kGqbQs) | 20&nbsp;Oct | 918 |
-| Repo Radar AI | [Remove 25 Bloatware Packages From Your Android TV](https://www.youtube.com/watch?v=rGL7ZI5S1CE) | 20&nbsp;Oct | 893 |
+| Cloud Codes | [Hack Your Smart TV with AI (No Ads)](https://www.youtube.com/watch?v=daW8bKZOS34) | 20&nbsp;Oct | 8,274 |
+| Nafay 3D | [Faster Android TV in 60 Seconds #androidtv #techtips #lifehacks](https://www.youtube.com/watch?v=NdcrG9NOo9c) | 20&nbsp;Oct | 7,380 |
+| 无巧不成书吖 | [【第12期】仅需电脑和电视在同一WiFi，就能净化所有安卓电视桌面，关闭广告和预装软件，替换极简桌面，媲美 Apple TV！适配绝大多数安卓电视与电视盒子！](https://www.bilibili.com/video/BV1sznN6CEAd/) | 20&nbsp;Oct | 7,231 |
+| Alta Media | [CleanYourTV — Remove TV Ads & Bloatware, Get an Apple TV-Style Home (Full Tutorial)](https://www.youtube.com/watch?v=oLasOtMhiBE) | 20&nbsp;Oct | 3,538 |
+| Garlex AI &#124; Боты, сайты, автоматизации | [Claude Code убрал рекламу с телевизора #shorts](https://www.youtube.com/watch?v=B_z8XEtxNKE) | 20&nbsp;Oct | 3,358 |
+| Open Source AI Trends | [cleanyourtv: Debloat your Android TV](https://www.youtube.com/watch?v=G_TPL2ff3xc) | 20&nbsp;Oct | 3,014 |
+| Daily Tech News Show | [Vibe Code Ads Right Off of Your TV - DTNS 5377](https://www.youtube.com/watch?v=x1EcnYPAHb8) | 20&nbsp;Oct | 3,005 |
+| AI Anytime | [Vibe coding reached your TV now. #tv #vibecoding #aiagents #cleanyourtv #viral #shorts #aishorts](https://www.youtube.com/watch?v=zsah85KcyTQ) | 20&nbsp;Oct | 2,630 |
+| Prinon Turio | [Replace Android & Google TV Ads with an Apple TV-Style Home Screen](https://www.youtube.com/watch?v=HWaceIUDVfI) | 20&nbsp;Oct | 2,413 |
+| โทเคนยังเหลือ | [EP2 สอนล้างโฆษณาทีวีด้วย AI ทีละขั้น ทำตามได้เลย! #Shorts](https://www.youtube.com/watch?v=tXTWP1jCFOQ) | 20&nbsp;Oct | 2,273 |
+| Carlos &#124; IA para Marcas | [Quita los anuncios de tu tele con una IA en 15 minutos (CleanYourTV)](https://www.youtube.com/watch?v=LsK-peC3Fvw) | 20&nbsp;Oct | 2,081 |
+| ITG Now | [cleanyourtv: Free on GitHub. Netflix, minus the ads](https://www.youtube.com/watch?v=ymcdZRfBgDQ) | 20&nbsp;Oct | 2,051 |
+| AI Pulse Labs | [People are using AI coding agents to make their Smart TVs dumb again. 🤯](https://www.youtube.com/watch?v=oif1j8fwtF4) | 20&nbsp;Oct | 1,993 |
+| Fire of AI | [Why are people hacking their own TVs with Claude?](https://www.youtube.com/watch?v=kyL5fqX6fOI) | 20&nbsp;Oct | 1,793 |
+| Bytecut | [Debloat an Android TV without root: CleanYourTV](https://www.youtube.com/watch?v=PMiugRgkRYg) | 20&nbsp;Oct | 1,743 |
+| Explain Fold | [People Are Hacking Their TVs With Claude](https://www.youtube.com/watch?v=jAyqKeLNvQs) | 20&nbsp;Oct | 1,560 |
+| internetartsy | [He Removed Ads From His TV Using AI 📺 #shorts](https://www.youtube.com/watch?v=KrOtiA9CvuI) | 20&nbsp;Oct | 1,378 |
+| AI with Akshat | [He told AI to delete the ads on his TV #Shorts](https://www.youtube.com/watch?v=P4K-D48Iqho) | 20&nbsp;Oct | 1,183 |
+| 人間不要新聞 | [Claude Codeでテレビの広告を消す人が急増、cleanyourtvは3日半でスター1.19万、文鎮化の報告も](https://www.youtube.com/watch?v=0gF5tYNhZeA) | 20&nbsp;Oct | 977 |
+| Repo Radar AI | [Remove 25 Bloatware Packages From Your Android TV](https://www.youtube.com/watch?v=rGL7ZI5S1CE) | 20&nbsp;Oct | 929 |
+| AI Bytes Lab | [叫 Claude Code 清掉電視廣告｜CleanYourTV](https://www.youtube.com/watch?v=r8G4_kGqbQs) | 20&nbsp;Oct | 927 |
 | NextLayer | [Claude Code Can Fix Your Slow Smart TV (Step by Step)](https://www.youtube.com/watch?v=uPDVZ8Aejb0) | 20&nbsp;Oct | 851 |
-| Alta Media | [Stop Watching Ads on Your Own TV! This FREE Tool Cleans Any Android TV](https://www.youtube.com/watch?v=umLvMUqlAts) | 20&nbsp;Oct | 606 |
-| AI&Other-Tech | [People Are Using AI to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=dGAoxdpJ6ik) | 20&nbsp;Oct | 492 |
-| Gcode | [Mi TV Makeover: No Ads, Custom Home Screen & Live Screensavers](https://www.youtube.com/watch?v=NyLS0_wmsOs) | 20&nbsp;Oct | 488 |
-| MakSim-IT | [Топ-10 GitHub за 3 дня: cleanyourtv и free-my-tv](https://www.youtube.com/watch?v=a26j1IL6p_A) | 20&nbsp;Oct | 445 |
-| WeeklyAIHaul | [Someone used Claude Code to fix their ad-filled smart TV...](https://www.youtube.com/watch?v=Cww_R-rmwjA) | 20&nbsp;Oct | 434 |
-| cheekymomo | [Free tvOS makeover for Android TV with tv‑vibehack](https://www.youtube.com/watch?v=P-U9QpHmCNg) | 20&nbsp;Oct | 418 |
-| Mixtape of Experts | [CleanYourTV: The Funniest Way to Get Ads Off Your TV](https://www.youtube.com/watch?v=tJTLOcN450w) | 20&nbsp;Oct | 415 |
-| The Output | [People Are Using AI Agents to Make Their Smart TVs Dumb Again. Your TV Already Has a Safer Switch](https://www.youtube.com/watch?v=7YJC7yb4GVY) | 20&nbsp;Oct | 313 |
-| AwesomeFOSS | [CleanYourTV: 6,000 Stars in 3 Days to Kill Smart TV Ads #Shorts](https://www.youtube.com/watch?v=k5Ka3D7AzcY) | 20&nbsp;Oct | 287 |
-| Ray Wang | [电视首页全是广告？一句话让 AI 帮你关掉（不卸载、随时还原）](https://www.youtube.com/watch?v=ky-x7RSKXEA) | 20&nbsp;Oct | 277 |
-| Desi Degen | [Smart TV ke Ads Kaise Hataye? Free GitHub Tool CleanYourTV #Shorts](https://www.youtube.com/watch?v=SHWD5fZTVDc) | 20&nbsp;Oct | 231 |
+| Alta Media | [Stop Watching Ads on Your Own TV! This FREE Tool Cleans Any Android TV](https://www.youtube.com/watch?v=umLvMUqlAts) | 20&nbsp;Oct | 614 |
+| AI&Other-Tech | [People Are Using AI to Make Their Smart TVs Dumb Again](https://www.youtube.com/watch?v=dGAoxdpJ6ik) | 20&nbsp;Oct | 522 |
+| Gcode | [Mi TV Makeover: No Ads, Custom Home Screen & Live Screensavers](https://www.youtube.com/watch?v=NyLS0_wmsOs) | 20&nbsp;Oct | 513 |
+| MakSim-IT | [Топ-10 GitHub за 3 дня: cleanyourtv и free-my-tv](https://www.youtube.com/watch?v=a26j1IL6p_A) | 20&nbsp;Oct | 456 |
+| WeeklyAIHaul | [Someone used Claude Code to fix their ad-filled smart TV...](https://www.youtube.com/watch?v=Cww_R-rmwjA) | 20&nbsp;Oct | 444 |
+| Mixtape of Experts | [CleanYourTV: The Funniest Way to Get Ads Off Your TV](https://www.youtube.com/watch?v=tJTLOcN450w) | 20&nbsp;Oct | 438 |
+| cheekymomo | [Free tvOS makeover for Android TV with tv‑vibehack](https://www.youtube.com/watch?v=P-U9QpHmCNg) | 20&nbsp;Oct | 425 |
+| The Output | [People Are Using AI Agents to Make Their Smart TVs Dumb Again. Your TV Already Has a Safer Switch](https://www.youtube.com/watch?v=7YJC7yb4GVY) | 20&nbsp;Oct | 324 |
+| Ray Wang | [电视首页全是广告？一句话让 AI 帮你关掉（不卸载、随时还原）](https://www.youtube.com/watch?v=ky-x7RSKXEA) | 20&nbsp;Oct | 290 |
+| AwesomeFOSS | [CleanYourTV: 6,000 Stars in 3 Days to Kill Smart TV Ads #Shorts](https://www.youtube.com/watch?v=k5Ka3D7AzcY) | 20&nbsp;Oct | 288 |
+| Vova Luka | [ИИ-агенты чистят телевизоры от рекламы и слежки &#124; Лука ИИщев, 20 октября](https://www.youtube.com/watch?v=8o3MkKCaYcM) | 20&nbsp;Oct | 265 |
+| Desi Degen | [Smart TV ke Ads Kaise Hataye? Free GitHub Tool CleanYourTV #Shorts](https://www.youtube.com/watch?v=SHWD5fZTVDc) | 20&nbsp;Oct | 232 |
 | 啾一下 AI | [電視開機先看廣告？爆紅的 AI 去廣告法，先看這 3 件事](https://www.youtube.com/watch?v=1Gkqvr7SuZs) | 20&nbsp;Oct | 230 |
-| MUHAMMAD ZAIN UL ABIDIN | [This Free Tool Deletes the Ads on Your Smart TV #Shorts](https://www.youtube.com/watch?v=1WEznb6nq34) | 20&nbsp;Oct | 194 |
-| I HAVE ADHD AND FOMO | [GPT-6 COBOL Migration, DeepSeek DeepInfer & CleanYourTV &#124; AX Trend Deep Dive](https://www.youtube.com/watch?v=NZiuLXyLwWQ) | 20&nbsp;Oct | 177 |
+| MUHAMMAD ZAIN UL ABIDIN | [This Free Tool Deletes the Ads on Your Smart TV #Shorts](https://www.youtube.com/watch?v=1WEznb6nq34) | 20&nbsp;Oct | 195 |
+| I HAVE ADHD AND FOMO | [GPT-6 COBOL Migration, DeepSeek DeepInfer & CleanYourTV &#124; AX Trend Deep Dive](https://www.youtube.com/watch?v=NZiuLXyLwWQ) | 20&nbsp;Oct | 178 |
 | Glitch Daily | [AI Is Making Smart TVs Dumb Again 📺 #AI #SmartTV #Shorts](https://www.youtube.com/watch?v=aSugs6jWF8A) | 20&nbsp;Oct | 173 |
-| ScanderLoud | [Make Your Smart TV Dumb Again With AI](https://www.youtube.com/watch?v=cYWtsyuY74Q) | 20&nbsp;Oct | 154 |
-| SubstrateIQ | [A free repo strips the ads off an Android TV over Wi-Fi, and nothing gets uninstalled](https://www.youtube.com/watch?v=GfSCBJdtnW4) | 20&nbsp;Oct | 92 |
-| SpokenLayer | [People are using AI to make their smart TVs dumb again](https://www.youtube.com/watch?v=hZv0FYwpBk0) | 20&nbsp;Oct | 66 |
-| dailybotlab | [How People Are Using AI to Fix Smart TVs (Claude Code Overhaul)](https://www.youtube.com/watch?v=J5lrh4mig_I) | 20&nbsp;Oct | 61 |
-| I HAVE ADHD AND FOMO | [Claude Code Wipes Android TV Ads — AX Trend Short #3345](https://www.youtube.com/watch?v=5g_EroLGKqQ) | 20&nbsp;Oct | 38 |
+| ScanderLoud | [Make Your Smart TV Dumb Again With AI](https://www.youtube.com/watch?v=cYWtsyuY74Q) | 20&nbsp;Oct | 165 |
+| SubstrateIQ | [A free repo strips the ads off an Android TV over Wi-Fi, and nothing gets uninstalled](https://www.youtube.com/watch?v=GfSCBJdtnW4) | 20&nbsp;Oct | 94 |
+| SpokenLayer | [People are using AI to make their smart TVs dumb again](https://www.youtube.com/watch?v=lzftxCd5dg4) | 20&nbsp;Oct | 83 |
+| grepgrep | [[开源]3天6100星！用Claude Code自动整治电视广告](https://www.bilibili.com/video/BV1BGnN6wEDW/) | 20&nbsp;Oct | 82 |
+| SpokenLayer | [People are using AI to make their smart TVs dumb again](https://www.youtube.com/watch?v=hZv0FYwpBk0) | 20&nbsp;Oct | 70 |
+| dailybotlab | [How People Are Using AI to Fix Smart TVs (Claude Code Overhaul)](https://www.youtube.com/watch?v=J5lrh4mig_I) | 20&nbsp;Oct | 68 |
+| I HAVE ADHD AND FOMO | [Claude Code Wipes Android TV Ads — AX Trend Short #3345](https://www.youtube.com/watch?v=5g_EroLGKqQ) | 20&nbsp;Oct | 39 |
 | pwni | [Mein Fernseher, eure Verkaufsfläche? CleanYourTV räumt auf](https://www.youtube.com/watch?v=1NPepUWDewA) | 20&nbsp;Oct | 38 |
-| Dev4Code | [Android ADB Wireless Pairing Explained](https://www.youtube.com/watch?v=w6z_NKvI8T0) | 20&nbsp;Oct | 26 |
-| Artificially Intimidating | [Claude Code Is Evicting the Ads From Your TV -- AI Brief October 20](https://www.youtube.com/watch?v=y4IvB_qKWdM) | 20&nbsp;Oct | 19 |
-| Syntax | [Everyone is hacking their TV ⟡ VoidZero Framework Open Sourced ⟡ OpenCode Hacked ⌁ Syntax Weekly ⌁](https://www.youtube.com/watch?v=qKyFi6j1XpA) | 19&nbsp;Oct | 102,096 |
-| TechCodeRealm | [AI Is Removing Ads From Smart TVs! 📺 Make Android TV Faster & Cleaner](https://www.youtube.com/watch?v=LIV9FPkJO3U) | 19&nbsp;Oct | 22,016 |
-| shang peng | [2. 受够了电视开机广告！免刷机无线净化换装Apple TV极简桌面软件 &#124; CleanYourTV TV VibeHack](https://www.youtube.com/watch?v=ca8Jepqhahs) | 19&nbsp;Oct | 8,854 |
-| • 𝐭𝐞𝐜𝐡-𝑖𝑠ℎ | [I Fixed My Google TV Home Screen With AI](https://www.youtube.com/watch?v=-G8OUZrayIM) | 19&nbsp;Oct | 5,350 |
-| Readme reels | [Get a clean, ad-free Apple TV-style home on your Android or Google TV](https://www.youtube.com/watch?v=A8DAwbp3DnQ) | 19&nbsp;Oct | 3,008 |
-| عبدالرحمن AI | [نظّفت شاشتي TCL بمشروع من GitHub… عن طريق هرمز &#124; Clean Your TV](https://www.youtube.com/watch?v=JfGdT6a_S0Y) | 19&nbsp;Oct | 1,379 |
-| TechInYourHands | [Developers Are Using Vibe Coding to Remove Unwanted Apps and Personalize Their Smart TV Screens!](https://www.youtube.com/watch?v=lN-j4DU_19U) | 19&nbsp;Oct | 1,065 |
-| 굿리포 | [Wi-Fi로 Android TV를 Apple TV처럼 정리하는 cleanyourtv](https://www.youtube.com/watch?v=siFONnVIpNE) | 19&nbsp;Oct | 909 |
-| Commit Brief | [Claude Code switches off ads on Sony, TCL, Xiaomi TVs](https://www.youtube.com/watch?v=bAFq5i642D8) | 19&nbsp;Oct | 718 |
-| Prism Labs | [CleanYourTV Strips Ads From 54 Smart TVs Free #Shorts](https://www.youtube.com/watch?v=AiXGusz91NQ) | 19&nbsp;Oct | 657 |
+| Dev4Code | [Android ADB Wireless Pairing Explained](https://www.youtube.com/watch?v=w6z_NKvI8T0) | 20&nbsp;Oct | 27 |
+| Artificially Intimidating | [Claude Code Is Evicting the Ads From Your TV -- AI Brief October 20](https://www.youtube.com/watch?v=y4IvB_qKWdM) | 20&nbsp;Oct | 20 |
+| Nytro Marketing | [AI Revolution: Smart TV Hacks, Marketing Gaps, and Ukraine's Drone Evacuation Breakthrough](https://www.youtube.com/watch?v=DueT82m2eNI) | 20&nbsp;Oct | 8 |
+| Syntax | [Everyone is hacking their TV ⟡ VoidZero Framework Open Sourced ⟡ OpenCode Hacked ⌁ Syntax Weekly ⌁](https://www.youtube.com/watch?v=qKyFi6j1XpA) | 19&nbsp;Oct | 102,900 |
+| TechCodeRealm | [AI Is Removing Ads From Smart TVs! 📺 Make Android TV Faster & Cleaner](https://www.youtube.com/watch?v=LIV9FPkJO3U) | 19&nbsp;Oct | 22,125 |
+| shang peng | [2. 受够了电视开机广告！免刷机无线净化换装Apple TV极简桌面软件 &#124; CleanYourTV TV VibeHack](https://www.youtube.com/watch?v=ca8Jepqhahs) | 19&nbsp;Oct | 9,062 |
+| • 𝐭𝐞𝐜𝐡-𝑖𝑠ℎ | [I Fixed My Google TV Home Screen With AI](https://www.youtube.com/watch?v=-G8OUZrayIM) | 19&nbsp;Oct | 6,374 |
+| Readme reels | [Get a clean, ad-free Apple TV-style home on your Android or Google TV](https://www.youtube.com/watch?v=A8DAwbp3DnQ) | 19&nbsp;Oct | 3,153 |
+| عبدالرحمن AI | [نظّفت شاشتي TCL بمشروع من GitHub… عن طريق هرمز &#124; Clean Your TV](https://www.youtube.com/watch?v=JfGdT6a_S0Y) | 19&nbsp;Oct | 1,581 |
+| TechInYourHands | [Developers Are Using Vibe Coding to Remove Unwanted Apps and Personalize Their Smart TV Screens!](https://www.youtube.com/watch?v=lN-j4DU_19U) | 19&nbsp;Oct | 1,077 |
+| 굿리포 | [Wi-Fi로 Android TV를 Apple TV처럼 정리하는 cleanyourtv](https://www.youtube.com/watch?v=siFONnVIpNE) | 19&nbsp;Oct | 918 |
+| Commit Brief | [Claude Code switches off ads on Sony, TCL, Xiaomi TVs](https://www.youtube.com/watch?v=bAFq5i642D8) | 19&nbsp;Oct | 756 |
+| Prism Labs | [CleanYourTV Strips Ads From 54 Smart TVs Free #Shorts](https://www.youtube.com/watch?v=AiXGusz91NQ) | 19&nbsp;Oct | 664 |
 | Next Token | [Meta's 816B Open Model vs DeepSeek: Same Score, 3.5× Cheaper &#124; Last Week in AI](https://www.youtube.com/watch?v=_hQsiqyk824) | 19&nbsp;Oct | 392 |
-| I HAVE ADHD AND FOMO | [Claude Code's Triple Play: Fork Subagents, TV Hacks, and a Public Benefit Fund &#124; AX Trend Deep Dive](https://www.youtube.com/watch?v=Fq4WBSDFOy4) | 19&nbsp;Oct | 89 |
+| I HAVE ADHD AND FOMO | [Claude Code's Triple Play: Fork Subagents, TV Hacks, and a Public Benefit Fund &#124; AX Trend Deep Dive](https://www.youtube.com/watch?v=Fq4WBSDFOy4) | 19&nbsp;Oct | 90 |
 | BotBuhdy | [A coding AI killed the ads on an Android TV #Shorts](https://www.youtube.com/watch?v=sO8u6imtyKQ) | 19&nbsp;Oct | 59 |
-| Games I Played | [Gaming News Malayalam Episode 3](https://www.youtube.com/watch?v=PgvWUs6BRM0) | 19&nbsp;Oct | 31 |
-| TechPP | [How to debloat your Android TV with Claude Code](https://www.youtube.com/watch?v=YAaxqBvd1sY) | 18&nbsp;Oct | 294,517 |
-| Github Awesome | [GitHub Trending Weekly #54: git-ai, sill, Filee, Tracely-ai, Snitch, web-ocean, earshot, net-merge](https://www.youtube.com/watch?v=PYgTElh4CSk) | 18&nbsp;Oct | 14,010 |
-| Picoito | [An AI cleared the ads from his parents' Android TV](https://www.youtube.com/watch?v=_zB3OufofGE) | 18&nbsp;Oct | 4,407 |
-| Hyperank ai | [This TV Showed Ads Before Netflix… So Claude Code Hacked It 🤯 #shorts](https://www.youtube.com/watch?v=ekJu3HbzLMQ) | 18&nbsp;Oct | 2,617 |
-| Github Signals | [TV Vibehack: Your TV, Minus the Ads](https://www.youtube.com/watch?v=6052j4zquic) | 18&nbsp;Oct | 1,583 |
-| LookOnThisGit | [Strip annoying ads from your Android TV instantly ⚡](https://www.youtube.com/watch?v=zHYFFkFNCjg) | 18&nbsp;Oct | 1,502 |
-| Cléofas Rocha | [Tirei os anúncios da minha TV com 1 prompt (Claude Code) #shorts](https://www.youtube.com/watch?v=OnXNaRIalFM) | 18&nbsp;Oct | 1,093 |
-| โทเคนยังเหลือ | [ทีวีมีโฆษณา? ให้ AI ล้างทิ้ง แถมหน้าโฮมใหม่สวยเหมือน Apple TV #Shorts](https://www.youtube.com/watch?v=bz-K4mYW5rQ) | 18&nbsp;Oct | 593 |
-| 아하! AI테크 | [TV 광고 치우는 AI 나왔다? TV 바이브핵 드디어 공개!](https://www.youtube.com/watch?v=qVCDr6Gd0wg) | 18&nbsp;Oct | 83 |
-| Peter Ai News | [666 Developers Star This Ad-Wipe TV Hack! #ai #viral #claude #shorts](https://www.youtube.com/watch?v=bdVdHVYb3Zs) | 18&nbsp;Oct | 20 |
+| Games I Played | [Gaming News Malayalam Episode 3](https://www.youtube.com/watch?v=PgvWUs6BRM0) | 19&nbsp;Oct | 34 |
+| TechPP | [How to debloat your Android TV with Claude Code](https://www.youtube.com/watch?v=YAaxqBvd1sY) | 18&nbsp;Oct | 308,156 |
+| Github Awesome | [GitHub Trending Weekly #54: git-ai, sill, Filee, Tracely-ai, Snitch, web-ocean, earshot, net-merge](https://www.youtube.com/watch?v=PYgTElh4CSk) | 18&nbsp;Oct | 14,250 |
+| Picoito | [An AI cleared the ads from his parents' Android TV](https://www.youtube.com/watch?v=_zB3OufofGE) | 18&nbsp;Oct | 4,492 |
+| Hyperank ai | [This TV Showed Ads Before Netflix… So Claude Code Hacked It 🤯 #shorts](https://www.youtube.com/watch?v=ekJu3HbzLMQ) | 18&nbsp;Oct | 2,729 |
+| Github Signals | [TV Vibehack: Your TV, Minus the Ads](https://www.youtube.com/watch?v=6052j4zquic) | 18&nbsp;Oct | 1,606 |
+| LookOnThisGit | [Strip annoying ads from your Android TV instantly ⚡](https://www.youtube.com/watch?v=zHYFFkFNCjg) | 18&nbsp;Oct | 1,514 |
+| Cléofas Rocha | [Tirei os anúncios da minha TV com 1 prompt (Claude Code) #shorts](https://www.youtube.com/watch?v=OnXNaRIalFM) | 18&nbsp;Oct | 1,132 |
+| โทเคนยังเหลือ | [ทีวีมีโฆษณา? ให้ AI ล้างทิ้ง แถมหน้าโฮมใหม่สวยเหมือน Apple TV #Shorts](https://www.youtube.com/watch?v=bz-K4mYW5rQ) | 18&nbsp;Oct | 624 |
+| 아하! AI테크 | [TV 광고 치우는 AI 나왔다? TV 바이브핵 드디어 공개!](https://www.youtube.com/watch?v=qVCDr6Gd0wg) | 18&nbsp;Oct | 120 |
+| Peter Ai News | [666 Developers Star This Ad-Wipe TV Hack! #ai #viral #claude #shorts](https://www.youtube.com/watch?v=bdVdHVYb3Zs) | 18&nbsp;Oct | 21 |
 
 [Back to the README](../README.md)

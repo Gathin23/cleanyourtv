@@ -23,6 +23,10 @@
 # [CleanYourTV discussion](https://github.com/Gathin23/cleanyourtv/discussions/2074#discussioncomment-19471670).
 # TLS ADB may need the stock `adb` via `TV_ADB_BINARY`; see [native ADB notes](../../tools/native-adb.md).
 #
+# On Projector.20260820.173302 the Wireless debugging switch this paragraph pairs through also comes back off
+# at every reboot, not only the port, and the first time it is turned on there the projector black-screens
+# until a power cycle - a second enable then works (#4296, one unit on a later build).
+#
 # Home: with the stock launcher left enabled (STOCK_LAUNCHER=none) the firmware opens com.htc.magcubicos at
 # every boot whatever the default Home, and stock_home_redirect does not help: something with the system uid
 # clears enabled_accessibility_services within seconds, so HomeKeyService never stays bound. Disabling the
@@ -41,6 +45,17 @@
 # Inputs: com.softwinner.vis lists HDMI1-3 and CVBS1-2, but nothing on this firmware handles the
 # passthrough URI as a TV app (ACTION_VIEW on it resolves to OfficeSuite), so config.json sends the Inputs
 # pill to Allwinner's own source picker, com.softwinner.awsource.
+#
+# That picker is wider than the hardware: on Projector.20260820.173302 the report in #4296 found it offering
+# several virtual HDMI and CVBS ports on a projector with a single HDMI input, so a reader who picks one of
+# the others gets nothing back, and the stock launcher on that build opens
+# com.softwinner.awlivetv/.MainActivity rather than the picker. An owner who would rather have the stock
+# panel can point config.json at it - com.softwinner.awlivetv is kept enabled below either way:
+#
+#   "source_panel_service": "com.softwinner.awlivetv/com.softwinner.awlivetv.MainActivity"
+#
+# The shipped config.json keeps the picker, because that is what the unit this header was written on ran
+# (Inputs > HDMI1 is in the working list above); the swap is reported from one other unit on a later build.
 #
 # Kept on purpose:
 # - com.htc.magcubicos: Home, disabled by the install script, not by this list.

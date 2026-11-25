@@ -21,11 +21,15 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
    script. The bot checks this in the diff, not in the description.
 6. Add a JVM unit test under `launcher/app/src/test/java/com/gathin/tvhome/` for any logic that can be tested
    without a TV.
-7. Keep it small: a switch should cost a few hundred bytes to about 1 KB of APK. Build and check the size
-   gate; the gate is hard. The size is also printed on the front pages, so a switch that moves it updates
-   `STATS` in `tools/readme_stats.py` - the number `docs/card.jpg` is drawn from, and what each page's alt
-   text describes - and the `about N KB` in every `README*.md` that shows that card: its alt text, the
-   `launcher/build-and-install.sh` Tools row and the Launcher section's first sentence, in each page's own
+7. Keep it small, and measure the room before you design it: the gate's ceiling is in
+   `.github/workflows/ci.yml`, and little is left under it, so build the launcher and subtract the APK's size
+   from that ceiling rather than working from the rounded figure the front pages print. A switch has to be
+   tiny, and it may not fit at all - what room is left goes to fixes of wrong behaviour first,
+   so a preference that does not fit belongs in a fork with one row in `SHOWCASE.md`. Say what it costs in
+   bytes in the pull request. The size is printed on the front pages as well, so a switch that moves it
+   updates `STATS` in `tools/readme_stats.py` - the number `docs/card.jpg` is drawn from, and what each
+   page's alt text describes - and the `about N KB` in every `README*.md` that shows that card: its alt text,
+   the `launcher/build-and-install.sh` Tools row and the Launcher section's first sentence, in each page's own
    words.
 8. Verify on a real TV with the switch on and off, D-pad from every edge, and attach screenshots.
 9. If you can, run the regression check in [`perf-ab.md`](perf-ab.md) with the

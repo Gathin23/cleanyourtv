@@ -198,7 +198,9 @@ def address_problem(raw):
     return None
 
 
-_raw_host = os.environ.get("TV_HOST")
+# Stripped: an address copied off a page or out of a file often carries a space or a newline, and the
+# socket read "192.168.1.50 " as a host name it could not find, so the TV and its network were blamed.
+_raw_host = (os.environ.get("TV_HOST") or "").strip()
 if not _raw_host:
     sys.exit("Set TV_HOST to your TV's IP address, e.g.  TV_HOST=192.168.1.50 tools/tv.py --probe\n"
              "(find it under Settings → Network, or look for the TV in `arp -a`)")
@@ -210,6 +212,12 @@ if _problem:
                      f"TV_HOST=192.168.1.50 tools/tv.py --probe\n")
     sys.exit(2)
 HOST, _endpoint_port = split_host_port(_raw_host)
+if not HOST:
+    # `:5555` or `[]:5555`: a port with no address in front of it, which the socket answered as a TV it
+    # could not reach.
+    sys.stderr.write(f"TV_HOST={_raw_host!r} has no address before the port. Pass the TV's IP, e.g.  "
+                     f"TV_HOST=192.168.1.50:5555 tools/tv.py --probe\n")
+    sys.exit(2)
 _port_str = _endpoint_port or os.environ.get("TV_PORT") or "5555"
 try:
     PORT = int(_port_str)
@@ -523,6 +531,14 @@ def transfer_args(args):
         usage_error("--pull needs the path on the TV to read")
     if not local:
         usage_error("--pull needs the local file to save to")
+    # The three shapes screenshot_target() refuses for the same reason: a blank name was written as a
+    # file called "   " and the run said "pulled", and a name ending in a separator, `.` or `..` was only
+    # found out by os.replace() after the TV had sent the whole file.
+    if not local.strip():
+        usage_error(f"--pull's local file is blank ({local!r}): name the file to save to")
+    if local.endswith(("/", os.sep)) or os.path.basename(local) in (".", ".."):
+        path_error(f"{local} names a folder, and --pull writes the file to the name it is given: give a "
+                   f"file name. Nothing was pulled.")
     folder = os.path.dirname(os.path.abspath(local))
     if not os.path.isdir(folder):
         path_error(f"there is no folder {folder} for {local}: create it, or pull into a folder that is "

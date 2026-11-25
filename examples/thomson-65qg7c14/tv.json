@@ -1,0 +1,6 @@
+{
+  "tv": "Thomson 65QG7C14 (Expressluck-built, cottongreen, Thomson_4K_RATV3, Realtek rtd6748)",
+  "os": "Google TV 14",
+  "brand": "Thomson",
+  "notes": "11 packages: Anoki ACR, Google feedback and partner setup, Realtek retail demo, partner rows and karaoke guide, Play Games; Google TV store, Assistant, karaoke mic and the USB media player off by choice; Netflix, Prime Video and HbbTV commented out (off on this set); Google TV stays Home (no replacement launcher), `com.google.android.tungsten.setupwraith` kept (it owns the saved Wi-Fi), `com.realsil.ota` kept; held through an OTA from UKRC.260302.020 to UKRE.260524.089; ~1.7 GB"
+}

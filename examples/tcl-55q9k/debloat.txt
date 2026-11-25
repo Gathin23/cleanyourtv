@@ -1,0 +1,64 @@
+# TCL 55Q9K (China), device tcl_mt5879_cn / product tcl_mt5879_cn_db, MediaTek MT5879 platform,
+# Android 11 (SDK 30), build RQ3A.210705.001 / 2026032122 (2026-03-21), 3.7 GB RAM.
+#
+# 32-bit only: ro.product.cpu.abilist = armeabi-v7a,armeabi. No Google services — apps come from
+# com.tcl.appmarket2 or a USB stick. Same platform and firmware train as tcl-q10g-pro (same
+# display id RQ3A.210705.001, different build); this list is the 15 packages actually disabled
+# and lived with on the Q9K, a subset of that list.
+#
+# Status: applied 2026-10-27 in two batches (1 + 14), lived with for four weeks, re-checked
+# 2026-11-24 after a reboot: all 15 still disabled, no breakage, TV in daily use.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q9k/debloat.txt
+#
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q9k/debloat.txt com.tcl.workmode
+#
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB, read this before anything else: same path as tcl-q10g-pro — there is no "Build number"
+# tap seven times on this firmware and no ADB row in developer options. Settings → About this
+# device (关于本机) → Device info (本机信息), then press UP DOWN LEFT RIGHT on the remote; the
+# ADB toggle appears at the bottom. Once on, it stays on across reboots:
+#
+#   persist.adb.tcp.port=5555, persist.service.adb.enable=1.
+# Switch the ADB toggle off again on the same screen when you are done: until then port 5555 stays open on the network.
+#
+# Stock launcher: com.tcl.workmode — the only activity that resolves MAIN+HOME, so never disable
+# it (no HOME handler means a black screen on boot). A third-party launcher cannot be installed
+# here: the refusal is a package verification step, not a parse error (same gate as
+# tcl-q10g-pro — any APK declaring android.intent.category.HOME fails with
+# INSTALL_FAILED_VERIFICATION_FAILURE). Apps arrive through the TCL app store
+# (com.tcl.appmarket2) or a USB stick via 电视卫士.
+#
+# Live TV app: com.tcl.tv — keep it, it owns DTV/HDMI playback and the remote's source key.
+#
+# Kept on purpose:
+#   com.tcl.guard                 电视卫士; on this firmware the USB install path is the remaining
+#                                 way to sideload, so keep it
+#   com.tcl.appmarket2            TCL app store, the other install channel
+#   com.sohu.inputmethod.sogou.tv the only input method; disable it and there is no keyboard at all
+#   com.tcl.ttvs                  kept; hosts the firmware updater on the TCL lists
+#
+#
+# Ad and telemetry reporting
+#
+com.tcl.bootadservice                    # full-screen ad before Home
+com.tcl.profilemanager                   # audience / profile reporting
+com.tcl.xian.StartandroidService         # background reporting service
+com.tcl.logkit                           # log collection and upload
+com.tcl.recognize.service                # screen recognition; also receives PackageInstall.renew and
+                                         # PACKAGE_REMOVED, so it is a silent-install channel
+com.tcl.appreciate.art                   # art-wallpaper / screensaver promo content
+com.tcl.atomic.servicecenter             # home-screen recommendation cards (plugin host)
+com.tcl.c2dm.client                      # TCL push, long-lived connection
+com.tcl.wholenetsearch                   # whole-net search; results carry VOD promotions
+com.tcl.playskill                        # "tips" promo app
+com.tcl.repairguide                      # repair-guide app
+com.tcl.useragreement                    # user-agreement popup
+android.autoinstalls.config.tcl.device   # first-boot auto-install of preloaded apps
+#
+#
+# Content apps that carry their own promo surfaces
+#
+com.tcl.ffeducation                      # kids / education content
+com.tcl.ffkaraoke                        # karaoke

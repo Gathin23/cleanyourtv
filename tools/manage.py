@@ -28,7 +28,7 @@ them, since the launcher answers any other value with its own default. A colour 
 to the shape its own parser reads - six hex digits, and no background alpha, which Config.color() overwrites - so
 a malformed colour is refused rather than written as one the theme already had. A list of app_keys is read one entry at a
 time the way the launcher reads it: a key that is a keycode or a KEYCODE_ name and a target that is a package, an
-activity, an action word, input:, guide: or inputs, since RemoteKeys skips an entry it cannot read without a word
+activity, an action word, input:, guide:, action: or inputs, since RemoteKeys skips an entry it cannot read without a word
 and that button would open nothing. A list of `"package=value"` entries (`app_labels`, `app_banners`,
 `launch_actions`) is read one entry at a time too: Config.packageMap() keeps only an entry with a package before
 the '=' and a value after it, so an entry without both halves is refused rather than written as one the tile never
@@ -309,7 +309,8 @@ def app_key_problem(entry):
             break
     if ":" not in text:
         return f"{entry!r} has no colon, so RemoteKeys finds no key in it"
-    if text.startswith("scan:"):
+    # parseAppScancodes() trims the word before the first colon, so "scan :490:a.b" is a scancode too.
+    if text.partition(":")[0].strip() == "scan":
         parts = text.split(":", 2)
         if len(parts) != 3 or not parts[2].strip():
             return f"{entry!r} names a scancode but nothing it opens"
@@ -336,9 +337,9 @@ def app_key_target_problem(entry, target):
     """Why launch() would open nothing for this target, or None.
 
     launch() reads a target as an action word (isAction()'s ten), the input switcher ("inputs"), an input
-    ("input:<input id>"), a program guide ("guide:<package>"), an activity ("package/.Activity") or a package; a
-    target that is none of those - "youtube" without its dots, "guide:" with no package - finds no launch intent
-    and does nothing. A package name always has a dot, which is how isAction() tells a word from an app.
+    ("input:<input id>"), a program guide ("guide:<package>"), an intent action ("action:<intent action>"), an
+    activity ("package/.Activity") or a package; a target that is none of those - "youtube" without its dots,
+    "guide:" with no package, "action:" with no dotted action - finds no launch intent and does nothing. A package name always has a dot, which is how isAction() tells a word from an app.
     """
     if target in APP_KEY_WORDS or target == "inputs":
         return None
@@ -351,6 +352,13 @@ def app_key_target_problem(entry, target):
         if PACKAGE_NAME.fullmatch(package):
             return None
         return f"{entry!r}: guide: takes the Live TV app's package (guide:com.tcl.tv), not {package!r}"
+    if target.startswith("action:"):
+        # An intent action is a dotted name like a package; a bare word has no activity to answer it.
+        action = target[len("action:"):].strip()
+        if PACKAGE_NAME.fullmatch(action):
+            return None
+        return (f"{entry!r}: action: takes an intent action (action:android.settings.DISPLAY_SETTINGS), "
+                f"not {action!r}")
     package, slash, activity = target.partition("/")
     if slash and not activity.strip():
         return f"{entry!r}: {target!r} names no activity after the slash"
@@ -358,8 +366,8 @@ def app_key_target_problem(entry, target):
         return None
     words = ", ".join(APP_KEY_WORDS)
     return (f"{entry!r}: {target!r} is nothing the launcher opens - a package name has a dot "
-            f"(com.google.android.youtube.tv), and the words are {words}, inputs, input:<input id> and "
-            f"guide:<package>")
+            f"(com.google.android.youtube.tv), and the words are {words}, inputs, input:<input id>, "
+            f"guide:<package> and action:<intent action>")
 
 
 def app_keys_problem(values):
@@ -850,6 +858,11 @@ def looked_at(path):
 def own_folder_problem(folder):
     """Why set may not write into `folder`, or None: it is one of the folders this checkout ships, a file, or
     not there at all."""
+    if folder == ROOT:
+        # The checkout itself is no theme folder: set would start a config.json beside README.md and push the
+        # whole checkout as the theme.
+        return (f"{folder} is this checkout itself: set writes into a theme folder of your own, so make one "
+                f"somewhere else first. Nothing was written or pushed.")
     for name in PROJECT_FOLDERS:
         project = ROOT / name
         if folder == project or project in folder.parents:
@@ -1130,14 +1143,16 @@ def cmd_status():
         except ValueError:
             pass
         else:
-            for t in themes():
-                f = ROOT / "themes" / t["id"] / "config.json"
+            # A TV's own folder under examples/ is pushed with theme.sh the same way, and named by its path.
+            candidates = [(t["id"], ROOT / "themes" / t["id"] / "config.json") for t in themes()]
+            candidates += [(f"examples/{f.parent.name}", f) for f in sorted((ROOT / "examples").glob("*/config.json"))]
+            for name, f in candidates:
                 try:
                     matches = f.is_file() and json.loads(f.read_text(encoding="utf-8")) == pushed
                 except (OSError, ValueError):
                     continue
                 if matches:
-                    match = t["id"]
+                    match = name
     print(f"theme: {match or ('your own' if config.strip() else 'none (the built-in config.xml)')}")
     return 0
 
@@ -1251,7 +1266,7 @@ WORDS = {
     "show": (1, None, "an add-on, theme or switch"),
     "status": (0, 0, "no words"),
     "install": (1, None, "an add-on or a theme"),
-    "remove": (1, 1, "one add-on"),
+    "remove": (1, None, "one add-on"),
 }
 
 USAGE_LINES = {
@@ -1283,6 +1298,18 @@ def own_words(command, args):
     if command == "list" and args and args[0] not in LIST_GROUPS:
         raise Usage(f"list takes addons, themes or switches, not {args[0]!r}: {USAGE_LINES[command]}")
     return args
+
+
+def named(args):
+    """(name, rest): the fewest leading words that name an add-on or theme, and the words after them.
+
+    A name in addons/README.md can be several words ("Frigate Glance"), as show reads it; install and remove
+    used to look up the first word alone and answered that name with "no add-on called Frigate".
+    """
+    for n in range(1, len(args) + 1):
+        if find(" ".join(args[:n])):
+            return " ".join(args[:n]), args[n:]
+    return args[0], args[1:]
 
 
 def set_args(args):
@@ -1353,9 +1380,14 @@ def main(argv):
         return cmd_show(" ".join(args))   # a name can be several words: "Frigate Glance"
     if c == "status":
         return cmd_status()
+    name, rest = named(args)
     if c == "install":
-        return cmd_install(args[0], args[1:])
-    return cmd_remove(args[0])
+        return cmd_install(name, rest)
+    if rest:
+        # `remove weather --dry-run` ran pm uninstall with a word it never read: a word after the name is refused.
+        sys.stderr.write(f"remove takes one add-on, and would drop {' '.join(rest)!r}: {USAGE_LINES['remove']}\n")
+        return 2
+    return cmd_remove(name)
 
 
 if __name__ == "__main__":

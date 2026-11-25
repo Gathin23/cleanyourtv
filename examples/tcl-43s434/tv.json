@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 43S434 (4-Series, C02_4K_US, BeyondTV, Realtek), US AP12 build",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "US 4-Series C02_4K_US on Android TV 9, started from `tcl-32s334/`: 23 packages (TCL and Google telemetry, TCL Channel, promos, recommendation rows, TCL store and account, voice assistants) off; stock `tvlauncher` replaced by `launcher/` with remote Home, app, Input and Settings buttons still working, no key helper needed; setupwraith left on (owns Wi-Fi); `com.tcl.xian.StartandroidService` kept because System update fails without it; firmware updater and Chromecast kept; reboot-checked"
+}

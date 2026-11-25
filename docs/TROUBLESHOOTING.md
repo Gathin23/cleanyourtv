@@ -1136,6 +1136,32 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   package that also claims HOME (PatchWall on Xiaomi) makes Android drop the default. The install
   script now picks the known stock launcher among the candidates by itself; otherwise choose one on
   the TV or pass `STOCK_LAUNCHER=<package>`.
+- **Home works after the install, then a later Home press opens Android's chooser with FACTORY MENU in
+  it**, seen on a Hisense HiSmartTV A4 (`xiaoyushan-sa`, Android TV 9, `PTMR.190127.037` /
+  `02.00.00.01`). `launcher/build-and-install.sh` disabled `com.google.android.tvlauncher`, set the new
+  launcher as Home and read it back, and the first Home press opened it. A few seconds later logcat said
+  `Result set changed, dropping preferred activity for Intent { act=android.intent.action.MAIN
+  cat=[android.intent.category.HOME,android.intent.category.DEFAULT] }`, `dumpsys package preferred` showed
+  the new launcher's entry with `mAlways=false`, and the next Home press opened
+  `android/com.android.internal.app.ResolverActivity`. `com.hisense.uifac/.FacRootMenu` claims HOME on this
+  build, and Hisense's PackageManager drops it from some HOME lookups and not others (logcat
+  `[wangbin40]Hisense removing factory`), so the set of Home apps Android compares the default against keeps
+  changing, and Android throws the default away each time. Setting it again with `cmd package
+  set-home-activity` lasted until the next Home press. Do not pick anything in that chooser: it offers the
+  factory menu, and the safety rules say never to open one. What works on that set is keeping the stock
+  launcher, which wins Home on its priority and needs no default:
+  `TV_HOST=<tv ip> tools/tv.py 'pm enable --user 0 com.google.android.tvlauncher'`, then a build with
+  `stock_home_redirect` set to `com.google.android.tvlauncher` and `home_long_press_home` true in
+  `launcher/app/src/main/res/values/config.xml`, installed with
+  `STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 TV_HOST=<tv ip> launcher/build-and-install.sh`. That run ends with
+  `Home resolves to com.google.android.tvlauncher/.MainActivity, not to the new launcher` and exits before its
+  helper step, so `HomeKeyService` has to be switched on the way that step does it
+  (`enabled_accessibility_services`, then `accessibility_enabled 1`); `dumpsys accessibility` then lists it
+  bound. The real Home button opens the new launcher at once, it is still Home after a reboot, and the
+  remote's Input button keeps the stock launcher's inputs panel. The price is the key filter's: a held
+  Volume key steps once per press. Without `home_long_press_home` the helper lets Android handle Home and
+  opens the launcher afterwards, and Android 9 holds app starts for 5 seconds after a Home press, so the
+  stock home shows for that long first.
 - **`tools/restore.sh` leaves the packages an earlier batch disabled off, after the TV changed its
   address mid-cleanup.** The recovery record is one file per list and address
   (`~/.cleanyourtv/recovery-<address>-<list hash>.json`), so a new DHCP lease - a router restart, or
@@ -1207,7 +1233,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   was empty. The same package disabled, given 12 seconds, then rebooted stayed at `enabled=3`
   (disabled-user), and so did every batch applied that way. Wait 15 seconds after the last `pm` command
   before rebooting, the same wait the tested lists already describe between batches. It is the
-  package-state counterpart of the lazy app-ops write above.
+  package-state counterpart of the lazy app-ops write above. A `sync` before the reboot does not stand in
+  for the wait: on an A4 on Android TV 9 (`PTMR.190127.037` / `02.00.00.01`), `sync` and the reboot
+  `tools/tv.py --reboot` sends, a few seconds after `tools/disable.sh`, brought all four packages of the
+  batch back, and the same batch given 25 seconds stayed disabled. `sync` flushes what is already on its
+  way to disk, and Android has not written the package state yet.
 - **A firmware update quietly undoes the cleanup.** The update installs over the cleaned-up system, so
   every listed package is enabled again, Home goes back to the stock launcher and new preloads
   appear that no list mentions. `tools/venv/bin/python -I tools/check.py <list>` reports the first
@@ -1265,6 +1295,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   player. They are not packages of their own, so only that package leaves with it. `pm enable com.youview.poa` brought
   them back. How each one launches, and how to give each a Home tile, is in
   [the Sony UK catch-up note](devices/sony-youview-uk-catchup.md).
+- **Freeview catch-up apps (iPlayer, ITVx, C4, C5) hang on the spinner, then go black, or answer
+  "Oops... Code: FVP-03-023"** (Philips 43PUS7906/12, `PH0M_EA_T32`, Android TV 11,
+  `TPM215E_R.101.000.198.158`, EU/UK). Not the debloat: the list keeps them, U included. The set's own HbbTV
+  setting **"Block tracking sites"** (Live TV > Options/Menu > HbbTV) blocks the hosts those apps load,
+  so the spinner never resolves and the picture stays black. Turning that setting off fixes all of them,
+  and it survives standby and a reboot once saved - it is there to block those hosts, so that is the
+  trade. The same code after a power cut is a different fault, a Freeview sign-in certificate the
+  server no longer accepts (`mdsclient TLSV1_ALERT_DECRYPT_ERROR` in `logcat`), fixed by
+  `tools/tv.py 'pm clear uk.co.freeview.mdsclient'` - never `uk.co.freeview.fvpconfigauth`, which is
+  the factory Freeview identity. An app that *vanished* instead is the Sony case above. Measured on one
+  unit: the tenth-unit block of
+  [`examples/philips-50pud7406/debloat.txt`](../examples/philips-50pud7406/debloat.txt) has the session.
 - **Channel Up/Down on the real remote lands two channels on**, showing the next channel's banner first
   (Xiaomi MiTV-MOOQ0, Android TV 11, `RTM4.220307.164.8835`, Spain). Live TV tunes one channel on the key
   press. On key release it hands the key to its HbbTV layer (`key is handled in hbbtv` in `logcat`), and about
@@ -1441,7 +1483,7 @@ turned off in Settings stays off.
   `settings_key_keycodes` and `settings_key_scancodes` do not bring the ribbon back on their own: both end in
   `Settings.ACTION_SETTINGS`, and `settings_fallback_components` is read only when that action resolves to
   nothing, which it does not on this set. If the remote reports a scancode for that button, an `app_keys`
-  entry should put it back (read from the launcher's code, not yet tried on a set), because a `scan:` entry is
+  entry should put it back (confirmed with the real remote on a BRAVIA VU31, scancode 204: see examples/sony-bravia-vu31/config.json), because a `scan:` entry is
   answered before the settings branch in
   `HomeKeyService.onKeyEvent`: `"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"` in
   `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -t` while pressing the button,

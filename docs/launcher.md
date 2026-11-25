@@ -125,7 +125,9 @@ tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.Clock
 - In place of an app, an `app_keys` entry can name an action: `back`, `home`, `recents`, `mute`, `sleep`
   (standby, Android 9 and later), `screensaver`, `settings`, `wifi`, `library` (Home with the App library
   open, for a remote's Apps button; needs `app_library`) or `ignore` (the button does nothing), so a spare
-  colour button can mute the TV or, held, put it in standby.
+  colour button can mute the TV or, held, put it in standby. `action:<intent action>` starts that intent
+  action, for a vendor screen that closes itself unless opened by it, such as TCL's picture panel
+  (`action:android.settings.DISPLAY_SETTINGS`).
 - `HOME_KEY_SERVICE=1` also fixes sticks whose Home key sends ALL_APPS, and opens Settings from the remote's
   **gear** button, even one Android does not map (scancodes or keycodes in config.xml).
 - With `settings_key_panel` the gear opens a [small quick settings panel](quick-settings-panel.jpg)

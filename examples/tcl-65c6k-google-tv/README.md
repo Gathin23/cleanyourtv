@@ -67,6 +67,53 @@ setupwraith to `com.android.tv.settings` before disabling setupwraith. When rebo
 or `svc power reboot`: a raw `adb shell reboot` before the system server has synced network state can drop newly saved
 Wi-Fi credentials.
 
+## Fourth unit: 85C6K, Czechia (EU firmware), Wi-Fi, debloat only
+
+TCL 85C6K (QD-Mini LED, 85"), model "Smart TV Pro", device `G08`, product `G08_4K_GB`, `ro.boot.product=C6K`,
+`ro.boot.extension=TCL_QDMINI_4K`, client type `TCL-EU-MT9653-S1`, cs-CZ, on Wi-Fi, with an Apple TV on HDMI 1 (eARC)
+and a PS5 on HDMI 2. Android only reports "Smart TV Pro", and `ro.odm.tcl.panel_size` reads 55 on this 85" set; the
+real model name is in Settings > System > About > Status > Product information. Debloated on 23 November 2026 with
+`tools/disable.sh` in six batches with a screenshot after each, stock launcher and setupwraith kept (setupwraith owned
+the saved Wi-Fi). One evening and three reboots, not a several-day test.
+
+**It started on Android 12 and ended on this build.** The set came on `STT2.221228.001 AS35` (EU Android 12), so the
+first five batches followed `examples/tcl-g08-eu-android12/debloat.txt`. TCL's updater (`com.tcl.ttvs`, auto update on)
+had downloaded the Android 14 update in the background and posted "System update downloaded"; the next reboot, a check
+after a batch, installed it as an A/B update (`reboot,ota` in the boot reasons, then `UTT2.250416.001 AU02`, security
+patch 2025-12-05). Every disabled package stayed disabled; `com.iplayer.android.webview` (BBC WebView, disabled in
+batch 2) was removed from the firmware by the update. There is no way back to Android 12, so on an EU Android 12 set
+check `dumpsys notification --noredact | grep android.title` for a downloaded update before any reboot. The sixth batch
+followed this list and `examples/tcl-g08-au-android14/debloat.txt` on the new build.
+
+**What it turned off, compared with this list.** Every active line except these, left enabled on purpose:
+`com.tcl.interactive` (the EU Android 12 list found the source overlays break without it; not tried here),
+`com.tcl.guard` (it frees memory, and swap filled fast on Android 12), `com.tcl.UpdatePeripheral` (updaters stay),
+`com.google.android.katniss` (the Assistant is used), and `android.autoinstalls.config.google.gtvpai` and
+`com.google.android.partnersetup` (not in the lists it started from; not tried). `com.tcl.hotelmenu` is not on this
+set. From the "Kept on this unit" lines it turned off `com.tcl.magiconnectfree` and Prime Video, and kept Chromecast,
+AirPlay, Miracast, the game bar, the USB media player and gallery, Netflix and YouTube. On top of the list it turned off
+thirteen more: the four lines under "Spare webviews" (in the list now), the three commented as one day so far, and six
+commented at the end of the "Kept on this unit" lines (Play Movies, Disney+, HBO Max, iQIYI, `com.tcl.t_solo`,
+`com.tcl.hearaid`). Sound from the TV speakers with `com.tcl.hearaid` off was not checked.
+
+**The TCL Channel row on Home went away.** Unlike the first unit's TCL tab, this EU set had a "TCL Channel" row of
+app promotions (sledovani.tv, O2 TV, Magenta TV, Spotify) that stayed after `com.tcl.channelplus` and
+`com.tcl.waterfall.overseas` were off, and disappeared with `com.tcl.partnercustomizer`. Right after that, the "Your
+apps" row showed a dead "TCL Channel" tile (Play Store: "Item not found"); it was gone after the next reboot. The
+source panel's Apps row still shows the TCL Channel and User Guide tiles, as on the first unit.
+
+**Checked:** after each batch Home, the Input key's source panel (AirPlay, TV, HDMI 1), Wi-Fi and ADB; after the last
+batch Netflix, YouTube and Play Store; after each of the three reboots the same disabled set. Not checked: Live TV,
+Chromecast, AirPlay and Miracast sessions, the real remote's buttons, sound.
+
+**Also seen on this set:** a built-in far-field microphone, on (`persist.tcl.far_field_mic_status=1`, a hardware
+switch shows up as the `mic_mute` input device), with no hotword model enrolled; `com.tcl.ttvs` runs TCL's BI, usage
+statistics and track-data services as well as T-Cast. The UI renders at 1920x1080 on the 4K panel
+(`ro.surface_flinger.max_graphics_width=1920`, `vendor.mtk.osd_size=1080p`); video and HDMI inputs are full 4K.
+
+Network ADB was switched off afterwards and `tools/adb-closed.py` reported port 5555 closed; Wireless debugging was
+never on.
+
 Undo, as in the list's own Undo line:
 
 ```

@@ -1,0 +1,71 @@
+# NVIDIA SHIELD Android TV 2015 (model P2571, codename foster, Tegra X1), Android TV 11 (API 30)
+# Fingerprint: NVIDIA/foster_e/foster:11/RQ1A.210105.003/13961456_4387.0822:user/release-keys
+# (SHIELD Experience 9.2.x, the same build as examples/nvidia-shield-tv-2017).
+# Applied with the Clean Your TV app on 2026-11-23, with the launcher as Home.
+# Based on examples/nvidia-shield-tv-2017/debloat.txt. Packages that list names and this unit does
+# not have (com.nvidia.diagtools, com.google.android.youtube.tvunplugged, com.imdbtv.livingroom) are
+# left out.
+#
+# Apply:   TV_HOST=<shield ip> tools/disable.sh examples/nvidia-shield-tv-2015/debloat.txt
+# Undo:    TV_HOST=<shield ip> tools/restore.sh examples/nvidia-shield-tv-2015/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Connecting: Developer options, then "Network debugging" opens ADB on port 5555.
+# When you are done, switch Network debugging off again so port 5555 is closed.
+# Launcher: as on the 2017 and 2019 models, run launcher/build-and-install.sh first; disabling
+# com.google.android.tvlauncher (last line) hands Home over.
+# A SHIELD has no HDMI inputs and no tuner, so the launcher's Inputs pill has nothing to list.
+#
+# Owner's choices on this unit:
+# - Kept: Google Assistant and hotword, Chromecast built-in, firmware updates (com.nvidia.ota,
+#   NvCPLUpdater, KeyComboOta), Netflix, Prime Video, YouTube, Photos & Videos (gallery3d), Backdrop.
+# - Kept: com.nvidia.shield.nas, com.nvidia.shield.smbauth, com.nvidia.shield.smbserver. Plex Media
+#   Server here is NVIDIA's build (com.plexapp.mediaserver.smb), as on the 2017 unit.
+# - Already disabled before this list (not by this project), left alone: air.com.vudu.air.DownloaderTablet,
+#   com.zattoo.player, air.ITVMobilePlayer, com.amazon.music.tv, com.nvidia.bbciplayer*,
+#   com.nvidia.benchmarkblocker.
+# - Left enabled here, though the 2017 list disables them (the app left them on in this run):
+#   com.nvidia.nvgamecast, com.nvidia.osc, com.nvidia.factory, com.nvidia.developerwidget,
+#   com.nvidia.tegraprofiler.security, com.android.bluetoothmidiservice, com.android.hotspot2.osulogin,
+#   com.google.android.apps.nbu.smartconnect.tv, com.google.android.videos.
+#
+# Leave alone (same as the 2017 list): com.google.android.tvrecommendations (the SHIELD TV phone
+# app's remote needs it), com.nvidia.blakepairing, com.nvidia.bluetooth.*, com.nvidia.shieldtech.*,
+# com.nvidia.ControllerMapper, com.nvidia.remotelocator, com.nvidia.irtuner, com.nvidia.NvCPLSvc,
+# com.nvidia.nvaudiosvc, com.nvidia.avsync, com.nvidia.shieldservice, com.nvidia.packagemanagerservice,
+# com.android.tv.settings, com.android.providers.tv, com.google.android.tv.remote.service,
+# com.google.android.tungsten.setupwraith, Play Services, Play Store, keychain, com.android.se.
+# Also on this unit and not on the 2017 one, all left enabled: com.nvidia.shieldtech.hooks,
+# com.nvidia.shieldtech.proxy, com.nvidia.wifi.countrycode, com.nvidia.bluetooth.ps3usbpairer,
+# com.nvidia.shield.nvcustomize, com.nvidia.hotwordsetup.
+
+# Batch 1: NVIDIA and Google telemetry and feedback
+com.nvidia.stats                       # anonymous usage statistics
+com.nvidia.feedback                    # crash reports and the "send feedback" form
+com.google.android.feedback
+
+# Batch 2: sponsored rows, promos, auto-installs, gaming leftovers
+android.autoinstalls.config.nvidia     # Play auto-installs of partner apps
+com.nvidia.shield.welcome              # first-run promo
+com.nvidia.factorybundling             # accessory bundle offers
+com.nvidia.shield.beta                 # beta programme
+com.nvidia.shieldbeta                  # beta programme
+com.nvidia.shield.registration         # product registration
+com.nvidia.tegrazone3                  # "NVIDIA Games" app and row
+
+# Batch 3: factory and developer test tools (disabled, never launched)
+com.nvidia.factorysyschecker
+com.nvidia.inputviewer
+
+# Batch 4: idle background services
+com.android.printspooler
+com.android.dynsystem                  # Dynamic System Updates (GSI loader)
+com.android.cts.ctsshim                # CTS test shim
+com.android.cts.priv.ctsshim           # CTS test shim
+com.google.android.onetimeinitializer  # runs once at first boot
+
+# Batch 5: apps the owner doesn't use
+com.google.android.play.games
+
+# Stock Android TV launcher: disabling it is what hands Home to the replacement launcher
+com.google.android.tvlauncher

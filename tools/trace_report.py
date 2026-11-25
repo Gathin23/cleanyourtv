@@ -273,7 +273,8 @@ def measure(paths, package, open_trace):
             metrics = nav_metrics(q, package) if scenario_of(path) == "nav" else start_metrics(q, package)
         finally:
             close()
-        out.append((os.path.basename(path)[:-len(".pftrace")], metrics))
+        name = os.path.basename(path)
+        out.append((name[:-len(".pftrace")] if name.endswith(".pftrace") else name, metrics))
     return out
 
 

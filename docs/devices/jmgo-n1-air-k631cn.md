@@ -113,15 +113,19 @@ So there is no way to *hold* Home on this build without losing the remote: `com.
 keys and the brightness, so suspending it takes the remote with it. What does work is not fighting for the
 Home slot at all:
 
-- Leave `com.jmgo.launcher` enabled, and set `home_guard_package` to it in the launcher's `config.xml`. The
-  launcher's accessibility service watches `TYPE_WINDOW_STATE_CHANGED` and sends a Home intent when a
-  `com.jmgo.launcher` window comes to the front. Measured 540 ms from the press to the replacement being
-  focused, still focused across five samples three seconds later, and still working 71 s after a reboot with
-  no ADB involved.
-- Debounce it by about 2 s. This firmware emits 2-3 window events per press, and each `openHome()` is a
-  `NEW_TASK|RESET_TASK_IF_NEEDED` start that hands `MainActivity` a new intent and replays its
-  "back to the first tile" animation, which reads as the home screen jittering. Logged once per press after
-  the debounce.
+- Leave `com.jmgo.launcher` enabled, and have a window watcher put the replacement back instead of holding the
+  Home slot. `config.xml` cannot ask for that watcher: `stock_home_redirect` is the nearest name, and it
+  matches the window's activity class rather than the package - the launcher fills it from the named package's
+  `CATEGORY_HOME` activities, the mismatch the third bullet records - and `home_guard_package` is a name the
+  launcher reads nowhere (no such string in `config.xml`, no such key in `Config.java`), so setting it changes
+  nothing. The watcher these numbers come from is a change to `HomeKeyService`: it watches this package's
+  windows themselves and sends a Home intent when one comes to the front. Measured with that change, 540 ms
+  from the press to the replacement being focused, still focused across five samples three seconds later, and
+  still working 71 s after a reboot with no ADB involved.
+- Debounce the watcher by about 2 s, in the same change: this firmware emits 2-3 window events per press, and
+  each `openHome()` is a `NEW_TASK|RESET_TASK_IF_NEEDED` start that hands `MainActivity` a new intent and
+  replays its "back to the first tile" animation, which reads as the home screen jittering. Logged once per
+  press after the debounce.
 - Keep `stock_home_redirect` **empty**. Set to `com.jmgo.launcher` it never matches - the redirect collects
   the `CATEGORY_HOME` activity `com.jmgo.os.home.HomeActivity`, while the window that actually comes to the
   front is `home.standard.ui.MovieHomeActivity`, started by the private action

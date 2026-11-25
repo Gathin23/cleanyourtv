@@ -1,5 +1,7 @@
 # Philips 55PUS7503/12 (TP Vision TPM171E, device PH7M_EU_5596), Europe, 2018 model
 # Second tested model: Philips 50PUS7303/12, Europe, same product, board and firmware build.
+# Third unit: Philips 49PUS7502/12, Europe, same product, board and firmware build (one day of use only;
+# see README.md, which also records that tools/disable.sh refused two packages of this list on it).
 # Android TV 8.0.0 (API 26), firmware OC build 4718, security patch 2021-01-05
 # Board TPM17XE_96, MediaTek MT5891, armeabi-v7a, 1.9 GB RAM, 1920x1080.
 # Fingerprint: Philips/PH7M_EU_5596/PH7M_EU_5596:8.0.0/OC/4718:user/release-keys

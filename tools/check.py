@@ -361,7 +361,8 @@ def main():
     # read_list validates every name before anything is sent to the TV: its entries end up in the
     # TV's shell, and a list edited by hand since then is not to be trusted.
     try:
-        listed = recovery.read_list(list_path)
+        # A name the list repeats is still one package: counted, reported and disabled once.
+        listed = list(dict.fromkeys(recovery.read_list(list_path)))
     except OSError as e:
         # A path typed wrong or a list that moved after a git pull is a command-line mistake, not a
         # TV that drifted: exit 2, not the 1 a weekly job reads as drift.

@@ -24,7 +24,9 @@ fi
 
 (cd "$HERE" && ./gradlew assembleRelease -q) || { echo "build failed (JDK 17 and Android SDK 34 needed; see launcher/README)" >&2; exit 1; }
 "$PY" -I "$TOOLS/b64push.py" "$HERE/app/build/outputs/apk/release/app-release.apk" /data/local/tmp/photodream.apk >/dev/null
-tv "pm install -r /data/local/tmp/photodream.apk; rm -f /data/local/tmp/photodream.apk"
+OUT="$(tv 'pm install -r /data/local/tmp/photodream.apk; rm -f /data/local/tmp/photodream.apk')"
+echo "$OUT"
+case "$OUT" in *Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; esac
 # TCL's TclAppBoot blocks the app's provider until it may auto-start; elsewhere the op doesn't exist.
 tv "appops set $PKG AUTO_START allow 2>/dev/null; appops set $PKG APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" >/dev/null
 echo "Installed. Now: TV_HOST=$TV_HOST addons/photo-screensaver/sync.sh"

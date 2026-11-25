@@ -1,0 +1,13 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.hulu.livingroomplus",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "hidden_apps": [
+    "com.tcl.tv",
+    "com.tcl.partnercustomizer"
+  ],
+  "live_tv_package": "com.tcl.tv"
+}

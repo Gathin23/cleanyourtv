@@ -34,7 +34,8 @@ EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 def read_packages(path):
     """The package names in a saved `pm list packages` answer, sorted and without repeats.
 
-    `package:<name>` lines are what pm prints; with -f the line is `package:<apk path>=<name>`. A bare
+    `package:<name>` lines are what pm prints; with -f the line is `package:<apk path>=<name>`, and -i
+    and -U add `installer=<package>` and `uid:<n>` after the name. A bare
     name on its own line is taken too, so a hand-trimmed file works. `android` itself is the one name
     that needs that: it is a package with no dot (the framework package, `package:android`), so the
     name test below would not take it and its row - the `never` this tool promises for every core
@@ -51,7 +52,9 @@ def read_packages(path):
     for line in text.splitlines():
         line = line.strip()
         if line.startswith("package:"):
-            line = line[len("package:"):].rsplit("=", 1)[-1].strip()
+            # -i and -U add words after the name (`installer=...`, `uid:...`); the name is the first.
+            words = line[len("package:"):].split()
+            line = words[0].rsplit("=", 1)[-1] if words else ""
         # A name without a dot is taken only when disable.sh would refuse it anyway (the one such name
         # in CORE_RE is `android`), so a stray word such as `Total` or `not_a_package` is still skipped.
         if recovery.PACKAGE_RE.fullmatch(line) or recovery.CORE_RE.match(line):

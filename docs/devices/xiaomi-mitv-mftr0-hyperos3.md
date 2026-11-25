@@ -67,11 +67,11 @@ two recovery lines above at hand.
   `Set enter_standby:1`, `uptime` does not reset and ADB still answers afterwards, so a symptom that clears only
   on a real cold boot needs a reboot or the plug, not 关机. Noted while chasing the standby-LED report in
   [#2948](https://github.com/Gathin23/cleanyourtv/issues/2948).
-- **The standby LED can latch into a fast blink; the cause is still open, and a disabled package is not ruled out.**
+- **The standby LED can latch into a fast blink, and the package that owns the LED state machine is named.**
   Two owners reported it again, three times, on 2026-11-21 and 2026-11-22, on `OS3.0.101.0.UFTMATV`
   ([#4302](https://github.com/Gathin23/cleanyourtv/issues/4302)) and on `OS3.0.106.0.UFTMATV` (a comment on
-  #2948 from a second set, and that set's owner again on 2026-11-22), so both builds carry it. Their kernel
-  log names the transition:
+  #2948 from a second set, and that set's owner again on 2026-11-22 with the APK reading below), so both
+  builds carry it. Their kernel log names the transition:
   `Leds_Breath_Suspend_Noirq`, then `Leds_Breath_Resume_Noirq` about 20 ms later,
   `[LED-DFX] [find_transition] INVALID TRANS from NORMAL to RESUMING`, and
   `[LED-DFX] [led_check_callback] [FLICKER] timeout` about 14 s after that. Once it latches, the LED stays in
@@ -80,10 +80,33 @@ two recovery lines above at hand.
   `com.mitv.tvhome`'s siblings still enabled, and the 106 set's owner toggled `com.xiaomi.wakeupservice` off
   and back with the flicker either way - then reported on 2026-11-22 that the blink stopped once every
   package its list had disabled was re-enabled, though turning them back on one at a time had not stopped it
-  before that. So no single package is the trigger, and a cumulative effect of several is not ruled out.
-  `dumpsys power` taken right after a latch shows the partial wake locks still held (`LanHostRuntime`,
-  `wakeup_WakelockTag`, `AudioIn`), and one set also logs a `MitvPowerManagerService` message pending on the
-  power looper. #2948 was closed on 2026-11-17; #4302 is the follow-up.
+  before that. That owner then narrowed it to the one package below. `dumpsys power` taken right after a
+  latch shows the partial wake locks still held (`LanHostRuntime`, `wakeup_WakelockTag`, `AudioIn`), and one
+  set also logs a `MitvPowerManagerService` message pending on the power looper. #2948 was closed on
+  2026-11-17; #4302 is the follow-up.
+- **`com.mitv.overseaservice`, which these lists disable as an ad-service helper, is the userspace owner of
+  that LED state machine.** On 2026-11-22 the `OS3.0.106.0.UFTMATV` owner read `overseaService.apk` and found
+  the node from the kernel log inside it: `LED_DFX_SYSTEM_NODE = "/sys/class/led-dfx/device/system_state"`,
+  written by `writeToLedDfxNode(EnumSystemState, ...)`, and its `ScreenStatusReceiver` writes `SYS_NORMAL`
+  there and clears the LED on `SCREEN_ON`; its service also sets `vendor.mitv.bspserver.enable=true` when it
+  starts. With the package disabled nothing writes that state back. With the LED already blinking, that owner
+  re-enabled this one package alone and cycled the screen, and the blink stopped, with `pm list packages -d`
+  going from 17 to 16. It is one set and one package rather than a bisect, and it looks necessary rather than
+  sufficient: the third unit of this model (the `OS3.0.101.0` folder) ran the same list with the package
+  disabled for twelve days and records no blink. So on a set that starts blinking:
+
+  ```bash
+  tools/venv/bin/python -I tools/tv.py 'pm enable --user 0 com.mitv.overseaservice'
+  tools/venv/bin/python -I tools/tv.py 'am start-service -n com.mitv.overseaservice/.overseaService'
+  tools/venv/bin/python -I tools/tv.py 'input keyevent 26'   # screen off
+  tools/venv/bin/python -I tools/tv.py 'input keyevent 26'   # screen on, which writes SYS_NORMAL
+  ```
+
+  A reboot clears the latch too and does not need the package. On the `OS3.0.101.0` list the line is still
+  active, with a pointer on it and the same paragraph in the folder's header; comment it out there if the
+  blink appears. Before doing so, note what the folders that keep the package say it carries on their units:
+  `netflixService` (the remote's Netflix key, on MOOR0/MOOR2/MOSR4/MOOQ2) and, on MiTV-AXFU0, the Bluetooth
+  remote's reconnect after deep standby.
 
 ## A second set on the same build
 

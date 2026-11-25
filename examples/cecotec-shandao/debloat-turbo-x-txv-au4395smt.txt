@@ -1,0 +1,96 @@
+# Turbo-X TXV-AU4395SMT (43" 4K, Vestel-built for Plaisio, Greece; product EMIR, device shandao, board EMIR,
+# MediaTek m7632), Android TV 14 (API 34), firmware UKNV.260304.001, security patch 2026-02-01, 1.8 GB RAM.
+# Fingerprint My/EMIR/shandao:14/UKNV.260304.001/14975625. ro.product.manufacturer = vestel,
+# ro.product.brand = My, ro.product.model = "Android TV".
+# The same shandao board and the same build as this folder's Cecotec VQU10065S (debloat.txt), under the
+# Turbo-X brand. A list of its own because it keeps the retail demo app and makes other owner's choices.
+# Greek-market unit on UK-market firmware: every uk.co.freeview.* package already ships disabled.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/cecotec-shandao/debloat-turbo-x-txv-au4395smt.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/cecotec-shandao/debloat-turbo-x-txv-au4395smt.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher:  com.google.android.tvlauncher (classic Android TV, not Google TV).
+#                  Only com.android.tv.settings/.system.FallbackHome also claims HOME.
+# Live TV app:     com.mediatek.wwtv.tvcenter
+# Updates:         no separate firmware-update package; updates live in Settings.
+#
+# KEEP, even though the names look like bloat (checked on this TV with dumpsys package):
+# - fusion.android.tv.demo, which debloat.txt disables: on this unit the retail demo app
+#   (/system_ext/priv-app/RetailDisplayVestel) declares a receiver for
+#   com.mstar.android.intent.action.TV_INPUT_BUTTON, the remote's Input key on Vestel's menlo sets
+#   (examples/turbo-x-40as60t, examples/jvc-android-tv-menlo). Kept as a precaution, not tested
+#   without it: the Cecotec owner reports Input working with it disabled on this same build. With it
+#   on, the Input button works here after the stock launcher is gone, with no key helper.
+# - com.google.android.tungsten.setupwraith: owns the Wi-Fi network saved at first setup
+#   (dumpsys wifi shows cname=com.google.android.tungsten.setupwraith); disabling it deletes that
+#   network and takes the TV off Wi-Fi and ADB. It does not claim HOME on this firmware.
+# - com.mediatek.android.leanbacklauncher.partnercustomizer, every other com.mediatek.*,
+#   mediatek.factorymenu.ui and com.mediatek.tv.factory (never started), com.vestel.tv.service,
+#   com.vestel.tv.keycontroller (remote keys), com.vestel.tv.backlight, com.vestel.overlay.*,
+#   com.dolby.android.audio.service, Play Store, Play Services, Gboard, TTS.
+# - com.mediatek.wwtv.mediaplayer (MMP, USB media player): kept by choice. tools/disable.sh skips it
+#   anyway, as on the Cecotec (see debloat.txt).
+# - Owner's choices kept: Netflix, YouTube, Cosmote TV (gr.cosmote.cosmotetv.androidtv, which now
+#   calls itself MagentaTV), ANT1+ (gr.antenna.ant1.screen) and Chromecast built-in.
+#
+# Quirks on this firmware:
+# - screencap works over ADB; Live TV comes back empty, as usual.
+# - ro.adb.secure = 1. The set ran network ADB on 5555 and Wireless debugging side by side;
+#   switching USB debugging on switches Wireless debugging on too, and switching Wireless
+#   debugging off also closes 5555.
+# - The TV registers only the tuner (HW0, HW1) and three HDMI ports (HW5 to HW7) with the TV input
+#   framework: the launcher's Inputs menu shows HDMI 1 to 3 and Live TV, and no AV row.
+# - Apps cannot read /proc/stat here, so the launcher's show_stats line carries memory and storage
+#   and no CPU figure.
+# - The remote's power button is a standby with no boot: boot_to_live_tv alone does not cover it,
+#   open_on_start_on_wake does (see README.md here).
+# - Private DNS (dns.adguard-dns.com) validates on this TV and YouTube keeps playing with it.
+# - Reboot-checked: pm list packages -d unchanged after a reboot, nothing re-enabled by the firmware.
+
+# Vestel telemetry, logging and "cleaner"
+com.vestel.vestelreporter                        # Vestel reporter: INTERNET + usage stats + boot start, no UI
+com.vestel.smartlogger                           # Vestel logging service: location, READ_LOGS, usage stats, Firebase
+com.vestel.tv.speedup                            # "speed up" task killer
+com.vestel.smartcenter                           # no UI, persistent: GET_TASKS (sees which apps you run) + INTERNET
+
+# Google ads, personalisation, feedback, setup leftovers
+com.android.adservices.api                       # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services     # on-device ad personalisation
+com.android.federatedcompute.services            # federated learning for the above
+com.google.android.partnersetup                  # partner/OEM attribution
+com.google.android.feedback                      # Google feedback reporter
+com.android.tv.feedbackconsent                   # feedback consent prompts
+android.autoinstalls.config.vestel.medusa        # Vestel auto-install stub (preloads apps at setup)
+com.mstar.android.tv.disclaimercustomization     # disclaimer screen used only by first-run setup
+
+# Preloaded apps and services (off by the owner's choice)
+# This set has Prime Video off; uncomment if you don't use it.
+# com.amazon.amazonvideo.livingroom              # Prime Video. Its remote key does nothing while this is off.
+com.google.android.youtube.tvmusic               # YouTube Music
+com.google.android.videos                        # Google Play Movies & TV. It serves a TvInputService of its own
+                                                 # (video previews), not HDMI or the tuner: inputs survive with it off.
+com.google.android.play.games                    # Play Games
+com.google.android.katniss                       # Google Assistant / voice search. Off by choice: the remote's
+                                                 # microphone button then does nothing. Casting is unaffected.
+com.mediatek.tv.freeviewplay                     # Freeview Play, UK only
+com.vestel.tv.eib                                # E-User Manual app: one activity and an accessibility service
+                                                 # that is not enabled. Off by choice.
+
+# Dead weight on a TV
+com.android.healthconnect.controller             # Health Connect
+com.android.health.connect.backuprestore         # Health Connect backup
+com.android.managedprovisioning                  # enterprise work-profile provisioning
+com.android.dynsystem                            # Dynamic System Updates
+com.android.cts.ctsshim                          # Android test shim
+com.android.cts.priv.ctsshim                     # Android test shim
+com.google.android.syncadapters.calendar         # calendar sync
+com.android.settings.intelligence                # the search box inside Settings; the menus keep working
+com.android.se                                   # Secure Element (eSIM, NFC payments): no such radio
+
+# Only safe once com.gathin.tvhome owns Home and com.google.android.tvlauncher is disabled
+com.google.android.tvrecommendations             # launcher recommendation rows
+com.google.android.backdrop                      # Google screensaver; the launcher's Clock screensaver replaces it
+
+# Stock launcher, replaced by launcher/
+# com.google.android.tvlauncher   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved

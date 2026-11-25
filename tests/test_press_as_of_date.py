@@ -76,8 +76,9 @@ ARTICLE_MONTHS = {name: number for number, name in enumerate(
 # The month names a page in each language can date the numbers with, spelled the way a date spells them:
 # German "31. Oktober", Ukrainian "31 жовтня" (genitive), Turkish "31 Ekim", Portuguese "31 de outubro",
 # Uzbek "31-oktabr" (README.uz.md writes the day and the month joined by a hyphen), French "9 novembre",
-# Spanish "9 de noviembre" (README.es.md, which is not the Portuguese "novembro") and Hebrew "14 בנובמבר"
-# (README.he.md, where the month carries the ב prefix a Hebrew date puts in front of it).
+# Spanish "9 de noviembre" (README.es.md, which is not the Portuguese "novembro"), Hebrew "14 בנובמבר"
+# (README.he.md, where the month carries the ב prefix a Hebrew date puts in front of it) and Greek
+# "14 Νοεμβρίου" (README.el.md, the genitive a Greek date uses).
 MONTHS = (
     ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
      "November", "December"),
@@ -100,6 +101,8 @@ MONTHS = (
     # Hebrew writes the month of a date with the ב prefix in front of its name: "14 בנובמבר 2026".
     ("בינואר", "בפברואר", "במרץ", "באפריל", "במאי", "ביוני", "ביולי", "באוגוסט", "בספטמבר", "באוקטובר",
      "בנובמבר", "בדצמבר"),
+    ("Ιανουαρίου", "Φεβρουαρίου", "Μαρτίου", "Απριλίου", "Μαΐου", "Ιουνίου", "Ιουλίου", "Αυγούστου",
+     "Σεπτεμβρίου", "Οκτωβρίου", "Νοεμβρίου", "Δεκεμβρίου"),
 )
 
 
@@ -229,7 +232,7 @@ class TreeTest(unittest.TestCase):
 
     def test_the_pages_that_date_the_numbers_today(self):
         self.assertEqual(
-            {"README.md", "README.de.md", "README.es.md", "README.fr.md", "README.he.md", "README.nl.md",
+            {"README.md", "README.de.md", "README.el.md", "README.es.md", "README.fr.md", "README.he.md", "README.nl.md",
              "README.pt-BR.md", "README.tr.md", "README.uk.md", "README.uz.md"},
             {name for name, _ in dated_pages()},
             "the front pages that close the coverage sentence with a date; a translation that copies the "
@@ -249,16 +252,17 @@ class ReaderTest(unittest.TestCase):
 
     def test_each_page_s_clause_parses_to_its_own_day(self):
         expected = {
-            "README.md": (2026, 11, 14),
-            "README.de.md": (2026, 11, 14),
-            "README.es.md": (2026, 11, 14),
-            "README.fr.md": (2026, 11, 14),
-            "README.he.md": (2026, 11, 14),
-            "README.nl.md": (2026, 11, 14),
-            "README.uk.md": (2026, 11, 14),
-            "README.tr.md": (2026, 11, 14),
-            "README.pt-BR.md": (2026, 11, 14),
-            "README.uz.md": (2026, 11, 14),
+            "README.md": (2026, 11, 23),
+            "README.de.md": (2026, 11, 23),
+            "README.es.md": (2026, 11, 23),
+            "README.el.md": (2026, 11, 23),
+            "README.fr.md": (2026, 11, 23),
+            "README.he.md": (2026, 11, 23),
+            "README.nl.md": (2026, 11, 23),
+            "README.uk.md": (2026, 11, 23),
+            "README.tr.md": (2026, 11, 23),
+            "README.pt-BR.md": (2026, 11, 23),
+            "README.uz.md": (2026, 11, 23),
         }
         for name, date in expected.items():
             text = (ROOT / name).read_text(encoding="utf-8")

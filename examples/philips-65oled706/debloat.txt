@@ -134,3 +134,23 @@ com.netflix.ninja                         # owner's choice (no subscription)
 # Stock launcher and its content engine, replaced by launcher/. ORDER MATTERS (50PUS8517): the launcher first.
 # com.google.android.tvlauncher   # launcher/build-and-install.sh disables it after Home has moved
 com.google.android.tvrecommendations      # recommendation rows and the system notification panel
+#
+# Fourth unit: Philips 55OLED706/12 (55"), Austria, cable (DVB-C). Same board PH1M_EA_9970A, same build 21029,
+# security patch 2025-10-01. Applied on 2026-11-14 in three batches with a 30 s idle-log check after each, no
+# replacement launcher (com.google.android.tvrecommendations kept, the stock launcher stays Home). Lived with for a
+# week; after a reboot on the first day all packages were still disabled.
+# - Joyn in Austria is com.zappntv (versionName 6.5.2-ATV-JOYN_AT-..., from Play): Zappn's package name, kept when
+#   the app became Joyn Austria. Do not disable it as old Zappn; doing so broke Joyn here. On Austrian units the
+#   preinstalled de.prosiebensat1digital.seventv (version 0.1) is only a stub for German Joyn that sends you to Play,
+#   where it is "not available in your country". It looks like a broken Joyn but never worked in Austria.
+# - org.droidtv.usagelogger and org.droidtv.demome were skipped by the disable scripts (TV_INPUT_HARDWARE, #321).
+#   dumpsys package showed neither provides a TvInputService, so both were disabled with TVINPUT_ALLOW=1. Live TV
+#   over cable, channel changes, HDMI and the streaming apps worked through the week.
+# - Not disabled from this list: com.netflix.ninja (owner's choice).
+# - Disabled on top of this list, none used by the owner (web-app labels from the 50PUS8517 list):
+#   org.droidtv.tv.frameworklogger, com.phorus.playfi.softap (com.phorus.playfi.tv kept),
+#   com.google.android.youtube.tvmusic, tv.wuaki.apptv (Rakuten TV), the gallery apps nettvapp1814 (ARTE),
+#   nettvapp3093 (ARD Mediathek), nettvapp3463 (Videociety), nettvapp4546 (MEGOGO), nettvapp4655 (Deezer),
+#   nettvapp5326 (Toon Goggles), nettvapp5512 (Fishing TV) and nettvapp20004410 (Couchplay Games), and
+#   com.zeasn.whalelive (WhaleLive), com.boosteroidtv.streaming (Boosteroid), com.canalplus.canalplus (Canal+) and
+#   nl.streamgroup.hdaustria (HD Austria), all preinstalled.

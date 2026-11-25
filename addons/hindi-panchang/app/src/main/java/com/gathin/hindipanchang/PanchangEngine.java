@@ -424,7 +424,7 @@ final class PanchangEngine {
         int sunsetMin = sunTimes[1];
         int dayDurationMin = Math.max(120, sunsetMin - sunriseMin);
 
-        ZonedDateTime sunriseZdt = date.atStartOfDay(zone).plusMinutes(sunriseMin);
+        ZonedDateTime sunriseZdt = date.atStartOfDay().plusMinutes(sunriseMin).atZone(zone);
         double jdSunrise = toJulianDay(sunriseZdt.toInstant().getEpochSecond());
 
         double sunLonTrop = solarLongitude(jdSunrise);
@@ -1064,8 +1064,6 @@ final class PanchangEngine {
         double solarNoonMin = 720.0 - 4.0 * lon - eqTime + tzOffsetHours * 60.0;
         int sunrise = (int) Math.round(solarNoonMin - 4.0 * haDeg);
         int sunset = (int) Math.round(solarNoonMin + 4.0 * haDeg);
-        sunrise = Math.max(240, Math.min(540, sunrise));
-        sunset = Math.max(960, Math.min(1260, sunset));
         return new int[]{sunrise, sunset};
     }
 

@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="508 TV modeli · 139 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 527 yayın daha: 57 ülkeden 543 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="513 TV modeli · 139 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 579 yayın daha: 58 ülkeden 595 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
 </p>
 
 ## Buradan başlayın
@@ -129,11 +129,11 @@ içindedir. En çok listesi olan markalar, her biri web sitesindeki modellerine 
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 90 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 18 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 19 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 |
 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
-| [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 5 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
-| [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 |
-| [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
+| [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 6 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
+| [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
+| [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
 
 <details>
 <summary>+93 more brands and 16 projector brands</summary>
@@ -282,7 +282,7 @@ bir cihazda neyin kaldığı [Sorun giderme](docs/TROUBLESHOOTING.md) belgesinde
 | **Temalar** | Wi-Fi üzerinden gönderilen bir `config.json` ile arka plan, duvar kâğıdı ve düzen, yeniden derleme yok. Yerleşik `default/` dahil 33 tema [`themes/`](themes/) içinde gelir |
 | **31 dil** | TV'nin diline uyar; İbranice için tamamen aynalanmış, sağdan sola bir düzen sunar |
 | **Uygulama kitaplığı** | İsteğe bağlı: yüklü tüm uygulamalara göz atın ve Ana ekran kısayolları ekleyin veya kaldırın. Bkz. [uygulama kitaplığı kılavuzu](docs/app-library.md) |
-| **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgisi için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgisini açar |
+| **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgileri için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgilerini açar |
 | **Modül kartları** | Herhangi bir TV uygulaması kendi kutucuğunu sunabilir; her birini bir kez onaylarsınız. Bkz. [`docs/modules.md`](docs/modules.md) |
 | **Eklentiler** | Modül kartı olarak bağlanan isteğe bağlı uygulamalar; [`addons/`](addons/) içinde tutulur ve asla başlatıcıya derlenmez |
 | **Saat ekran koruyucusu** | Ekran izi kalmasın diye ışıltının üzerinde kayan bir saat |
@@ -395,7 +395,7 @@ Başlatıcı yalnızca yüklü olanları listeler ve onları on yıldır değiş
 <details>
 <summary><b>Uygulamalarımı nasıl yeniden düzenlerim?</b></summary>
 
-**Ayarlar** (sağ üstte) üzerinde OK'u basılı tutun ve **Uygulamaları yeniden sırala**'yı seçin. OK bir uygulamayı
+**Ayarlar** (sağ üstte) üzerinde OK'u basılı tutun ve **Uygulamaları sırala**'yı seçin. OK bir uygulamayı
 alır, oklar onu taşır, Geri yerine koyar ve tekrar Geri bitirir. `tile_menu` açıkken bir kutucukta OK'u basılı
 tutmak, o uygulamayı hemen alan **Taşı** seçeneğini sunar. Daha fazlası: [docs/launcher.md](docs/launcher.md#launcher-settings-and-the-default-home)
 
@@ -478,9 +478,9 @@ ulaştı, insanlar aynısını kendi TV'lerine yapmaya başladı ve yanıtları 
 bağlantılar çalışır.
 
 İki hafta sonra, 19–25 Ekim haftasında GitHub'ın 1 numaralı trend deposu oldu; 46 binden fazla yıldız, 5,7 bin
-fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 20 Kasım itibarıyla 59 bin yıldız ve 7,8 bin fork. Listeler artık 508 TV modelini ve 139 markayı kapsıyor.
-Basındaki karşılığı: 543 makale (57 ülkeden) ve YouTube ile Bilibili'de 674 video, hepsi [docs/PRESS.md](docs/PRESS.md)
-içinde (rakamlar 14 Kasım 2026 itibarıyla).
+fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 20 Kasım itibarıyla 59 bin yıldız ve 7,8 bin fork. Listeler artık 513 TV modelini ve 139 markayı kapsıyor.
+Basındaki karşılığı: 595 makale (58 ülkeden) ve YouTube ile Bilibili'de 944 video, hepsi [docs/PRESS.md](docs/PRESS.md)
+içinde (rakamlar 23 Kasım 2026 itibarıyla).
 
 ## Katkıda bulunma
 

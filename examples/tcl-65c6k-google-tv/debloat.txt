@@ -14,7 +14,8 @@
 # com.tcl.useragreement, com.tcl.globalkeyoverlay, com.tcl.systemui.plugin, com.tcl.factory.view,
 # com.tcl.inputmethod.international (the keyboard), com.tcl.eva, com.tcl.hearaid, com.tcl.t_solo,
 # tv.mopa.ginga, com.google.android.tv.remote.service (it carries the remote's mic button, see the C755 list),
-# com.google.android.apps.tv.dreamx and all com.mediatek.*.
+# com.google.android.apps.tv.dreamx and all com.mediatek.* (the fourth unit added com.mediatek.support.webview
+# and com.mediatek.backgrounddetection, below).
 # com.tcl.dashboard (TCL Home) is in the C755 list's Keep line, but it is disabled here at the owner's request:
 # without it the Input key's source panel, the Settings button and the remote's other buttons still worked,
 # checked on the real remote, and it stayed disabled after a reboot.
@@ -25,8 +26,8 @@
 #
 # Applied on a real unit on 2026-10-23 in four batches with screenshots between them. Home, the Input key's
 # source panel, the Settings button, the remote's app buttons, an HDMI device on HDMI 4 and YouTube with AdGuard
-# Private DNS all kept working. All 27 packages stayed disabled after two reboots, and the set was used daily
-# for three days afterwards (to 2026-10-26) with nothing re-enabled.
+# Private DNS all kept working. All 27 packages of the list as it was then stayed disabled after two reboots,
+# and the set was used daily for three days afterwards (to 2026-10-26) with nothing re-enabled.
 #
 # Known on this firmware:
 # - The TCL tab on Home stays. Google TV draws it from its own partner configuration, not from a TCL package:
@@ -38,6 +39,11 @@
 #
 # Second unit: TCL 55C6K, Vietnam, same G08_4K_GB build, with the reference launcher (setupwraith off after the
 # Wi-Fi was re-joined); its different choices and the handover are in README.md beside this list.
+#
+# Fourth unit: TCL 85C6K, Czechia, EU firmware (client type TCL-EU-MT9653-S1), on Wi-Fi, debloat only. It came on
+# Android 12 (STT2.221228.001 AS35) and installed this AU02 build by itself during the session. It added the four
+# lines under "Spare webviews" below, which examples/tcl-g08-au-android14 had off for two weeks on the same build;
+# what it kept, what else it turned off and the update are in README.md.
 
 # TCL tracking and analytics
 com.tcl.logkit                         # log capture and upload
@@ -73,6 +79,17 @@ com.tcl.smartalexa                     # Alexa
 com.tcl.guard                          # TCL "cleaner" / app manager
 com.tcl.UpdatePeripheral               # TCL soundbar / peripheral firmware updates
 
+# Spare webviews, print spooler and MediaTek background detection (fourth unit; also in the AU Android 14 list)
+com.android.printspooler
+com.tcl.android.webview                # spare webview; com.google.android.webview is the active one
+com.mediatek.support.webview           # spare webview
+com.mediatek.backgrounddetection
+
+# Also off on the fourth unit, one day so far (lived with on the Android 12 EU list); uncomment to try them
+# com.mediatek.network                 # MediaTek network monitor; Wi-Fi and ADB kept working
+# com.google.android.syncadapters.calendar
+# com.google.android.onetimeinitializer  # runs once at first setup
+
 # Off by the owner's choice
 com.google.android.play.games
 com.google.android.youtube.tvmusic
@@ -92,3 +109,10 @@ com.google.android.katniss             # Google Assistant voice
 # com.netflix.tokenmanager
 # com.amazon.amazonvideo.livingroom    # Prime Video
 # com.google.android.youtube.tv
+# com.google.android.videos            # Play Movies & TV (off on the fourth unit)
+# com.disney.disneyplus                # Disney+ (off on the fourth unit)
+# com.wbd.stream                       # HBO Max (off on the fourth unit)
+# com.iqiyi.i18n.tv                    # iQIYI (off on the fourth unit)
+# com.tcl.t_solo                       # "listen alone" headphone audio (off on the fourth unit)
+# com.tcl.hearaid                      # hearing test; off on the fourth unit, sound not checked; the India unit
+#                                        keeps it for the Onkyo speakers (README.md)

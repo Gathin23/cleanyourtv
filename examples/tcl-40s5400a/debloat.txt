@@ -78,6 +78,27 @@
 # - `adb exec-out screencap -p` wrote the firmware's "Init wrapper sys mutex successful" line into the
 #   file instead of a PNG; `screencap -p /data/local/tmp/s.png` followed by `adb pull` works.
 #
+# Brazil unit, 2026-11-19: same model "Smart TV", product C06_2K_GB and build AR2101 / AR34,
+# Android TV 11 (SDK 30), TCL software V8-T221T01-LF1V034.000077 (persist.tcl.client_type
+# TCL-LA-MT9221-01), TV+ OS V5.2.0 (V8-2203260-MF1V520), 1280x720 panel, about 922 MB RAM
+# (low_ram=true). Folded in from the separate tcl-c06-ar2101-br-v034 report (#4217): a second
+# Brazilian unit on the same client type, on a newer V034 build of the same C06/MT9221 family as
+# the Brazil unit above. One session of a few hours, not a several-day test.
+# - Applied the list's three waves: TCL block, voice, Google/duplicates, with plain
+#   `pm disable-user --user 0`. Kept by choice: Chromecast (mediashell), ttvs (the firmware
+#   updater and Cast safety), the TV/input/remote packages, guard (PERSISTENT on this unit) and
+#   partnercustomizer (the TKey button). No Android core package touched.
+# - After sync, a 60 s wait and one reboot, 27 of the 29 disabled packages stayed off; usercenter
+#   and smartalexa came back at every boot (idle), and esticker was re-disabled after a sideload
+#   test re-enabled it (final disabled count 28).
+# - AdGuard Private DNS (dns.adguard-dns.com, hostname mode) was enabled and resolved normally.
+# - launcher/ was installed as Home (com.gathin.tvhome, reduced motion) with the
+#   stock launcher disabled afterwards; the TCL and the Alexa tile were hidden with hidden_apps
+#   rather than disabled. HDMI (tuner plus HDMI 1-3), Live TV and Cast (port 8009,
+#   mediashell) were kept and checked after every wave and after the reboot. Neither power_on_home
+#   nor power_on_home_always could keep Home in front at boot; the owner chose to accept Live TV at
+#   power-on and press Home. Not claimed as a fix.
+#
 # Second Asia-Pacific unit, 2026-11-15: same model "Smart TV", product C06_2K_GB, build AR2101,
 # Android TV 11 (SDK 30), persist.tcl.client_type TCL-AP-MT9221-01, security patch 2025-03-05,
 # 1280x720 panel, about 918 MB RAM (low_ram=true). One session, not a several-day test.

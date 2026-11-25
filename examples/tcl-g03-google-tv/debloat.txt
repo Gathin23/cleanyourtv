@@ -179,6 +179,9 @@
 #   remote): Netflix 4062, YouTube 4065, Prime Video 4099, the old TCL Guard button 4140, Settings gear 4077 (a gear mapped to
 #   83 did nothing here). app_keys and settings_key_keycodes in config.xml or a theme bring them back. After a reinstall the
 #   two helpers are enabled but not bound until they are switched off and on again.
+# - The picture button (keycode 4139) opens TCL's picture panel only when com.tcl.settings/.PictureActivity is started by
+#   its action; opened as an activity it closes at once. "4139:action:android.settings.DISPLAY_SETTINGS" in app_keys opens
+#   the panel over Home (43P735, LF1V578, real remote, 2026-11-23).
 # - Game Master (TCL's game mode: ALLM, low lag) survives Home, input changes and power cycles, and the TV shows a "Game
 #   Master : On/Off" banner at every input start. It is turned off only when the Options bar (or the Picture or Sound page)
 #   opens while the current source is not the console: the log says "game console isn't plugged in, turn off game master".
@@ -259,6 +262,18 @@
 #   (/proc/uptime kept counting), unlike the 43C641 in #3533. Standby took the TV off the network until it woke.
 # - Power-on and wake from standby both landed on the new Home, with no Live TV.
 #
+# TCL 43P735, EU firmware on an older build, 2026-11-09, status 2026-11-23 (two weeks, nothing re-enabled): Smart TV
+# Pro G03_4K_GB (BeyondTV4, Realtek rtd288o, software V8-R51MT05-LF1V578, client TCL-EU-RTD51M-S1), Google TV 11,
+# build RP1A.200622.001 AR07, security patch 2023-06-05, 2 GB, infrared remote (rtk_keypad). 41 packages were already
+# off from an earlier pass: most of this list, plus Stan (au.com.stan.and), Rakuten TV (tv.wuaki.apptv), camera2,
+# messaging, printspooler, htmlviewer, dynsystem, hotspot2.osulogin, smartconnect.tv, TalkBack, TTS, hearaid and t_solo.
+# This session added com.tcl.MultiScreenInteraction_TV, setupwraith (android.uid.system owned the Wi-Fi, so no
+# re-join) and launcherx via launcher/build-and-install.sh with HOME_KEY_SERVICE=1. On 2026-11-23 the same 44 were
+# disabled and Home was still the new launcher. Lines of this list left enabled on that unit: Chromecast (mediashell),
+# partnersetup, YouTube Music, com.tcl.android.webview, com.tcl.dashboard, micmanager, Miracast, partnercustomizer and
+# com.tcl.channelplus (TCL's free IPTV channels, opened from a remote button through its TV input). The launcher's
+# theme maps the remote's buttons by scancode (app_keys "scan:<n>:..."), the gear as settings_key_keycodes [4077].
+#
 # TCL G03 US, 2026-10-28, status 2026-11-13 (16 days, nothing re-enabled): product G03_4K_US_NF_DB (BeyondTV4, model
 # group 2021RT51MUHDGTV), Google TV on Android 11 (SDK 30), build RP1A.200622.001 AR37, US firmware. The owner's own
 # selection, based on this folder and examples/tcl-55s546-us: this list minus com.tcl.logkit,
@@ -273,6 +288,67 @@
 # too - forgetting it and re-joining in Settings before disabling setupwraith kept Wi-Fi. Not separately confirmed:
 # the Netflix, YouTube and Prime Video buttons, HDMI-CEC, casting, USB playback and a completed firmware update. USB
 # debugging was off and the port checked closed afterwards. Reported by @tjmcleod8 (#3876).
+#
+# TCL 43P755, Brazil, 2026-11-22: Smart TV Pro G03_4K_GB (BeyondTV4, Realtek rtd288o / RTD2851M, software
+# V8-R51MT05-LF1V652, client TCL-LA-RTD51M-S1), Google TV 11, build RP1A.200622.001 AR11, security patch 2024-12-05,
+# on Wi-Fi, ro.adb.secure=1: the Latin America firmware on the AR11 build. com.tcl.ocean.instructions and YouTube
+# Music were off at the factory. Applied in six batches with a screenshot after each: groups 1-3 minus com.tcl.gallery,
+# group 4 minus Netflix, Prime Video, the USB player and the TCL browser, group 5 minus voice (katniss, tv.assistant,
+# com.tcl.assistant, micmanager) and Chromecast (com.tcl.MultiScreenInteraction_TV is not installed here), then group 6,
+# launcherx via launcher/build-and-install.sh, the screensaver switch to ClockDream and group 7. Rebooted three times:
+# every package stayed disabled, the TV booted to FallbackHome and then the new launcher (no Live TV, no
+# RecoveryActivity), Wi-Fi stayed up, and HDMI 1-3 and the tuner stayed in `dumpsys tv_input` and in the launcher's
+# Inputs menu. Tested the same day, not yet lived with for days. Differences on this unit:
+# - com.tcl.gallery, com.tcl.ui_mediaCenter and com.tcl.t_solo all show TV_INPUT_HARDWARE granted in dumpsys on this
+#   AR11 unit, as on the AR09 50S546 and unlike the AR11 50C641 above, so they were left enabled.
+# - gtvpai was disabled by tools/disable.sh without being skipped, as on the Asia-Pacific unit.
+# - setupwraith owned an older saved network that was not in use; the network in use belonged to android.uid.system.
+#   FORCE_SETUPWRAITH=1, with the owner's agreement, deleted only that older network.
+# - usercenter off and a standby with the remote's power button, then waking it, did not reboot this unit
+#   (/proc/uptime kept counting), unlike the 43C641 in #3533.
+# - Remote: Bluetooth "BT_RC813_M4" (/dev/input/event3, Generic.kl). TclPhoneWindowManager logs its Netflix, YouTube and
+#   Prime Video buttons as startNetflix, startYouTube and startPrimeVideo, broadcasts only launcherx answers, so those
+#   three and the gear did nothing with launcherx off. HOME_KEY_SERVICE=1 with this folder's app_keys and
+#   settings_key_keycodes brought all four back (real remote), and Input opened com.tcl.suspension's source panel
+#   with no helper.
+# - Its TCL logo button is HID 0x0c0053 (KEY_SWITCHVIDEOMODE, scancode 227, TCL_QUICK_MENU, keycode 4020). With
+#   launcherx off the firmware's own handler failed to start its target and nothing opened; "scan:227:<package>" in
+#   app_keys maps it (real remote), as with the star button on the 50S546.
+# - "consume_volume_keys": true with the key helper bound: the owner reported volume taps and a held volume button
+#   working on the real remote. Without the helper a held Volume Down kept repeating.
+#
+# Australian firmware unit, 2026-11-21: same G03_4K_GB / AR09 / V8-R51MT05-LF1V620 build, client
+# TCL-AU-RTD51M-S1, security patch 2024-03-05, Google TV 11, 32-bit userspace (zygote32), board RTD2851M,
+# on Wi-Fi, ro.adb.secure=1. Applied groups 1-3 in three batches with a screenshot after each, then group 4
+# minus Netflix, Prime Video, the USB player and the game bar, and group 5 minus voice (katniss, tv.assistant,
+# tcl.assistant, micmanager) and Chromecast; then a reboot, group 6, launcher/build-and-install.sh, the
+# screensaver switch to ClockDream and group 7. 31 packages with launcherx. Rebooted twice while ADB was up:
+# every package stayed disabled, the TV booted to the new Home (FallbackHome, then the launcher; no Live TV,
+# no RecoveryActivity), Wi-Fi stayed up, and the tuner, AV and HDMI 1-3 stayed in `dumpsys tv_input` and
+# opened from the launcher's Inputs menu. The firmware updater was kept. Tested the same day, not yet lived
+# with for days. Differences on this unit:
+# - Remote: Bluetooth "TCL_RC802VEU4" (in `dumpsys input`), not one of the RC902 remotes above. No key helper
+#   was needed for any button: with launcherx off and nothing in `enabled_accessibility_services`, the owner
+#   confirmed on the real remote that Netflix, YouTube, Prime Video and the gear all still work, and so do
+#   Home, Input (TCL's source panel) and the mic, with a held Volume Up still ramping. So HOME_KEY_SERVICE
+#   was left off and this folder's settings_key_keycodes and app_keys were not needed here, as on the infrared-remote
+#   43P735 above and unlike the RC902 and RC813 remotes, whose four buttons die with launcherx. This remote's scancodes were not read.
+# - com.tcl.gallery was disabled by tools/disable.sh with no skip, unlike the 50S546 on this same AR09 build
+#   where it held TV_INPUT_HARDWARE; HDMI 1-3 and AV kept working with it off.
+# - gtvpai was disabled by tools/disable.sh here, not skipped.
+# - setupwraith owned a saved phone hotspot that was not in use, while the network in use belonged to
+#   com.android.tv.settings. FORCE_SETUPWRAITH=1, with the owner's agreement, deleted only that hotspot entry
+#   and the network in use was untouched.
+# - usercenter off, then a standby (`input keyevent SLEEP`) and a wake from the remote: /proc/uptime kept
+#   counting (335 s before, 587 s after), so this unit does not reboot on wake like the 43C641 in #3533.
+#   Standby took the TV off the network until it woke, as on the 43P735 above, so ADB is unreachable there.
+#
+# TCL 43P735, second unit, 2026-11-15 (#3949): BeyondTV4, software V8-R51MT05-LF1V620.021315, build RP1A.200622.001,
+# security patch 2024-03-05, on Ethernet. A light run: only com.tcl.bi and com.tcl.overseasappshow were disabled, and
+# both stayed disabled after a reboot. launcherx, setupwraith, the updater, the inputs and the remote services were kept;
+# stock_home_redirect to launcherx with home_long_press_home and the HomeKeyService helper, which needed APP_AUTO_START
+# allowed to start after a reboot (Google TV showed briefly first). The TCL Channel button opens Waterfall through
+# com.tcl.partnercustomizer, so keep both com.tcl.partnercustomizer and com.tcl.waterfall.overseas if you use that button.
 #
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,

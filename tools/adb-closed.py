@@ -179,6 +179,13 @@ def address_problem(word):
     if "/" in word:
         return ("that is a path, not the TV's address: give the IP (or IP:port) alone, without a / or the "
                 "page it opens, e.g.  tools/adb-closed.py <tv ip>")
+    # A bracketed IPv6 address has to close its bracket, and only `:port` may follow it: split_host_port()
+    # dropped anything else and asked the address on 5555, and an open bracket went to the lookup as is.
+    if word.startswith("["):
+        end = word.find("]")
+        if end == -1 or (word[end + 1:] and not word[end + 1:].startswith(":")):
+            return ("that is not the TV's address: an IPv6 address goes in brackets, closed, with only a port "
+                    "after them, e.g.  tools/adb-closed.py [2001:db8::1]:5555")
     return None
 
 

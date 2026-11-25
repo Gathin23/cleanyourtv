@@ -10,6 +10,10 @@
 # and the remote's app, Input and Settings buttons work. On this firmware
 # com.google.android.tvrecommendations comes back enabled at every boot (see its line below).
 #
+# Third unit: Turbo-X TXV-AU4395SMT (Greece), the same shandao board and build (UKNV.260304.001)
+# under the Turbo-X brand. It has its own list, debloat-turbo-x-txv-au4395smt.txt, because it keeps
+# fusion.android.tv.demo (see that line below) and other owner's choices; README.md covers it.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/cecotec-shandao/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/cecotec-shandao/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -82,6 +86,8 @@ com.google.android.katniss                       # Google Assistant and voice se
                                                  # SEARCH_LONG_PRESS; casting and the phone remote live in
                                                  # mediashell, tv.remote.service and GMS, all left enabled.
 fusion.android.tv.demo                           # shop-floor retail demo mode
+                                                 # On the Turbo-X unit it also declares a receiver for
+                                                 # the remote's Input key; that list keeps it (README.md).
 com.mediatek.tv.freeviewplay                     # Freeview Play (UK only, useless outside the UK)
 com.smartdevice.tv.aircast                       # Coocaa iCast AirPlay/mirroring app, starts at boot.
                                                  # Off by choice. Keep it if you want AirPlay without

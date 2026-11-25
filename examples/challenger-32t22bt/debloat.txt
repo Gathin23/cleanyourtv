@@ -8,10 +8,10 @@
 # Stock launcher: com.cvte.tv.launcher (AppActivity). Pass it to restore.sh or set-home-activity if reverting.
 # Live TV & Inputs: keep com.cvte.tvservice, com.cvte.tv.androidsetting, and com.mediatek.tv.agent (needed for HDMI and TV tuners).
 #
-# Tested on Challenger 32T22 BT: freed up crucial RAM for third-party launcher (com.gathin.tvhome) and streaming apps.
-# The Home half cannot be reproduced from this repository on this set: the published launcher is minSdk 26
-# (Android 8) and `pm install` answers INSTALL_FAILED_OLDER_SDK on this API 24 TV (#576,
-# docs/TROUBLESHOOTING.md), so the launcher half cannot be installed here and the stock Home stays enabled.
+# Tested on Challenger 32T22 BT: the owner's run freed up crucial RAM for the streaming apps that stayed.
+# The launcher line at the end is commented out, so applying this list leaves the stock Home in place: the
+# published launcher is minSdk 26 (Android 8) and `pm install` answers INSTALL_FAILED_OLDER_SDK on this API 24
+# TV (#576, docs/TROUBLESHOOTING.md), so this repository cannot put a Home on this set.
 # The debloat half applies as it is, from the stock home screen.
 
 # Factory test and diagnostic tools (CVTE & TCL ODM)

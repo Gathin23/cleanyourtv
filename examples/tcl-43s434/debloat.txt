@@ -1,0 +1,80 @@
+# TCL 43S434 (4-Series, reports as "Smart TV", product C02_4K_US, device BeyondTV, Realtek), US model
+# Android TV 9 (SDK 28), build PPR1.180610.011 / incremental AP12.
+# Fingerprint: TCL/C02_4K_US/BeyondTV:9/PPR1.180610.011/AP12:user/release-keys
+#
+# Not the same firmware as examples/tcl-50s434 (C03_4K_NA, BeyondTV4, Android TV 11): do not apply that
+# list here. Closest list is examples/tcl-32s334 (BeyondTV, Android TV 9, PPR1.180610.011 AP13), which
+# this one started from, plus packages most tested lists disable, keeping only what this set has.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43s434/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43s434/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (HOME priority 2). Not listed here:
+#   launcher/build-and-install.sh installs com.gathin.tvhome and disables it afterwards. Other HOME
+#   claimants: com.tcl.keycustomfunctionservice/.FallbackHome and com.android.tv.settings FallbackHome.
+# Live TV app: com.tcl.tv, inputs: com.tcl.tvinput (both kept; set live_tv_package to com.tcl.tv).
+# Already disabled from the factory on the tested set: com.tcl.bootadservice (boot ad).
+#
+# DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput, com.tcl.settings, com.tcl.tcl_bt_rcu_service,
+# com.tcl.autopair, com.tcl.framework.custom, com.tcl.keycustomfunctionservice,
+# com.tcl.inputmethod.international, com.google.android.tv.remote.service, com.android.vending.
+# Left alone because their role on this set is unclear or tied to the remote and HDMI:
+# com.tcl.partnercustomizer, com.tcl.keyhelp, com.tcl.useragreement, com.tcl.ui_mediaCenter,
+# com.tcl.appstatecontroller.
+#
+# setupwraith owned a saved Wi-Fi network after first setup (`dumpsys wifi` showed
+# cname=com.google.android.tungsten.setupwraith), so it is not in this list. Forget and re-join the
+# network in Settings first if you want to disable it, or Wi-Fi and ADB drop with it.
+#
+# Kept by the owner's choice: Netflix, Hulu, Prime Video, YouTube, Chromecast, Play Store, and the
+# firmware updater (com.tcl.versionUpdateApp, commented out below so a shared list keeps it on).
+#
+# com.tcl.xian.StartandroidService is KEPT although most TCL lists disable it: with it off, Settings >
+# System update fails with "cannot access network resources" while apps stream fine. Found on the
+# tested set by re-enabling the whole list (update worked), then halving it: with only this package
+# back on, the update check worked again; with it off and com.tcl.bi back on, it still failed.
+# Disable it only if you do not want TCL firmware updates.
+# Off by choice: Google Assistant / TCL voice / Alexa, YouTube Music, Play Movies, Play Games.
+#
+# Tested on a real unit 2026-11-23, in four batches with a Home screenshot after each, then a reboot:
+# every package stayed disabled (com.tcl.smartalexa included, which TCL re-enabled at boot on the
+# 32S334), Wi-Fi and ADB came back, and Home came up on launcher/ (mResumedActivity checked). With
+# tvlauncher off, the real remote's Home, Netflix, YouTube, Input and Settings buttons kept working
+# with no key helper.
+
+# ---- 1. TCL and Google telemetry ----
+com.tcl.bi                                  # TCL BI analytics
+# com.tcl.xian.StartandroidService          # KEPT: System update needs it (see header)
+com.google.android.feedback                 # feedback / crash reporting
+com.google.android.tv.bugreportsender       # bug report uploader
+
+# ---- 2. Ads, promos and recommendation rows ----
+android.autoinstalls.config.tcl.device      # silently installs partner apps
+com.google.android.partnersetup             # partner-app attribution
+com.google.android.onetimeinitializer       # one-time setup leftovers
+com.tcl.esticker                            # retail demo stickers
+com.tcl.messagebox                          # TCL push messages and promos
+com.tcl.waterfall.overseas                  # TCL Channel recommendation browser
+com.google.android.tvrecommendations        # stock Home recommendation rows
+com.google.android.leanbacklauncher.recommendations
+
+# ---- 3. Background services and preloaded extras ----
+com.tcl.tvweishi                            # TCL "TV Guard" cleaner
+com.tcl.copydatatotv                        # phone-to-TV data migration
+com.tcl.usercenter                          # TCL account sign-in nags
+com.tcl.appmarket2                          # TCL app store (Play Store stays)
+com.google.android.syncadapters.calendar    # calendar sync
+com.google.android.play.games               # Play Games
+com.google.android.videos                   # Play Movies & TV
+com.google.android.youtube.tvmusic          # YouTube Music
+com.android.printspooler                    # printing
+
+# ---- 4. Off by choice: voice assistants not used ----
+# Chromecast (com.google.android.apps.mediashell) stays.
+com.google.android.katniss                  # Google Assistant / voice search
+com.tcl.assistant                           # TCL voice service
+com.tcl.smartalexa                          # Alexa bridge
+
+# ---- Kept ----
+# com.tcl.versionUpdateApp                  # firmware updater, kept on

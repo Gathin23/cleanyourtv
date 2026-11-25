@@ -1,0 +1,51 @@
+# Skyworth SWTV-22AE-FHD (device umeda, MediaTek)
+# Android 11 (SDK 30), build RTM7.230903.221, manufacturer skyworth. Google TV home.
+# Stock launcher: com.google.android.apps.tv.launcherx
+# The Android 14 list for this model is examples/skyworth-swtv-22ae-fhd/debloat.txt; this one is
+# the Android 11 variant, filtered to packages that exist on this firmware.
+# Setup wizard: com.google.android.tungsten.setupwraith (its RecoveryActivity claims HOME;
+#   launcher/build-and-install.sh fails its Home check until this is disabled)
+# Saved Wi-Fi network was owned by android.uid.system, so disabling setupwraith kept Wi-Fi.
+# Disabling setupwraith gives Home back but costs casting (Chromecast built-in) on Google TV.
+#   Check yours first: dumpsys wifi | grep -o 'cname=[^ ]*'
+# HDMI and tuner inputs: com.mediatek.tvinput (left on)
+# Remote: all buttons worked after the launcher install.
+# Remote app button: worked. The Android 14 entry found it needs
+#   dailymanage, dailyshortcut and myapp, so they are left enabled here.
+# In use for about a month (as of 2026-11-21): nothing broke.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/skyworth-swtv-22ae-fhd-android11/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/skyworth-swtv-22ae-fhd-android11/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# This firmware is Android 11, so the Android 14 components that other Skyworth lists
+# disable (adservices, ondevicepersonalization, federatedcompute, Health Connect) are not
+# installed here and are not listed.
+#
+# Left alone. Purposes below come from the Android 14 entry for this model, not verified on this firmware:
+# com.smartdevice.global.service (remote keys), com.smartdevice.bleconnectservice (Bluetooth remote
+# pairing), com.skyworth.backligthadjust (backlight), com.smartdevice.dailymanage,
+# com.smartdevice.dailyshortcut and com.smartdevice.myapp (the remote's app button).
+# Also left enabled: com.smartdevice.dtv.icast (Miracast/DLNA) and com.smartdevice.factory
+# (factory menu; the Android 14 entry disables it).
+
+# Skyworth telemetry and activation
+com.smartdevice.recordactivation # records first activation
+com.smartdevice.aftersale # "after-sale" service: boot + network receivers, can install APKs
+com.google.android.feedback
+
+# Content rows and recommendations
+com.smartdevice.recommendation # Coocaa recommendation rows and analytics
+com.smartdevice.leanbacklauncher.customizer # partner config that injects rows into the home screen
+
+# Retail demo, manual, unused
+com.coocaa.demonow.lightining # "Demo Now" retail mode
+fusion.android.tv.demo # shop demo player (Skyworth ePop)
+com.mstar.android.tv.disclaimercustomization # retail legal-disclaimer dialogs
+com.Smartdevice.emanual # on-screen manual
+com.google.android.play.games # Google Play Games
+
+# Stock Google TV home and setup wizard
+# Disable only after installing and verifying the new launcher!
+com.google.android.tungsten.setupwraith # setup wizard recovery activity claiming HOME
+com.google.android.apps.tv.launcherx # stock Google TV launcher

@@ -169,6 +169,14 @@ def main():
                          "Use a shorter remote path. Nothing was sent to the TV.\n")
         dev.close()
         return 2
+    # A folder at the target took the whole transfer: `mv -f` put the file inside it under the staging
+    # name (<folder>/<name>.part) and the run said the copy was on the TV. Asked before the try, so a
+    # refusal leaves no staging cleanup behind it.
+    if "isdir" in dev.shell(f"[ -d {q(remote)} ] && echo isdir").split():
+        sys.stderr.write(f"refusing remote path {remote!r}: it is a folder on the TV. Give the file's own "
+                         f"name, e.g. {remote}/<name>. Nothing was sent to the TV.\n")
+        dev.close()
+        return 2
     try:
         # Only our own temporary names are cleared; the target stays until the copy is verified.
         # `: >` creates the base64 file even for an empty upload, so `base64 -d` has an input.

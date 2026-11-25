@@ -50,6 +50,7 @@ import errno
 import io
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -144,7 +145,7 @@ VENV_CANNOT_START = """#!/nonexistent/interpreter
 # <font> <out>", a script that exited non-zero puts the command before "and commit it with the tables" - so
 # the command is read by its own shape. Read as words rather than looked for inside the whole line, because
 # the interpreter can be a path that ends in `python3` - see bare_interpreter().
-REMEDY = re.compile(r"(?P<interpreter>\S+) (?P<script>tools/readme_stats\.py|tools/readme_card\.py) "
+REMEDY = re.compile(r"(?P<interpreter>'[^']*'|\"[^\"]*\"|\S+) (?P<script>tools/readme_stats\.py|tools/readme_card\.py) "
                     r"<Fredoka\.ttf> \S+")
 # A name with no path in it, which is not a command: a stock Ubuntu 24.04 has /usr/bin/python3 and no
 # /usr/bin/python, and macOS ships no `python` without the developer tools. The rule
@@ -156,7 +157,8 @@ BARE_INTERPRETER = re.compile(r"^(python|python2|python3|py)(\.exe)?$", re.IGNOR
 def remedy(text):
     """(interpreter, script) from the remedy line in `text`, or None when it prints no such command."""
     found = REMEDY.search(text)
-    return (found.group("interpreter"), found.group("script")) if found else None
+    # The interpreter is quoted when its path has a space, so the line pastes as one command.
+    return (shlex.split(found.group("interpreter"))[0], found.group("script")) if found else None
 
 
 def bare_interpreter(interpreter):
@@ -183,8 +185,8 @@ class RedrawFailureTest(unittest.TestCase):
         self.assertIn("docs/stats.png", done.stderr, "the remedy does not name the file to write")
         # And the interpreter the retry has to use: this checkout has no venv, so it is the one that ran the
         # script. A bare `python3` is the interpreter that just answered "needs Pillow" on a stock machine.
-        self.assertIn(f"{sys.executable} tools/readme_stats.py", done.stderr,
-                      f"the remedy names an interpreter that did not run: {done.stderr!r}")
+        self.assertEqual(remedy(done.stderr), (sys.executable, "tools/readme_stats.py"),
+                         f"the remedy names an interpreter that did not run: {done.stderr!r}")
         self.assertNotIn("Traceback", done.stderr, "the failure still ends in a CalledProcessError")
         # The tables are written: saying "nothing was drawn" would be wrong, and so would hiding it.
         self.assertIn("TCL A", readme, "the tables were not written before the redraw")

@@ -127,10 +127,22 @@
 # (TclShortCutKeyManager does on the 55P6K above). Power-on lands on the new Home by itself.
 # AdGuard Private DNS worked there.
 #
+# Also used on a TCL S551G (US S5; product G10_4K_US_NF, client type TCL-NA-RT2875-P01, build
+# STT2.230203.001, incremental AS50, Realtek rtd6748). Tested on 2026-11-22 for one session with one
+# reboot check, not yet lived with for several days. Disabled from this list: channelplus,
+# tclhome_passive, partnercustomizer, interactive, exhibit, esticker, ocean.instructions, repairguide,
+# ui_mediaCenter, UpdatePeripheral, feedback and dreamx; kept: tv.plus, smartlink.core, gamebar and
+# TalkBack; disable.sh skipped gtvpai (no permission block to read). From the optional section it also
+# disabled logkit, guard, usercenter, messagebox, hotelmenu, smartalexa, play.games, youtube.tvmusic,
+# katniss and the four "S551G" lines. As on the 55QM5K, ttvs hosts TCL's firmware updater here
+# (versionUpdateApp), so keep it. The saved setup Wi-Fi belonged to setupwraith: forgotten and
+# re-joined in Settings first, after which disabling it kept Wi-Fi. The launcher took Home only once
+# setupwraith was off, and Home, Wi-Fi and ADB came back after the reboot.
+#
 # Also used on a TCL Smart TV (device G10, product G10_4K_GB_NF_32BIT, Realtek rtd6748),
 # Android 14 / SDK 34, build UTT2.250416.001 AU02 — the first Android 14 unit on this list
 # (every unit above is STT2.230203.001, Android 12). Tested on 2026-11-23 for one session with
-# no reboot check, not yet lived with for several days, driving a third-party launcher
+# one session so far, not yet lived with for several days, driving a third-party launcher
 # (Projectivy, com.spocky.projengmenu) as Home rather than the reference launcher.
 # Disabled from this list: exhibit, esticker, ocean.instructions, repairguide, hotelmenu,
 # logkit, samba TV ACR, gtvpai, feedback, talkback, tclhome_passive, gamebar, and from the
@@ -257,6 +269,12 @@ com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks ab
 # com.google.android.youtube.tvmusic   # YouTube Music
 # com.google.android.videos            # Google TV / Play Movies storefront
 # com.google.android.play.games        # Play Games
+
+# Off on the US S551G for one session so far (uncomment what you don't use):
+# com.tcl.android.webview                # TCL's own WebView; Google's stays on
+# com.google.android.partnersetup        # partner setup at first boot
+# com.google.android.onetimeinitializer  # one-time setup at first boot
+# com.google.android.syncadapters.calendar # Google Calendar sync
 
 # Off on the 55C69B unit (France); this set has them off, uncomment if you don't use them:
 # com.google.android.katniss             # Google Assistant

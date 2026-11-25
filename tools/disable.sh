@@ -9,11 +9,31 @@ set -euo pipefail
 # Live TV and Settings handler lookups matched nothing (#3286). Match bytes, not the user's alphabet.
 export LC_ALL=C
 LIST="${1:?usage: disable.sh <debloat list>}"
+# One word, the list. A dash-led word (--help, -h, --reset copied over from theme.sh) went to dirname
+# as an option and came back as coreutils' own help inside a cd error; a word after the list was
+# dropped while the list went to the TV. restore.sh refuses both the same way.
+USAGE="usage: TV_HOST=<tv ip> tools/disable.sh <debloat list>"
+case "$LIST" in
+  -*)
+    echo "disable.sh takes a debloat list, and $LIST is a flag it does not have. Nothing was sent to the TV." >&2
+    echo "$USAGE" >&2
+    exit 2 ;;
+esac
+if [ "$#" -gt 1 ]; then
+  shift
+  echo "disable.sh takes one debloat list: $* would not have been used. Nothing was sent to the TV." >&2
+  echo "$USAGE" >&2
+  exit 2
+fi
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
 # C:/Users/..., the same path (and so the same record) as the PowerShell scripts.
-LIST_DIR="$(cd "$(dirname "$LIST")" && { pwd -W 2>/dev/null || pwd; })"
-LIST="$LIST_DIR/$(basename "$LIST")"
+# A folder that is not there keeps the path as typed, as in restore.sh: a list path one folder short
+# used to stop here on bash's "cd: <folder>: No such file or directory", and the "cannot read the
+# list" check below, written for exactly this, was never reached.
+if LIST_DIR="$(cd "$(dirname "$LIST")" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"; then
+  LIST="$LIST_DIR/$(basename "$LIST")"
+fi
 cd "$(dirname "$0")/.."
 # The safety overrides are read from the environment. `FORCE_HOME=1 tools/disable.sh ...` lasts one
 # command, but an exported value stays set for the shell and reaches child processes (check.py --fix).
@@ -28,7 +48,7 @@ done
 PY=tools/venv/bin/python
 [ -x "$PY" ] || PY=tools/venv/Scripts/python.exe
 export MSYS_NO_PATHCONV=1
-[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt"; exit 1; }
+[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt" >&2; exit 1; }
 # Lists come from contributors, and the package name is pasted into a shell command on the TV.
 # Refuse the whole list unless every entry is a bare package name (#165).
 # A list read from a directory that is not there dies in the `cd` above; one whose file is not

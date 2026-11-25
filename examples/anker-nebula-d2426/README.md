@@ -118,6 +118,33 @@ remote: if it does not land on the new launcher, undo as above.
 - The Wi-Fi pill says "Wi-Fi" and never the network name on this unit, with `ACCESS_FINE_LOCATION` and
   `ACCESS_COARSE_LOCATION` granted and location switched on (`dumpsys wifi` shows the SSID). Not solved.
 
+### Two more units (Canada, 2026-11-22, same build)
+
+Two more D2426, same build. `debloat.txt` applied to both with no refusal, commented extras included, and
+Home came back as `com.gathin.tvhome` after a real reboot (`dumpsys activity activities | grep mFocusedApp`).
+With the owner's own apps switched off as well, `pm list packages -d` counts 36 on the one that went furthest.
+
+- `getprop ro.product.cpu.abilist` answers `armeabi-v7a,armeabi` on both, so a 64-bit APK is refused: install
+  the `armeabi-v7a` build of anything that ships one. That is the shipped userspace, not what `/proc/cpuinfo`
+  shows: it prints "ARMv7 Processor rev 0" for all four cores, which says nothing about the cores themselves.
+  The GPU is a Mali-G52 on OpenGL ES 3.2.
+- Do not read `/proc/loadavg` on this firmware. Both units sit at 48 to 63 on 4 cores, including the one left
+  idle. Use `top` and `dumpsys meminfo`.
+- The Assistant the firmware brings back is expensive. Its re-enable leaves a `com.google.android.katniss`
+  `:search` process near 138 MB resident (`top`, RES column), a tenth of the RAM, on a set with no stock home
+  and nobody using voice. These two cost more here than on the earlier units. Switch them off again after each
+  boot:
+
+  ```bash
+  tools/venv/bin/python -I tools/tv.py 'pm disable-user --user 0 com.google.android.katniss'
+  tools/venv/bin/python -I tools/tv.py 'pm disable-user --user 0 com.cltv.fast'
+  ```
+
+  Re-applying the whole list after a boot works too, but only while this launcher is Home: the script checks
+  Home first and stops if something else owns it.
+
+  Switching them off took `SwapFree` up 34 MB, to 216 MB, on the unit that had the least headroom.
+
 ## ADB
 
 ADB was left on at the end of the setup, by choice. Port 5555 is plaintext, so close it when you no longer need it:
