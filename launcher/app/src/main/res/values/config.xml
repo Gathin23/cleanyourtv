@@ -18,9 +18,10 @@
 
     <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->
     <string-array name="dock_apps">
-        <item>tv.formuler.mytvonline.real</item>
+        <item>com.netflix.ninja</item>
+        <item>com.amazon.amazonvideo.livingroom</item>
         <item>com.google.android.youtube.tv</item>
-        <item>com.android.vending</item>
+        <item>in.startv.hotstar</item>
     </string-array>
     <!-- With fewer dock_apps than columns (or a dock app that is not installed), the free dock slots take
          the first grid apps, so the dock never shows a gap. false leaves them empty (#162); a theme can
@@ -47,18 +48,18 @@
          after the TV starts it opens that app instead. Once per boot, like boot_to_live_tv (which wins when
          both are set); Home after that stays Home, and an app that is gone or disabled leaves Home on screen.
          Off by default; a theme can set "open_on_start_choice": true. -->
-    <bool name="open_on_start_choice">true</bool>
+    <bool name="open_on_start_choice">false</bool>
     <!-- With open_on_start_choice: the picked app also opens each time the screen comes back on, for sets whose
          remote powers them into a light sleep with no boot. It opens over whatever was in front, an HDMI input
          included. Off by default; a theme can set "open_on_start_on_wake": true. -->
-    <bool name="open_on_start_on_wake">true</bool>
+    <bool name="open_on_start_on_wake">false</bool>
 
     <!-- Seconds the first Home after the TV starts waits for a working internet connection before it opens the
          boot_to_live_tv or Open on start app. A streaming app opened before the network is back shows an error,
          and after a power cut Wi-Fi can take minutes, as the router starts again too. Home stays on screen
          meanwhile, and leaving Home cancels the opening. 0, the default: open at once. Up to 600; a theme can
          set "open_on_start_network_wait": 180. -->
-    <integer name="open_on_start_network_wait">30</integer>
+    <integer name="open_on_start_network_wait">0</integer>
 
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
@@ -250,7 +251,7 @@
          com.xgimi.xrmservice does, on every one of its remote keys, power included (docs/TROUBLESHOOTING.md).
          Whenever that launcher's home screen comes up anyway, HomeKeyService (HOME_KEY_SERVICE=1) sends the TV
          straight back here. A theme's config.json can set it too. Leave empty to omit. -->
-    <string name="stock_home_redirect" translatable="false">tv.formuler.siptv.leanbacklauncher.real</string>
+    <string name="stock_home_redirect" translatable="false"></string>
 
     <!-- For TVs whose firmware opens the Live TV app (live_tv_package) by itself at every power-on, with no setting
          to change it (Changhong / Homwee boards start com.mediatek.wwtv.tvcenter from its own boot receiver, which

@@ -4,9 +4,10 @@
 
 ## What was disabled
 
-The debloat list disables **9 packages**: Formuler stock launcher (already disabled), Formuler help center, upgrade services (2), network storage service, AOSP dreams/wallpaper/userdictionary, Google feedback.
+The debloat list disables **7 packages**: Formuler stock launcher (already disabled), Formuler help center, network storage service, AOSP dreams/wallpaper/userdictionary, Google feedback.
 
 **Kept (not in list):**
+- `tv.formuler.real.upgrade` and `tv.formuler.remoteupgrade.z`: firmware updaters, commented out in the list and left enabled
 - `tv.formuler.mytvonline.real` — MyTVOnline (IPTV app), kept as dock item
 - `tv.formuler.mytvonline.tunerservice.real` — MyTVOnline tuner service
 - `tv.formuler.service.real`: MyTVOnline binds its TVService. Disabled, the tuner reports `tvservice_not_connected`
@@ -34,7 +35,7 @@ TV_HOST=<tv ip> tools/restore.sh examples/formuler-z10-neo/debloat.txt
 
 ## Launcher config
 
-The launcher's `config.xml` already includes Formuler's MyTVOnline in `dock_apps` and the stock launcher package (`tv.formuler.siptv.leanbacklauncher.real`) in `stock_home_redirect` for Home-guard.
+[`config.json`](config.json) puts MyTVOnline, YouTube and Play Store in the dock, opens the app picked under Open on start at boot and on wake (after up to 30 s waiting for the network), and sends the stock launcher (`tv.formuler.siptv.leanbacklauncher.real`) back to this one through `stock_home_redirect`. Push it with `TV_HOST=<tv ip> tools/theme.sh examples/formuler-z10-neo`.
 
 ## Note
 

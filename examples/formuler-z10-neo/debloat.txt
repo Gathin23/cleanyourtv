@@ -12,8 +12,8 @@ tv.formuler.siptv.leanbacklauncher.real
 
 # Formuler background services
 tv.formuler.helpcenter
-tv.formuler.real.upgrade
-tv.formuler.remoteupgrade.z
+# tv.formuler.real.upgrade       # firmware updater, left enabled
+# tv.formuler.remoteupgrade.z    # firmware updater, left enabled
 tv.formuler.service.networkstorage.real
 # tv.formuler.service.real       # KEEP: MyTVOnline binds its TVService; disabled, the tuner reports tvservice_not_connected
 # tv.formuler.productservice     # KEEP: MyTVOnline binds its AFR service; disabled, it crashes on launch ("failed to bind afr service")

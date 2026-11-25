@@ -1,0 +1,11 @@
+{
+  "dock_apps": [
+    "tv.formuler.mytvonline.real",
+    "com.google.android.youtube.tv",
+    "com.android.vending"
+  ],
+  "open_on_start_choice": true,
+  "open_on_start_on_wake": true,
+  "open_on_start_network_wait": 30,
+  "stock_home_redirect": "tv.formuler.siptv.leanbacklauncher.real"
+}
