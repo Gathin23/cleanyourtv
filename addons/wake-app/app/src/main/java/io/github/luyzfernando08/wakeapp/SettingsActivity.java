@@ -72,6 +72,8 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        // After a force-stop nothing runs the watcher until a reboot; a running one is left as it is.
+        startForegroundService(new Intent(this, WatchService.class));
         refresh();
     }
 
