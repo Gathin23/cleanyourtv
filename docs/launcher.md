@@ -21,6 +21,15 @@ It needs JDK 17 and Android SDK platform 34. On macOS: `brew install openjdk@17 
 and `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. On Linux the install script finds
 `~/Android/Sdk` and the `java` on your PATH.
 
+The build reads one project property, `launcherApplicationId`
+([`launcher/app/build.gradle`](../launcher/app/build.gradle)), and answers `com.gathin.tvhome` when it is
+not passed. It exists because some firmware only accepts a package name it allowlists as Home, so those
+sets are built under another id - `com.ts.launcher` on China-market Xiaomi, `com.coocaa.cleanhome` on a
+Coocaa. `launcher/build-and-install.sh` builds and installs the default id, so a set that needs another
+one is built and installed by hand: `./gradlew assembleRelease -PlauncherApplicationId=<id>` leaves the
+APK in `launcher/app/build/outputs/apk/release/app-release.apk`. The
+[device notes](devices/) and [Troubleshooting](TROUBLESHOOTING.md) name the id each such set wants.
+
 ## Configure
 
 [`config.xml`](../launcher/app/src/main/res/values/config.xml) sets:
