@@ -32,13 +32,13 @@
    published on the 31st.
    `tests/test_press_as_of_date.py` reads that parenthetical in each page's own words, off every page whose
    story paragraph carries the link, so a translation that copies the sentence is read the day it lands; a
-   page that writes none is not judged. That paragraph is also
-   read on the five front pages that have it without the card:
-   `README.pt-BR.md`, the Hebrew `README.he.md`, the Uzbek `README.uz.md`, the French `README.fr.md` and the
-   Spanish `README.es.md` show no `docs/card.jpg`, so their numbers are held to `README.md`'s alt text and to
-   `docs/PRESS.md` on their own, and their coverage clause has to open with a colon like the others ("A
-   repercussão: 412 artigos ...", "סיקור בתקשורת: 412 כתבות ...", "Matbuotdagi aks: 412 maqola ...", "La
-   couverture médiatique : 534 articles ..."), since that colon is what the reader cuts the three numbers at.
+   page that writes none is not judged. That paragraph is also read on the front pages that have it without
+   the card: `README.pt-BR.md`, the Hebrew `README.he.md`, the Uzbek `README.uz.md`, the French
+   `README.fr.md`, the Spanish `README.es.md` and the Greek `README.el.md` show no `docs/card.jpg`, so their
+   numbers are held to `README.md`'s alt text and to `docs/PRESS.md` on their own, and their coverage clause
+   has to open with a colon like the others ("A repercussão: 412 artigos ...", "סיקור בתקשורת: 412 כתבות ...",
+   "Matbuotdagi aks: 412 maqola ...", "La couverture médiatique : 534 articles ..."), since that colon is
+   what the reader cuts the three numbers at.
    The Uzbek page dates them too ("(raqamlar 2026-yil 31-oktabr holatiga)"), the year before the day and the
    month in its own language, and the date check reads that shape like the other eight. A page counts as one
    of them by its paragraph, so a translation that copies the story without the picture is read without the
