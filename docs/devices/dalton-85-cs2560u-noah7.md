@@ -33,11 +33,9 @@ this model are:
 
 The key helper must be included in the build (`-InputKeyService` on Windows, or
 `INPUT_KEY_SERVICE=1` on the shell script). With the helper enabled and this configuration applied,
-the owner's physical Source button opens the vendor panel from the CleanYourTV home screen. Pressing
-Source while the panel is open closes it; the remote's Back button also closes it. The helper tracks
-the configured panel package, starts the OEM panel directly and guards against a rapid duplicate
-press, which avoids the original launcher error and delayed reopen. The owner confirmed this works
-on the TV. Picture and sound were confirmed working from TV, AV and HDMI 1–3 in the panel.
+the owner's physical Source button opens the vendor panel from the CleanYourTV home screen. The
+remote's Back button closes it. The owner confirmed the configured panel launch works on the TV.
+Picture and sound were confirmed working from TV, AV and HDMI 1–3 in the panel.
 
 The launcher fix is generic: device keycodes and OEM component/action/extra stay in this TV's theme
 configuration. The panel component and Source-key handling were confirmed on the physical TV remote;

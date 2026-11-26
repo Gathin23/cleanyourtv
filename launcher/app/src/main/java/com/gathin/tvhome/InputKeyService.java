@@ -1,11 +1,8 @@
 package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import java.util.Collections;
@@ -25,9 +22,6 @@ public class InputKeyService extends AccessibilityService {
 
     private int[] inputKeycodes = new int[0];
     private Config config;
-    private String sourcePanelPackage = "";
-    private long lastInputKeyLaunch;
-    private boolean sourcePanelOpen;
     private Map<Integer, String> appKeys = Collections.emptyMap();
     private Map<Integer, String> appScancodes = Collections.emptyMap();
     private Map<Integer, String> holdAppKeys = Collections.emptyMap();
@@ -50,18 +44,6 @@ public class InputKeyService extends AccessibilityService {
         running = this;
         // From config.xml or a theme's config.json; theme.sh rebinds this service after a push.
         config = Config.load(this);
-        ComponentName sourcePanel = ComponentName.unflattenFromString(config.sourcePanelService);
-        sourcePanelPackage = sourcePanel == null ? "" : sourcePanel.getPackageName();
-        // Subscribe only for a configured vendor panel. Keep this key-only helper silent otherwise.
-        if (!sourcePanelPackage.isEmpty()) {
-            AccessibilityServiceInfo info = getServiceInfo();
-            if (info != null) {
-                info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-                // setServiceInfo() can drop the XML key-filter flag; preserve the configured choice.
-                if (config.keyFilter) info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
-                setServiceInfo(info);
-            }
-        }
         // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
@@ -94,30 +76,13 @@ public class InputKeyService extends AccessibilityService {
         if (RemoteKeys.handle(this, event, RemoteKeys.tap(appKeys.get(event.getKeyCode()),
                 frontAppKeys.get(event.getKeyCode())),
                 holdAppKeys.get(event.getKeyCode()))) return true;
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-            sourcePanelOpen = false;
-            lastInputKeyLaunch = 0;
-            return false;
-        }
         if (!isInputKey(event.getKeyCode())) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            long now = SystemClock.elapsedRealtime();
-            if (sourcePanelOpen) {
-                sourcePanelOpen = false;
-                lastInputKeyLaunch = 0;
-                performGlobalAction(GLOBAL_ACTION_BACK);
-                return true;
-            }
-            if (lastInputKeyLaunch != 0 && now - lastInputKeyLaunch < 800) return true;
-            lastInputKeyLaunch = now;
             try {
-                // Start the vendor picker directly so the key doesn't wait on Home's menu animation.
-                // The short guard prevents a quick second press from opening/toggling the panel twice.
-                boolean opened = !config.sourcePanelService.isEmpty()
-                        && MainActivity.openSourcePanel(this, config.sourcePanelService,
-                        config.sourcePanelAction, config.sourcePanelExtra);
-                if (opened) sourcePanelOpen = true;
-                if (!opened) {
+                if (!config.sourcePanelService.isEmpty()) {
+                    MainActivity.openSourcePanel(this, config.sourcePanelService,
+                            config.sourcePanelAction, config.sourcePanelExtra);
+                } else {
                     startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
             } catch (ActivityNotFoundException | SecurityException ignored) {
@@ -145,10 +110,6 @@ public class InputKeyService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return;
-        CharSequence packageName = event.getPackageName();
-        sourcePanelOpen = !sourcePanelPackage.isEmpty()
-                && packageName != null && sourcePanelPackage.contentEquals(packageName);
     }
 
     @Override
