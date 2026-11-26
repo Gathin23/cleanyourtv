@@ -45,6 +45,19 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   name or with the `android.settings.APPLICATION_DEVELOPMENT_SETTINGS` action. Install an app that
   opens activities by name (Activity Launcher) from the Play Store, open that screen and switch on
   USB debugging there. When no app can open it either, see the carrier-box bullet above.
+- **The firmware's own `ADB debug` switch and Android's Developer options both exist, and Android's
+  pairing never completes while the vendor switch is on.** On a
+  [Magcubic HY300 PRO (not the Plus)](https://github.com/Gathin23/cleanyourtv/issues/4296), Android 14,
+  build not reported, the vendor switch (Other settings > Developer mode) was on and the pairing code on
+  Android's own Wireless debugging page never got the computer in. The order that worked: switch the
+  **vendor ADB off**; open the stock Android Settings app with Activity Launcher and turn on developer
+  options there; switch on "USB debug" and "Wireless debug" - the first enable of Wireless debug freezes
+  the projector, so hold the power button until it restarts, go back and enable Wireless debugging again;
+  open "Pair device with pairing code", pair from the computer with the endpoint the screen shows, port
+  included, which is not the connection port; then `adb connect <tv ip>` with no port, and `adb shell`
+  answers. That set then ran the clean-up and installed the launcher. Both behaviours - the freeze on the
+  first enable, and the switch coming back off at every restart - are on the family's Plus unit too, in
+  [the HY300 Pro+ header](../examples/magcubic-hy300-pro-plus/debloat.txt).
 - **USB debugging never opens port 5555** on some Google TV sets (a Skyworth-built Philips among
   them). Pair once through Wireless debugging with the stock `adb` (`adb pair <ip>:<port> <code>`,
   then `adb connect`), run `adb tcpip 5555`, and `tools/tv.py` works from then on. Keep 5555 closed
