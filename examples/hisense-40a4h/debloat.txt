@@ -22,7 +22,8 @@
 #
 # com.at.factory.factorymanager re-enables packages at every boot on this firmware, as on
 #   examples/motorola-mt4310: with it enabled, katniss, mediashell, tvrecommendations and Netflix came back
-#   after a reboot (17 of 21 stayed off). With it disabled, all 22 entries stayed off across the next reboot.
+#   after a reboot (17 of 21 stayed off). With it disabled, all 22 entries the list then carried - Netflix
+#   and Vudu among them, commented out below since - stayed off across the next reboot.
 #   It was only disabled, never opened.
 # setupwraith: com.google.android.tungsten.setupwraith is NOT in this list. It does not answer HOME on
 #   this firmware (query-activities listed only tvlauncher, FallbackHome and a third-party launcher), so the
