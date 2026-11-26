@@ -241,7 +241,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.dockRow = cfg.dockRow;
         this.singleRow = cfg.singleRow;
         this.restNameAlpha = cfg.alwaysShowNames ? 0.75f : 0f;
-        this.cinematic = cfg.cinematicHome;
+        this.cinematic = cfg.cinematicHome && cfg.cinematicLastOpened; // no recording for a hidden line
         this.launchActions = cfg.launchActions;
         this.iconTiles = new HashSet<>(Arrays.asList(ctx.getResources().getStringArray(R.array.icon_tiles)));
         this.tileMenu = cfg.tileMenu;

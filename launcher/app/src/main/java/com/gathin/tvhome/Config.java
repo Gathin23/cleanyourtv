@@ -242,6 +242,8 @@ final class Config {
     final boolean dockBand;
     /** The dock position dots under the cinematic shelf's name (config.xml, cinematic_dots); false leaves them out. */
     final boolean cinematicDots;
+    /** The cinematic shelf's last-opened line; false keeps its space without reading or recording opens. */
+    final boolean cinematicLastOpened;
     /** The cinematic shelf keeps the white focus highlight instead of the app's colour (config.xml, cinematic_white_focus). */
     final boolean cinematicWhiteFocus;
     /** The Wi-Fi pill's icon green while the TV is online (config.xml, wifi_status_color); false keeps it white. */
@@ -296,7 +298,7 @@ final class Config {
                    Festival festival, int[] inputKeycodes, List<String> appKeys, String stockHomeRedirect,
                    List<RaceWeekend.Race> raceCalendar, boolean cinematicHome, boolean ambientGlow, boolean appGlow, boolean fadeRows, int homeIdleClockMinutes,
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
-                   boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
+                   boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicLastOpened, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean volumePausesFilter, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
                    boolean settingsKeyClearTask) {
@@ -390,6 +392,7 @@ final class Config {
         this.dockEvenPadding = dockEvenPadding;
         this.dockBand = dockBand;
         this.cinematicDots = cinematicDots;
+        this.cinematicLastOpened = cinematicLastOpened;
         this.cinematicWhiteFocus = cinematicWhiteFocus;
         this.wifiStatusColor = wifiStatusColor;
         this.cinematicArt = cinematicArt;
@@ -531,6 +534,7 @@ final class Config {
         boolean dockEvenPadding = res.getBoolean(R.bool.dock_even_padding);
         boolean dockBand = res.getBoolean(R.bool.dock_band);
         boolean cinematicDots = res.getBoolean(R.bool.cinematic_dots);
+        boolean cinematicLastOpened = res.getBoolean(R.bool.cinematic_last_opened);
         boolean cinematicWhiteFocus = res.getBoolean(R.bool.cinematic_white_focus);
         boolean wifiStatusColor = res.getBoolean(R.bool.wifi_status_color);
         int cinematicArt = res.getInteger(R.integer.cinematic_art);
@@ -648,6 +652,7 @@ final class Config {
             dockEvenPadding = bool(json, "dock_even_padding", dockEvenPadding);
             dockBand = bool(json, "dock_band", dockBand);
             cinematicDots = bool(json, "cinematic_dots", cinematicDots);
+            cinematicLastOpened = bool(json, "cinematic_last_opened", cinematicLastOpened);
             cinematicWhiteFocus = bool(json, "cinematic_white_focus", cinematicWhiteFocus);
             wifiStatusColor = bool(json, "wifi_status_color", wifiStatusColor);
             cinematicArt = integer(json, "cinematic_art", cinematicArt, 0, 100);
@@ -727,7 +732,7 @@ final class Config {
                 wallpapers, rotationMinutes, wallpaperDim, dockOpacity, wallpaperOrder, applied, festival, inputKeycodes, appKeys, stockHomeRedirect,
                 json == null ? Collections.emptyList() : raceCalendar(json), cinematic, ambientGlow, appGlow, fadeRows,
                 Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding,
-                dockBand, cinematicDots, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough,
+                dockBand, cinematicDots, cinematicLastOpened, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough,
                 consumeVolumeKeys, volumePausesFilter, homeIgnoreChannelKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,

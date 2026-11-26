@@ -154,6 +154,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private LinearLayout heroDots;
     /** Cinematic top shelf (config.xml, cinematic_home): the focused dock app's artwork behind a larger shelf. */
     private boolean cinematic;
+    /** config.xml cinematic_last_opened: false leaves out the last-opened line, keeping its space. */
+    private boolean cinematicLastOpened;
     /** config.xml ambient_glow, overridable by a theme. Off: the glow view is gone and no fade or colour animator
      *  is started for it, so a focus move costs nothing extra on a launcher that runs all day. */
     private boolean ambientGlow;
@@ -535,6 +537,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroDots = findViewById(R.id.heroDots);
         heroArt = findViewById(R.id.heroArt);
         cinematic = cfg.cinematicHome;
+        cinematicLastOpened = cfg.cinematicLastOpened;
         glowStyle = cfg.glowStyle;
         heroDotsShown = cfg.cinematicDots;
         cinematicWhiteFocus = cfg.cinematicWhiteFocus;
@@ -2091,7 +2094,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** "Last opened yesterday, 9:40 PM", the time in white; nothing (but the same height) when it was never seen. */
     private void updateHeroMeta(int position) {
-        long when = LastOpened.get(this, adapter.packageAt(position));
+        long when = cinematicLastOpened ? LastOpened.get(this, adapter.packageAt(position)) : 0L;
         if (when <= 0) {
             heroMeta.setVisibility(View.INVISIBLE);
             return;

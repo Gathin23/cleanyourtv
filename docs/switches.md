@@ -26,6 +26,7 @@ rule sit on its wanted list until a screenshot arrives.
 
 | Key | Screenshot |
 |---|---|
+| `cinematic_last_opened` | <img src="switches/cinematic_last_opened.jpg" width="320" alt="cinematic_last_opened false on a TV: app name and dots without the Last opened line"> |
 | `columns` | <img src="../themes/six-columns/screenshot.jpg" width="320" alt="columns on a TV"> |
 | `glass_style` | <img src="switches/glass_style.jpg" width="320" alt="glass_style halo on a TV"> |
 | `sky_intensity` | <img src="sky-sunset.jpg" width="320" alt="sky_intensity on a TV"> |
