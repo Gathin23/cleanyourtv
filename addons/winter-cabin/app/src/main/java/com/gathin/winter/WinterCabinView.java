@@ -61,6 +61,7 @@ public final class WinterCabinView extends View {
     private void updateLoop() {
         if (tick == null) return; // visibility callbacks can arrive from View's constructor
         boolean run = eligible();
+        if (!run) releaseArtwork(); // A pending draw can rebuild the cache between pause and hide.
         if (run == looping) return;
         looping = run;
         removeCallbacks(tick);
