@@ -83,6 +83,8 @@ no helper.
 | Disney+ | | | keeps working on its own |
 | TCL Channel | 4020 | 456 | opens `com.tcl.waterfall.overseas`, which the list disables; map it to any app you like |
 | Shield (TCL Guard) | 4140 | 660 | opens TGuard, which the list disables; free to map |
+| TV | 4001 | 365 | `app_keys`; Chile remote (50C6KS); the firmware also sends a Guide key with it |
+| WEB | 4159 | 651 | `app_keys`; Chile remote (50C6KS); opens TCL's browser where it is installed |
 
 Found with `logcat` while pressing each button: TCL logs every press as `handleKeyBeforeQueueing event=KeyEvent
 { ... keyCode=..., scanCode=... }` from `WindowManager`. Keys injected over ADB never reach `InputKeyService`,
@@ -207,6 +209,42 @@ Undo: `TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat-50p7k
 - **Power-on:** after a full reboot the launcher was Home and `com.tcl.tv` did not come to the front by itself
   (`logcat -b events | grep wm_set_resumed_activity`), so neither `power_on_home` nor `boot_to_live_tv` is set.
 - With Location off (the default here), the Wi-Fi pill says "Wi-Fi" rather than the network name.
+
+## TCL 50C6KS and 50P7L (G09, AS24, Chile)
+
+Two more units, set up on 13 and 14 November 2026 and reboot-checked: a **TCL 50C6KS** (product `G09_4K_GB`)
+and a **TCL 50P7L** (product `G09_4K_GB_32BIT`), both board `TC8000`, SoC `AMLT963D4`, Google TV 12, firmware
+`STT2.230203.001.AS24` (the build fingerprint ends in AS25 on the 50C6KS and AS10 on the 50P7L). Both took the
+same route as the install above: this list applied with these lines kept enabled, launcherx disabled once the
+new Home was confirmed, nothing re-enabled by the firmware after a reboot. Unlike the AS23 55P7L above, the 50P7L
+on AS24 needed no stock-home redirect.
+
+Kept enabled by the owner: `com.tcl.initsetup` (channel scan), `com.google.android.tv.remote.service` (phone
+remote and mic), `com.tcl.gamebar`, `com.google.android.apps.tv.dreamx` (Ambient screensaver kept),
+`com.google.android.apps.mediashell` (Chromecast), `com.tcl.ui_mediaCenter` and
+`com.mirakulo.astrotv.service`. Alexa (`com.tcl.smartalexa`) was disabled because TCL does not offer it in
+Chile: `sys.showalexa` was already `false` before any change, the app reads country `CL` and says it is not
+available in the current country, and re-enabling `com.tcl.ttvs` did not change that.
+
+Home was the owner's own launcher, a port of this repo's launcher with `InputKeyService` and `VolumeKeys`
+carried over, not `com.gathin.tvhome` itself. What they found:
+
+- **Chromecast still works with setupwraith disabled** on the 50C6KS, as on [the G08 EU unit](../tcl-g08-eu-android12/README.md);
+  [the TCL 65C6K](../tcl-65c6k-google-tv/README.md) lost casting with it.
+- **Wi-Fi:** on the 50C6KS one saved network belonged to setupwraith (`dumpsys wifi`), and it was forgotten
+  before the wizard was disabled; the network in use already belonged to `android.uid.system`. On the 50P7L
+  it did too, so setupwraith went with no re-join.
+- **Volume repeat on the 50C6KS:** with the key-filtering service bound, holding Volume Up sent one DOWN and,
+  2.7 s later, one UP in `handleKeyBeforeQueueing`, with no repeats, and the volume keys never reached the
+  accessibility service. So `consume_volume_keys` could not help on this unit, unlike the India AS24 unit
+  [above](#input_key_service1-and-volume-repeat). Measured with the port, not with `com.gathin.tvhome`.
+  `volume_pauses_filter`, which gave the [50P7K above](#tcl-50p7k-g09-as23) a ramp on AS23, was not tried on
+  these units. The owner kept the app buttons (both units) and stepwise volume.
+- **Live TV with an HDMI-CEC device:** `com.tcl.tv` opened on its own resumes the last source, so with a
+  CEC player switched on it lands on that HDMI input, not the antenna. Opening
+  `TvContract.buildChannelUriForPassthroughInput()` for the system tuner input (`TunerInputService/HW2`)
+  lands on the tuner. Match only a `TYPE_TUNER` input of a system app: VLC registers a `TYPE_TUNER` input of its own.
+- With setupwraith disabled, Settings → Accounts & sign-in is empty: that panel is drawn by the wizard.
 
 ## Notes for this set
 
