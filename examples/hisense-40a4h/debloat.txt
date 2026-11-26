@@ -1,0 +1,71 @@
+# Hisense 40A4H (ro.product.model "SmartTV", device hayward, product huashan_na; Hisense/CVTE board,
+# MediaTek mt5867), US, Android TV 14 (SDK 34), firmware UKNV.260706.001, security patch 2026-08-01.
+# Fingerprint: Hisense/huashan_na/hayward:14/UKNV.260706.001/15791684:user/release-keys
+# About 935 MB of RAM (ro.config.low_ram=true), 1080p panel with a 1280x720 UI, 4 GB /data.
+# Same board as examples/toshiba-43v35kp (huashan_emT, Android TV 11), examples/polytron-2k-hayward and
+# examples/motorola-mt4310; this is the first Android TV 14 build of it here.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-40a4h/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-40a4h/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED with pm disable-user, never uninstalled. Comment out any line you want to keep.
+# Applied in six batches of 3-5 with a screenshot after each; no batch needed undoing.
+#
+# Stock launcher:   com.google.android.tvlauncher (classic Android TV). launcher/build-and-install.sh
+#                   disables it after the Home handover; it is not in this list.
+# Live TV / HDMI:   com.mediatek.wwtv.tvcenter. Left enabled, with every other com.mediatek.* package.
+# Kept on purpose:  com.airoha.android.btd (remote pairing), com.cvte.autobacklight, com.cvte.hotkey.receiver,
+#                   com.dolby.android.audio.service, Play Store / Play Services, Gboard, com.cltv.fast
+#                   (a Live TV / FAST channels app; not checked whether the Inputs path needs it).
+# ADB: USB debugging opened network ADB on port 5555 directly; Wireless debugging went off at every
+#   reboot while 5555 stayed open. tools/adb-closed.py reported 5555 refused once USB debugging was off,
+#   and again after a reboot.
+#
+# com.at.factory.factorymanager re-enables packages at every boot on this firmware, as on
+#   examples/motorola-mt4310: with it enabled, katniss, mediashell, tvrecommendations and Netflix came back
+#   after a reboot (17 of 21 stayed off). With it disabled, all 22 entries stayed off across the next reboot.
+#   It was only disabled, never opened.
+# setupwraith: com.google.android.tungsten.setupwraith is NOT in this list. It does not answer HOME on
+#   this firmware (query-activities listed only tvlauncher, FallbackHome and a third-party launcher), so the
+#   new launcher took Home without disabling it - but it created the saved Wi-Fi network the set was on
+#   (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so disabling it would have taken the TV off Wi-Fi.
+# A third-party launcher with an accessibility service that catches Home (Projectivy Launcher was installed
+#   here) keeps Home after set-home-activity: switch its service off or disable it before installing.
+# screensaver_components pointed at an app that was no longer installed; point it at the launcher's clock:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#
+# Status: applied 2026-11-14 with the reference launcher (default theme, 7 columns); Home, Back, D-pad,
+# Input, Settings, volume repeat and the remote's app buttons checked on the real remote, and YouTube TV
+# and Plex play. Free RAM (MemAvailable) about 210 MB before, 265-300 MB after a reboot.
+# In daily use since then with no problems: nothing came back, apps, inputs and the remote fine (2026-11-26).
+
+# --- Silent installs and partner promo rows ---
+android.autoinstalls.config.hisense          # silently installs promoted apps
+android.autoinstalls.config.hkc              # same, a Play-installed config stub
+com.google.android.leanbacklauncher.partnercustomizer  # partner promo rows on the stock launcher
+com.google.android.tvrecommendations         # recommendation / sponsored rows
+fusion.android.tv.demo                       # store demo mode
+
+# --- Manufacturer and Google telemetry ---
+com.cvte.tv.infoprovider                     # CVTE device-info / telemetry service
+com.cvte.tv.hisenseproductregister           # product registration (country select at setup)
+com.google.android.feedback                  # feedback / crash uploader
+com.android.tv.feedbackconsent               # feedback consent prompt
+com.google.android.partnersetup              # partner / OEM attribution
+
+# --- Setup leftovers and unused services ---
+com.mstar.android.tv.disclaimercustomization # store-mode disclaimer
+com.google.android.syncadapters.calendar     # calendar sync, on a TV
+com.android.providers.calendar
+
+# --- Re-enables packages at every boot (see header) ---
+com.at.factory.factorymanager
+
+# --- Off by choice on the tested set (keep what you use) ---
+com.google.android.katniss                   # voice search / Assistant (about 64 MB in two processes)
+com.google.android.apps.mediashell           # Chromecast built-in
+com.google.android.tts                       # Google text-to-speech
+com.google.android.marvin.talkback           # screen reader
+com.netflix.ninja
+air.com.vudu.air.DownloaderTablet            # Vudu / Fandango at Home (Play-installed preload)
+com.google.android.videos                    # Google TV / Play Movies
+com.google.android.play.games
