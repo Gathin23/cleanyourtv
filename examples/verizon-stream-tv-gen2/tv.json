@@ -1,0 +1,6 @@
+{
+  "tv": "Verizon Stream TV, 2nd gen (ARRIS VIP7802W, Broadcom f354), US",
+  "os": "Android TV 14",
+  "brand": "Verizon",
+  "notes": "15 packages: ARRIS bug report, GTVS, OEM data and UPnP, Broadcom helpers, setup wizards, recommendations, Play Games, TalkBack and the stock Verizon launcher; streaming box, no HDMI inputs; Fios Guide (`com.verizon.qlv.content`) and the remote services, firmware updaters, Assistant and Backdrop kept; after the stock launcher is off, wake from standby needs an appops fix, see the folder's [README](verizon-stream-tv-gen2/README.md); YouTube Music left as a commented choice; AdGuard DNS works"
+}

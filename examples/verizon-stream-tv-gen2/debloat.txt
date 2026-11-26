@@ -1,0 +1,51 @@
+# Verizon Stream TV, 2nd generation (ARRIS VIP7802W, Broadcom BCM72174, board f354), Android TV 14 (Google TV)
+# Build UTT1.250115.001 (14.06.15.08.17), API 34. ro.product.manufacturer=ARRIS, ro.product.model=Stream TV,
+# ro.product.device=f354. A streaming box: HDMI out only, no inputs.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/verizon-stream-tv-gen2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/verizon-stream-tv-gen2/debloat.txt com.verizon.qlv.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-10-29, lived with for four weeks since (checked 2026-11-24). After a reboot all 16 packages this set
+# disabled (YouTube Music included) stayed disabled and Home stayed on com.gathin.tvhome (the launcher was sideloaded over ADB); the
+# real remote's Guide and Home buttons work.
+#
+# Stock launcher: com.verizon.qlv.launcher. It is the last line group below: disable it only after the new
+# launcher is installed and confirmed as Home (tools/disable.sh checks this).
+# After the stock launcher is off, com.verizon.qlv.services tries to open it by package name on wake from standby,
+# and the fallback is a Play Store "Item unavailable" page. Fix, see README.md:
+#   appops set com.verizon.qlv.services SYSTEM_ALERT_WINDOW ignore
+#
+# Kept on purpose: com.verizon.qlv.services and com.verizon.qlv.content (Fios Guide and Live TV, a good dock tile),
+# com.arris.remoteservice, com.arris.globalkeyactions, com.arris.quickactions (remote pairing and keys),
+# com.arris.wifiservice, com.arris.arriswifiwatchdog, com.arris.customizer, com.arris.arus.updater and
+# com.omni.ota (firmware updates, the owner's choice), com.broadcom.conxmonitor, com.technicolor.NtpTimeSync,
+# com.vantiva.android.partnercustomizer, com.uei.quicksetsdk (remote SDK), Assistant (com.google.android.katniss),
+# the Backdrop screensaver, Play Store and Play Services.
+
+# === ARRIS diagnostics and telemetry ===
+com.arris.bugreport           # ARRIS internal bug-reporting tool
+com.arris.gtvs                # ARRIS Google TV service shim
+com.arris.oemdata             # OEM data collection
+com.arris.upnpapp             # UPnP helper
+com.arris.arus.usbinstaller   # ARRIS USB installer; ADB sideloading works without it
+com.arris.disablepaiapps      # ARRIS tool that disables preinstalled apps
+
+# === Broadcom platform helpers ===
+com.broadcom.dnyhelper        # Broadcom DNS helper (not the resolver)
+com.broadcom.nrdphelper       # Netflix Ready Device Platform helper; Netflix works without it
+
+# === One-time setup wizards ===
+com.omni.simplesetup          # setup wizard
+com.arris.setup               # ARRIS setup wizard
+com.uei.quicksetsetup         # UEI remote setup wizard (com.uei.quicksetsdk kept for pairing)
+
+# === Google TV noise and unused apps ===
+com.google.android.tvrecommendations  # recommendation rows on the stock home
+com.google.android.play.games         # Google Play Games
+com.google.android.marvin.talkback    # TalkBack
+# This set has YouTube Music off; uncomment it if you use it.
+# com.google.android.youtube.tvmusic    # YouTube Music for TV
+
+# === Stock launcher (only once the new launcher is Home) ===
+com.verizon.qlv.launcher
