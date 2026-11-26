@@ -179,3 +179,53 @@ remotes send.
 
 The mechanism, the other routes and what each of them costs are in
 [A key helper is bound and a held remote button stopped repeating](../../docs/TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating).
+
+## Another unit on the same firmware, on Ethernet (25 November 2026)
+
+Same `MiTV-MZTU0` / `river` model and `V816.0.26.6.2.6.URTMIXM` build, 1.8 GB of RAM, wired to its own Ethernet
+port with no saved Wi-Fi network. It was cleaned with `PROMPT.md`: 29 packages, starting from the 75-inch list,
+plus Privacy Sandbox, the store demo mode `com.xiaomi.floatingframe` (enabled at the factory on this unit) and the
+streaming apps the household does not use. All three firmware updaters, the Assistant, Chromecast, AirPlay and
+Miracast stayed enabled. Checked across two reboots on the day; this is not a claim of several-day validation.
+
+- **Setup wizard on Ethernet:** `tools/disable.sh` skips setupwraith here, because with no saved Wi-Fi network
+  `dumpsys wifi` names no owner to check, and its message asks for `FORCE_SETUPWRAITH=1` when the TV uses
+  Ethernet. That was the case, and it was applied with the owner's agreement. The install run made before it
+  stopped with Home resolving to setupwraith's `.RecoveryActivity` and put launcherx back, as designed. With
+  setupwraith off, the Cast service still advertised itself and answered after each reboot; a cast session
+  itself was not tried.
+- **Wallpaper after a reboot, without ADB:** as on the third unit, a full reboot brings Home up with the theme's
+  settings but no wallpaper (the launcher keeps a copy of `config.json` in its own storage for a start before
+  shared storage is mounted, not the pictures). Pressing Home and waiting for the next rotation did not bring them
+  back. Changing a value in Launcher settings does, because Home rebuilds when its settings change: hold OK on
+  the Settings pill, choose Launcher settings, set Clock to 24-hour and back to System, then press Back. Choosing
+  the value that is already selected changes nothing. Force stop in Settings > Apps would also restart Home, but it
+  takes the key helpers off. Standby from the remote is not a reboot, and the pictures stay.
+- **The other remote buttons:** Netflix is keycode 193 (`KEYCODE_BUTTON_6`) and Prime Video 194
+  (`KEYCODE_BUTTON_7`). Without a key helper both go to `mitv.service`'s `GlobalKey` (`ACTION_GLOBAL_BUTTON`),
+  which opened Netflix (back on after every boot) and only logged an error for the disabled Prime Video. With
+  `INPUT_KEY_SERVICE=1`, `app_keys` entries `"193:<package>"` and `"194:<package>"` took both buttons ahead of it,
+  checked with the real remote. Red is `KEYCODE_PROG_RED`, and
+  `"KEYCODE_PROG_RED:com.android.tv.settings/com.xiaomi.gtv.settings.display.picture.MiPictureActivity"` opens
+  Xiaomi's picture panel (picture mode, backlight, eye comfort) over whatever is on screen, a one-press brightness
+  control; a colour key taken this way no longer reaches Live TV's teletext. With only `InputKeyService` bound,
+  the Settings button (176) did nothing until `"176:settings"` was added, and the Input button kept opening
+  Xiaomi's source picker (`com.mitv.livetv/.input.SelectInputActivity`), as there was no `inputs` entry.
+- **Reading the keycodes:** `tools/tv.py 'getevent -lt'` returned no output, presses included, before tv.py's
+  120-second read limit. This build logs real presses (not injected ones) as
+  `WindowManager: interactive:true,keyCode:<n>,action:0`, so `tools/tv.py 'logcat -d | grep "WindowManager: interactive"'`
+  right after the presses gave the codes above. Later in the same session, after the set had been through
+  standby, those lines no longer appeared.
+- **Waking from the network:** Energy modes (Settings > System > Power & Energy) was on the highest setting,
+  "Always connected". In standby the system suspends (`System STR on ... wakeup_reason=cast` in the log) and the
+  Ethernet controller wakes it on network traffic. Home Assistant's Android TV Remote integration turned the TV on
+  from standby. While it was asleep, 2 of 8 TCP connections to the remote port 6466 timed out, so a first
+  "turn on" can fail where a second one works. A Wake-on-LAN magic packet to the Ethernet port's MAC address
+  turned the screen on about 10 seconds later, from a standby deep enough that the set no longer answered ping.
+  The lower energy modes were not tried.
+- **Apps:** the userspace is 32-bit only (`ro.product.cpu.abilist` is `armeabi-v7a,armeabi`), so a sideloaded
+  APK needs its armeabi-v7a or universal build; SmartTube's armeabi-v7a stable build installed and opened.
+  `tools/tv.py --push` stalled on that 25 MB APK, while the Android SDK's `adb push` took two seconds over the
+  same network connection, with no new authorisation prompt: with `tools/adbkey/` empty, `tools/tv.py` signs with
+  the same `~/.android/adbkey`. The Play Store offers Nuvio as `com.nuvio.app` (not `com.nuvio.tv`) and Jellyfin
+  as `org.jellyfin.androidtv`; it does not offer the Home Assistant app on this set ("not compatible").
