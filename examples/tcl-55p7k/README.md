@@ -79,3 +79,55 @@ the end, for four days and four reboots, the last day with the Clean Your TV lau
   moves one step per press with the helpers on, as on the 55C655.
 - `com.tcl.channelplus` (TCL Live): right after it was disabled its channels stayed in Live TV's list without playing;
   after the next reboot they were gone.
+
+## Fourth unit: TCL 43T69C (Italy)
+
+A **TCL 43T69C** (2024) on product `G10_4K_GB_NF_32BIT` (the 32-bit build of the same platform, 1.8 GB), firmware
+`STT2.230203.001` incremental AS50, on Wi-Fi. It ran `debloat.txt` with Netflix and Prime Video kept and the 43T69C
+extras at the end, for three days and three reboots, with the Clean Your TV launcher as Home and `HomeKeyService` on.
+
+- **Wi-Fi:** the saved network belonged to setupwraith (`cname=com.google.android.tungsten.setupwraith`), as on the
+  55T7B. Forgetting it and joining again in Settings moved it to `com.android.tv.settings`; setupwraith and launcherx
+  then went in one `tools/disable.sh` run and the TV stayed online.
+- **`com.tcl.interactive`: re-enabled on this unit.** With it off, pressing Up on a broadcast channel showed
+  nothing, and `com.tcl.tv` logged `tias_sdk ... getService failure` on every press. It is TCL's HbbTV engine as
+  well as TIAS: Up opens the channel's own HbbTV page (RaiPlay on Rai channels, Mediaset's on Mediaset ones).
+  On Rai 1 the HbbTV app sometimes takes OK too, so OK opens the channel list only some of the time there;
+  Settings, System, HbbTV settings turns HbbTV off. `com.tcl.channelplus` (TCL TV+) is not needed for either key.
+- **`com.tcl.gamebar` came back once:** a TCL app update pushed through `com.tcl.ttvs` reinstalled it, which
+  re-enabled it (`dumpsys package com.tcl.gamebar` showed `lastDisabledCaller: com.tcl.ttvs`). Check
+  `pm list packages -d` after a TCL update.
+
+### Remote buttons (this unit's remote)
+
+Read from `logcat` (`WindowManager: handleKeyBeforeQueueing ... ACTION_DOWN`) while the owner pressed each button;
+every row was checked with the real remote, with launcherx disabled.
+
+| Button | keyCode | scanCode | With launcherx disabled | Mapped with |
+|---|---|---|---|---|
+| YouTube | 4065 | 569 | dead | `4065:org.smarttube.stable` |
+| Netflix | 4062 | 242 | dead | `4062:com.netflix.ninja` |
+| Prime Video | 4099 | 752 | dead | `4099:com.amazon.amazonvideo.livingroom` |
+| Disney+ | 4141 | | dead | `4141:<any app>` |
+| TCL Channel | 4020 | | dead (`com.tcl.waterfall.overseas` is disabled) | `4020:<any app>` |
+| TV | 4001 | 365 | dead: the firmware turns it into `KEYCODE_GUIDE` | `4001:com.tcl.tv` and `front:4001:guide:com.tcl.tv` |
+| Gear | `KEYCODE_NOTIFICATION` (83) | 233 | dead | `settings_key_keycodes` 83 |
+| Media player | 4057 | 236 | works (opens `com.tcl.ui_mediaCenter`) | |
+| ☰ | 4514 | | works (TCL's quick menu: brightness, picture mode, sound, sleep timer) | |
+| Input | `KEYCODE_TV_INPUT` | 417 | works | |
+
+- YouTube is scancode 569 here, not 245 as on the 55C655: map it by keycode.
+- **Volume:** with `HomeKeyService` bound, a held Volume Up moves one step per press, as on the other units.
+  `volume_pauses_filter` gave the ramp back after a tap: tap once, then hold within four seconds, and it repeats at
+  the firmware's speed; a cold hold is still one step. The app buttons kept working. The owner kept that setup.
+
+### Settings worth knowing
+
+- **Standby LED:** Settings, System, Advanced video, "Standby indicator bar" (Italian: "Barra per l'indicazione
+  dello standby"), Off. It writes `tcl_sys_lights_led_indicator_standby=0`. There is no setting for a light while the
+  TV is on: writing `tcl_sys_lights_led_indicator_working=1` by hand changes nothing.
+- **Auto store mode** ("Modalità Negozio Automatica") is on from the factory on the same page.
+- **The Display & Sound side panel** (Picture, Screen, Sound, Audio output), which launcherx's gear used to open, is
+  TCL's `ShowWindowService`: `am start-foreground-service -a com.tcl.settings.SHOW_WINDOW -p com.android.tv.settings
+  --es Type device_display_sound`. The gear button, Settings, Display & Sound opens it too.
+- The UI runs at 1920x1080 on the 3840x2160 panel (`wm size` shows the 1080p override from the factory).
