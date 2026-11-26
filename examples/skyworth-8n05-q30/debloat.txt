@@ -1,0 +1,48 @@
+# Skyworth 8N05 Q30 / 65Q30 (board sky8N05, Novatek NT72671, 2 GB), Coocaa CCOS on Android 8.0
+# (API 26), build OPR6.170623.012 / 022.007.270, no Google Play services.
+# Stock launcher: com.tianci.movieplatform. Leave it enabled: this firmware refuses
+# set-home-activity ("cannot be home on user 0"), puts persist.service.homepage.pkg back from the
+# read-only DEFAULT_HOMEPAGE at every boot and binds no third-party accessibility service, so the
+# reference launcher cannot take Home here.
+# Live TV / inputs: com.skyworth.tv (kept).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-8n05-q30/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-8n05-q30/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# THIS LIST DOES NOT SURVIVE A REBOOT. The firmware turned 17 of these 18 packages back on by itself
+# at the next boot (only com.tianci.appstore stayed off), so treat it as a per-session cleanup or
+# re-apply it after each boot, and do not plan a set whose only debloat is this one.
+#
+# From @linzhijie30618's 2026-11-04 session in #2337, one pm disable-user --user 0 call per package,
+# read before the first reboot; the names arrived in the thread on 2026-11-26. Kept on the device, as
+# the device note records: com.tianci.de, com.skyworthdigital.stb.dataprovider and com.coocaa.sky.ccapi
+# carry the device-info page ADB is switched on from, and com.coocaa.factory, com.tianci.movieplatform,
+# com.skyworth.tv and com.tianci.localmedia the home screen and the TV app.
+
+# Ads, push, telemetry and silent install
+com.tianci.ad                  # boot ad
+com.tianci.push                # push service with usage analytics
+com.coocaa.sysreport           # usage reporting on boot, screen and app install
+com.tongji.cesu                # statistics agent
+com.tianci.autoinstaller       # silently installs promoted apps
+com.coocaa.messageprovider     # message and push provider
+
+# Commercial portals, remote support and markets
+com.coocaa.mall                # shopping portal
+com.coocaa.app_browser         # promoted-app browser
+com.coocaa.tvpitv              # shopping channel
+com.coocaa.os.customerservice  # remote support and help
+com.skyworth.smarthome_tv      # smart-home hub
+com.skyworth.skymarket         # Skyworth app market
+
+# Value-added apps and cleaners
+com.bajintech.karaok           # karaoke
+com.coocaa.educate             # kids and education channel
+com.tianci.family.photograph   # family photo album
+com.dianshiyouhua              # "TV optimiser" cleaner
+com.qq.cleaning                # cleaner
+
+# Commented out: the home screen's My Apps button opens AppStoreHomeActivityV3 in this package, so
+# with it off the button does nothing. Uncomment it if you do not use My Apps.
+# com.tianci.appstore

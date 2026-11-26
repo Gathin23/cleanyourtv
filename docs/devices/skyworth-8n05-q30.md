@@ -1,9 +1,10 @@
 # Skyworth 8N05 Q30 / 65Q30 (Coocaa CCOS, Android 8.0): Home cannot be replaced, and a debloat does not survive a reboot
 
 From @linzhijie30618's session in [#2337](https://github.com/Gathin23/cleanyourtv/issues/2337) on 2026-11-04. The owner
-asked for the set to be put back the way it was, so this is a record of what the firmware does rather than a list: the
-18 packages the session disabled were turned on again at the end and the report never enumerated them, so there is
-nothing here to apply.
+asked for the set to be put back the way it was, and the report named no packages at the time, so this page is a record
+of what the firmware does. The 18 packages came in on 2026-11-26 and ship as
+[`examples/skyworth-8n05-q30/`](../../examples/skyworth-8n05-q30/), with the reboot caveat below written into that
+list's header and its README.
 
 ## Device
 
@@ -68,6 +69,8 @@ The device-info / factory page is the only place ADB can be turned on, and it st
 
 - One session on one set, reverted afterwards: `pm list packages -d` is empty, the stock Home is untouched and the
   launcher was uninstalled.
-- The 18 packages were never written down, so there is no list to reuse and none is claimed here.
+- The 18 packages were written down on 2026-11-26 and are the list in
+  [`examples/skyworth-8n05-q30/`](../../examples/skyworth-8n05-q30/): one session rather than a several-day run, and 17
+  of the 18 came back at the next boot.
 - Nothing above was retested after the revert, and no other CCOS build was checked: the accessibility finding is this
   firmware's, and the way to tell is to write `enabled_accessibility_services` and read `dumpsys accessibility` back.
