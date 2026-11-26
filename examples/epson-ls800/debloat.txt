@@ -52,6 +52,18 @@
 # - Disabling com.epson.fwupdate, com.droidlogic.updater and com.askey.autousbota (updates off by choice) and
 #   com.epson.onlinemeetings, com.epson.logcollection kept as above: Projector Settings > Picture, Sound,
 #   Installation, Information and Bluetooth Speaker Mode all still open.
+#
+# Update on the first unit, 24 November 2026 (firmware unchanged):
+# - Play updated Google's Ambient-mode screensaver (com.google.android.backdrop) from the factory 1.8.1 to 2.3.5
+#   on 11 November, and it began showing "glance"-branded AI-generated travel pictures with a "Show Me Here"
+#   button on the screensaver. Fixed by pointing the screensaver at the launcher's clock first, then disabling
+#   Backdrop (batch 4 below):
+#   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream; settings put secure screensaver_enabled 1'
+#   Reboot-checked: Backdrop stays disabled (the firmware does not re-enable it) and the clock stays the screensaver.
+#   Undo: pm enable com.google.android.backdrop, then
+#   settings put secure screensaver_components com.google.android.backdrop/.Backdrop
+# - To see the screensaver over ADB, there is no Somnambulator and `cmd dreams` needs root: set
+#   `settings put system screen_off_timeout 15000` for a moment, then put the old value back.
 
 # Batch 1: telemetry
 com.google.android.feedback             # Google feedback reporter
@@ -68,3 +80,6 @@ com.google.android.play.games
 com.instagram.airwave
 tv.pluto.android
 com.epson.onlinemeetings               # Epson Online Meetings (video conferencing), owner does not use it
+
+# Batch 4: screensaver (set the launcher's ClockDream first, see the 24 November note)
+com.google.android.backdrop             # Ambient screensaver, showed Glance content after a Play update

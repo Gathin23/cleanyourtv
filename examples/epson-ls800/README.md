@@ -6,7 +6,7 @@ launcher as Home. Tested on 21 October 2026.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 9 packages that were disabled, grouped and commented, with what to keep and why (`build-and-install.sh` disables the stock launcher on top) |
+| `debloat.txt` | The 10 packages that were disabled, grouped and commented, with what to keep and why (`build-and-install.sh` disables the stock launcher on top) |
 | `config.json` | Dock order and hidden tiles; push it with `tools/theme.sh` |
 
 All commands run from the repo root, with the projector's IP in `TV_HOST`.
