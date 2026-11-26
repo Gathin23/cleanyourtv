@@ -107,6 +107,25 @@ wired Ethernet, lived with for six days. The details are at the end of `debloat.
   disabled with `pm disable-user --user 10`, which `tools/disable.sh` and `restore.sh` do not cover.
 - **Memory**: about 920 to 960 MB available with the launcher, a Home Assistant add-on and YouTube running.
 
+## Fourth set: 65OLED818/12
+
+A Philips 65OLED818/12 (OLED, Italy) reports the same model, board and build. On Wi-Fi with no tuner in use.
+Debloated on 2026-11-24 in four batches with a screenshot after each and two reboots; not yet lived with for days.
+The end of `debloat.txt` lists what differed.
+
+- **Home as on the third set**: the saved Wi-Fi network belonged to setupwraith, so it and launcherx stayed
+  enabled. The launcher went on with
+  `TV_HOST=<tv ip> STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 launcher/build-and-install.sh`, with
+  `home_long_press_home` true and `stock_home_redirect` set to `com.google.android.apps.tv.launcherx` in
+  `launcher/app/src/main/res/values/config.xml`. At boot launcherx comes up for a moment and hands over to this
+  launcher. The owner pressed every remote button (Home short and held, gear, Apps, YouTube, Prime Video,
+  Source, mic) and all worked; a held volume key moves one step, as on the other sets.
+- **Home at every power-on**: Philips comes back to the last source. With `power_on_home_always` true and
+  `HOME_KEY_SERVICE=1`, HDMI 2 followed by sleep and wake came back to this launcher.
+- **DVB tuner input**: `pm disable-user` took it without `TVINPUT_ALLOW`, and the firmware enabled it again at
+  every boot. The retail demo was skipped by `tools/disable.sh`'s input-driver check, as on the third set.
+- **Inputs**: HDMI 1 to 4, Component and Composite listed in the launcher's Inputs menu after both reboots.
+
 ## Re-enable an app
 
 On the TV: Settings > Apps > See all apps > Show system apps (or "Disabled apps"), pick the app, Enable.
