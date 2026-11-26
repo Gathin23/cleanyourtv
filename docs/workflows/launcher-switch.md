@@ -36,7 +36,10 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
    switch on: a baseline before you start, your build after, and the numbers in the PR. It's optional, but welcome.
 
 Anything TV-specific goes in `config.xml` or a theme, not in code. A bug fix that corrects wrong behaviour needs
-no switch. No new dependencies in `launcher/app/build.gradle` without an issue first.
+no switch. A switch does not bring a new permission either: the shared launcher holds the ones its features need,
+and one that asks for another in the manifest belongs in a fork with one row in `SHOWCASE.md`, the way step 7
+treats a switch too big for the size gate - being off by default does not make it fit. No new dependencies in
+`launcher/app/build.gradle` without an issue first.
 
 Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
 [`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
