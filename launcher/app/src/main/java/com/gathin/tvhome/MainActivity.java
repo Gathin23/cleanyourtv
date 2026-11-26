@@ -439,6 +439,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private final Runnable minuteTick = new Runnable() {
         @Override
         public void run() {
+            // A festival that ends at midnight while Home stays on screen.
+            if (festive != festival.active(LocalDate.now())) { recreate(); return; }
             updateGreeting();
             updatePanel();
             // The pill follows the network callbacks and each return to Home; only the festive light follows the
