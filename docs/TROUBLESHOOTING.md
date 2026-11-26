@@ -57,7 +57,8 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   included, which is not the connection port; then `adb connect <tv ip>` with no port, and `adb shell`
   answers. That set then ran the clean-up and installed the launcher. Both behaviours - the freeze on the
   first enable, and the switch coming back off at every restart - are on the family's Plus unit too, in
-  [the HY300 Pro+ header](../examples/magcubic-hy300-pro-plus/debloat.txt).
+  [the HY300 Pro+ header](../examples/magcubic-hy300-pro-plus/debloat.txt). Switch Wireless debugging and USB
+  debugging off again when you are done.
 - **USB debugging never opens port 5555** on some Google TV sets (a Skyworth-built Philips among
   them). Pair once through Wireless debugging with the stock `adb` (`adb pair <ip>:<port> <code>`,
   then `adb connect`), run `adb tcpip 5555`, and `tools/tv.py` works from then on. Keep 5555 closed
@@ -919,8 +920,8 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   has it on the same SoC - is drawn by the running TV, so it is no way back in either.
   Not a button combination, but one owner got such a set back over its **Ethernet** port
   ([#2516](https://github.com/Gathin23/cleanyourtv/issues/2516), an HQ HQS32NKHM on the same SoC family,
-  CVTE `Hi3751V352E`, Android 14 SDK 34, stock launcher `com.cvte.tv.launcher.brhq`): the framework and
-  `adbd` run long before `sys.boot_completed`, so a set stuck on the animation still has its wired
+  CVTE `Hi3751V352E`, Android 14 SDK 34, stock launcher `com.cvte.tv.launcher.brhq`): `adbd` and the wired
+  interface come up long before `sys.boot_completed`, so a set stuck on the animation still has its wired
   interface broadcasting DHCP `DISCOVER` and still advertises `_adb._tcp` on 5555 (`adb mdns services`
   finds it) - it has no address to connect to, not no shell. A cable straight from the set to a laptop
   and one DHCP answer on that link gives it an address: read the set's MAC from

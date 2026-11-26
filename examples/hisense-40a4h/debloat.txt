@@ -65,7 +65,8 @@ com.google.android.katniss                   # voice search / Assistant (about 6
 com.google.android.apps.mediashell           # Chromecast built-in
 com.google.android.tts                       # Google text-to-speech
 com.google.android.marvin.talkback           # screen reader
-com.netflix.ninja
-air.com.vudu.air.DownloaderTablet            # Vudu / Fandango at Home (Play-installed preload)
+# Netflix and Vudu: off on the tested set by the owner's choice; uncomment to disable
+# com.netflix.ninja
+# air.com.vudu.air.DownloaderTablet          # Vudu / Fandango at Home (Play-installed preload)
 com.google.android.videos                    # Google TV / Play Movies
 com.google.android.play.games

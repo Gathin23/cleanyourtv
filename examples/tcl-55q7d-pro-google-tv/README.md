@@ -126,8 +126,6 @@ on this set, and nothing was disabled out of the box.
   `com.tcl.ttvs` for the firmware, and check `pm list packages -d` against the list now and then.
 - **Media player:** `com.tcl.ui_mediaCenter` (the optional line above) was switched back on. The Input panel always
   shows a "Media player" tile, which only closes the panel while the package is off.
-- **ADB from macOS:** the stock `adb` answered "No route to host" (Local Network privacy) while `tools/tv.py`
-  connected to port 5555, which this set opened alongside Wireless debugging.
 
 ## Picture calibration on this build: the DDC menu and its 3D LUT import
 

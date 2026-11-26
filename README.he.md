@@ -94,8 +94,8 @@
 
 | | | | | | |
 |:---|:---|:---|:---|:---|:---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 19 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 |
-| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 20 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 19 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 |
 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 6 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
@@ -103,19 +103,20 @@
 </div>
 
 <details>
-<summary>עוד 93 מותגים ו־16 מותגי מקרנים</summary>
+<summary>עוד 94 מותגים ו־16 מותגי מקרנים</summary>
 
 <div dir="ltr" align="left">
 
 **RockTek** 3 · **Vidda** 3 · **Vu** 3 · **BTV** 2 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
 **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **Next** 2 · **PRISM+** 2 · **Sankey** 2 ·
-**Sber** 2 · **Síragon** 2 · **TIM** 2 ·
+**Sber** 2 · **Síragon** 2 · **TIM** 2 · **Verizon** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Continental Edison ·
-Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Freebox · Glofiish · HAAM · Hikeen ·
-Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
-MarQ · MECOOL · MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV · Prosonic · realme ·
-Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System ·
-Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · Vivensis · VSTV · X.Vision ·
+Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Formuler · Freebox · Glofiish · HAAM ·
+Hikeen · Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST ·
+Magyar Telekom · MarQ · MECOOL · MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV ·
+Prosonic · realme · Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General ·
+TD Systems · Tele System · Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · VISIO · Vision · Vityas · Vivensis ·
+VSTV · X.Vision ·
 Alwtniet, Anker Nebula, Aurzen, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Nonete, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </div>
@@ -378,7 +379,7 @@ ADB ברשת ביציאה 5555 אינו מוצפן. בחלק מהטלוויזי�
 
 ב־17 באוקטובר 2026 פרסם יוצר הפרויקט [תמונות לפני ואחרי](https://x.com/gathint/status/2111379569030939102) של הטלוויזיה של הוריו, אחרי ניקוי באמצעות Claude Code דרך Wi-Fi. הפרסום הגיע ל־8.6 מיליון צפיות. בתוך ארבעה ימים הקהילה תרמה רשימות ליותר מ־170 דגמים, בעזרת יותר מ־200 תורמים. עד 19 באוקטובר המאגר נקרא tv-vibehack, והקישורים הישנים עדיין עובדים.
 
-בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־20 בנובמבר יש לו 59 אלף כוכבים ו־7,800 פיצולים. הרשימות כיסו 513 דגמים מ־139 מותגים. סיקור בתקשורת: 595 כתבות מ־58 מדינות ו־944 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־23 בנובמבר 2026)
+בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־20 בנובמבר יש לו 59 אלף כוכבים ו־7,800 פיצולים. הרשימות כיסו 518 דגמים מ־140 מותגים. סיקור בתקשורת: 595 כתבות מ־58 מדינות ו־944 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־23 בנובמבר 2026)
 
 ## תרומה לפרויקט
 

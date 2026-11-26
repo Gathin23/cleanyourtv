@@ -142,7 +142,7 @@
 # Also used on a TCL Smart TV (device G10, product G10_4K_GB_NF_32BIT, Realtek rtd6748),
 # Android 14 / SDK 34, build UTT2.250416.001 AU02 — the first Android 14 unit on this list
 # (every unit above is STT2.230203.001, Android 12). Tested on 2026-11-23 for one session with
-# one session with one reboot check, not yet lived with for several days, driving a third-party launcher
+# one reboot check, not yet lived with for several days, driving a third-party launcher
 # (Projectivy, com.spocky.projengmenu) as Home rather than the reference launcher.
 # Disabled from this list: exhibit, esticker, ocean.instructions, repairguide, hotelmenu,
 # logkit, samba TV ACR, gtvpai, feedback, talkback, tclhome_passive, gamebar, and from the

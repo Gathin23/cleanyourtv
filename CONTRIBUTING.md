@@ -34,8 +34,8 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
 2. Put the exact model name, Android version and firmware build in the header so people can tell
    whether it matches theirs. `tools/tv.py --probe` prints all three.
 3. Only list packages you have actually disabled and lived with for a few days. Restart the TV once with
-   the list applied and write in the header what held: the packages still disabled, Home still on the
-   launcher you installed, and Wi-Fi back on its own. Most headers here record that check
+   the list applied and write in the header what held: the packages still disabled, Home still working
+   (on the launcher you installed, if you installed one), and Wi-Fi back on its own. Most headers here record that check
    (`examples/amazon-fire-tv-stick-4k-max-2021/debloat.txt`: "Rebooted twice after applying: everything
    below stayed disabled"), and a list PR without it is asked for the reboot before it is merged. Note
    anything that broke and what you re-enabled.

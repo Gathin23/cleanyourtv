@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="513 TV modeli · 139 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 579 yayın daha: 58 ülkeden 595 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="518 TV modeli · 140 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 579 yayın daha: 58 ülkeden 595 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
 </p>
 
 ## Buradan başlayın
@@ -129,24 +129,25 @@ içindedir. En çok listesi olan markalar, her biri web sitesindeki modellerine 
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 19 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 |
-| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 20 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 19 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 |
 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 6 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
 
 <details>
-<summary>+93 more brands and 16 projector brands</summary>
+<summary>+94 more brands and 16 projector brands</summary>
 
 **RockTek** 3 · **Vidda** 3 · **Vu** 3 · **BTV** 2 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
 **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **Next** 2 · **PRISM+** 2 · **Sankey** 2 ·
-**Sber** 2 · **Síragon** 2 · **TIM** 2 ·
+**Sber** 2 · **Síragon** 2 · **TIM** 2 · **Verizon** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Continental Edison ·
-Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Freebox · Glofiish · HAAM · Hikeen ·
-Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
-MarQ · MECOOL · MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV · Prosonic · realme ·
-Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System ·
-Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · Vivensis · VSTV · X.Vision ·
+Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Formuler · Freebox · Glofiish · HAAM ·
+Hikeen · Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST ·
+Magyar Telekom · MarQ · MECOOL · MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV ·
+Prosonic · realme · Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General ·
+TD Systems · Tele System · Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · VISIO · Vision · Vityas · Vivensis ·
+VSTV · X.Vision ·
 Alwtniet, Anker Nebula, Aurzen, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Nonete, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -478,7 +479,7 @@ ulaştı, insanlar aynısını kendi TV'lerine yapmaya başladı ve yanıtları 
 bağlantılar çalışır.
 
 İki hafta sonra, 19–25 Ekim haftasında GitHub'ın 1 numaralı trend deposu oldu; 46 binden fazla yıldız, 5,7 bin
-fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 20 Kasım itibarıyla 59 bin yıldız ve 7,8 bin fork. Listeler artık 513 TV modelini ve 139 markayı kapsıyor.
+fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 20 Kasım itibarıyla 59 bin yıldız ve 7,8 bin fork. Listeler artık 518 TV modelini ve 140 markayı kapsıyor.
 Basındaki karşılığı: 595 makale (58 ülkeden) ve YouTube ile Bilibili'de 944 video, hepsi [docs/PRESS.md](docs/PRESS.md)
 içinde (rakamlar 23 Kasım 2026 itibarıyla).
 

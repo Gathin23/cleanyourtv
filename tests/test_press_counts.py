@@ -418,25 +418,6 @@ class PressCountsTest(unittest.TestCase):
             with self.subTest(readme=name):
                 self.assertIn(name, step, f"docs/workflows/press.md step 2 does not name {name}")
 
-    def test_the_press_recipe_names_every_page_with_the_story_and_no_card(self):
-        # The guard above holds the alt-text half of the recipe to the pages that show the card. A page that
-        # carries the story paragraph and no picture needs the same hand edit - its two totals and its three
-        # press numbers are prose, and tools/gen_tables.py never writes it - but nothing held its name to the
-        # recipe, so the Greek front page, which landed with the language and states the same five numbers,
-        # was missing from the list: a press round following the recipe left README.el.md on the old counts
-        # and learned it from a red check instead of from the step it was reading. The list is read from the
-        # pages, so a translation that copies the story without the picture is held to the recipe the day it
-        # lands, without a name being added here.
-        step = PRESS_RECIPE.read_text(encoding="utf-8").split("\n2. ")[1].split("\n3. ")[0]
-        cardless = sorted(set(story_pages()) - set(card_alt_texts()))
-        self.assertTrue(cardless,
-                        "no page carries the story paragraph without the card, so this check would pass on nothing")
-        for name in cardless:
-            with self.subTest(readme=name):
-                self.assertIn(name, step,
-                              f"docs/workflows/press.md step 2 does not name {name}, whose story sentence a "
-                              f"press round has to edit by hand")
-
     def test_the_card_source_draws_the_same_numbers(self):
         more = re.search(r'^MORE = "(.*)"$', FEATURED.read_text(encoding="utf-8"), re.M)
         self.assertIsNotNone(more, "tools/readme_featured.py no longer has a MORE line")

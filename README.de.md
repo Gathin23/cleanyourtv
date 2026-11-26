@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="513 TV-Modelle · 139 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 579 weitere: 595 Artikel aus 58 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher. Platz 1 der Trend-Repositories der Woche, 19.–25. Oktober 2026, über trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="518 TV-Modelle · 140 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 579 weitere: 595 Artikel aus 58 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher. Platz 1 der Trend-Repositories der Woche, 19.–25. Oktober 2026, über trendshift.io." width="800"></a>
 </p>
 
 ## Einstieg
@@ -125,24 +125,25 @@ meisten Listen, jede mit ihren Modellen auf der Website verlinkt:
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 19 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 18 |
-| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 92 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 53 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 46 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 25 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 20 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 19 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 12 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 8 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 |
 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 6 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 |
 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
 | [Master-G](https://cleanyour.tv/tvs?q=Master-G) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
 
 <details>
-<summary>+93 more brands and 16 projector brands</summary>
+<summary>+94 more brands and 16 projector brands</summary>
 
 **RockTek** 3 · **Vidda** 3 · **Vu** 3 · **BTV** 2 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
 **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **Next** 2 · **PRISM+** 2 · **Sankey** 2 ·
-**Sber** 2 · **Síragon** 2 · **TIM** 2 ·
+**Sber** 2 · **Síragon** 2 · **TIM** 2 · **Verizon** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Continental Edison ·
-Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Freebox · Glofiish · HAAM · Hikeen ·
-Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
-MarQ · MECOOL · MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV · Prosonic · realme ·
-Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems · Tele System ·
-Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · Vivensis · VSTV · X.Vision ·
+Daewoo · Dcolor · Dialog · Durabrand · DYON · Element · ENGY · Essentiel b · Formuler · Freebox · Glofiish · HAAM ·
+Hikeen · Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST ·
+Magyar Telekom · MarQ · MECOOL · MediaTek · Metz · MTC · OK. · OPPO · Panavox · PEAQ · Philco · Polytron · PPTV ·
+Prosonic · realme · Rockchip · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General ·
+TD Systems · Tele System · Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · VISIO · Vision · Vityas · Vivensis ·
+VSTV · X.Vision ·
 Alwtniet, Anker Nebula, Aurzen, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Nonete, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -443,7 +444,7 @@ ihren eigenen Fernsehern gemacht, und ihre Antworten wurden zu den Listen hier: 
 ersten vier Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionieren.
 
 Zwei Wochen später war es das Repository auf Platz 1 der GitHub-Trends in der Woche vom 19. bis 25. Oktober, mit über 46.000 Sternen
-und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Am 20. November waren es 59.000 Sterne und 7.800 Forks. Die Listen umfassen jetzt 513 TV-Modelle von 139 Marken.
+und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Am 20. November waren es 59.000 Sterne und 7.800 Forks. Die Listen umfassen jetzt 518 TV-Modelle von 140 Marken.
 Die Berichterstattung: 595 Artikel aus 58 Ländern und 944 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 23. November 2026).
 
 ## Mitmachen
@@ -456,9 +457,7 @@ Du arbeitest über einen Coding-Agenten mit? [AGENTS.md](AGENTS.md) gibt ihm die
 |---|---|
 | **Die Debloat-Liste deines Fernsehers** | Die nützlichste: die nächste Person mit diesem Modell überspringt das Entdecken. |
 | **Launcher und Prompt** | Verbesserungen am Launcher und schärfere Prompt-Formulierungen sind auch willkommen. |
-| **Etwas darauf gebaut?** | Ein Launcher, eine Portierung, ein Theme: trag es in [SHOWCASE.md](SHOWCASE.md) ein, wo schon 277 Projekte leben, sortiert in Startbildschirme, Forks, Add-ons, Werkzeuge und andere Plattformen, mit einem Index nach TV-Marke. |
-| **Etwas darauf gebaut?** | Ein Launcher, eine Portierung, ein Theme: trag es in [SHOWCASE.md](SHOWCASE.md) ein, wo schon 273 Projekte leben, sortiert in Startbildschirme, Forks, Add-ons, Werkzeuge und andere Plattformen, mit einem Index nach TV-Marke. |
-| **Etwas darauf gebaut?** | Ein Launcher, eine Portierung, ein Theme: trag es in [SHOWCASE.md](SHOWCASE.md) ein, wo schon 278 Projekte leben, sortiert in Startbildschirme, Forks, Add-ons, Werkzeuge und andere Plattformen, mit einem Index nach TV-Marke. |
+| **Etwas darauf gebaut?** | Ein Launcher, eine Portierung, ein Theme: trag es in [SHOWCASE.md](SHOWCASE.md) ein, wo schon 284 Projekte leben, sortiert in Startbildschirme, Forks, Add-ons, Werkzeuge und andere Plattformen, mit einem Index nach TV-Marke. |
 
 Die Menschen, deren Arbeit in diesem Repo steckt:
 

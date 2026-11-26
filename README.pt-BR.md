@@ -503,7 +503,7 @@ quatro dias. Até o dia 19, o repositório se chamava tv-vibehack; os links anti
 
 Duas semanas depois, o projeto era o repositório em alta nº 1 no GitHub na semana de 19 a 25 de outubro,
 com mais de 46 mil estrelas e 5,7 mil forks, além de 1,4 milhão de visualizações e 260 mil clones em 14 dias.
-Em 20 de novembro, eram 59 mil estrelas e 7,8 mil forks. As listas agora abrangem 513 modelos de TV de 139 marcas. A repercussão: 595 artigos em 58 países e
+Em 20 de novembro, eram 59 mil estrelas e 7,8 mil forks. As listas agora abrangem 518 modelos de TV de 140 marcas. A repercussão: 595 artigos em 58 países e
 944 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
 (dados de 23 de novembro de 2026).
 
@@ -518,9 +518,7 @@ as mesmas regras para ele.
 |---|---|
 | **Lista de remoção da sua TV** | É a contribuição mais útil: a próxima pessoa com esse modelo não precisará fazer a etapa de identificação. |
 | **Launcher e prompt** | Melhorias no launcher e ajustes para deixar o prompt mais claro também são bem-vindos. |
-| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e setenta e sete projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
-| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e setenta e três projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
-| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e setenta e oito projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
+| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e oitenta e quatro projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
 
 As pessoas cujo trabalho faz parte deste repositório:
 
