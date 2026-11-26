@@ -217,6 +217,21 @@ public class PrayerScheduler {
         }
     }
 
+    /** A failed fetch tries again in 15 minutes; without it reminders stop until the app is opened. */
+    private static void retryRefresh(Context ctx) {
+        AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+        Intent intent = new Intent(ctx, PrayerReceiver.class);
+        intent.setAction(ACTION_REFRESH_ALARM);
+        PendingIntent pi = PendingIntent.getBroadcast(
+                ctx,
+                1002,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
+        );
+        setAlarm(am, System.currentTimeMillis() + 15 * 60_000L, pi);
+    }
+
     public static void fetchTimingsAndSchedule(Context ctx) {
         if (!ctx.getResources().getBoolean(R.bool.reminders)) {
             cancel(ctx);
@@ -263,6 +278,7 @@ public class PrayerScheduler {
                 Log.i(TAG, "Background fetch and schedule successful for " + day);
             } catch (Exception e) {
                 Log.w(TAG, "Background fetch error: " + e);
+                retryRefresh(ctx.getApplicationContext());
             }
         }).start();
     }
