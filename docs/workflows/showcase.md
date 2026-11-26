@@ -32,7 +32,15 @@
    borrows a name - another company's product or TV brand, or this repo's own - says it is unofficial in
    its "what it is" cell: "Unofficial, fan-made tvOS-style fork (not affiliated with Apple)". A reader has
    to be able to tell a look-alike from the company's own app, and a row that leaves it out is asked for it
-   on the pull request (#4258, #4314).
+   on the pull request (#4258, #4314). A project that asks for more than this repo's launcher does says so
+   in that cell too, in a few words: `no INTERNET permission`, `INTERNET` for the cover art,
+   `RECEIVE_BOOT_COMPLETED to start at boot`. That is the sentence the block above the
+   tables sends a reader to: it lists the manifest permissions to look for (`INTERNET`,
+   `BIND_ACCESSIBILITY_SERVICE`, `RECEIVE_BOOT_COMPLETED`, `REQUEST_INSTALL_PACKAGES`) and any code that
+   talks to ADB or Wireless debugging, and it says not to install anything a row and the project's own
+   README leave unmentioned. An add-on states the same in its Permissions column, which
+   `tests/test_addon_permissions_index.py` holds to its manifest; a showcase row has no column, so its
+   "what it is" cell is where it goes.
 4. The project is open source with a link people can read and build, says which TV it was tested on, collects
    nothing beyond what its README says, and is yours or listed with the author's blessing. A project that has
    only run on an emulator says that in its Built on cell instead of naming a TV it has not run on -
