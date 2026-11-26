@@ -54,6 +54,16 @@ class StatusThemesTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("theme: examples/acme-tv", out)
 
+    def test_identical_example_folders_are_all_named(self):
+        pushed = json.dumps({"dock_apps": ["com.shared.live"]})
+        for tv in ("alpha-tv", "beta-tv"):
+            example = self.root / "examples" / tv / "config.json"
+            example.parent.mkdir(parents=True)
+            example.write_text(pushed, encoding="utf-8")
+        code, out = self.status(pushed)
+        self.assertEqual(code, 0)
+        self.assertIn("theme: examples/alpha-tv or examples/beta-tv", out)
+
     def test_a_bad_candidate_does_not_hide_a_later_matching_theme(self):
         for contents in (b'{"columns":', b"\xff"):
             with self.subTest(contents=contents):
