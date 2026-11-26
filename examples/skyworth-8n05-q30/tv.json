@@ -1,0 +1,6 @@
+{
+  "tv": "Skyworth 8N05 Q30 / 65Q30 (nt72671_a32, Novatek NT72671, 2 GB), China market",
+  "os": "Coocaa CCOS / Android 8.0",
+  "brand": "Skyworth",
+  "notes": "Coocaa CCOS preloads: boot ad, push and usage reporting, silent auto-installer, shopping portals, remote support, markets, cleaners; the app store is commented out because it opens My Apps; the firmware turns the rest back on at the next boot, and Home cannot be replaced on this build: [notes](../docs/devices/skyworth-8n05-q30.md)"
+}
