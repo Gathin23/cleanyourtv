@@ -1,0 +1,10 @@
+{
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx",
+  "key_filter": false,
+  "power_on_home": false,
+  "power_on_home_always": false,
+  "boot_to_live_tv": false,
+  "restore_key_services": false,
+  "consume_volume_keys": false,
+  "handle_view_inputs": false
+}
