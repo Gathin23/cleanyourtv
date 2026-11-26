@@ -43,6 +43,13 @@ public class WallpaperCaptionsTest {
     }
 
     @Test
+    public void aByteOrderMarkBeforeTheFirstLineIsDropped() {
+        Map<String, String> names = WallpaperCaptions.parse(Arrays.asList("\uFEFF001.jpg\tDusk", "002.jpg\tDawn"));
+        assertEquals("Dusk", names.get("001.jpg"));
+        assertEquals("Dawn", names.get("002.jpg"));
+    }
+
+    @Test
     public void missingFolderHasNoNames() {
         assertTrue(WallpaperCaptions.read(null).isEmpty());
     }
