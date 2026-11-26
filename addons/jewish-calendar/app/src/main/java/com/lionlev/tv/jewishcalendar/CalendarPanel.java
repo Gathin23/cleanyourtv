@@ -20,7 +20,7 @@ final class CalendarPanel extends LinearLayout {
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             refresh();
-            handler.postDelayed(this, 60_000L);
+            handler.postDelayed(this, 60_000L - System.currentTimeMillis() % 60_000L);
         }
     };
 
