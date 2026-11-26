@@ -31,6 +31,12 @@ final class Timer {
         return end > System.currentTimeMillis() - 5_000 ? end : 0;
     }
 
+    /** The stored end for AlarmReceiver: an alarm Android delivers late (no exact-alarm grant) still counts for ten minutes. */
+    static long due(Context ctx) {
+        long end = prefs(ctx).getLong("end", 0);
+        return end > System.currentTimeMillis() - 10 * 60_000L ? end : 0;
+    }
+
     static void start(Context ctx, int minutes) {
         startSeconds(ctx, minutes * 60);
     }
