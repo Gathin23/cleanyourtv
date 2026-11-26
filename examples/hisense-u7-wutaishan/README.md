@@ -92,3 +92,47 @@ Volume: with the helper bound, held volume moved one step per press (the trade i
 kept that. No soundbar was connected, so CEC volume is untested.
 
 Not tested: a several-day run, CEC and an eARC soundbar, HDMI 3, AV.
+
+## Third unit: Hisense 65U7SG (65U75SUA)
+
+A Hisense 65U7SG (`ro.vt.product.model` 65U75SUA, `SmartTV 4K FFM`, `wutaishan`, Google TV 14, build
+`UKN6.251123.001.049`, US) was debloated on 2026-10-28, a day before this list landed, with a list started from
+hengshan's. The owner has used it daily since, through standby overnight, restarts from Settings and an unplug on
+2026-11-26. Nothing was disabled at the factory on this unit.
+
+What differed from the U7 and the 65U88QG:
+
+- **AirPlay kept working**, as on the 65U88QG. The owner played to it from an iPhone after `setupwraith` was
+  disabled, and after the unplug four weeks later the set still advertised `_airplay._tcp` (`manufacturer=HVCL`).
+  Two of three units kept it.
+- **Google TV's home stayed enabled.** `launcherx` stays behind the launcher with a theme that sets `"key_filter":
+  false` and `"stock_home_redirect": "com.google.android.apps.tv.launcherx"`, installed with `HOME_KEY_SERVICE=1`.
+  The gear opens Google TV's quick settings panel and held volume ramps. `cmd package set-home-activity` printed
+  `Success` but Home stayed on launcherx, so the order that worked was: install with launcherx disabled (the default),
+  push the theme, then `pm enable --user 0 com.google.android.apps.tv.launcherx`.
+- **That costs a step after a real restart.** Hisense's HiPerf (`VtInterceptApp` in `services.jar`) refuses to start
+  third-party processes for services and broadcasts while launcherx is in front:
+
+  ```
+  HiPerf  : [VtInterceptApp] intercept 3rd app.processName: com.gathin.tvhome(service) before boot_completed, topPkgName: com.google.android.apps.tv.launcherx
+  ```
+
+  After a restart or a power cut the Home helper sits under "Binding services" in `dumpsys accessibility` and Home
+  stays on Google TV. HiPerf's allow-list (`settings put global allowed_self_launch_3rd_packages`) did not help, and
+  on Android 14 the shell cannot disable launcherx's `HomeActivity` on its own. Opening the launcher once from Google
+  TV's app row works, because HiPerf does not block activities, and Home then redirects until the next restart. The
+  power button is standby here (uptime keeps counting), and standby never undid it, 12 hours overnight included. If
+  the set restarts often, disable launcherx as this list does.
+- **More is off than on the U7**, with no problems in four weeks: `com.vt.factory`, `tv.mopa.ginga` and `tv.mopa.tias`
+  (all three under "Leave enabled" in `debloat.txt`), `com.vt.tv.calmanconnector`, `com.vt.tv.mediacenter`,
+  `com.vt.tv.singlelisten`, Miracast (`com.vt.tv.mobiledeviceconnectiontips`), `com.android.printspooler`,
+  `com.android.providers.calendar` and `com.android.providers.contacts`. `com.vt.tv.ai_sense` and
+  `com.vt.udpserver` stayed on.
+- **The owner also turned off** YouTube Music, Play Games, Instagram, the official YouTube app and Chromecast built-in
+  (`com.google.android.apps.mediashell`). With mediashell off, a phone's Cast button no longer finds the TV. AirPlay
+  and YouTube clients linked with a TV code still work.
+
+Port 5555 and the saved Wi-Fi went as on the 65U88QG: Wireless debugging, then `adb tcpip 5555` until the next
+reboot, and the network had to be forgotten and joined again before `setupwraith` could go.
+
+Not tested: CEC, a soundbar, USB storage.
