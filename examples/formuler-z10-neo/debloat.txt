@@ -1,0 +1,33 @@
+# Formuler Z10 Neo, Android TV 10, firmware QT 2606261306 release-keys
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/formuler-z10-neo/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/formuler-z10-neo/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested: launcher (com.gathin.tvhome) already installed and set as Home.
+# Freed storage allowing system updates. All disabled packages held across reboots.
+# Remote works on real remote with no key helper.
+#
+# Formuler stock launcher (replaced by launcher/) - already disabled
+tv.formuler.siptv.leanbacklauncher.real
+
+# Formuler background services
+tv.formuler.helpcenter
+# tv.formuler.real.upgrade       # firmware updater, left enabled
+# tv.formuler.remoteupgrade.z    # firmware updater, left enabled
+tv.formuler.service.networkstorage.real
+# tv.formuler.service.real       # KEEP: MyTVOnline binds its TVService; disabled, the tuner reports tvservice_not_connected
+# tv.formuler.productservice     # KEEP: MyTVOnline binds its AFR service; disabled, it crashes on launch ("failed to bind afr service")
+
+# AOSP/demo apps
+com.android.dreams.basic
+com.android.wallpaperbackup
+com.android.providers.userdictionary
+
+# Google feedback (preloaded)
+com.google.android.feedback
+
+# MediaTek / board services (kept Live TV: com.mediatek.wwtv.tvcenter)
+# com.mediatek.wwtv.tvcenter    # Live TV / tuner - KEPT for HDMI/antenna
+
+# Google services kept: Play Store, Play Services, Gboard, Chromecast, Assistant
+# MyTVOnline kept: tv.formuler.mytvonline.real (dock item), tv.formuler.mytvonline.tunerservice.real
