@@ -6,9 +6,9 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/verizon-stream-tv-gen2/debloat.txt com.verizon.qlv.launcher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Status: applied 2026-10-29, lived with for four weeks since (checked 2026-11-24). After a reboot all 16 packages this set
-# disabled (YouTube Music included) stayed disabled and Home stayed on com.gathin.tvhome (the launcher was sideloaded over ADB); the
-# real remote's Guide and Home buttons work.
+# Status: applied 2026-10-29, lived with for four weeks since (checked 2026-11-24). After a reboot all 16 packages that
+# session disabled - the 15 this list sends, plus YouTube Music, commented out below - stayed disabled, and Home stayed
+# on com.gathin.tvhome (the launcher was sideloaded over ADB); the real remote's Guide and Home buttons work.
 #
 # Stock launcher: com.verizon.qlv.launcher. It is the last line group below: disable it only after the new
 # launcher is installed and confirmed as Home (tools/disable.sh checks this).
