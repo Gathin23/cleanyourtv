@@ -3,13 +3,14 @@ package com.gathin.tvhome;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 
 /** The standard settings intent, or, when nothing usable answers it, the first vendor settings entry
- *  from settings_fallback_components that is installed (Xiaomi China, TCL / FFALCON, Fire OS), else the
+ *  from settings_fallback_components whose activity is installed (Xiaomi China, TCL / FFALCON, Fire OS), else the
  *  AOSP TV settings app's main screen where it is installed. */
 final class SystemSettings {
     private SystemSettings() {}
@@ -38,7 +39,7 @@ final class SystemSettings {
     private static final ComponentName AOSP_TV_SETTINGS =
             new ComponentName("com.android.tv.settings", "com.android.tv.settings.MainSettings");
 
-    /** The first vendor settings entry from settings_fallback_components that is installed, or null
+    /** The first vendor settings entry from settings_fallback_components whose activity is installed, or null
      *  when none is. China-market firmware keeps pages the AOSP TV settings has no row for -
      *  Xiaomi's Account & Security, where the ADB switch lives - in the vendor's own settings app;
      *  MainActivity's Settings menu offers it as "Native settings" while one is installed. */
@@ -47,12 +48,14 @@ final class SystemSettings {
         for (String value : context.getResources().getStringArray(R.array.settings_fallback_components)) {
             ComponentName component = ComponentName.unflattenFromString(value);
             if (component == null) continue;
-            // Explicit resolveActivity() always succeeds, so check the package exists instead.
+            // Check the activity, not only its package: two TCL entries share com.tcl.settings.
+            ActivityInfo info;
             try {
-                pm.getPackageInfo(component.getPackageName(), 0);
+                info = pm.getActivityInfo(component, 0);
             } catch (PackageManager.NameNotFoundException e) {
                 continue;
             }
+            if (!info.exported) continue;
             return new Intent().setComponent(component);
         }
         return null;
