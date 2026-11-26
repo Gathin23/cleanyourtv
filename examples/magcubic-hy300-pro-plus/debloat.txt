@@ -57,6 +57,21 @@
 # The shipped config.json keeps the picker, because that is what the unit this header was written on ran
 # (Inputs > HDMI1 is in the working list above); the swap is reported from one other unit on a later build.
 #
+# That swap is not free on every board. awlivetv opens the port its string extra "input_source" names and
+# falls back to HDMI3 when the extra is missing, and config.json cannot send one: source_panel_extra
+# carries a whole number as an int extra only, so "input_source=HDMI2" there is dropped without a word. On
+# one HY300 Pro+ in #4296 the only wired port was HDMI2 - dumpsys tv_input put
+# com.softwinner.vis/.HdmiInputService/HW2 at state 0 with HW1 and HW3 at state 1, and
+# /product/etc/config.ini and persist.sys.hdmisource both say HDMI2 - so the panel came up on the unwired
+# HDMI3 and showed "No Signal" over a live source; started by hand it locked on at once (logcat:
+# SubDeviceSetSourceAsync to kHalSourceID_HDMI_2, then onVideoAvailable inputId .../HW2, 3840x2160 30Hz):
+#
+#   tools/tv.py 'am start -n com.softwinner.awlivetv/.MainActivity --es input_source HDMI2'
+#
+# That report carries no build string - Projector.20260820.173302 above is the first unit's - so read
+# dumpsys tv_input for the port that is connected before trusting any row, and open the panel with the
+# extra rather than through the Inputs pill when the wired port is not HDMI3.
+#
 # Kept on purpose:
 # - com.htc.magcubicos: Home, disabled by the install script, not by this list.
 # - com.softwinner.awsource, com.softwinner.vis, com.softwinner.awlivetv: the inputs.
