@@ -16,7 +16,9 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 import contextlib
 import importlib.util
 import io
+import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -77,6 +79,13 @@ class CommandLimitedDevice:
         self.closed = True
 
 
+# The fake TV's shell is this machine's /bin/sh, and b64push.py's verification needs md5sum and base64,
+# so the cases that run the commands skip where there is no POSIX shell, as test_b64push_atomic.py does.
+NEEDS_POSIX_SHELL = unittest.skipUnless(
+    os.name == "posix" and shutil.which("md5sum") and shutil.which("base64"),
+    "the fake TV's shell is /bin/sh, and md5sum and base64 are needed")
+
+
 class ShellCommandBudgetTest(unittest.TestCase):
     def run_push(self, data, remote, device=None):
         device = device if device is not None else CommandLimitedDevice()
@@ -101,6 +110,7 @@ class ShellCommandBudgetTest(unittest.TestCase):
     def chunk_commands(self, device):
         return [c for c in device.commands if c.startswith("echo '")]
 
+    @NEEDS_POSIX_SHELL
     def test_a_tv_that_refuses_a_65_kb_command_now_gets_the_file(self):
         # The reported set, and a file the size of the add-on APK install.sh uploads this way.
         data = bytes(range(256)) * 2344
@@ -111,6 +121,7 @@ class ShellCommandBudgetTest(unittest.TestCase):
         self.assertIn("MATCH", out)
         self.assertTrue(device.closed)
 
+    @NEEDS_POSIX_SHELL
     def test_every_command_fits_the_budget_and_still_carries_24_kb(self):
         data = bytes(range(256)) * 2344
         code, device, _, err, _ = self.run_push(data, "target.apk")
@@ -128,6 +139,7 @@ class ShellCommandBudgetTest(unittest.TestCase):
         # 57,000 that timed out 3 of 3.
         self.assertEqual(push.SHELL_COMMAND_LIMIT, 32 * 1024)
 
+    @NEEDS_POSIX_SHELL
     def test_a_transport_that_states_its_own_limit_keeps_it(self):
         # The native adapter: its 4096-byte payload, and the command budget it states for itself.
         device = CommandLimitedDevice(max_chunk_size=4096, max_shell_command_size=4088)
