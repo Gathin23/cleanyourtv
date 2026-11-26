@@ -21,7 +21,10 @@ final class WallpaperCaptions {
 
     static Map<String, String> parse(List<String> lines) {
         Map<String, String> names = new HashMap<>();
+        boolean first = true;
         for (String line : lines) {
+            if (first && line != null && line.startsWith("\uFEFF")) line = line.substring(1);   // Windows editors add a BOM
+            first = false;
             if (line == null || line.trim().isEmpty() || line.trim().startsWith("#")) continue;
             int tab = line.indexOf('\t');
             if (tab <= 0) continue;
