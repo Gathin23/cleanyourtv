@@ -174,6 +174,38 @@
 # adapter can uncomment them, and one where they are off gets Ethernet back with
 # `pm enable com.sony.dtv.sonybugreportsys` and the same for idd.agent, one package per call.
 
+# Eighth unit, EU M variant on a newer firmware: product BRAVIA_VH2_M_EU, Android 12/API 31,
+# build BRAVIA_VH2_M_EU-user 12 STT2.230505.001.S158 682461 (every unit above reports S136 682241),
+# ro.adb.secure=1, on the built-in Ethernet port, with a USB drive set up as extra internal storage.
+# Status: applied on 26 November 2026 in small batches with this repo's launcher; one evening, not lived with
+# for days. After a restart, taken before the last of the extras, `pm list packages -d` matched the list read
+# before it and Home stayed on the new launcher. The extras went in afterwards; the owner restarted the TV and
+# reported all good (the disabled list was not read again). ADB debugging was then switched off and
+# `tools/adb-closed.py <tv ip>` reported port 5555 closed. The TV menu calls the switch "ADB debugging".
+#
+#  - Factory-disabled here: seeds.iot, sonypicturescore, homekit, b2b.softap, youview.poa, the
+#    my5/itv/ard/all4/iplayer/sounds launchers and de.hdplus.tvapp.androidtv. Shipped enabled, unlike the first
+#    EU unit: promos and b2b.vendorprotocol; sonyselect and seeds.iot.remotestart were enabled too. Not
+#    installed: the India preloads (Amazon Music, Gaana, iTuner).
+#  - The shell cannot disable the factory-disabled seeds.iot: pm answers "SecurityException: Shell cannot
+#    change component state" for that line, it stays off, and the rest of the list carries on.
+#  - Disabled from the list: the tracker, telemetry, demo, preloaded and promo groups (youtube.tvmusic kept by
+#    the owner), the whole Asia-Pacific agent group, osat.music, google.android.videos and setupwraith. From the
+#    commented groups: the DLNA packages, b2b.hotelmode, b2b.rs232csupport, accessibility.tutorial,
+#    gestureapp, ecodashboard, launcherx and launcherxcustomizer. Also, by the owner's choice, the Assistant
+#    packages and Sony's Media Player (the last commented group). Chromecast built-in, AirPlay and firmware
+#    updates kept.
+#  - qterics.da.product, autoinstalls and launcherxcustomizer disabled without TVINPUT_ALLOW, unlike on the
+#    sixth unit.
+#  - launcherx registers HOME at priority=2 here too; launcher/build-and-install.sh disabled it and Home
+#    resolved to the new launcher.
+#  - Wi-Fi: setupwraith owned some of the saved networks. The TV was on Ethernet, so it was disabled with
+#    FORCE_SETUPWRAITH=1 and the owner's agreement; those saved networks were deleted, and Ethernet stayed up.
+#    Casting was not tried.
+#  - No key service enabled: the owner reports that Home, Input, the gear button, the app buttons and held
+#    volume all work with the real remote.
+#  - The launcher's Inputs menu lists HDMI 1-4, AV and Live TV; HDMI 3 opens through com.sony.dtv.tvx.
+
 # ACR viewing tracker
 tv.samba.ssm                                   # Samba TV fingerprints what's on screen
 tv.samba.ssm.ui
@@ -248,3 +280,10 @@ com.google.android.tungsten.setupwraith
 # disable.sh's Home guard refuses it otherwise, and restore.sh puts it back.
 # com.google.android.apps.tv.launcherx
 # com.sony.dtv.launcherxcustomizer             # Sony's add-on for launcherx; disabled with it on the PA unit
+
+# Eighth unit: Assistant and Sony's Media Player, off by that owner's choice, one evening only. With the
+# Assistant off, voice search and the microphone button have nothing to answer them. Uncomment if you use neither.
+# com.google.android.katniss                   # Google Assistant
+# com.sony.dtv.voicesearch
+# com.sony.dtv.assistantadapter
+# com.sony.dtv.smartmediaapp                   # Sony Media Player (USB and network files)
