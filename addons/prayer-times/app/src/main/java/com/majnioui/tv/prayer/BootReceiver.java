@@ -16,7 +16,8 @@ public class BootReceiver extends BroadcastReceiver {
         }
         String action = intent != null ? intent.getAction() : "";
         Log.i(TAG, "onReceive boot/update action: " + action);
-        if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action) || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             PrayerScheduler.scheduleNext(context);
         }
     }
