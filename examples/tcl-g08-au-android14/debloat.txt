@@ -55,7 +55,11 @@ com.google.android.play.games
 com.android.printspooler
 com.tcl.android.webview              # spare webview
 com.mediatek.support.webview         # spare webview
-com.mediatek.backgrounddetection
+# com.mediatek.backgrounddetection   # KEEP: despite its name it is on the standby path. Its QhbReceiver
+                                    # handles SCREEN_ON/SCREEN_OFF, and with the package off every suspend
+                                    # aborts ("One or more tasks refusing to freeze", alarmtimer.0.auto
+                                    # failed to suspend: error -16), so the set never reaches deep standby
+                                    # and Bluetooth headphones stay connected all through it (#4499).
 
 # Home takeover for launcher/. On the tested set the saved Wi-Fi belonged to setupwraith at first, so it was
 # forgotten and joined again from Settings before this ran; disable.sh skips setupwraith by itself when it owns

@@ -1347,6 +1347,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `low_power_standby_enabled` stays 1, and the firmware sets it back to 1 at every boot. Apps may not read or write
   it on Android 12 and later; only the system and the shell can (`tools/tv.py 'settings put global
   low_power_standby_enabled 0'`, again after each boot). It keeps more of the TV awake in standby.
+- **The set stops reaching deep standby: Bluetooth stays connected all night, and it wakes at once** (TCL 55C71K,
+  `G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU02`). `com.mediatek.backgrounddetection` is not a background-jobs
+  package on this board: its `QhbReceiver` handles `SCREEN_OFF`/`SCREEN_ON` and takes part in suspend. Disabled,
+  TCL's `TclPowerManagerServiceEx` still starts standby and drops its wakelocks, but every suspend attempt aborts:
+  `dumpsys batterystats` lists `Abort: One or more tasks refusing to freeze` and
+  `alarmtimer.0.auto failed to suspend: error -16`, and
+  `tools/tv.py "dumpsys alarm | grep -m2 'Runtime uptime'"` prints the same elapsed and uptime, so no time was
+  spent suspended. `pm enable com.mediatek.backgrounddetection` brings deep standby back; wait about 40 s before
+  rebooting, as an immediate reboot lost the change on that set. `persist.tcl.totalstrtimes` and
+  `persist.tcl.totalboottimes` stop counting once TCL's own apps are disabled, so they cannot be used to check it.
+  Lists that still disable the package: `grep -l '^com.mediatek.backgrounddetection' examples/*/debloat*.txt`
+  ([#4499](https://github.com/Gathin23/cleanyourtv/issues/4499)).
 - **Wireless debugging shows "IP address & port: unavailable" after a reboot** (same set; the Q7C notes in
   `examples/tcl-q7c-google-tv` saw it too). It happens when Wireless debugging is switched on before Wi-Fi is up,
   as at boot: the TLS server never binds and `adb mdns services` lists no `_adb-tls-connect._tcp`. Switching it

@@ -7,7 +7,7 @@ account, and Google's voice assistant and Cast.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 26 packages to disable (MagiConnect is a comment), grouped and commented |
+| `debloat.txt` | The 25 packages to disable (MagiConnect is a comment), grouped and commented |
 
 **How much testing is behind it:** one set, from 30 October 2026, lived with for two weeks with nothing broken
 and nothing re-enabled. The list was applied with `tools/disable.sh` in four batches with a screenshot after each,
@@ -31,6 +31,13 @@ TV_HOST=<tv ip> launcher/build-and-install.sh
 - **Game bar.** `com.tcl.gamebar` was disabled with the extras and turned back on for a console on HDMI 2; it is
   commented out in the list.
 - **Live TV.** With no aerial, TCL Live and TCL Channel are the only live channels, so both were kept.
+- **Deep standby.** `com.mediatek.backgrounddetection` is commented out in the list since
+  [#4499](https://github.com/Gathin23/cleanyourtv/issues/4499): its `QhbReceiver` is part of TCL's standby
+  path on this firmware, and with the package disabled every suspend aborts (`dumpsys batterystats`:
+  *One or more tasks refusing to freeze*, `Device alarmtimer.0.auto failed to suspend: error -16`), so the
+  set stays half awake and Bluetooth headphones never disconnect. With it enabled, and after a reboot with
+  about 40 s between `pm enable` and the power press, `dumpsys alarm`'s elapsed clock again runs ahead of
+  uptime while the set is in standby.
 - **SmartTube** needs the 32-bit (`armeabi-v7a`) build. The F-Droid build (`app.smarttube.fdroid`) installs and
   plays; install a large APK with the SDK's `adb install`, as `tools/tv.py --push` is meant for small files.
 - Live TV and HDMI pictures come back as empty screenshots: the TV protects video.
