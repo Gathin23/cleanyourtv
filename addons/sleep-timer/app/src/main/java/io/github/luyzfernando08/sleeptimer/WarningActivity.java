@@ -24,6 +24,10 @@ public class WarningActivity extends Activity {
                 return;
             }
             long left = (end - System.currentTimeMillis() + 999) / 1000;
+            if (left * 1000 > Timer.WARN_MS + 5_000) {         // pushed back from the quick bar or the picker
+                finish();
+                return;
+            }
             if (left <= 0) {
                 Timer.sleepNow(WarningActivity.this);
                 finish();
