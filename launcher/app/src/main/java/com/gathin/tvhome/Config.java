@@ -682,7 +682,7 @@ final class Config {
         if (chosenRows >= 0 && chosenRows <= 3) rowsBelow = chosenRows;
         animations = choices.getBoolean("animations", animations);
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
-        File wallpaper = readWallpaper(ctx, dir != null ? new File(dir, WALLPAPER_NAME) : null, mounted);
+        File wallpaper = readWallpaper(ctx.getFilesDir(), dir != null ? new File(dir, WALLPAPER_NAME) : null, mounted);
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
         if (!wallpaperEnabled) wallpaper = null;
@@ -824,10 +824,6 @@ final class Config {
             }
         }
         return json;
-    }
-
-    static File readWallpaper(Context ctx, File file, boolean mounted) {
-        return readWallpaper(ctx.getFilesDir(), file, mounted);
     }
 
     static File readWallpaper(File filesDir, File file, boolean mounted) {
