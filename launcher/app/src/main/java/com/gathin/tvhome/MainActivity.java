@@ -1357,6 +1357,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(clockCheck);
         stopped = true;
         tileRefresh.onStop();
+        // With a key helper on, the process stays in the foreground: Android sends RUNNING_LOW once, often while
+        // Home is still in front (which keeps everything), and calls onTrimMemory again only when the level
+        // changes. Read the level now that Home is gone, so the tiles go even when the callback came too early.
+        android.app.ActivityManager.RunningAppProcessInfo state = new android.app.ActivityManager.RunningAppProcessInfo();
+        android.app.ActivityManager.getMyMemoryState(state);
+        if (MemoryTrimPolicy.shouldRelease(state.lastTrimLevel, started)) onTrimMemory(state.lastTrimLevel);
     }
 
     /**
