@@ -1,20 +1,21 @@
 # ZTE ZXV10 B863AV3.1-M2 (Amlogic S905L3A, Android 9): launcher handover, no debloat list
 
-Owner-observed single-session note from 2026-11-27. The box runs a rebranded third-party ATV
-image; this records one unit and does not establish that other S905L3A boxes or stock ZTE
-firmware behave the same way. No package was disabled or uninstalled, so there is no tested
-debloat list for this set.
+Owner-observed notes from 2026-11-27, re-checked over ADB on 2026-11-28. The box runs a
+rebranded third-party ATV image; this records one unit and does not establish that other
+S905L3A boxes or stock ZTE firmware behave the same way. No package was disabled or uninstalled,
+so there is no tested debloat list for this set.
 
 | Field | Observed value |
 |---|---|
-| Retail model | ZTE ZXV10 B863AV3.1-M2 (S905L3A-B, 2 GB RAM, 8 GB flash) |
+| Retail model | ZTE ZXV10 B863AV3.1-M2 (S905L3A-B, 2 GB RAM, 8 GB flash, 5621DS) |
 | `ro.product.model` / `device` | `S905l3a` / `S905l3a` |
 | Android / API | 9 / 28 |
 | Build fingerprint | `MECOOL/KM9PRO/KM9PRO:9/PI/V1.20190329:user/release-keys` |
+| `ro.build.display.id` | `HarmonyOS` (rebrand label only; the system is still Android 9) |
 | Board / ABI | `S905l3a` / `armeabi-v7a` (32-bit) |
 | Build date | 2019-10-09 |
-| Stock launcher | `com.ikukan.launcher` (`.ui.home.activity.HomeActivity`; `.receiver.BootReceiver`) |
-| Network | Built-in `eth0` Ethernet; no Wi-Fi |
+| Stock launcher | `com.ikukan.launcher` 3.5.00.5 (`.ui.home.activity.HomeActivity`; `.receiver.BootReceiver`) |
+| Network | Built-in `eth0` Ethernet; no Wi-Fi. ADB over LAN on port 5555, shell root |
 
 ## What was installed
 
@@ -29,8 +30,14 @@ debloat list for this set.
     helper the system dropped from the enabled list.
   - `power_on_home_always` = `true`: Home comes up about a second after the screen turns on,
     whatever was in front; a key pressed first wins.
-- Dock: `org.jellyfin.androidtv`, `org.xbmc.kodi`, `org.smarttube.stable`; 4 columns. The Inputs
-  pill is hidden: TvInputManager reports no HDMI/AV/tuner hardware on this box, and
+- Owner-installed media apps (all enabled; their tiles come from the app library):
+  - `org.jellyfin.androidtv` 0.20.1 (versionCode 200199) — Jellyfin TV client; home rows and the
+    movie wall load from a LAN Jellyfin server.
+  - `org.xbmc.kodi` 21.3 (versionCode 2103000, armeabi-v7a)
+  - `org.smarttube.stable` 32.80 (versionCode 2470)
+  - `ak.helper` 4.0 (TVBox)
+  - `com.jerry.live.pro` 2.6.15 (IP live TV)
+- The Inputs pill is hidden: TvInputManager reports no HDMI/AV/tuner hardware on this box, and
   `live_tv_package` is empty.
 - Granted to tvhome: `WRITE_SECURE_SETTINGS`, `ACCESS_FINE_LOCATION`; AppOps
   `AUTO_START` / `ASSOC_START` allowed; `enabled_accessibility_services` =
@@ -39,26 +46,41 @@ debloat list for this set.
 ## Observed and verified (ADB session)
 
 - MainActivity renders: clock/date, Ethernet pill, Settings pill, dock and grid. `DPAD_RIGHT`
-  moves focus through the dock; the three dock apps launch and resume, and Back returns Home. An
+  moves focus through the dock; the media tiles launch and resume, and Back returns Home. An
   injected `KEYCODE_HOME` lands on tvhome.
 - After one owner-consented reboot, `eth0` came back on its own; the HOME resolver and resumed
-  activity were both `com.gathin.tvhome/.MainActivity`; the helper was bound; 85 packages were
-  present and the disabled list was empty.
+  activity were both `com.gathin.tvhome/.MainActivity`; the helper was bound. Re-checked
+  2026-11-28: 85 packages present, disabled list empty (0 disabled).
 - Standby/wake: the first wake, before `power_on_home_always` was enabled, landed back on the
   stock launcher (late or missing stock-home window event; see the standby-wake entry in
   [TROUBLESHOOTING.md](../TROUBLESHOOTING.md)). After enabling `power_on_home_always` and
   reinstalling, a retested wake landed on tvhome. ADB goes offline while the box sleeps; reconnect
-  after waking.
+  with `adb connect <box>:5555` after waking.
 - No TvInput/HDMI/tuner input is registered, so the HDMI-misroute scenario (HDMI 2 opening
   HDMI 1) does not apply; no input switching was configured.
+
+## Playback codecs (owner-verified)
+
+- Hardware decode works for H.264 (`OMX.amlogic.avc.decoder.awesome`) and HEVC/H.265
+  (`OMX.amlogic.hevc.decoder.awesome`); the HEVC decoder produced a first frame in Kodi after
+  selecting it directly.
+- `OMX.amlogic.vp9.decoder.awesome` is a leftover shell from the MECOOL KM9PRO (S905X2) image
+  this firmware is rebranded from: the VP9 instance reaches Executing, then fails on the first
+  input (`EINVAL`); no VP9 kernel vdec instance or firmware loads, and playback ends in
+  `CodecNameUnknown`. There is no AV1 decoder on this silicon.
+- The software Google VP9 decoder is capped at 1280×1280, so 1080p/4K VP9 or AV1 tracks are not
+  playable on this box. In practice the YouTube client is held to a 720p30 AVC profile; H.264 and
+  HEVC files play through the hardware decoders.
+- Observed on this one rebranded image only; do not generalize to other S905L3A builds.
 
 ## Not yet verified
 
 - Physical remote buttons (Home, Inputs, Settings, Volume, Channel, app shortcuts) were not
   pressed on the real remote. Injected ADB keyevents do not prove the firmware-level global key
   route reaches the helper; check with the physical remote before relying on them.
-- One same-day session; no several-day ordinary-use follow-up and no before/after RAM or storage
-  measurement. Voice, casting and Bluetooth pairing were not checked in this session.
+- One initial session plus a follow-up re-check; still no several-day ordinary-use follow-up and
+  no before/after RAM or storage measurement. Voice, casting and Bluetooth pairing were not
+  checked.
 - This unit's image is a rebranded third-party ATV build; do not copy these conclusions to other
   boards.
 
