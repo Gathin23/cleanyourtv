@@ -18,8 +18,8 @@ Android TV 11, this one reports device `G13`, Google TV 14 (SDK 34), build `UKN2
   ```
 
   Undo: `tools/venv/bin/python tools/tv.py "settings delete global power_button_long_press"`.
-- **Restart from the shell:** `tools/tv.py --reboot` comes back on, to Home, with no key pressed, and network ADB
-  answers again about 40 seconds after the request (`sys.boot.reason` `reboot,shell`).
+- **Restart from the shell:** `tools/tv.py --reboot` comes back on, to Home, with no key pressed, and is back
+  about 40 seconds after the request (`sys.boot.reason` `reboot,shell`).
 - **Restart from Android's power menu:** the set goes dark and drops off the network (no route to its address), and
   it boots only when the remote's power key is pressed (`sys.boot.reason` `reboot,userrequested`). For the owner it
   behaves like a power-off.
