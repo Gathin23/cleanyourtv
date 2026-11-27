@@ -826,11 +826,6 @@ final class Config {
         return json;
     }
 
-    /**
-     * Returns the wallpaper file to use, keeping a copy in internal storage for the case where
-     * external storage is not yet mounted at boot (#4104). Same pattern as {@link #readOverlay}.
-     * Returns null when neither the external file nor the internal copy is a non-empty file.
-     */
     static File readWallpaper(Context ctx, File file, boolean mounted) {
         return readWallpaper(ctx.getFilesDir(), file, mounted);
     }
@@ -843,15 +838,11 @@ final class Config {
             copy.delete();
             return null;
         }
-        if (!copy.isFile() || copy.length() != file.length() || copy.lastModified() < file.lastModified()) {
-            try (InputStream in = new FileInputStream(file);
-                 FileOutputStream out = new FileOutputStream(copy)) {
-                byte[] buf = new byte[8192];
-                int n;
-                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-            } catch (IOException e) {
-                Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
-            }
+        try {
+            java.nio.file.Files.copy(file.toPath(), copy.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
         }
         return file;
     }
