@@ -76,6 +76,24 @@ CATALOGUE = {
         "Samba TV ACR on TCL sets: identifies what is on screen to target ads; shipped enabled on the "
         "Netherlands 43P69K (examples/tcl-g10-google-tv) and a US 55Q651G",
     ),
+    "tv.samba.ssm": (
+        "acr",
+        "Samba TV ACR (\"Samba Services Manager\"): identifies what is on screen, HDMI included, to "
+        "target ads; disabled in 34 Sony and 5 Philips lists in examples/",
+    ),
+    "com.tcl.ttvs": (
+        "acr",
+        "TCL's TTVS core, whose name says nothing: it hosts the Samba TV frame server "
+        "(.ssm.frameserver.SambaVideoService), which runs where the firmware declares the "
+        "com.tcl.software.sambatv_acr feature and tv.samba.ssm.ui is installed, plus TCL's BI "
+        "tracking; disabled in 19 TCL lists, but on some units it is also the firmware updater and "
+        "the EU 75T8C needs it (examples/tcl-g10-google-tv, examples/tcl-65c7k-google-tv)",
+    ),
+    "tv.alphonso.alphonso_eula": (
+        "acr",
+        "Alphonso ACR: identifies what is on screen to target ads; disabled in the Kodak 55CA0909, "
+        "Xiaomi Mi Box 3, Mi Box S and MiTV AESP0 lists in examples/",
+    ),
     "org.droidtv.candeebug": (
         "telemetry",
         "\"DAC\" analytics on Philips sets",
