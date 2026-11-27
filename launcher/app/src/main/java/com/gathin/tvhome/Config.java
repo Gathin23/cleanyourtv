@@ -682,8 +682,7 @@ final class Config {
         if (chosenRows >= 0 && chosenRows <= 3) rowsBelow = chosenRows;
         animations = choices.getBoolean("animations", animations);
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
-        File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
-        if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
+        File wallpaper = readWallpaper(ctx, dir != null ? new File(dir, WALLPAPER_NAME) : null, mounted);
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
         if (!wallpaperEnabled) wallpaper = null;
@@ -825,6 +824,36 @@ final class Config {
             }
         }
         return json;
+    }
+
+    /**
+     * Returns the wallpaper file to use, keeping a copy in internal storage for the case where
+     * external storage is not yet mounted at boot (#4104). Same pattern as {@link #readOverlay}.
+     * Returns null when neither the external file nor the internal copy is a non-empty file.
+     */
+    static File readWallpaper(Context ctx, File file, boolean mounted) {
+        return readWallpaper(ctx.getFilesDir(), file, mounted);
+    }
+
+    static File readWallpaper(File filesDir, File file, boolean mounted) {
+        File copy = new File(filesDir, WALLPAPER_NAME);
+        if (!mounted) return copy.isFile() && copy.length() > 0 ? copy : null;
+        boolean present = file != null && file.isFile() && file.length() > 0;
+        if (!present) {
+            copy.delete();
+            return null;
+        }
+        if (!copy.isFile() || copy.length() != file.length() || copy.lastModified() < file.lastModified()) {
+            try (InputStream in = new FileInputStream(file);
+                 FileOutputStream out = new FileOutputStream(copy)) {
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+            } catch (IOException e) {
+                Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+            }
+        }
+        return file;
     }
 
     private static JSONObject read(File file) {
