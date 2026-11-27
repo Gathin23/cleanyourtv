@@ -44,9 +44,11 @@ REMOTE_KEYS = (ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "ga
 # example entry in the row is a code span with a colon in it (`"284:library"`, `"scan:586:ignore"`,
 # `hold:`, `front:`, `guide:<package>`), so a later sentence adds no word this reader would take.
 LIST_OPENER = "runs that action:"
-# A word in that list is a backticked, lowercase, letters-only span. `app_library` (the key the library
-# word needs) carries an underscore and `"284:library"` a colon and quotes, so neither is a second word.
-WORD = re.compile(r"`([a-z]+)`")
+# A word in that list is a backticked, lowercase span, letters and underscores only. `app_library`
+# (the key the library word needs) and `live_tv_package` (the key the live_tv word needs) also match
+# but are not action words: exclude them so a key name beside its action word is never read as a second.
+WORD = re.compile(r"`([a-z][a-z_]*[a-z]|[a-z])`")
+NOT_WORDS = {"app_library", "live_tv_package"}
 
 # The words `isAction()` accepts and nothing else acts on, on purpose: the press is swallowed so a
 # remote shortcut pressed by accident does nothing. `RemoteKeys.runAction()` says so in a comment.
@@ -106,7 +108,7 @@ def page_words(row):
         raise AssertionError("the `app_keys` row in themes/README.md no longer says "
                              f"{LIST_OPENER!r} and lists the action words, so a reader has nothing to "
                              "read: say 'runs that action: `back`, ...' as before")
-    return WORD.findall(row.split(LIST_OPENER, 1)[1])
+    return [w for w in WORD.findall(row.split(LIST_OPENER, 1)[1]) if w not in NOT_WORDS]
 
 
 def java_text(root=ROOT):

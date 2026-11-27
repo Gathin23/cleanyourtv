@@ -292,7 +292,7 @@ APP_KEYS = "list of strings"
 # both hand over the whole list, and the entry that wins is the one the owner wrote last.
 APP_KEY_NUMBER = re.compile(r"[0-9]{1,6}")
 APP_KEY_NAME = re.compile(r"KEYCODE_[A-Z0-9_]+")
-APP_KEY_WORDS = ("back", "home", "recents", "mute", "sleep", "screensaver", "settings", "wifi", "library", "ignore")
+APP_KEY_WORDS = ("back", "home", "recents", "mute", "sleep", "screensaver", "settings", "wifi", "library", "live_tv", "ignore")
 PACKAGE_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")
 
 

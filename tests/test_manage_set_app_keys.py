@@ -214,7 +214,7 @@ class TheLauncherTest(unittest.TestCase):
         text = self.source()
         block = text[text.index("static boolean isAction(String target)"):]
         block = block[:block.index("}")]
-        self.assertEqual(list(manage.APP_KEY_WORDS), re.findall(r'case "([a-z]+)":', block))
+        self.assertEqual(list(manage.APP_KEY_WORDS), re.findall(r'case "([a-z_]+)":', block))
 
     def test_the_target_prefixes_are_the_ones_pinned(self):
         text = self.source()
