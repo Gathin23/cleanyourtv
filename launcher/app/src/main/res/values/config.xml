@@ -507,6 +507,10 @@
     <!-- With cinematic_home, false leaves out the dock position dots under the app's name, for a quieter shelf. Can
          also be set with "cinematic_dots": false in a theme's config.json. -->
     <bool name="cinematic_dots">true</bool>
+    <!-- With cinematic_home, false leaves out the "Last opened … ago" line under the app's name, for a cleaner shelf
+         that shows only the name and the dots. Can also be set with "cinematic_last_opened": false in a theme's
+         config.json. -->
+    <bool name="cinematic_last_opened">true</bool>
     <!-- With cinematic_home, true keeps the focus highlight white on the dock instead of the focused app's colour,
          for wallpapers and banners that clash with it; app_glow still colours every tile. Can also be set with
          "cinematic_white_focus": true in a theme's config.json. -->

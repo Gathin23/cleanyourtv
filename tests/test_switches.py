@@ -42,7 +42,7 @@ SCREENSHOT_WANTED = {
     "accent_color", "advanced_effects", "always_show_names", "ambient_glow", "animations",
     "app_banners", "app_glow", "app_keys", "app_labels", "app_library", "app_library_selection",
     "background_color", "boot_to_live_tv", "cinematic_art", "cinematic_dots", "cinematic_home",
-    "cinematic_scrim", "cinematic_white_focus", "coocaa_sources", "dock_apps", "dock_even_padding",
+    "cinematic_last_opened", "cinematic_scrim", "cinematic_white_focus", "coocaa_sources", "dock_apps", "dock_even_padding",
     "dock_glass", "dock_opacity", "dock_row", "dock_title", "fade_rows", "festival_until", "fill_dock",
     "focus_overshoot", "glow_style", "greeting", "greeting_name", "handle_view_inputs", "hidden_apps",
     "icon_only_buttons", "icon_only_inputs", "input_action", "input_key_keycodes", "input_sources",
