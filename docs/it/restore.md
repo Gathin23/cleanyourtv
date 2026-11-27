@@ -34,6 +34,24 @@ Quel record sta in `~/.cleanyourtv/`, un file per ogni TV e per ogni elenco.
 - Il file prende il nome dall'indirizzo con cui è stata raggiunta la TV, quindi è `TV_HOST` a scegliere il record:
   un'esecuzione senza `TV_HOST` si ferma con il messaggio di tv.py e non manda nulla alla TV, invece di ripiegare
   sull'intero elenco per un record che non sa nominare.
+- Anche l'elenco fa parte del nome: gli otto caratteri dopo l'indirizzo sono un hash del percorso dell'elenco,
+  risolto prima, quindi `examples/x/debloat.txt`, `./examples/x/debloat.txt` da quella cartella e un link simbolico
+  al file arrivano tutti allo stesso record. Una copia dell'elenco - una che tieni accanto ai tuoi appunti, un
+  secondo checkout - è un file diverso, con un nome suo: il ripristino da lì non trova alcun record, dice
+  `no recovery record for this TV and list` mentre il record dell'originale della copia sta in `~/.cleanyourtv/`, e
+  prende la via senza record qui sotto, che riattiva ogni pacchetto dell'elenco, compresi quelli che avevi
+  disattivato tu. Fai il ripristino con il file che hai applicato, nel checkout da cui hai ripulito la TV.
+- Lo stesso file può anche dare due hash. Un hard link, o lo stesso elenco scritto con altre maiuscole su un disco
+  che le ignora (macOS, di default), è un solo file raggiunto da un percorso che dà un hash diverso: l'esecuzione
+  trova il record preso per quel file e stampa quale ha usato (`using <record>, the record taken for this list
+  under another spelling of its path`) invece di ripiegare sull'intero elenco.
+- Due record che nominano entrambi questa TV e questo elenco non vengono scelti: l'esecuzione stampa entrambi i
+  percorsi e si ferma prima che qualcosa raggiunga la TV (`this TV and list have two recovery records:`, poi
+  `Nothing was changed on the TV`). Sono il nome più vecchio per questo indirizzo accanto a quello attuale, oppure
+  due grafie dell'elenco che hanno scritto un record a testa prima che esistesse la ricerca qui sopra, e possono
+  non concordare su com'era la TV prima della pulizia: quale delle due sia questa TV non è cosa che lo script possa
+  dire. Sposta da parte, deliberatamente, quello che non è lo stato di questa TV prima della pulizia, poi eseguilo
+  di nuovo.
 - Una seconda esecuzione dello stesso elenco conserva il primo record, senza salvargli sopra lo stato già ripulito.
 - Se nel frattempo hai aggiunto pacchetti all'elenco, quell'esecuzione li aggiunge al record prima di disattivarli, e
   un pacchetto dell'elenco che allora non era installato ma ora è installato e attivo viene registrato come attivo.
