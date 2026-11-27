@@ -7,15 +7,31 @@ so there is no tested debloat list for this set.
 
 | Field | Observed value |
 |---|---|
-| Retail model | ZTE ZXV10 B863AV3.1-M2 (S905L3A-B, 2 GB RAM, 8 GB flash, 5621DS) |
+| Retail model | ZTE ZXV10 B863AV3.1-M2, China Mobile-branded carrier box (S905L3A-B, 2 GB RAM, 8 GB flash, 5621DS Wi-Fi/BT module) |
 | `ro.product.model` / `device` | `S905l3a` / `S905l3a` |
+| SoC / CPU | Amlogic S905L3A-B; 4× ARM Cortex-A53 (`cpu part 0xd03`), ARMv7 32-bit, max 1.8 GHz, `interactive` governor |
+| Memory / storage | 2 GB RAM (`MemTotal` 2055160 kB); 8 GB flash, `/data` 3.3 G |
 | Android / API | 9 / 28 |
 | Build fingerprint | `MECOOL/KM9PRO/KM9PRO:9/PI/V1.20190329:user/release-keys` |
 | `ro.build.display.id` | `HarmonyOS` (rebrand label only; the system is still Android 9) |
 | Board / ABI | `S905l3a` / `armeabi-v7a` (32-bit) |
 | Build date | 2019-10-09 |
 | Stock launcher | `com.ikukan.launcher` 3.5.00.5 (`.ui.home.activity.HomeActivity`; `.receiver.BootReceiver`) |
-| Network | Built-in `eth0` Ethernet; no Wi-Fi. ADB over LAN on port 5555, shell root |
+| Network | Built-in `eth0` Ethernet only on this image. The 5621DS Wi-Fi is removed (`persist.vendor.wifi_remove=true`); the Bluetooth stack is present but pairing was not tested. ADB over LAN on port 5555, shell root |
+
+## How this image got here (owner history of this unit)
+
+- The stock unit shipped as a China Mobile carrier box with the ZTE stock firmware. It was
+  reflashed over USB with the Amlogic USB Burning Tool using a third-party ATV image; the board
+  entered burning mode through the contact point on the back of the board.
+- The write used erase-flash (normal erase) with bootloader verification; reset-after-success
+  and key overwrite were left off.
+- The first write booted into a looping boot animation and never reached Home. A second write
+  with erase flash enabled reached the ATV home.
+- The resulting image carries the MECOOL KM9PRO (S905X2 g12a) fingerprint rather than a native
+  S905L3A build. Its leftover X2 media nodes are why the VP9 OMX shell listed below fails on this
+  L3A silicon. Local-only details (image file, machine paths, MAC, serial) are deliberately
+  left out of this note.
 
 ## What was installed
 
