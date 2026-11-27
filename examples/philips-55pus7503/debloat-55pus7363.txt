@@ -1,0 +1,78 @@
+# Philips 55PUS7363/12 (TP Vision TPM171E, device PH7M_EU_5596), Europe, 2018 model (label chassis TPM18.1E LA)
+# Android TV 8.0.0 (API 26), firmware TPM171E_R.107.001.143.000 (OC build 4718), security patch 2021-01-05
+# Fingerprint: Philips/PH7M_EU_5596/PH7M_EU_5596:8.0.0/OC/4718:user/release-keys
+# MediaTek MT5891, 1.9 GB RAM, 1920x1080 UI, density 320. Same product and firmware build as debloat.txt.
+#
+# Apply:   TV_HOST=<tv ip> TVINPUT_ALLOW=1 tools/disable.sh examples/philips-55pus7503/debloat-55pus7363.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55pus7503/debloat-55pus7363.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# TVINPUT_ALLOW=1 is only for org.droidtv.usagelogger and org.droidtv.demome, which hold TV_INPUT_HARDWARE.
+# Neither serves an input here: `cmd package query-services -a android.media.tv.TvInputService` lists
+# com.mediatek.tvinput, com.mediatek.agent and VLC only. Run the list without it first if you prefer; the
+# guard then skips those two and disables the rest.
+#
+# Stock launcher: com.google.android.tvlauncher (build-and-install.sh disables it after the new Home runs;
+#                 listed here so the Undo line brings it back)
+# Live TV app:    org.droidtv.playtv (this set has no aerial; live_tv_package was left empty, playtv hidden)
+#
+# Tested: one evening, applied in six batches with a screenshot between them and two reboots; every entry
+# stayed disabled across both. Checked on the TV: replacement Home (resolve-activity and mResumedActivity),
+# the real remote's Home and Source buttons, HDMI 2 from the Inputs pill, Netflix and MagentaTV starting
+# from Home, the built-in Media app opening. Not tested: tuner reception (no aerial), Ambilight, USB playback,
+# Chromecast sending.
+#
+# ADB: USB debugging alone opens TCP 5555. The RSA prompt appeared only after revoking USB debugging
+# authorisations, toggling debugging off and on and a power cycle at the mains (not standby).
+# Closing it: revoke the authorisations, switch USB debugging off and reboot; `tools/adb-closed.py <tv ip>`
+# then reported 5555 closed. Android 8 has no Wireless debugging.
+#
+# Kept on purpose: Chromecast, Google Assistant, firmware updates, Prime Video, Netflix, YouTube,
+# org.droidtv.nettvbrowser (HbbTV handler and browser engine), org.droidtv.eum (the Source button's menu
+# needs it, see README.md), org.droidtv.playtv, org.droidtv.xtv, org.droidtv.GlobalKey, org.droidtv.settings,
+# org.droidtv.tvsystemui, com.mediatek.tvinput, com.mediatek.tunerservice, Ambilight, Play Store.
+# Never start org.droidtv.factory, even to look.
+
+# ACR and analytics (as in debloat.txt)
+tv.inscape.tvclient.inscapeacr                    # Inscape ACR: identifies what is on screen, HDMI included
+org.droidtv.candeebug                             # "DAC" analytics (runs together with org.droidtv.gel)
+org.droidtv.gel                                   # "GEL" analytics
+org.droidtv.tv.frameworklogger                    # Framework and reboot logging
+com.google.android.partnersetup                   # Google Partner Setup: RLZ attribution pings
+com.google.android.feedback                       # Market Feedback Agent
+
+# Philips promotional services and tutorials
+com.google.android.tvtutorials                    # Android TV first-run tutorials
+org.droidtv.nettvrecommender                      # Philips NetTV / Top Picks recommendation row
+org.droidtv.sticker                               # Philips store-demo stickers
+org.droidtv.twittershare                          # Philips Twitter sharing
+org.droidtv.demome                                # Retail demonstration app ("Demo-Menü"); needs TVINPUT_ALLOW=1
+org.droidtv.usagelogger                           # Philips usage and device logging; needs TVINPUT_ALLOW=1
+com.opera.sdk.example                             # Opera TV SDK sample app, the "Webbrowser" tile
+
+# Stock launcher and its recommendation engines, replaced by launcher/
+# Disable the launcher before tvrecommendations: it holds a provider reference into that process.
+com.google.android.tvlauncher
+com.google.android.tvrecommendations              # Android TV recommendations/content rows
+com.google.android.leanbacklauncher.recommendations
+
+# This set has these off; uncomment the ones you don't use.
+# org.droidtv.amazonalexa                         # Alexa
+# com.google.android.videos                       # Google Play Movies & TV
+# com.google.android.music                        # Google Play Music
+# com.google.android.play.games                   # Google Play Games
+
+# NetTV app gallery ("Philips TV Collection") and its web apps. This set has them off: the owner moved to
+# Play Store apps. Take all of them or none: the web apps (ARD Mediathek among them) open through
+# nettv_launcherapp, and on a 65PUS8602 ARD came back only with all four store packages enabled and a reboot
+# (examples/philips-65pus8102/debloat-65pus8602.txt). Restoring them needs one reboot.
+# org.droidtv.nettv.market                        # "Philips TV Collection" app gallery
+# org.droidtv.nettvapps                           # Gallery's preload installer
+# org.droidtv.nettv_launcherapp                   # Opens the NetTV web apps
+# org.droidtv.nettvregistration                   # Philips account registration for NetTV
+# org.droidtv.nettvapp3093                        # ARD Mediathek (NetTV web app)
+# org.droidtv.nettvapp4836                        # Social TV (NetTV web app)
+# org.droidtv.nettvapp5118                        # NetTV web app (N24 tile)
+
+# Off on this set, only partly tested: the built-in Media app still opens without it, USB playback was
+# not tried. Other Philips boards bind it from the Media app (examples/philips-55oled708).
+# org.droidtv.dlna                                # DLNA/UPnP server and renderer (process org.droidtv.upnp)
