@@ -55,7 +55,9 @@ Some notes on the numbers:
 
 Tools: [`tools/trace.py` and `tools/trace_report.py`](../../tools/trace.md),
 [`tools/flamechart.py`](../../tools/flamechart.md) and [`tools/screendiff.py`](../../tools/screendiff.md).
-Install them once:
+For a change meant to free memory, [`tools/hprof_bitmaps.py`](../../tools/hprof_bitmaps.py) lists the bitmaps in a
+heap dump of a debug build (`am dumpheap -g`), largest first, with what holds each one: run it before and after.
+Install the others once:
 
 ```bash
 tools/venv/bin/pip install -r tools/requirements-perf.txt
