@@ -42,7 +42,9 @@ Keys: `input_action`, `input_sources`, the `source_panel_service` / `source_pane
 
 Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
 [`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
-`adb_shell` the suite imports - under the system `python3` those checks skip and the run still says OK.
+`adb_shell` the suite imports - under the system `python3` those checks skip and the run still says OK. The
+picture, card and wallpaper checks need Pillow as well: `tools/requirements-perf.txt` adds it, and without it
+they are reported as skips, not failures.
 
 An `input_sources` entry is held by `tests/test_manage_set_input_sources.py`: `tools/manage.py`'s `set` refuses
 one the launcher would skip (`InputSources.mapped()`: no `=`, the `=` first, a `/` in the left half, a right half
