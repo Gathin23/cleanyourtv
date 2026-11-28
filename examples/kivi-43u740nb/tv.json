@@ -1,0 +1,6 @@
+{
+  "tv": "KIVI 43U740NB (MTC, bangbae, MediaTek m7322), Ukraine",
+  "os": "Android TV 11",
+  "brand": "KIVI",
+  "notes": "First KIVI list, same MTC board and firmware build as [marq-4k-android-tv](marq-4k-android-tv/): Anoki ACR, Google feedback/partnersetup/recommendations, the JVC autoinstall config, MStar disclaimer, data saver, Play Games, calendar and printing; streaming apps (MEGOGO, SWEET.TV, KIVI Media, Prime), Assistant, Chromecast and the preloads left as comments; `fusion.android.tv.demo` kept (Input key and remote pairing), setupwraith owns the saved Wi-Fi so it stays; reference launcher installed, every remote button works with no key service; reboot-checked"
+}

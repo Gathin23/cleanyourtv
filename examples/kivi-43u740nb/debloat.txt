@@ -1,0 +1,75 @@
+# KIVI 43U740NB (KIVI 4K Android TV, built by MTC, codename bangbae, MediaTek m7322), Android TV 11 (API 30),
+# firmware RTO8.260427.001, security patch 2025-11-01, 1.3 GB RAM, 1920x1080. Ukrainian unit.
+# Fingerprint: KIVI/MTCMSD6886EU_KIVI/bangbae:11/RTO8.260427.001/15299243:user/release-keys
+# Same MTC board and build family as examples/eko-4k-bangbae, examples/marq-4k-android-tv (same firmware build)
+# and examples/hitachi-65qledsm20.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/kivi-43u740nb/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/kivi-43u740nb/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: Developer options > USB debugging on is enough to open port 5555 (the "Allow USB debugging?" prompt
+# appears on the first connection); Wireless debugging is off and was left off. To close it afterwards:
+# Developer options > Revoke USB debugging authorisations, USB debugging off, restart the TV; then
+# tools/adb-closed.py <tv ip> reported 5555 refused.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home, HOME priority 2; the restore.sh
+# default). The only other HOME claimant is com.android.tv.settings/.system.FallbackHome; setupwraith does not
+# claim HOME. setupwraith owns saved Wi-Fi networks on this set (dumpsys wifi, cname=), so it is not in this
+# list: leave it alone. Live TV: com.mediatek.wwtv.tvcenter.
+# TV inputs (com.mediatek.tvinput): HDMI 1-4 = HW4-HW7, AV = HW1 (composite), tuners = HW0, HW8.
+#
+# KEEP, even though the names look like bloat (as on the other bangbae sets):
+# - fusion.android.tv.demo ("MtcRetailDisplay"): the remote's Input button and Bluetooth remote pairing.
+# - com.google.android.leanbacklauncher.partnercustomizer: widget provider com.mediatek.tv.service needs.
+# - com.mediatek.testpq: applies picture settings at boot.
+# - com.mediatek.mtc.factory, mediatek.factorymenu.ui: never launch either, never disable.
+# - com.mediatek.wwtv.setupwizard (BT remote pairing), com.airoha.btd (the remote's firmware updater; it has
+#   a launcher tile, so hide it with hidden_apps rather than disabling it), com.mediatek.*.
+# - No separate firmware-update package on this build.
+# Off from the factory already: com.cltv.fast (Anoki FAST channels) and com.google.android.marvin.talkback.
+#
+# Notes from this TV (2026-11-28, every batch checked with screenshots):
+# - Restarted twice with the list applied: every package stayed disabled, Home stayed the reference launcher
+#   (launcher/), Wi-Fi came back on its own. At power-on the TV lands on Home, not Live TV.
+# - All seven hardware inputs still registered after the restart, and Live TV opens.
+# - With com.google.android.tvlauncher disabled, the real remote's Input, Netflix, YouTube, Settings, Home and
+#   Back buttons all work and a held volume key ramps, with no key service enabled.
+# - Stock adb on macOS fails with "No route to host" (Local Network privacy); tools/tv.py works.
+# - Free RAM before debloating: about 530 MB.
+
+# Telemetry, ads and recommendation rows
+tv.anoki.acr.controller                       # Anoki automatic content recognition, persistent, starts at boot
+com.google.android.feedback
+com.google.android.partnersetup               # partner attribution
+android.autoinstalls.config.JVC               # Play Auto Install config: partner apps pushed after setup
+com.google.android.tvrecommendations          # recommendation rows on the stock home
+com.mstar.android.tv.disclaimercustomization  # store disclaimer screens
+com.google.android.apps.nbu.smartconnect.tv   # data-saver VPN service and data meter
+
+# Background services and Google extras
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.printspooler
+
+# This set has these off by the owner's choice; uncomment the ones you don't use.
+# com.google.android.backdrop                 # Ambient screensaver; with launcher/ installed, point the screensaver at
+#                                             # its clock: settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+# com.google.android.youtube.tvmusic          # YouTube Music
+# com.google.android.katniss                  # Google Assistant: the remote's mic button stops working
+# com.google.android.apps.mediashell          # Chromecast built-in
+# com.amazon.amazonvideo.livingroom           # Prime Video
+# com.megogo.application                      # MEGOGO (preloaded)
+# tv.sweet.tvplayer                           # SWEET.TV (preloaded)
+# kivi.media                                  # KIVI Media: KIVI's content portal, phone login, usage-stats access, launcher rows
+# com.tvwebbrowserpaid.v22                    # TV Web Browser (preloaded)
+# com.hitv.explore                            # HiTV Explore (preloaded)
+# org.liskovsoft.androidtv.rukeyboard         # layouts for a physical keyboard; Gboard stays the on-screen keyboard
+#
+# These two are flagged by disable.sh's TV-input check (TV_INPUT_HARDWARE, a preview input service), but on this
+# set neither serves a hardware input: pm query-services -a android.media.tv.TvInputService lists only
+# com.mediatek.tvinput for HDMI, AV and the tuners. Uncommented, they need TVINPUT_ALLOW=1; with both off,
+# every input still registered after a restart.
+# org.videolan.vlc                            # VLC (preloaded)
+# com.mediatek.wwtv.mediaplayer               # USB photo and video player
