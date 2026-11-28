@@ -28,7 +28,9 @@
 #   com.google.android.apps.mediashell, com.mitv.milinkservice, com.xiaomi.mitv.smartshare,
 #   com.xiaomi.wfdsinkhelperservice                Chromecast, Mi Cast and Miracast, kept by owner's choice
 #   com.google.android.katniss                     voice assistant, kept by owner's choice
-#   com.xiaomi.mitv.updateservice                  firmware updates
+#   com.xiaomi.mitv.updateservice                  firmware updates. It also reinstalls PatchWall in the
+#                                                  background, which turns it back on (seen 27 Nov 2026):
+#                                                  docs/TROUBLESHOOTING.md, "PatchWall is back at power-on"
 #   com.xiaomi.mitv.mediaexplorer, com.mitv.videoplayer   the USB media player
 #
 # The remote's PatchWall button arrives from "Xiaomi RC Consumer Control" as KEY_WWW (scancode 150, HID usage
