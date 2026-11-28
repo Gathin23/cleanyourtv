@@ -46,6 +46,23 @@
 #   YouTube, and BUTTON_7 and scan:207 TrueID TV (com.truedmp.idtv), the app that unit's owner put on the button,
 #   while HomeKeyService answers ALL_APPS so the Apps button opens Home. The config.json at the folder's root,
 #   from another unit, is the one that points BUTTON_7 at Prime Video. See README.md.
+#
+# A third unit, same firmware (V816.0.11.0.UZFAABX), one evening and one reboot (2026-11-27), applied this list
+# with YouTube Music, Assistant, Chromecast, Miracast/Mi share and the updater kept, plus the Privacy Sandbox
+# group below. Disney+ and HBO Max were not installed on it.
+# - Its only saved Wi-Fi network belonged to setupwraith. Forgotten and re-joined in Settings it became
+#   android.uid.system:1000, and Wi-Fi and ADB stayed up when setupwraith was disabled.
+# - After the reboot, `pm list packages -d` matched what was disabled, and the first activity resumed at boot was
+#   the new launcher's (logcat -b events, wm_set_resumed_activity): no Live TV at power-on.
+# - Remote, with launcherx off and partnercustomizer enabled: Netflix (BUTTON_6, scan 416) and Prime Video
+#   (BUTTON_7, scan 207) still opened their apps with no app_keys and no key helper; logcat showed the
+#   NETFLIX_KEY_START and AMAZON_BUTTON intents. YouTube (BUTTON_3, scan 425) and Apps (ALL_APPS, scan 216) did
+#   nothing. HomeKeyService with app_keys KEYCODE_BUTTON_3 and scan:425 to YouTube and KEYCODE_ALL_APPS:home
+#   brought both back, checked with the physical remote. Each YouTube press then logged two START lines about
+#   40 ms apart but displayed YouTube once.
+# - A held D-pad key still repeated with HomeKeyService filtering keys (held Down ran to the end of a Settings list).
+# - Re-joining Wi-Fi switched Wireless debugging off (adb_wifi_enabled 1 -> 0), yet port 5555 kept answering,
+#   across a reboot too, while USB debugging stayed on: switch USB debugging off as well when you are done.
 
 # Telemetry and feedback
 com.miui.tv.analytics
