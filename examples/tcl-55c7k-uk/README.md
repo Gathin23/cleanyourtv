@@ -396,3 +396,48 @@ operation. The cause was not established; this is not evidence of long-term YouT
 Later personal launcher/screensaver extensions are outside this reference-launcher report; the
 owner's follow-up covers that customized setup, not several days running an unmodified reference
 launcher.
+
+## Compatibility report: TCL 55C7K, Ethernet
+
+TCL 55C7K QD-Mini LED, model "Smart TV Pro", device `G08`, product `G08_4K_GB`, MediaTek `tcl9618` / `mt5896`,
+Google TV 14 (SDK 34), firmware `UTT2.250416.001 AU02` with the newer TCL software `V8-T653T01-LF1V643` (client
+type `TCL-EU-MT9653-S1`, security patch 5 December 2025), 32-bit only (`armeabi-v7a,armeabi`), on its built-in
+Ethernet port with Wi-Fi switched off. Set up on 28 November 2026 in one session from Windows with the PowerShell
+twins: 23 of this list's 32 entries in three batches with screenshots and the Input button's source panel checked
+between them, plus `com.android.adservices.api`, `com.android.federatedcompute.services` and
+`com.android.ondevicepersonalization.services` as on the 50C71K, and the preinstalled iQIYI (`com.iqiyi.i18n.tv`)
+and Google TV / Play Movies (`com.google.android.videos`) apps the owner does not use. Then setupwraith, the
+launcher (built locally with JDK 21, installed with `-HomeKeyService -RestoreKeyServices`) and dreamx once the
+screensaver was switched to `com.gathin.tvhome/.ClockDream`.
+
+**Different choices from the UK unit:** `com.tcl.ttvs` kept, for firmware updates. Also kept: Assistant
+(`katniss`), YouTube, YouTube Music, Prime Video, Chromecast, AirPlay, Miracast, MagiConnect/T-Cast, the game bar,
+the USB media player and gallery, T-Solo and the soundbar updater. Netflix (both packages) disabled.
+
+- **Two reboots**: after the three batches every package stayed disabled; after the launcher handover all
+  packages from the five batches plus launcherx were still disabled, Home came back as
+  `com.gathin.tvhome/.MainActivity`, `HomeKeyService` was bound again, the Clock screensaver was still set and the
+  TV was back on Ethernet.
+- **setupwraith owned the saved Wi-Fi networks** (`cname=com.google.android.tungsten.setupwraith`). The set is
+  wired and its Wi-Fi was off, so the owner agreed to lose them and it was disabled with `FORCE_SETUPWRAITH=1`;
+  Ethernet and ADB stayed up.
+- **No Samba TV on this unit**: `pm list features` has no `com.tcl.software.sambatv_acr`, `tv.samba.ssm.ui` is not
+  installed and no `SambaVideoService` runs. `ttvs` still runs TCL's own `BIService`, `TrackDataService`,
+  `UsagestService` and `IdentifierService` next to T-Cast and the updater.
+- **Remote** `BT_RC833A_B5`: every app button sends scancode 240 and shows as `KEY_UNKNOWN` in `getevent`; the
+  keycode is only in `logcat` (`TclKeyLayoutMap: mapKey ... usageCode=... ~ Result keyCode=...`), not in the
+  remote's `Vendor_0417_Product_0304.kl`. Netflix is 4062 (usage `0x0c0051`), Disney+ 4141 (`0x0c004d`), TCL
+  Channel 4020 (`0x0c0053`) and the blue film-strip button 4057 (`0x0c0058`, TCL's USB media player). With
+  `HOME_KEY_SERVICE` and `settings_key_keycodes` 83, `app_keys` `190:` SmartTube, `4099:` Prime Video,
+  `4020:com.tcl.ui_mediaCenter` and `4057:input:com.tcl.tvinput/.TvPassThroughService/HW15` all worked on the
+  real remote. `HW15` is HDMI 1 here (`dumpsys tv_input` lists it with `hdmi_port=1`). Disney+ kept opening
+  Disney+ by itself with launcherx off.
+- **Inputs**: TCL's source panel (`com.tcl.suspension`) kept opening after every batch; its TCL Channel and User
+  Guide shortcuts still show with `com.tcl.channelplus` and `com.tcl.ocean.instructions` disabled, as on the
+  85C81K.
+- **Google TV Remote protocol**: the phone-remote service was left alone, and a Home Assistant Android TV Remote
+  integration kept seeing the set and reported `com.gathin.tvhome` as the current app.
+- `wm size` shows the same factory override of 1920x1080, density 320.
+
+The held-volume behaviour with the helper bound was not measured on this unit. This is a single-session
+compatibility report, not several days with the list.
