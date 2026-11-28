@@ -8,6 +8,8 @@ that can sort itself. Everything new is off unless a theme or `config.xml` turns
 
 What changed, release by release: [CHANGELOG.md](CHANGELOG.md).
 
+![Home on the Streamer: Prime Video's Continue watching cards above the dock, the weather beside the top buttons and the chevron under the dock](docs/fork/home.jpg)
+
 ## What it adds
 
 | Key | What it does | From |
