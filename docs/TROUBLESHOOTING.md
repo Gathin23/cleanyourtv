@@ -2581,6 +2581,19 @@ drops every packet until the VPN is up, and a TV whose app fails to start stays 
 that says why. Undo:
 `tools/tv.py 'settings delete secure always_on_vpn_app; settings delete secure always_on_vpn_lockdown'`.
 
+Always-on can still lose the app at boot for another reason: the app keeps a file open on shared storage while
+Android unmounts it. Seen with personalDNSfilter (1.50.61.5, local VPN, always-on) on a Xiaomi TV Box S 3rd
+gen (MiTV-AFMU0, Google TV 14, `V816.0.11.0.UZFAABX`, 1.9 GB). The box mounts `/storage/emulated` at boot,
+then unmounts and mounts it again around `BOOT_COMPLETED`, and before the unmount vold kills every process that
+holds a file there open: `vold: Found symlink /proc/<pid>/fd/<n> referencing
+/storage/emulated/0/Android/data/<package>/...`, then `Process <package> (pid <pid>) has died`. Here the file
+was the app's DNS traffic log (`.../log/trafficlog/trafficlog_0.log`). It was killed three times in 16 s and
+did not come back: no process, no `tun0`, and the TV ran unfiltered. With the traffic log off
+(`enableTrafficLog = false` in its `dnsfilter.conf`) vold no longer killed it, and the VPN came up on every
+later reboot. Right after a reboot, `tools/tv.py 'logcat -d -b all' | grep -E 'Found symlink|has died'` shows
+whether this is what happened. An app that keeps a file open under `Android/data` while the TV boots can be
+killed the same way.
+
 ## The home screen reads about 40 ms and every tuning change lands inside the noise
 
 **Seen on:** the Wanbo X5 Pro's built-in stick (`4K Google TV Stick`, Skyworth `HP4609-Skyworth`,
