@@ -1,6 +1,5 @@
 package com.gathin.tvhome;
 
-import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -577,15 +576,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             clockRow.addOnLayoutChangeListener(centerGreeting);
         }
         btnWifi = findViewById(R.id.btnWifi);
-        shamsiDate = findViewById(R.id.shamsiDate);
         stats = findViewById(R.id.stats);
         raceCalendar = cfg.raceCalendar;
-        racePanel = findViewById(R.id.racePanel);
-        raceKicker = findViewById(R.id.raceKicker);
-        raceHeadline = findViewById(R.id.raceHeadline);
-        raceSessions = findViewById(R.id.raceSessions);
-        raceBar = findViewById(R.id.raceBar);
-        racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
@@ -593,22 +585,49 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         inputsConnectedOnly = cfg.inputsConnectedOnly;
         inputsCecStateOnly = cfg.inputsCecStateOnly;
         shamsi = cfg.shamsiDate;
-        lunarDate = findViewById(R.id.lunarDate);
         lunar = cfg.lunarDate;
         lunarOffset = Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault());
-        if (lunar) lunarDate.setVisibility(View.VISIBLE);
+        boolean rtlHeader = getResources().getBoolean(R.bool.rtl_menu_bar);
+        if (shamsi || lunar) {
+            TextView date = findViewById(R.id.date);
+            LinearLayout dateCol = (LinearLayout) date.getParent();
+            android.graphics.Typeface reg = UiFont.get(this, R.string.font_regular);
+            int grav = rtlHeader ? Gravity.RIGHT : Gravity.LEFT;
+            if (shamsi) {
+                shamsiDate = new TextView(this);
+                shamsiDate.setGravity(grav);
+                shamsiDate.setSingleLine(true);
+                shamsiDate.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                shamsiDate.setTextColor(0xE6FFFFFF);
+                shamsiDate.setTextSize(17f);
+                shamsiDate.setTypeface(reg);
+                shamsiDate.setLetterSpacing(0.02f);
+                shamsiDate.setIncludeFontPadding(false);
+                dateCol.addView(shamsiDate, 0, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                date.setTextSize(11f);
+                date.setPadding(0, (int) (4 * density), 0, 0);
+            }
+            if (lunar) {
+                lunarDate = new TextView(this);
+                lunarDate.setGravity(grav);
+                lunarDate.setSingleLine(true);
+                lunarDate.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                lunarDate.setTextColor(0x80FFFFFF);
+                lunarDate.setTextSize(shamsi ? 11f : 14f);
+                lunarDate.setTypeface(reg);
+                lunarDate.setLetterSpacing(0.14f);
+                lunarDate.setAllCaps(true);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.topMargin = Math.round(4 * density);
+                dateCol.addView(lunarDate, lp);
+            }
+        }
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
-        if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
-                && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
+        if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu && !rtlHeader) {
             alignDateBelowIconsWithClock();
-        }
-        if (shamsi) {
-            shamsiDate.setVisibility(View.VISIBLE);
-            TextView date = findViewById(R.id.date);
-            date.setTextSize(11f);
-            lunarDate.setTextSize(11f);
-            date.setPadding(0, (int) (4 * density), 0, 0);
         }
         vpnApp = cfg.vpnApp;
         vpnPill = cfg.vpnPill && !cfg.topMenu;
@@ -619,6 +638,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         grid = findViewById(R.id.grid);
         rtlAppGrid = getResources().getBoolean(R.bool.rtl_app_grid);
+        final int rowsBelowDock = cfg.rowsBelowDock;
+        final boolean dockTitle = cfg.dockTitle;
+        final boolean alwaysShowNames = cfg.alwaysShowNames;
         // Mirror only the app grid; the header and other locales keep their own layouts.
         // single_row: one span laid out sideways, so the same adapter, glass and dock band serve a scrolling row.
         grid.setLayoutManager(new GridLayoutManager(this, singleRow ? 1 : COLUMNS,
@@ -626,6 +648,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             protected boolean isLayoutRTL() {
                 return rtlAppGrid;
+            }
+
+            @Override
+            public void onMeasure(@NonNull RecyclerView.Recycler recycler, @NonNull RecyclerView.State state,
+                                  int widthSpec, int heightSpec) {
+                int w = View.MeasureSpec.getSize(widthSpec), h = View.MeasureSpec.getSize(heightSpec);
+                if (w > 0 && h > 0) {
+                    updateGridPadding(w, h, rowsBelowDock, dockTitle, alwaysShowNames, appLibraryEnabled);
+                }
+                super.onMeasure(recycler, state, widthSpec, heightSpec);
             }
 
             /**
@@ -683,7 +715,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View v) {
-                v.setAlpha(tileAlpha(grid.getChildAdapterPosition(v)));
+                if (reordering || v.getAlpha() != 1f) {
+                    v.setAlpha(tileAlpha(grid.getChildAdapterPosition(v)));
+                }
             }
 
             @Override
@@ -707,34 +741,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // tvOS layout: push the dock row towards the bottom of the screen, leaving room for
         // rows_below_dock grid rows under it; the rest of the grid stays below until you press Down.
-        int rowsBelowDock = cfg.rowsBelowDock;
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            int h = b - t;
-            // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
-            int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
-            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow, density);
-            int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
-            int dockRow = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);   // item height plus DockDecoration offsets
-            int gridRows = itemH * rowsBelowDock;
-            // Keep the hero below the header when the library is enabled on a short screen,
-            // even when the theme requests an extra visible row below the dock.
-            int shelfClearance = cfg.appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
-            int want = Math.max(shelfClearance, h - dockRow - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
-            // Where the rows cannot fit even at the smallest tile (3 rows with the title on), the title keeps its
-            // room above the dock and the last rows run off the bottom instead of the title drawing over the clock.
-            if (MainActivity.this.dockRow && cfg.dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
-            // No dock to push down: the grid starts at the top, with room for the first row's zoom and glass.
-            if (!MainActivity.this.dockRow) want = (int) (AppAdapter.TOP_ROOM_DP * density);
-            // A single row never shows the names under its tiles (the title above the row names the app), so the
-            // 7dp gap and 22dp label item_app.xml keeps for them would only lift the row: sit it that much lower.
-            if (singleRow && !cfg.alwaysShowNames) want += (int) (29 * density);
-            if (grid.getPaddingTop() != want) {
-                grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
-                // A vertical grid parks the dock on the new padding line by scrolling (onTileFocused); a sideways
-                // row cannot scroll vertically, and the layout request made from inside this layout pass is
-                // dropped, so lay the row out again on the next frame. The glass and the title were placed for the
-                // old position, so fit them again once it has moved.
-                if (singleRow) grid.post(() -> {
+            if (updateGridPadding(r - l, b - t, rowsBelowDock, dockTitle, alwaysShowNames, appLibraryEnabled) && singleRow) {
+                grid.post(() -> {
                     grid.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
@@ -790,6 +799,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                    if (racePanel == null) return;
                     int shift = rv.canScrollVertically(-1) ? rv.computeVerticalScrollOffset() : 0;
                     racePanel.setTranslationY(-shift);
                     int room = Math.max(1, racePanel.getTop() - clockBlock.getBottom());
@@ -1051,6 +1061,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         getWindow().getDecorView().post(() -> {
             if (!isFinishing() && !isDestroyed()) onLibraryRequested();
         });
+        return true;
+    }
+
+    private boolean updateGridPadding(int w, int h, int rowsBelowDock, boolean dockTitle, boolean alwaysShowNames, boolean appLibrary) {
+        int inner = w - grid.getPaddingLeft() - grid.getPaddingRight();
+        int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, dockTitle, dockRow, density);
+        int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
+        int dockRowH = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);
+        int gridRows = itemH * rowsBelowDock;
+        int shelfClearance = appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
+        int want = Math.max(shelfClearance, h - dockRowH - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
+        if (dockRow && dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
+        if (!dockRow) want = (int) (AppAdapter.TOP_ROOM_DP * density);
+        if (singleRow && !alwaysShowNames) want += (int) (29 * density);
+        if (grid.getPaddingTop() == want) return false;
+        grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
         return true;
     }
 
@@ -2050,7 +2076,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * the grid stay readable over the artwork. One small bitmap stretched over the screen, like the glow.
      */
     private Drawable scrimDrawable() {
-        int w = 480, h = 270;
+        int w = 128, h = 72;
         Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
         boolean rtl = getResources().getBoolean(R.bool.rtl_menu_bar);
@@ -2063,6 +2089,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 Shader.TileMode.CLAMP));
         canvas.drawRect(0, 0, w, h, paint);
         BitmapDrawable scrim = new BitmapDrawable(getResources(), bmp);
+        scrim.setFilterBitmap(true);
         scrim.setGravity(Gravity.FILL);
         return scrim;
     }
@@ -2157,8 +2184,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambientColor = color;
         BitmapDrawable glow = (BitmapDrawable) ambient.getBackground();
         if (glow == null) {
-            int w = 480;
-            int h = 270;
+            int w = 128;
+            int h = 72;
             Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bmp);
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -2193,6 +2220,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             canvas.drawRect(0, 0, w, h, paint);
             glow = new BitmapDrawable(getResources(), bmp);
+            glow.setFilterBitmap(true);
             glow.setGravity(Gravity.FILL);
             ambient.setBackground(glow);
         }
@@ -2209,7 +2237,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         ambient.animate().alpha(1f).setDuration(180).start();
-        ambientAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), ambientColor, color);
+        ambientAnimator = ValueAnimator.ofArgb(ambientColor, color);
         ambientAnimator.setDuration(360);
         ambientAnimator.addUpdateListener(animation -> setAmbient((int) animation.getAnimatedValue()));
         ambientAnimator.start();
@@ -2840,9 +2868,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RaceWeekend.State f1 = raceCalendar.isEmpty() ? null : RaceWeekend.at(raceCalendar, java.time.Instant.ofEpochMilli(now));
         List<GameDay.Turn> turns = GameDay.merge(games, f1, now);
         if (turns.isEmpty()) {
-            racePanel.setVisibility(View.GONE);
+            if (racePanel != null) racePanel.setVisibility(View.GONE);
             return;
         }
+        ensureRacePanel();
         int seconds = gameDay.turnSeconds();
         long since = SystemClock.elapsedRealtime() - rotationStart;
         int on = GameDay.current(turns.size(), since, seconds);
@@ -2897,12 +2926,90 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         racePager.setVisibility(View.VISIBLE);
     }
 
+    private void ensureRacePanel() {
+        if (racePanel != null) return;
+        boolean rtl = getResources().getBoolean(R.bool.rtl_menu_bar);
+        android.graphics.Typeface med = UiFont.get(this, R.string.font_medium);
+        LinearLayout panel = new LinearLayout(this);
+        panel.setOrientation(LinearLayout.VERTICAL);
+        panel.setFocusable(false);
+        panel.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        if (rtl) panel.setGravity(Gravity.RIGHT);
+        FrameLayout.LayoutParams plp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP | (rtl ? Gravity.RIGHT : Gravity.LEFT));
+        int side = Math.round(60 * density);
+        if (rtl) plp.setMarginEnd(side);
+        else plp.setMarginStart(side);
+        plp.topMargin = Math.round(158 * density);
+
+        LinearLayout top = new LinearLayout(this);
+        top.setOrientation(LinearLayout.HORIZONTAL);
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        raceBar = new View(this);
+        raceBar.setBackgroundResource(R.drawable.race_bar);
+        LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(Math.round(3 * density), Math.round(13 * density));
+        if (rtl) blp.setMarginStart(Math.round(10 * density));
+        else blp.setMarginEnd(Math.round(10 * density));
+        raceKicker = new TextView(this);
+        raceKicker.setSingleLine(true);
+        raceKicker.setTextColor(0xB3FFFFFF);
+        raceKicker.setTextSize(12f);
+        raceKicker.setTypeface(med);
+        raceKicker.setLetterSpacing(0.22f);
+        raceKicker.setAllCaps(true);
+        if (rtl) {
+            top.addView(raceKicker);
+            top.addView(raceBar, blp);
+        } else {
+            top.addView(raceBar, blp);
+            top.addView(raceKicker);
+        }
+        panel.addView(top, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        raceHeadline = new TextView(this);
+        raceHeadline.setSingleLine(true);
+        raceHeadline.setTextColor(0xFFFFFFFF);
+        raceHeadline.setTextSize(34f);
+        raceHeadline.setTypeface(UiFont.get(this, R.string.font_light));
+        raceHeadline.setLetterSpacing(-0.01f);
+        raceHeadline.setIncludeFontPadding(false);
+        LinearLayout.LayoutParams hlp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        hlp.topMargin = Math.round(8 * density);
+        panel.addView(raceHeadline, hlp);
+
+        raceSessions = new TextView(this);
+        raceSessions.setSingleLine(true);
+        raceSessions.setTextColor(0x99FFFFFF);
+        raceSessions.setTextSize(12f);
+        raceSessions.setTypeface(med);
+        raceSessions.setLetterSpacing(0.12f);
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        slp.topMargin = Math.round(12 * density);
+        panel.addView(raceSessions, slp);
+
+        racePager = new LinearLayout(this);
+        racePager.setOrientation(LinearLayout.HORIZONTAL);
+        racePager.setVisibility(View.GONE);
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dlp.topMargin = Math.round(12 * density);
+        panel.addView(racePager, dlp);
+
+        root.addView(panel, root.indexOfChild(ambient) + 1, plp);
+        racePanel = panel;
+    }
+
     private void updateRace() {        // an empty calendar (a theme without race_calendar, or a reset) hides a panel the last theme showed
         RaceWeekend.State s = raceCalendar.isEmpty() ? null : RaceWeekend.at(raceCalendar, java.time.Instant.now());
         if (s == null) {
-            racePanel.setVisibility(View.GONE);
+            if (racePanel != null) racePanel.setVisibility(View.GONE);
             return;
         }
+        ensureRacePanel();
         RaceWeekend.Race race = s.race;
         raceKicker.setText(race.place.isEmpty()
                 ? getString(R.string.race_kicker_no_place, race.round, race.shortName())
