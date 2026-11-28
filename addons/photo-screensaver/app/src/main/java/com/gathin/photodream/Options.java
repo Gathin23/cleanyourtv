@@ -16,6 +16,7 @@ final class Options {
     static final String ANIMATION = "animation";
     static final String SECONDS_PER_PICTURE = "seconds_per_picture";
     static final String IDLE_MINUTES = "idle_minutes";
+    static final String SHUFFLE = "shuffle";
 
     static final int DEFAULT_IDLE_MINUTES = 10;
 
@@ -28,6 +29,7 @@ final class Options {
     final boolean animation;
     final int secondsPerPicture;
     final int idleMinutes;
+    final boolean shuffle;
 
     Options(SharedPreferences p, File dir) {
         clock = p.getBoolean(CLOCK, false);
@@ -40,6 +42,7 @@ final class Options {
         secondsPerPicture = p.getInt(SECONDS_PER_PICTURE,
                 Media.seconds(Photos.read(dir == null ? null : new File(dir, Media.SECONDS))));
         idleMinutes = p.getInt(IDLE_MINUTES, DEFAULT_IDLE_MINUTES);
+        shuffle = p.getBoolean(SHUFFLE, false);
     }
 
     static SharedPreferences preferences(Context context) {

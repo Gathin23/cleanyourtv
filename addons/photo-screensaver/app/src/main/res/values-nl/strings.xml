@@ -10,6 +10,7 @@
     <string name="option_clock_fades">Tijd kort tonen bij elke foto</string>
     <string name="option_dates">Tonen wanneer een foto is gemaakt (maand en jaar)</string>
     <string name="option_animation">Ken Burns-animatie (zoom en drift)</string>
+    <string name="option_shuffle">Willekeurig: elke ronde een nieuwe volgorde</string>
     <string name="option_prints">Drie afdrukken in plaats van schermvullend (geen clips)</string>
     <string name="option_sky">Lucht die meekleurt met het tijdstip achter de afdrukken</string>
     <string name="option_weather">Het weer tonen (heeft de locatie van de TV nodig)</string>
