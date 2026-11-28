@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 /**
  * Sends the remote's Home button to this launcher on remotes that emit KEYCODE_ALL_APPS for Home
@@ -72,6 +73,8 @@ public class HomeKeyService extends AccessibilityService {
     private final Set<String> stockHome = new HashSet<>();
     /** stock_home_redirect, the stock launcher's package. */
     private String stockHomePackage = "";
+    /** That package declares no HOME activity, so stockHome holds only its name and any of its activities counts. */
+    private boolean stockHomeAny;
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -209,6 +212,10 @@ public class HomeKeyService extends AccessibilityService {
             for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
                 stockHome.add(ri.activityInfo.name);
             }
+            // A vendor home that never claims HOME and is started by its own firmware (Xiaomi's PatchWall, which
+            // Xiaomi's updater turns back on by installing an update over it): any of its activities counts.
+            stockHomeAny = stockHome.isEmpty();
+            if (stockHomeAny) stockHome.add(stockHomePackage);
         }
         // power_on_home, off by default. Not with boot_to_live_tv, or with Live TV picked as the Open on start app:
         // those open Live TV on purpose at boot.
@@ -340,22 +347,41 @@ public class HomeKeyService extends AccessibilityService {
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
         CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) {
+        CharSequence pkg = event.getPackageName();
+        if (isStockHomeWindow(stockHome, stockHomeAny, cls, () -> isStockActivity(pkg, cls))) {
             redirectFromStockHome();
-        } else if (!isOwnHome(event.getPackageName(), cls) && !isStockHomePanel(event.getPackageName(), cls)) {
+        } else if (!isOwnHome(pkg, cls) && !isStockHomePanel(pkg, cls)) {
             // Any other window (an app, a panel, the quick panel): the person moved on, so no second look.
             otherWindowSinceRedirect = true;
         }
     }
 
+    /**
+     * stock_home_redirect: the window is the stock home. Its HOME activities by class name; with stockHomeAny (a package
+     * that declares none), any activity of the package, asked only then, so a toast or dialog it shows never counts.
+     */
+    static boolean isStockHomeWindow(Set<String> stockHome, boolean any, CharSequence cls, BooleanSupplier stockActivity) {
+        if (stockHome.isEmpty() || cls == null) return false;
+        return any ? stockActivity.getAsBoolean() : stockHome.contains(cls.toString());
+    }
+
     /** A view or dialog of the stock launcher, not one of its activities: its home screen is still what is in front. */
     private boolean isStockHomePanel(CharSequence pkg, CharSequence cls) {
+        return pkg != null && cls != null && stockHomePackage.contentEquals(pkg) && !isStockActivity(pkg, cls);
+    }
+
+    /**
+     * An activity of the stock launcher's package. Disabled components count: PatchWall starts through an enabled
+     * activity-alias whose target activity is itself a disabled component.
+     */
+    private boolean isStockActivity(CharSequence pkg, CharSequence cls) {
         if (pkg == null || cls == null || !stockHomePackage.contentEquals(pkg)) return false;
         try {
-            getPackageManager().getActivityInfo(new ComponentName(stockHomePackage, cls.toString()), 0);
-            return false;
-        } catch (PackageManager.NameNotFoundException notAnActivity) {
+            getPackageManager().getActivityInfo(new ComponentName(stockHomePackage, cls.toString()),
+                    PackageManager.MATCH_DISABLED_COMPONENTS);
             return true;
+        } catch (PackageManager.NameNotFoundException notAnActivity) {
+            return false;
         }
     }
 
