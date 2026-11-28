@@ -49,6 +49,14 @@ final class Timer {
         am.cancel(pending(ctx, ACTION_SLEEP));
     }
 
+    /** After a reboot the alarms are gone: arm them again for a timer that has not ended. */
+    static void restore(Context ctx) {
+        long end = prefs(ctx).getLong("end", 0);
+        if (end <= System.currentTimeMillis()) return;
+        schedule(ctx, ACTION_WARN, Math.max(System.currentTimeMillis(), end - WARN_MS));
+        schedule(ctx, ACTION_SLEEP, end + 2_000);
+    }
+
     /** Ends the timer and puts the TV to sleep. False when the accessibility service is off. */
     static boolean sleepNow(Context ctx) {
         cancel(ctx);
