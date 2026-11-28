@@ -56,12 +56,15 @@ so there is no tested debloat list for this set.
 - Google Play stack was already present with the third-party ATV image (not installed during this
   session): `com.android.vending` 35.2.19-23 (versionCode 83521938; the TV `TvMainActivity`
   resolves), `com.google.android.gms` 20.50.16, and `com.google.android.gsf`; all enabled.
-  Play sign-in was not tested.
 - Official ATV YouTube `com.google.android.youtube.tv` 7.12.300 (versionCode 712300320,
   minSdk 24, armeabi-v7a) was sideloaded over ADB on 2026-11-28. The APK came from a third-party
   mirror; its v2/v3 signer cert SHA-1 `61226bdb57cc32c8a2a9ef71f7bc9548e95dcc0b` matches the
-  official Google YouTube signer. It launches to the account-linking screen; Google account
-  sign-in was not performed.
+  official Google YouTube signer. The UI, search and thumbnails render, but any video or home
+  preview selects the dead VP9 OMX shell: the Starboard player hits an unrecoverable MediaCodec
+  error (`0x80001009`), resets the video surface, and the screen goes black. The official app
+  exposes no decoder/codec or AVC-preference toggle; playback on this box stays on SmartTube.
+  A system-level removal of the amlogic VP9 nodes from `media_codecs.xml` was considered but not
+  applied.
 - The Inputs pill is hidden: TvInputManager reports no HDMI/AV/tuner hardware on this box, and
   `live_tv_package` is empty.
 - Granted to tvhome: `WRITE_SECURE_SETTINGS`, `ACCESS_FINE_LOCATION`; AppOps
@@ -96,6 +99,10 @@ so there is no tested debloat list for this set.
 - The software Google VP9 decoder is capped at 1280×1280, so 1080p/4K VP9 or AV1 tracks are not
   playable on this box. In practice the YouTube client is held to a 720p30 AVC profile; H.264 and
   HEVC files play through the hardware decoders.
+- The official ATV YouTube TV client hits the same VP9 shell on home previews and playback:
+  Starboard opens a VP9 WebM stream, the decoder fails unrecoverably (`0x80001009`), the
+  surface resets and the app shows a black screen. Unlike SmartTube, the official app has no
+  force-traditional-decoder or AVC-preference setting.
 - Observed on this one rebranded image only; do not generalize to other S905L3A builds.
 
 ## Not yet verified
