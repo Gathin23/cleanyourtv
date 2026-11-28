@@ -2,6 +2,13 @@
 # Fingerprint XGIMI/Product_raptor/snake_deep:12/SP1A.210812.016/v6.13.113:user/dev-keys, board huanglong (HiSilicon Hi3751V660), GMUI 6.0, abi armeabi-v7a
 # Mainland-China counterpart of the international Elfin Flip 4K.
 #
+# Not this board: a Z9X 4K (旗舰版) sold under the same retail name on Android 14 reports product
+# Product_dapeng / device horse_popular (XGIMI TV DOHKO, build v6.15.62). There com.xgimi.home is
+# DIRECT_BOOT_AWARE and the only Home that starts before boot completes, so the install command this
+# folder gives, which disables it, leaves the set in BOOTING behind a black screen at every cold boot,
+# with no Wi-Fi and so no network ADB. Nothing in this folder applies to that board;
+# docs/devices/xgimi-z9x-dohko-android14.md has the fingerprint, the symptom and the way back (#4478).
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xgimi-z9x-china/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xgimi-z9x-china/debloat.txt com.xgimi.home
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

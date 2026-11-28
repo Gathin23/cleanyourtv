@@ -13,6 +13,16 @@ with no problems. The projector was rebooted during that time and the new Home c
 own, so `HomeKeyService` survives a boot on this firmware (unlike the RS10 Ultra's GMUI 6, which
 drops it on every boot). A live HDMI source was used and worked.
 
+**Not this board.** XGIMI sells a Z9X 4K (旗舰版) under the same retail name on Android 14, which
+reports `ro.product.model=XGIMI TV DOHKO`, `ro.product.name=Product_dapeng`,
+`ro.product.device=horse_popular`, build `v6.15.62`. On that unit `com.xgimi.home` is
+`DIRECT_BOOT_AWARE` and the only Home that starts before boot finishes, so the install command on
+this page (which disables it) leaves the projector in `BOOTING` behind a black screen at every cold
+boot, with no Wi-Fi and so no network ADB. Leave the stock Home in place there. The fingerprint, the
+symptom and the way back are in
+[`docs/devices/xgimi-z9x-dohko-android14.md`](../../docs/devices/xgimi-z9x-dohko-android14.md)
+(#4478). Check `ro.product.name` before applying anything from this folder.
+
 ## What this folder contains
 
 | File | What it is |
