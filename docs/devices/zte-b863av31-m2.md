@@ -53,6 +53,10 @@ so there is no tested debloat list for this set.
   - `org.smarttube.stable` 32.80 (versionCode 2470)
   - `ak.helper` 4.0 (TVBox)
   - `com.jerry.live.pro` 2.6.15 (IP live TV)
+- Google Play stack was already present with the third-party ATV image (not installed during this
+  session): `com.android.vending` 35.2.19-23 (versionCode 83521938; the TV `TvMainActivity`
+  resolves), `com.google.android.gms` 20.50.16, and `com.google.android.gsf`; all enabled.
+  Play sign-in was not tested.
 - The Inputs pill is hidden: TvInputManager reports no HDMI/AV/tuner hardware on this box, and
   `live_tv_package` is empty.
 - Granted to tvhome: `WRITE_SECURE_SETTINGS`, `ACCESS_FINE_LOCATION`; AppOps
