@@ -1,0 +1,82 @@
+# BPL 32H-E5341 (80 cm / 32", 1280x720), Android TV 11 (API 30), firmware RTMA.250416.061, India.
+# Built by Changhong on its "AI PONT" platform: model AI PONT, product DVB86BL, device osaka,
+# MediaTek mt5867, about 1.4 GB RAM (MemTotal 1442956 kB). Same osaka board as examples/aiwa-ai-pont-sa
+# (Google TV 14 there); this unit runs Android TV 11 with the Google TV home (launcherx).
+#
+# Status: applied 2026-11-28 on one set, in three batches, each followed by a reboot. After every reboot
+# the packages below stayed disabled, Home came back on its own (launcherx before the new launcher,
+# com.gathin.tvhome after), Wi-Fi reconnected by itself, and logcat's crash buffer was empty.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/bpl-32h-e5341/debloat.txt
+# Then:    TV_HOST=<tv ip> launcher/build-and-install.sh   (makes the new launcher Home, then disables launcherx)
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/bpl-32h-e5341/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh; this firmware has no
+# com.google.android.tvlauncher). Live TV: com.mediatek.wwtv.tvcenter.
+#
+# ADB on this set: there is no Network or Wireless debugging toggle. USB debugging alone opens network ADB
+# on port 5555, and the port stays open across reboots while that toggle is on. When you are done, switch
+# USB debugging off (Settings > Device Preferences > Developer options) and check with
+# tools/adb-closed.py <tv ip>.
+#
+# KEEP, even though some names look like bloat:
+# - com.mediatek.android.leanbacklauncher.partnercustomizer: on the Android 11 CHiQ list (same platform),
+#   disabling it crash-loops com.mediatek.tv.service after a reboot and the Input key stops working.
+# - com.homwee.dmt.upgrade (firmware updates), com.homwee.synckey (remote keys), com.homwee.dynamicbacklight
+#   (picture), com.homwee.factory and com.mediatek.tv.factorykey (never open these).
+# - com.homwee.mmp.fileexplorer and com.homwee.mmp.imageplayer: the "Media Player" tile, which plays USB drives.
+# - Every com.mediatek.* package not listed below (Live TV, HDMI inputs, tuner, remote pairing).
+# - com.google.android.tv.remote.service, the keyboard, Play Store, Play services, WebView.
+#
+# Notes from this firmware:
+# - TalkBack (com.google.android.marvin.talkback) shipped disabled.
+# - The stock screensaver is com.google.android.apps.tv.dreamx/.service.Backdrop. Before disabling dreamx,
+#   switch it: settings put secure screensaver_components com.android.dreams.basic/.Colors
+# - Home claimants: launcherx/.home.HomeActivity (priority 2), setupwraith/.RecoveryActivity (priority 1),
+#   then com.android.tv.settings/.system.FallbackHome. Disable setupwraith before launcherx goes, or Home
+#   lands on the setup wizard; launcher/build-and-install.sh disables launcherx only after the new Home is set.
+# - The remote's Input key keeps opening com.mediatek.wwtv.tvcenter/.nav.inputpanel.InputsPanelActivity with
+#   the new launcher as Home. The launcher's Inputs menu lists HDMI 1-3, AV (composite) and Live TV.
+# - The remote's power button suspends to RAM (ro.vendor.mstar.str.enable=user_mode): the set wakes in a
+#   few seconds. Switching off at the wall means a full boot of about 30 s behind the BPL logo.
+
+# Partner auto-installs, feedback and attribution
+android.autoinstalls.config.google.gtvpai     # silently installs partner apps through Play
+com.google.android.partnersetup               # partner-app attribution / referrer
+com.google.android.feedback                   # Google feedback reporter
+
+# Vendor (Changhong / Homwee) store, help and app updater
+com.homwee.store                              # Changhong store and retail-demo service, not the Play Store
+com.homwee.help                               # help app
+com.homwee.upgrade                            # vendor app updater, not the firmware; the Play Store still updates apps
+
+# Background services and setup leftovers
+com.google.android.apps.nbu.smartconnect.tv   # Google data-saver VPN service, starts at boot
+com.mstar.android.tv.disclaimercustomization  # disclaimer screen used only by first-run setup
+com.google.android.syncadapters.calendar      # calendar sync
+com.android.printspooler                      # printing
+
+# Preloaded apps
+com.google.android.play.games                 # Play Games
+com.google.android.apps.tv.dreamx             # ambient screensaver, mixes in promos; switch the screensaver first (see above)
+
+# First-run wizard. Its RecoveryActivity takes Home once launcherx is gone. It can own the saved Wi-Fi
+# network: Android deletes every network setupwraith created when it is disabled (here an old one it owned
+# was lost; the network in use belonged to android.uid.system and stayed). tools/disable.sh skips it while
+# it owns a saved network. On Google TV casting can stop without it; on this set the owner reported casting
+# from a phone still worked with it disabled.
+com.google.android.tungsten.setupwraith
+
+# Personal choice. This set has these off; uncomment the ones you don't use.
+# com.google.android.katniss                  # Google Assistant (the remote's mic button stops working)
+# com.homwee.multiscreenshare                 # screen mirroring (Miracast)
+# com.homwee.mmp.screenshare                  # AirPlay / screen share
+# com.mediatek.androidbox                     # MediaTek Miracast sink (WFDSinkTest)
+# com.google.android.videos                   # Google TV / Play Movies store; also feeds the Google TV home
+# com.google.android.youtube.tvmusic          # YouTube Music (kept on this set)
+# com.google.android.apps.mediashell          # Chromecast built-in (kept on this set)
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only after
+# the new home is installed and set as default. The Undo command above passes it so restore.sh brings it back.
+# com.google.android.apps.tv.launcherx
