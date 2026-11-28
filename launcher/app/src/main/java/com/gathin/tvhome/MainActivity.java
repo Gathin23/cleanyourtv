@@ -3320,25 +3320,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The TV's own source-selection panel, for TVs that have no TvInputManager (TCL Android TV 9): a
      *  service, or an activity on sets whose panel is a dialog (BYINTEK U4's QuickSourceActivity). */
     private void openSourcePanel() {
-        Intent i = new Intent(sourcePanelAction);
-        ComponentName c = ComponentName.unflattenFromString(sourcePanelService);
+        openSourcePanel(this, sourcePanelService, sourcePanelAction, sourcePanelExtra);
+    }
+
+    /** Open the configured vendor source panel from either Home or the remote key service. */
+    static boolean openSourcePanel(Context context, String service, String action, String extra) {
+        Intent i = new Intent(action);
+        ComponentName c = ComponentName.unflattenFromString(service);
         if (c != null) i.setComponent(c);
-        int eq = sourcePanelExtra.indexOf('=');
+        int eq = extra.indexOf('=');
         if (eq > 0) {
             try {
-                i.putExtra(sourcePanelExtra.substring(0, eq).trim(),
-                        Integer.parseInt(sourcePanelExtra.substring(eq + 1).trim()));
+                i.putExtra(extra.substring(0, eq).trim(),
+                        Integer.parseInt(extra.substring(eq + 1).trim()));
             } catch (NumberFormatException ignored) {
             }
         }
         try {
-            if (getPackageManager().resolveActivity(i, 0) != null) {
-                startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                return;
+            if (context.getPackageManager().resolveActivity(i, 0) != null) {
+                context.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                return true;
             }
-            startService(i);
+            return context.startService(i) != null;
         } catch (Exception e) {
-            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.not_available, Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 

@@ -21,6 +21,7 @@ public class InputKeyService extends AccessibilityService {
     private static final String ACTION_VIEW_INPUTS = "com.android.tv.action.VIEW_INPUTS";
 
     private int[] inputKeycodes = new int[0];
+    private Config config;
     private Map<Integer, String> appKeys = Collections.emptyMap();
     private Map<Integer, String> appScancodes = Collections.emptyMap();
     private Map<Integer, String> holdAppKeys = Collections.emptyMap();
@@ -42,7 +43,7 @@ public class InputKeyService extends AccessibilityService {
         super.onServiceConnected();
         running = this;
         // From config.xml or a theme's config.json; theme.sh rebinds this service after a push.
-        Config config = Config.load(this);
+        config = Config.load(this);
         // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
@@ -78,7 +79,12 @@ public class InputKeyService extends AccessibilityService {
         if (!isInputKey(event.getKeyCode())) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             try {
-                startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                if (!config.sourcePanelService.isEmpty()) {
+                    MainActivity.openSourcePanel(this, config.sourcePanelService,
+                            config.sourcePanelAction, config.sourcePanelExtra);
+                } else {
+                    startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
             } catch (ActivityNotFoundException | SecurityException ignored) {
             }
         }

@@ -537,6 +537,7 @@ on that firmware, grouped and commented. These are starting points: comment out 
 [Xiaomi MiTV-MFTR0 "freeguy"](../docs/devices/xiaomi-mitv-mftr0-freeguy.txt), China, Android 14 `OS3.0.101.0.UFTMATV`: inputs, Xiaomi settings intents and app discovery; the list for that build is [`xiaomi-mitv-mftr0-android14/`](xiaomi-mitv-mftr0-android14/debloat.txt).
 
 Notes for models that have no tested list yet live in [`docs/devices/`](../docs/devices/):
+- [DALTON 85" CS2560U / Noah7](../docs/devices/dalton-85-cs2560u-noah7.md) (HiSilicon Hi3751V553, Android 14): Source-key mapping and Hikeen/Zeasn panel; picture and sound verified on TV, AV and HDMI1–3.
 
 - [Xiaomi F Pro L55MB-FPEU](../docs/devices/xiaomi-l55mb-fpeu.md) (`AFTBR92D74`, `ginzaeu`, Fire OS 8.1.8.5 / Android 11, `RS8185.3885N`): initial one-session report; 20 packages remain disabled after reboot, five ad packages return, Amazon Music and satellite TV retained; no several-day list yet.
 - [Magcubic HY320 Pro](../docs/devices/magcubic-hy320-pro.md) (Android 14 / SDK 34, `Projector_20260713.153921`): APK/Home observations, stock projector controls kept, and separately maintained helper-free launcher source; no tested disable list.

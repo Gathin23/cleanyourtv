@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Keys only: no accessibilityEventTypes (0), so the system never calls into the launcher for
-     accessibility events, which both services ignore. Key filtering depends only on
-     flagRequestFilterKeyEvents and canRequestFilterKeyEvents, not on the event types. -->
+<!-- Keys only: the service subscribes to window changes at runtime only when a vendor source panel is
+     configured, to track whether that panel is open. It never retrieves or inspects window content. -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagRequestFilterKeyEvents"
