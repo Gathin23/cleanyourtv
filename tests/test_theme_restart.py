@@ -216,7 +216,10 @@ class Recovery(unittest.TestCase):
         tv = TV(home='com.google.android.apps.tv.launcherx/.HomeActivity')
         restart.restart(tv, tv.pause)
         start = next(x for x in tv.calls if x.startswith('am start '))
-        self.assertIn('-n com.gathin.tvhome/.MainActivity', start)
+        # The class, not the "<id>/.MainActivity" shorthand: that one is expanded against the package part, so a
+        # launcher built with -PlauncherApplicationId would be started under a class no build declares.
+        self.assertIn('-n com.gathin.tvhome/com.gathin.tvhome.MainActivity', start)
+        self.assertNotIn('/.MainActivity', start)
         tv = TV()
         restart.restart(tv, tv.pause)
         start = next(x for x in tv.calls if x.startswith('am start '))
