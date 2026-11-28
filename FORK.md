@@ -17,6 +17,9 @@ What changed, release by release: [CHANGELOG.md](CHANGELOG.md).
 | `shelf_hidden_apps` | Packages whose rows the shelf leaves out, for apps that publish only promotions | Mehdi-Ks |
 | `weather_line`, `weather_latitude`, `weather_longitude` | One line under the clock: now, the next hours and the night's low or the day's high, from Open-Meteo. English, French and German | Mehdi-Ks |
 | `dock_order` | `"fixed"` (default) keeps `dock_apps` as written; `"recent"` fills the dock with the apps Home opened last, newest first, with `dock_apps` filling the rest | This fork |
+| `weather_style` | `"line"` (default) keeps the sentence under the clock; `"compact"` shows only the temperature and condition beside the top buttons | This fork |
+| `peek_row` | `false` hides the grid row under the dock while the dock, the shelf or the top bar has focus, so only the dock and its cards show; Down still scrolls to the grid | This fork |
+| `scroll_hint` | A small chevron under the dock while it has focus and more apps follow below | This fork |
 
 Example theme `config.json` (Berlin as the weather place):
 
@@ -28,7 +31,11 @@ Example theme `config.json` (Berlin as the weather place):
   "weather_line": true,
   "weather_latitude": "52.52",
   "weather_longitude": "13.40",
-  "dock_order": "fixed"
+  "dock_order": "fixed",
+  "weather_style": "compact",
+  "peek_row": false,
+  "scroll_hint": true,
+  "cinematic_dots": false
 }
 ```
 
@@ -40,7 +47,7 @@ Example theme `config.json` (Berlin as the weather place):
   Open-Meteo (`api.open-meteo.com`, latitude and longitude only, every 30 minutes while Home is on screen) when
   `weather_line` is on. No analytics, no other hosts, nothing written to disk.
 - A program link that points into the launcher itself is not followed.
-- The release APK is about 609 KB, over upstream's 576 KB limit.
+- The release APK is about 611 KB, over upstream's 576 KB limit.
 
 ## What the apps publish, on this Streamer
 

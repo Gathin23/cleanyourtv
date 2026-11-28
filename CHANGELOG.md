@@ -20,6 +20,11 @@ Based on upstream `main` at `be608705` ("Round BI"). Tested on a Google TV Strea
   under the clock. `WeatherLine.java` and its test from Mehdi-Ks's `my-tv`; German strings added.
 - **`dock_order`**: `"fixed"` (default, as upstream) or `"recent"`, the dock filled with the apps Home opened last,
   newest first, `dock_apps` filling the rest. Home rebuilds on return when the order would change.
+- **`weather_style`**: `"compact"` shows only the temperature and condition beside the top buttons, instead of
+  the sentence under the clock (`"line"`, default).
+- **`peek_row`** (`true` by default, as upstream): `false` hides the grid row under the dock while the dock, the
+  shelf or the top bar has focus; Down still scrolls to the grid, which then shows in full.
+- **`scroll_hint`** (off by default): a small chevron under the dock while it has focus and more apps follow below.
 - Tests: `RecentDockTest`, `ShelfPreviewsTest`, `WeatherLineTest`.
 
 ### Changed
@@ -27,6 +32,6 @@ Based on upstream `main` at `be608705` ("Round BI"). Tested on a Google TV Strea
 - A shelf card whose link points into the launcher itself opens the app's front door instead.
 
 ### Known limits
-- The release APK (about 609 KB) is over upstream's 576 KB gate.
+- The release APK (about 611 KB) is over upstream's 576 KB gate.
 - Only launches from Home count for `dock_order: "recent"`, not an app a remote button starts.
 - Which apps fill the shelf depends on what they publish (YouTube publishes no Watch Next rows).
