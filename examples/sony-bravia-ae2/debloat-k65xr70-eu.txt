@@ -1,0 +1,62 @@
+# Sony K-65XR70 (BRAVIA 7, BRAVIA 4K AE2 / BRAVIA_AE2, MediaTek MT5897), European firmware
+# Android 12 (API 32), build STT2.231117.001 634040
+#
+# The owner's list, typed out on his own set in #4443 after he had lived with it: applied in one run,
+# the disabled list came back unchanged after a reboot, CleanYourTV was Home, and HDMI 3 and HDMI 4
+# were verified. He did not verify broadcast TV playback. We have not run this list on a TV: it is
+# his, and the only run behind it is his.
+#
+# This is a short list, and a different firmware line from the rest of this folder: debloat.txt and
+# debloat-k55xr50-eu.txt are both Google TV 14 builds, this BRAVIA 7 is the Android 12 EU build it
+# shipped with, so it is a third unit of the folder in the same way the K-55XR50 is the second.
+# Read the three against each other: everything the other lists send and this one does not was
+# simply left on this set.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-ae2/debloat-k65xr70-eu.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-ae2/debloat-k65xr70-eu.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it after
+# Home has moved). No separate Live TV app: HDMI inputs come from TvInputManager. No ATSC group:
+# an EU set has a DVB tuner.
+#
+# What the owner saw on this build, in his words or close to them:
+# - The physical gear button stopped opening Settings once launcherx was disabled; the launcher's own
+#   Settings button works. That is the AE2 behaviour debloat-k55xr50-eu.txt explains with the key it
+#   sends (KEY_CLEARVU_SONAR). This owner left it so rather than bind a key helper.
+# - AirPlay accepted an iPhone connection after the debloat, before the launcher handover.
+# - Google Cast had been hidden and disabled before any of this and stayed unavailable after it.
+# - With the launcher on, Home Assistant's Sony BRAVIA integration could still power the set off and
+#   back on. Its volume slider moved the TV's own speakers and left HDMI eARC alone; sending VolumeUp
+#   raised the eARC volume by five points, matching one press of the physical remote.
+# - How ADB was opened on this unit is not in the report. On the K-55XR50 unit of this folder it is the
+#   Wi-Fi pairing that header describes (`adb pair`, then the port `adb mdns services` shows). Whichever
+#   way you get in, switch that toggle back off when you are done and check the port with
+#   `tools/adb-closed.py <tv ip>`.
+#
+# Three streaming apps were off on this set too. They are commented out below rather than sent: which
+# of them a household uses is that owner's choice, not this list's. Uncomment the ones you do not want.
+
+# tracking, ads and reporting
+tv.samba.ssm                                   # Samba TV (ACR viewing data)
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service
+com.sonyericsson.idd.agent                     # Sony usage data
+com.sony.dtv.sonybugreportsys                  # bug-report uploader
+com.google.android.feedback
+
+# Sony's own surfaces
+com.sony.dtv.promos
+com.sony.dtv.sonytab                           # Sony tab on the Google TV home
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# the launcher handover
+com.google.android.tungsten.setupwraith        # its RecoveryActivity otherwise takes over Home
+# com.google.android.apps.tv.launcherx   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved
+
+# off on this set by choice - uncomment the ones you do not use
+# com.amazon.amazonvideo.livingroom
+# com.netflix.ninja
+# com.google.android.youtube.tv
