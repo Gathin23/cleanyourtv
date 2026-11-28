@@ -85,6 +85,18 @@ These are the owner's paths, not a run of ours: no LG set was tested for this pa
 says whether a firmware update puts any of them back. The DNS half below was measured on the 2026 set
 and does not depend on which menu a year's firmware puts the switches in.
 
+## The same switches on a 2025 set
+
+A 2025 set calls one of them something else. An owner of a 65QNED85AQA typed the page behind step 4 of
+the guide's `#lg-2025` section in [#3432](https://github.com/Gathin23/cleanyourtv/issues/3432): it
+offers **Power On Screen** and **Content Recommendation**, where the 2026 set above turns off **Home
+Promotion** and **Content Recommendation**. **Limit AD Tracking** is not on that page; it is a separate
+**Advertisement** entry, which is where he turns it on.
+
+The guide's 2025 section carries the paths to both pages. He typed the item names rather than the path,
+so this page does not add one, and he did not report a Screen Saver Promotion or an AI Recommendations
+entry, so nothing here says a 2025 set has them.
+
 ## AdGuard Home for the TV only
 
 The settings stop collection on the TV. DNS filtering stops the uploads that remain. This set
