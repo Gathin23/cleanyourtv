@@ -100,6 +100,7 @@ A new key needs one there in the same pull request.
 |---|---|---|
 | `dock_apps` | list of package names | The dock row, in order; missing apps are skipped |
 | `fill_dock` | bool | Fill the dock slots `dock_apps` leaves free with the first grid apps (true by default); false leaves them empty |
+| `dock_order` | `fixed` or `recent` | `fixed` (the default) keeps `dock_apps` as written; `recent` fills the dock with the apps Home opened last, newest first, and `dock_apps` fills the slots no recent app takes. Only launches from Home count, not a remote button's, and the saved manual order is not used while it is on |
 | `hidden_apps` | list of package names | Never shown as tiles |
 | `live_tv_package`, `live_tv_action` | string | The Live TV app and, if it has no leanback entry, the action to start it with |
 | `live_tv_input_id` | string | Live TV source for the Inputs menu: an exact system tuner ID opens its channel collection. The special value `content://android.media.tv/channel` opens the stock launcher's root channel URI on Xiaomi MiTV-MSSP1 (#1941). Empty keeps automatic selection. Missing input or unsupported collection falls back to the app's normal launch. [HAAM satellite example](../docs/devices/haam-r4.md) |

@@ -192,6 +192,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean cinematic;
     /** Dock order (config.xml dock_apps, or a theme's config.json). */
     private final List<String> favourites;
+    /** dock_order "recent": the dock follows the apps Home opened last (RecentDock); the saved order is not used. */
+    private final boolean recentDock;
+    /** The dock's packages at the last reload(): favourites, or RecentDock's order when recentDock. */
+    private List<String> dockNow;
     /** Grid apps fill the dock slots dock_apps leaves free (config.xml, fill_dock). */
     private final boolean fillDock;
     /** Dock apps found at the last reload, and the empty slots after them. */
@@ -227,6 +231,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.listener = listener;
         this.dockSize = dockSize;
         this.favourites = cfg.dockApps;
+        this.recentDock = cfg.dockOrderRecent;
+        this.dockNow = favourites;
         this.fillDock = cfg.fillDock;
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.libraryPreload = new HashSet<>(cfg.libraryApps);
@@ -311,11 +317,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fresh.add(new Entry(label, component, banner, icon));
             }
         }
+        if (recentDock) dockNow = recentOrder(fresh);
+        final List<String> dock = dockNow;
         Collections.sort(fresh, (a, b) -> {
             // The owner's own order first; tiles it does not know (new installs) follow by the rule below.
-            int saved = Order.compare(savedRanks, a.component.flattenToShortString(), b.component.flattenToShortString());
+            // dock_order "recent" sorts the dock by use instead, so a saved order would only fight it.
+            int saved = recentDock ? 0
+                    : Order.compare(savedRanks, a.component.flattenToShortString(), b.component.flattenToShortString());
             if (saved != 0) return saved;
-            int fa = favourites.indexOf(a.pkg), fb = favourites.indexOf(b.pkg);
+            int fa = dock.indexOf(a.pkg), fb = dock.indexOf(b.pkg);
             if (fa >= 0 || fb >= 0) {
                 if (fa < 0) return 1;
                 if (fb < 0) return -1;
@@ -554,7 +564,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         try {
             ctx.startActivity(i);
-            if (cinematic) LastOpened.record(ctx, e.pkg);
+            if (cinematic || recentDock) LastOpened.record(ctx, e.pkg);
             if (advancedEffects && !reducedMotion && ctx instanceof Activity) {
                 ((Activity) ctx).overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
             }
@@ -585,6 +595,18 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /** Uses this saved order and dock size from the next reload() (Order.ranks, Order.docked). */
+    /** dock_order "recent": the dock's packages for these tiles, from the apps Home opened last. */
+    private List<String> recentOrder(List<Entry> tiles) {
+        Set<String> installed = new HashSet<>();
+        for (Entry t : tiles) if (t.kind != Entry.EMPTY) installed.add(t.pkg);
+        return RecentDock.order(favourites, LastOpened.all(ctx), installed, dockSize);
+    }
+
+    /** True when dock_order "recent" would put other apps or another order in the dock than the last reload(). */
+    boolean recentDockStale() {
+        return recentDock && !recentOrder(items).equals(dockNow);
+    }
+
     void setSavedOrder(Map<String, Integer> ranks, int docked) {
         savedRanks = ranks;
         savedDocked = docked;
@@ -595,7 +617,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * the owner moved into the dock stays there (#499); else a dock_apps entry.
      */
     private boolean isDocked(Entry e) {
-        if (savedDocked < 0) return favourites.contains(e.pkg);
+        if (recentDock || savedDocked < 0) return dockNow.contains(e.pkg);
         Integer rank = savedRanks.get(e.component.flattenToShortString());
         return rank != null && rank < savedDocked;
     }

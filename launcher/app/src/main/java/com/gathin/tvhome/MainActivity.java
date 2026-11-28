@@ -1165,7 +1165,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         restartIdleClock();
         promptsPaused = false;
         if (grid.getAdapter() == null) grid.setAdapter(adapter);   // dropped by onTrimMemory
-        switch (tileRefresh.onResume(packagesChangedSinceRebuild())) {
+        // dock_order "recent": an app opened from Home moves to the front of the dock when Home comes back.
+        switch (tileRefresh.onResume(packagesChangedSinceRebuild() || adapter.recentDockStale())) {
             case REBUILD:
                 tilesReady = false;
                 reloadApps(true);

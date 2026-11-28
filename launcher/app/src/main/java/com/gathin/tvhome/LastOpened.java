@@ -22,6 +22,15 @@ final class LastOpened {
         prefs(ctx).edit().putLong(pkg, System.currentTimeMillis()).apply();
     }
 
+    /** Every app Home opened, package to milliseconds since the epoch (dock_order "recent"). */
+    static java.util.Map<String, Long> all(Context ctx) {
+        java.util.Map<String, Long> out = new java.util.HashMap<>();
+        for (java.util.Map.Entry<String, ?> e : prefs(ctx).getAll().entrySet()) {
+            if (e.getValue() instanceof Long) out.put(e.getKey(), (Long) e.getValue());
+        }
+        return out;
+    }
+
     /** Milliseconds since the epoch, or 0 when Home never opened the app. */
     static long get(Context ctx, String pkg) {
         return pkg == null ? 0L : prefs(ctx).getLong(pkg, 0L);

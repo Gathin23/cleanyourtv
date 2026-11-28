@@ -525,6 +525,12 @@
          theme's config.json. -->
     <bool name="continue_watching">true</bool>
 
+    <!-- Dock order. "fixed" (default) keeps dock_apps as written. "recent" fills the dock with the apps Home opened
+         last, newest first, and dock_apps fills the slots no recent app takes. Only launches from Home count (not a
+         remote's app button), and the saved manual order is not used while it is on. Can also be set with
+         "dock_order": "recent" in a theme's config.json. -->
+    <string name="dock_order" translatable="false">fixed</string>
+
     <!-- The glow behind the dock in the focused app's colour (red for YouTube, blue for Prime Video). false keeps
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a
          theme's config.json. -->
