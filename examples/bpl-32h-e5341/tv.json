@@ -1,0 +1,6 @@
+{
+  "tv": "BPL 32H-E5341 (Changhong AI PONT, osaka, DVB86BL)",
+  "os": "Android TV 11 (Google TV home)",
+  "brand": "BPL",
+  "notes": "Partner auto-installs, Homwee store/help/app updater, data-saver VPN, ambient screensaver, setupwraith off; Assistant, mirroring and Play Movies left commented as personal choice; firmware updater and `com.mediatek.android.leanbacklauncher.partnercustomizer` kept; no network-debugging toggle, USB debugging opens port 5555"
+}
