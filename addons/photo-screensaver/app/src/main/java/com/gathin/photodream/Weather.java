@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,13 +19,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
- * The weather now, for the weather option: the TV's own location (coarse, rounded to about 1 km before it is
- * sent) and Open-Meteo, which needs no key. Only called while the option is on; nothing else goes out.
+ * The weather now, for the weather option: a town typed in the settings, or else the TV's own location (coarse,
+ * rounded to about 1 km before it is sent), and Open-Meteo, which needs no key. Only called while the option is
+ * on, and the town lookup only when a town is typed; nothing else goes out.
  */
 final class Weather {
     static final long REFRESH_MS = 30 * 60_000L;
@@ -92,6 +95,49 @@ final class Weather {
         JSONObject current = get(url).getJSONObject("current");
         int temp = (int) Math.round(current.getDouble("temperature_2m"));
         return temp + "°  " + symbol(current.getInt("weather_code"), current.optInt("is_day", 1) == 1);
+    }
+
+    /** A town as Open-Meteo's geocoding found it: its name for the settings screen, and where it is. */
+    static final class Place {
+        final String label;
+        final double latitude;
+        final double longitude;
+
+        Place(String label, double latitude, double longitude) {
+            this.label = label;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+    }
+
+    /**
+     * The best match for a typed town, or null when there is none; blocking, call it off the main thread. Only
+     * the typed text and the TV's language go to geocoding-api.open-meteo.com, which needs no key either.
+     */
+    static Place find(String town, String language) throws IOException, JSONException {
+        String url = "https://geocoding-api.open-meteo.com/v1/search?count=1&format=json&name="
+                + URLEncoder.encode(town.trim(), "UTF-8") + "&language=" + URLEncoder.encode(language, "UTF-8");
+        JSONArray results = get(url).optJSONArray("results");
+        if (results == null || results.length() == 0) return null;
+        JSONObject first = results.getJSONObject(0);
+        return new Place(label(first.optString("name"), first.optString("admin1"), first.optString("country")),
+                first.getDouble("latitude"), first.getDouble("longitude"));
+    }
+
+    /** "Springfield, Illinois, United States": the parts that are there, each once. */
+    static String label(String name, String region, String country) {
+        StringBuilder label = new StringBuilder();
+        for (String part : new String[]{name, region, country}) {
+            if (part == null || part.trim().isEmpty() || label.indexOf(part.trim()) >= 0) continue;
+            if (label.length() > 0) label.append(", ");
+            label.append(part.trim());
+        }
+        return label.toString();
+    }
+
+    /** Two decimals, about 1 km: all the weather needs, and no more of where the TV is than that. */
+    static float coarse(double degrees) {
+        return Math.round(degrees * 100) / 100f;
     }
 
     /** A plain symbol for a WMO weather code, from characters every TV font has. */

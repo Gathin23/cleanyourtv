@@ -56,7 +56,9 @@ public class OptionsTest {
     private static SharedPreferences preferences(Integer seconds) {
         return (SharedPreferences) Proxy.newProxyInstance(SharedPreferences.class.getClassLoader(),
                 new Class<?>[]{SharedPreferences.class}, (proxy, method, args) -> {
-                    if (method.getName().equals("getBoolean")) return args[1];
+                    // Every other option at its default: a switch off, no town for the weather.
+                    if (method.getName().equals("getBoolean") || method.getName().equals("getString")
+                            || method.getName().equals("getFloat")) return args[1];
                     if (method.getName().equals("getInt")) {
                         return Options.SECONDS_PER_PICTURE.equals(args[0]) && seconds != null
                                 ? seconds : args[1];

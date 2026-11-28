@@ -25,10 +25,16 @@ slideshow. Google TV has no settings entry for other screensavers, so there it i
 | When a picture was taken | Month and year, from a name ending in the date (`trip-20231202.jpg`) or else the camera's EXIF date |
 | Three prints | Three pictures at a time as tilted prints, the whole picture, never cropped; clips are skipped |
 | Sky | Behind the prints, a sky that follows the time of day |
-| Weather | Temperature and a symbol, from the TV's rough location and Open-Meteo, every 30 minutes |
+| Weather | Temperature and a symbol from Open-Meteo every 30 minutes, for a town you type or else the TV's rough location |
 
-The weather needs location access (asked when you switch it on) and the TV's location services on; the
-settings say when they are off and open the TV's location settings. The prints, the sky and the date on a
+For the weather, press **Town for the weather** under its switch and type your town (with the country if the
+name is common); Open-Meteo's geocoding finds it, and the settings show the place it found. A town needs no
+location access. Without one, the weather uses the TV's own location, which needs location access (asked when
+you switch the weather on) and the TV's location services on; the settings say when they are off and open
+the TV's location settings. A TV has no GPS, so that location comes from Google's network location only,
+which on Google TV also needs Google's location consent: with it off (`dumpsys activity service
+com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService` prints `nlp
+consent=false`) the TV never knows where it is and no weather shows. The prints, the sky and the date on a
 picture come from Photo Prints by [@shivamsingh262](https://github.com/shivamsingh262) (#936).
 
 ## Install
@@ -86,9 +92,12 @@ is decoded at screen size. On a TCL 43P69K (1.5 GB) a 1080p clip played with the
 ## Permissions
 
 - **Network: `INTERNET` and `ACCESS_COARSE_LOCATION`**, used only by the weather option, which is off by
-  default. With it on, the TV's rough location, rounded to two decimals (about 1 km), goes to
-  `api.open-meteo.com` every 30 minutes while the screensaver runs, and the temperature and weather code
-  come back, with whether it is day. Nothing else goes out; with the weather off, the app makes no network connection at all.
+  default. With it on, the typed town's coordinates, or else the TV's rough location, rounded to two
+  decimals (about 1 km), go to `api.open-meteo.com` every 30 minutes while the screensaver runs, and the
+  temperature and weather code come back, with whether it is day. A typed town goes once, as typed, with
+  the TV's language, to `geocoding-api.open-meteo.com`, when it is entered; with a town set, the location
+  permission is not asked for. Nothing else goes out; with the weather off, the app makes no network
+  connection at all.
 - No storage permission and no background service: the pictures stay on the TV in the app's own folder
   (`Android/data/com.gathin.photodream/files/pictures`), removed with the app.
 - **`SlideshowActivity`** (exported) is the module card; **`SettingsActivity`** (exported) is opened by the
