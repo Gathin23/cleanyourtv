@@ -31,6 +31,22 @@ Prime Video button at Prime Video itself, keeps Prime Video in the dock and work
 `ALL_APPS` entry. Push whichever mapping you want - `examples/xiaomi-mitv-afmu0/theme` for the TrueID TV one above,
 `examples/xiaomi-mitv-afmu0` for the Prime Video one.
 
+## Third unit: Prime Video works without a mapping
+
+Tested with `PROMPT.md` and this folder's `debloat.txt` on 2026-11-27, one evening and one reboot, on the same
+firmware (`V816.0.11.0.UZFAABX`). The header of `debloat.txt` has the details; in short:
+
+| Button | Sends | With launcherx off |
+| --- | --- | --- |
+| Netflix | `BUTTON_6` (scancode 416) | Opens Netflix, no mapping needed |
+| Prime Video | `BUTTON_7` (scancode 207) | Opens Prime Video, no mapping needed (`partnercustomizer` sends `AMAZON_BUTTON`) |
+| YouTube | `BUTTON_3` (scancode 425) | Nothing; HomeKeyService with `KEYCODE_BUTTON_3` and `scan:425` app_keys brings it back |
+| Apps | `ALL_APPS` (scancode 216) | Nothing; HomeKeyService with `KEYCODE_ALL_APPS:home` makes it open Home |
+
+So on this unit only YouTube and Apps needed `app_keys`; a `BUTTON_7` mapping was not needed. Held D-pad keys
+kept repeating with HomeKeyService on. Port 5555 kept answering after Wireless debugging was off, across a
+reboot, while USB debugging was on: switch both off when you are done.
+
 ## Private DNS (AdGuard DoT)
 Private DNS (such as AdGuard DoT) works on this set.
 
