@@ -66,7 +66,7 @@ TV_HOST=<projector-ip> tools/tv.py 'settings delete secure tv_input_custom_label
 
 `tools/restore.sh` leaves the new launcher installed, as it does for every list; take it off from the
 projector's Settings → Apps if you want it gone. A list folder ships no script of its own: the folders
-that carried one were trimmed to the shared tools ([#1717](https://github.com/Gathin23/cleanyourtv/pull/1717)).
+that carried one were trimmed to the shared tools ([#1717](https://github.com/Gathin23/cleanyourtv/issues/1717)).
 
 ## Change the dock or the wallpaper
 
