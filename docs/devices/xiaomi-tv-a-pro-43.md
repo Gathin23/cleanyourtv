@@ -229,3 +229,54 @@ Miracast stayed enabled. Checked across two reboots on the day; this is not a cl
   same network connection, with no new authorisation prompt: with `tools/adbkey/` empty, `tools/tv.py` signs with
   the same `~/.android/adbkey`. The Play Store offers Nuvio as `com.nuvio.app` (not `com.nuvio.tv`) and Jellyfin
   as `org.jellyfin.androidtv`; it does not offer the Home Assistant app on this set ("not compatible").
+
+## The remote's buttons with no key helper bound (28 November 2026)
+
+Owner-reported retail model Xiaomi TV X Pro 43 (2025). Android reports `MiTV-MZTU0` / `river`, the model this
+page covers: Google TV 14, build `UKN1.240806.017` on the `V816.0.26` line (the full build string was not
+recorded), board platform `merak` (MediaTek MT5896), 32-bit userspace. The goal was this launcher as Home with
+the YouTube button, Home, the Settings button and a held volume key all working. Everything below was checked
+with the real remote in one session on 28 November 2026; this is not a several-day validation, and no list is
+added here.
+
+- **With a key-filtering helper bound, a held volume key steps once per press and the Settings button
+  misbehaves**, as [#3360](https://github.com/Gathin23/cleanyourtv/issues/3360) describes. It was the same with
+  `InputKeyService`, with `HomeKeyService` and with a third-party button mapper, so this unit was set up with no
+  key-filtering helper bound at all.
+- **YouTube button:** `KEYCODE_BUTTON_3` (190) goes to launcherx's `GlobalKeyListener_Receiver`, so with
+  launcherx disabled and no helper it does nothing. Here launcherx stayed enabled and was kept out of the
+  background, and the button then worked as on the stock set:
+
+  ```sh
+  tools/tv.py 'cmd appops set com.google.android.apps.tv.launcherx RUN_ANY_IN_BACKGROUND ignore'
+  tools/tv.py 'cmd appops set com.google.android.apps.tv.launcherx RUN_IN_BACKGROUND ignore'
+  tools/tv.py 'cmd appops write-settings'
+  ```
+
+  `am set-standby-bucket com.google.android.apps.tv.launcherx restricted` was run as well, but
+  `am get-standby-bucket` read back `5` (exempt) later, so it is not counted as part of the setup.
+- **Settings button:** `KEYCODE_SETTINGS` (176) goes to `mitv.service`, which needs
+  `com.xiaomi.tvqs.overseas.y24` enabled. [The 75-inch list](../../examples/xiaomi-tv-a-pro-2026/debloat.txt)
+  disables that package as a quality-stats uploader, so a unit cleaned with it loses the Settings button until
+  `tools/tv.py 'pm enable com.xiaomi.tvqs.overseas.y24'` turns it back on.
+- **Home:** with launcherx enabled, the Home button opens Google TV's home on this firmware, even with this
+  launcher set as Home. A small accessibility service that filters no keys and reads no window content sends it
+  back. It hears only window events from launcherx and from this launcher, opens this launcher whenever Google
+  TV's home comes up (`.home.HomeActivity`, or its root `FrameLayout` changing with no window-state event),
+  leaves launcherx's other windows such as the Settings dashboard (`DashboardActivity` / `DashboardHandler`)
+  alone, and redirects at most once every 700 ms. On 28 November it ran as a separate helper app; the same logic
+  is `HomeRedirectService` in the
+  [Tordroid CleanYourTV fork](https://github.com/1tordroid/Tordroid-CleanYourTV/blob/main/launcher/app/src/main/java/com/gathin/tvhome/HomeRedirectService.java).
+  It is not part of this repo's launcher.
+- **Result:** the YouTube button, Home, a held Volume + or - and the Settings button all worked together. Google
+  TV's home can show for a moment after Home before this launcher comes up, and for a few seconds after a
+  restart, until Android has started the helper.
+- **Not tried on this unit:** this repo's own redirect, `HomeKeyService` with `stock_home_redirect` set to
+  launcherx and `key_filter` false, the route in
+  [A key helper is bound and a held remote button stopped repeating](../TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating).
+  Its Home-key fallback needs key filtering ([#2779](https://github.com/Gathin23/cleanyourtv/issues/2779)).
+- **Undo:** set the two app-ops back to `default`, run `cmd appops write-settings` again, and switch the helper
+  off in Settings > Accessibility.
+
+Tested and fixed by Tordroid (https://tordroid.com, github.com/1tordroid). More extras in the Tordroid
+CleanYourTV fork: https://github.com/1tordroid/Tordroid-CleanYourTV

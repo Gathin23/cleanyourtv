@@ -1954,6 +1954,12 @@ A [Sony KD-55X9000H PA-firmware follow-up](devices/sony-kd-55x9000h.md#later-rem
 The same setup works on a Google TV Streamer (YouTube is a global key to launcherx there) and on a Philips Google
 TV TA5, with one more step on the Philips: see the next entry.
 
+A Xiaomi MiTV-MZTU0 (Google TV 14, #3360) had the YouTube button, Home, the Settings button and the ramp together
+with no key helper bound at all: launcherx enabled for the YouTube button but kept out of the background with
+two app-ops, Xiaomi's `com.xiaomi.tvqs.overseas.y24` enabled for the Settings button, and Google TV's home sent
+back by a separate helper that filters no keys
+([the MZTU0 notes](devices/xiaomi-tv-a-pro-43.md#the-remotes-buttons-with-no-key-helper-bound-28-november-2026)).
+
 ## App buttons stopped working after launcherx was re-enabled for the redirect
 
 - **Netflix, YouTube and Prime Video did nothing once launcherx was enabled again**, while they worked with it
