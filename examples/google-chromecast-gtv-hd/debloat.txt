@@ -41,7 +41,10 @@
 #   or enable setupwraith until mediashell logs `Created singleton instance of ClientAuthSigner` and then
 #   disable it again: the receiver keeps the credentials until it restarts, so that is needed after every
 #   reboot and whenever the receiver restarts (crash, force-stop, update). Cast Fix (SHOWCASE.md) does it
-#   at boot; it ran on every reboot during the trial and phone casting worked each time. Details in
+#   at boot; it ran on every reboot during the trial and phone casting worked each time. The receiver also
+#   restarts by itself: here it exited and came back almost every night, between 2 and 5 am, while the TV
+#   only slept (`dumpsys activity exit-info com.google.android.apps.mediashell`), and casting stopped until
+#   the next fix. From 1.1 Cast Fix checks every 15 minutes and runs the fix after those too. Details in
 #   docs/TROUBLESHOOTING.md#connecting (the "Untrusted device" bullet after setupwraith is disabled, issue #361).
 #   Cast Fix 1.0 (thayford/castfix) was verified on a second boreal unit, 2026-10-23: paired with the
 #   PairReceiver broadcast, `adb_allowed_connection_time` set to 0, and the boot run logged
@@ -55,6 +58,16 @@
 #   battery warning. Don't `am force-stop` Key Mapper over ADB: that unbinds its accessibility service
 #   until the setting is cleared and set again. Record the "Button 3" trigger with the physical remote.
 #   The -foss APK from its GitHub releases, version 4.6.2, is what the second unit (2026-10-23) runs.
+#   While Key Mapper's accessibility service is on, Disney+ cast from a phone keeps its player controls
+#   (subtitles, scrub bar) on screen after every episode change instead of hiding them after a few
+#   seconds; with the service off they hide again (2026-11-26, first unit; Private DNS off made no
+#   difference). Cast Fix 1.2 switches the service off while a cast is on screen and back on afterwards.
+# - The remote (Bluetooth LE) twice stopped reconnecting after an idle disconnect until Bluetooth was
+#   restarted, for 3 days and for 26 hours: `dumpsys bluetooth_manager` showed le_connectability_state
+#   stuck at DISARMED, then DISARMING. `cmd bluetooth_manager disable` and `enable` fixed it without
+#   re-pairing. github.com/adn0liva/chromecast-hd-remote-fix documents a second form on another HD (the
+#   LE accept list left empty) and has a watchdog for it; Cast Fix 1.2 watches for both. Putting the
+#   remote in pairing mode meanwhile (Back + Home) wipes its key: re-pair it from Remotes & Accessories.
 # - The "type on your phone" prompt that never works: default_input_method was
 #   com.google.android.tv.remote.service/.ImeBridgeService before anything here was changed. Gboard is
 #   installed and enabled, so the on-screen keyboard comes back with
