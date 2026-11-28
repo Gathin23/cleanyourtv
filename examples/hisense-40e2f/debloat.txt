@@ -1,0 +1,69 @@
+# Hisense VIDAA_TV (device MTK9255, board mt5862, MediaTek MStar), China-market VIDAA/WASU set,
+# retail model 40E2F (E2FWASU). Android 9 (SDK 28), build PPR2.180905.006.A1 / 02.02.60.01.
+# No Google services on this build.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-40e2f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-40e2f/debloat.txt com.jamdeo.tv.vod
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: turn on Developer options, then Network debugging (this set has no USB port wired for ADB), and
+# connect to <tv ip>:5555. Close it the same way when you are done: switch Network debugging off, then
+# tools/adb-closed.py <tv ip> must report port 5555 closed, before the reboot PROMPT.md asks for.
+#
+# KEPT ON PURPOSE
+# - com.jamdeo.tv.vod, the stock VIDAA Home. It answers the input-source handover on this board, so it
+#   stays enabled even after a replacement launcher is set as Home with `cmd package set-home-activity`.
+# - com.jamdeo.tv.livetv and com.jamdeo.tv.service, the Live TV app and its middleware. `dumpsys tv_input`
+#   lists no inputs at all on this build, so the app's own source panel is the way to reach HDMI 1 and 2.
+# - com.hisense.tv.tiletransition. Not just animation: AppTransitionManager.startSourceFromLauncher binds
+#   to its TileAnimationService, and with this package disabled HDMI 1/HDMI 2 switching stopped working
+#   (tested on this unit; re-enabled, and the ports switched again).
+# - Casting, all of it: com.multiscreen.airplay (AirPlay), com.hisense.wifidisplay (Miracast),
+#   com.hisense.multiscreen.screenhelper and com.ms.weshare (DLNA).
+# - com.jamdeo.tv.mediacenter, the media player, and the input methods, Settings and every com.android.*
+#   core package.
+#
+# FIRMWARE KEEP-ALIVE: com.android.browser, com.android.calendar, com.android.camera2, com.android.contacts,
+#   com.android.deskclock and com.android.music come back enabled after every reboot on this build. They are
+#   commented out below instead of being fought with `check.py --fix`.
+#
+# Applied in small batches with a screenshot after each; reboot-checked four times; the owner confirmed the
+# physical feature checks afterwards (HDMI 1/HDMI 2 switching, Live TV, casting, remote).
+
+# --- Advertising and telemetry ---
+com.hisense.service.ad             # Hisense ad service
+com.hisense.hitv.das               # data reporting
+com.hisense.logupload              # log uploader
+com.hisense.prism                  # analytics / ACR
+com.hisense.service.message        # push messages
+com.hisense.hitv.hicloud.account   # HiCloud account
+com.hisense.hitv.payment           # content payment
+
+# --- Demo, retail and test ---
+fusion.android.tv.demo             # demo app
+com.hisense.hotelmenu              # hotel-mode menu
+com.hisense.horizontalassistantmenu  # assistant menu
+com.hisense.smartimages            # cloud artwork
+com.hisense.autotest               # test harness; disabling is fine, never launch it
+com.android.wechathci              # WeChat HCI
+
+# --- Voice assistant stack (disabling it makes the remote's voice key do nothing) ---
+com.hisense.voicecontrol
+com.hisense.msvoicetome
+com.hisense.tv.aivirtualassistant
+com.hisense.vidaaassistant
+com.keylab.speech.core.vidaa
+com.keylab.speech.view.vidaa
+com.hispeech.ai.area
+
+# --- System update (kept off by the owner; uncomment if you want OTA) ---
+com.jamdeo.updateservice
+
+# --- Preloaded AOSP apps ---
+com.android.gallery3d
+com.android.soundrecorder
+
+# --- Owner's choice: left ON for the next owner, commented out here ---
+# com.android.bluetooth            # PROMPT.md keeps Bluetooth pairing; this unit uses the IR remote
+# com.hisense.childlock            # VIDAA child lock (PIN); worth keeping on a TV with children
+# com.jamdeo.tv.mediacenter        # media player, kept on this unit
