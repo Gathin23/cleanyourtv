@@ -40,3 +40,10 @@ jobs:
             (cd "addons/$a" && chmod +x gradlew && ./gradlew --no-daemon assembleRelease)
             echo "::endgroup::"
           done
+      - name: Upload SIHAT APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sihat-prayer-times-apk
+          path: addons/sihat-prayer-times/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
