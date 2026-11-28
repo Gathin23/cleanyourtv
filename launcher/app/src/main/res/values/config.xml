@@ -546,6 +546,16 @@
     <bool name="weather_line">false</bool>
     <string name="weather_latitude" translatable="false"></string>
     <string name="weather_longitude" translatable="false"></string>
+    <!-- "line" (default): the whole sentence under the clock. "compact": only the temperature and the condition now,
+         beside the top buttons. Theme: "weather_style". -->
+    <string name="weather_style" translatable="false">line</string>
+
+    <!-- false: while the dock (or the shelf above it) has focus, nothing of the grid row under the dock shows; Down
+         still scrolls to it. true (default) keeps upstream's look. Theme: "peek_row". -->
+    <bool name="peek_row">true</bool>
+    <!-- A small chevron under the dock while it has focus and more apps follow below. Off by default. Theme:
+         "scroll_hint". -->
+    <bool name="scroll_hint">false</bool>
 
     <!-- The glow behind the dock in the focused app's colour (red for YouTube, blue for Prime Video). false keeps
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a

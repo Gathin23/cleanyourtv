@@ -368,6 +368,26 @@
                 android:focusable="false"
                 android:visibility="gone" />
 
+            <!-- weather_style "compact": the temperature and the condition beside the top buttons. -->
+            <TextView
+                android:id="@+id/weatherCompact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/topButtons"
+                android:layout_alignTop="@id/topButtons"
+                android:layout_alignBottom="@id/topButtons"
+                android:layout_marginStart="22dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="#E6FFFFFF"
+                android:textSize="22sp"
+                android:fontFamily="@string/font_regular"
+                android:letterSpacing="0.02"
+                android:shadowColor="#99000000"
+                android:shadowRadius="6"
+                android:focusable="false"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"
@@ -458,4 +478,17 @@
         android:layout_height="10dp"
         android:alpha="0"
         android:importantForAccessibility="no" />
+
+    <!-- scroll_hint: shown while the dock has focus and more apps follow below (peek_row false hides their edge). -->
+    <ImageView
+        android:id="@+id/scrollHint"
+        android:layout_width="28dp"
+        android:layout_height="16dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="26dp"
+        android:src="@drawable/ic_scroll_hint"
+        android:alpha="0.55"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
 </FrameLayout>

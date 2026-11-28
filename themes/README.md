@@ -215,6 +215,9 @@ A new key needs one there in the same pull request.
 | `shelf_previews` | bool | With `continue_watching`, the cards also take the focused app's preview-channel programs (its picks, subscriptions or trending rows) after its Continue watching, without a progress bar. With the stock launcher disabled no channel is marked browsable, so all of an app's channels are read (Mehdi-Ks's top shelf). Off by default |
 | `shelf_hidden_apps` | list of package names | Apps whose rows the shelf leaves out, for apps that publish only promotions |
 | `weather_line`, `weather_latitude`, `weather_longitude` | bool, string, string | One line under the clock: now, the next hours and the night's low (or the day's high), from Open-Meteo for the given decimal coordinates. Only those two numbers are sent, every 30 minutes while Home is on screen (Mehdi-Ks's weather line). Off by default |
+| `weather_style` | `line` or `compact` | `line` (default) puts the whole weather sentence under the clock; `compact` shows only the temperature and the condition now, beside the top buttons |
+| `peek_row` | bool | `false` hides the grid row under the dock while the dock, the shelf or the top bar has focus; Down still scrolls to it. `true` by default |
+| `scroll_hint` | bool | A small chevron under the dock while it has focus and more apps follow below (`false` by default); pairs with `peek_row` false |
 | `dock_even_padding` | bool | The dock band's padding equals the gap between its tiles on all four sides, as far as the grid's edges leave room (`false` by default) |
 | `dock_glass` | bool | The dock band as light frosted glass like the top bar's pills (`false` by default); suits `sky_intensity` or a wallpaper, where the solid band reads as a dark slab |
 | `dock_band` | bool | Draw the dock band and its edge (`true` by default); `false` leaves the tiles floating on the wallpaper with no band, border or dark slab |

@@ -258,6 +258,12 @@ final class Config {
     final boolean weatherLine;
     final String weatherLatitude;
     final String weatherLongitude;
+    /** weather_style: "line" (under the clock, the whole sentence) or "compact" (beside the top buttons, now only). */
+    final boolean weatherCompact;
+    /** peek_row: false hides the grid row under the dock while the dock (or the shelf) has focus. */
+    final boolean peekRow;
+    /** scroll_hint: a small chevron under the dock while more apps follow below. */
+    final boolean scrollHint;
     /** Opacity of the app's artwork behind the cinematic shelf, 0 to 100 (config.xml, cinematic_art); 50 as before. */
     final int cinematicArt;
     /** Strength of the cinematic shelf's dark scrim, 0 to 100 percent (config.xml, cinematic_scrim); 100 as before. */
@@ -313,7 +319,7 @@ final class Config {
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
                    boolean settingsKeyClearTask, boolean continueWatching, boolean dockOrderRecent,
                    boolean shelfPreviews, List<String> shelfHiddenApps, boolean weatherLine, String weatherLatitude,
-                   String weatherLongitude) {
+                   String weatherLongitude, boolean weatherCompact, boolean peekRow, boolean scrollHint) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -413,6 +419,9 @@ final class Config {
         this.weatherLine = weatherLine;
         this.weatherLatitude = weatherLatitude;
         this.weatherLongitude = weatherLongitude;
+        this.weatherCompact = weatherCompact;
+        this.peekRow = peekRow;
+        this.scrollHint = scrollHint;
         this.cinematicArt = cinematicArt;
         this.cinematicScrim = cinematicScrim;
         this.wallpaperMoods = wallpaperMoods;
@@ -561,6 +570,9 @@ final class Config {
         boolean weatherLine = res.getBoolean(R.bool.weather_line);
         String weatherLat = res.getString(R.string.weather_latitude).trim();
         String weatherLon = res.getString(R.string.weather_longitude).trim();
+        boolean weatherCompact = "compact".equals(res.getString(R.string.weather_style));
+        boolean peekRow = res.getBoolean(R.bool.peek_row);
+        boolean scrollHint = res.getBoolean(R.bool.scroll_hint);
         int cinematicArt = res.getInteger(R.integer.cinematic_art);
         int cinematicScrim = res.getInteger(R.integer.cinematic_scrim);
         Map<String, Set<String>> wallpaperMoods = moods(res.getString(R.string.wallpaper_moods));
@@ -685,6 +697,9 @@ final class Config {
             weatherLine = bool(json, "weather_line", weatherLine);
             weatherLat = string(json, "weather_latitude", weatherLat);
             weatherLon = string(json, "weather_longitude", weatherLon);
+            if (json.has("weather_style")) weatherCompact = "compact".equals(string(json, "weather_style", "line"));
+            peekRow = bool(json, "peek_row", peekRow);
+            scrollHint = bool(json, "scroll_hint", scrollHint);
             cinematicArt = integer(json, "cinematic_art", cinematicArt, 0, 100);
             cinematicScrim = integer(json, "cinematic_scrim", cinematicScrim, 0, 100);
             JSONObject moods = json.optJSONObject("wallpaper_moods");
@@ -768,7 +783,7 @@ final class Config {
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
                 settingsKeyClearTask, continueWatching, dockOrderRecent,
-                shelfPreviews, shelfHidden, weatherLine, weatherLat, weatherLon);
+                shelfPreviews, shelfHidden, weatherLine, weatherLat, weatherLon, weatherCompact, peekRow, scrollHint);
     }
 
     /**

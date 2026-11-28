@@ -106,6 +106,13 @@ final class WeatherLine {
         return (int) Math.round(degrees);
     }
 
+    /** weather_style "compact": the temperature and the condition now ("0° Overcast"), or "" when unusable. */
+    static String compact(Forecast f, Words w) {
+        if (f == null || Double.isNaN(f.tempNow)) return "";
+        int cond = condition(f.codeNow);
+        return round(f.tempNow) + "°" + (cond >= 0 ? " " + w.conditions[cond] : "");
+    }
+
     /** The whole line, or "" when the forecast is unusable. */
     static String sentence(Forecast f, Words w) {
         if (f == null || Double.isNaN(f.tempNow)) return "";

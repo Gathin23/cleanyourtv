@@ -630,6 +630,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         weatherLat = WeatherLine.coordinate(cfg.weatherLatitude, 90);
         weatherLon = WeatherLine.coordinate(cfg.weatherLongitude, 180);
         showWeather = cfg.weatherLine && weatherLat != null && weatherLon != null;
+        weatherCompact = cfg.weatherCompact;
+        weatherCompactView = findViewById(R.id.weatherCompact);
+        peekRow = cfg.peekRow;
+        scrollHint = cfg.scrollHint ? findViewById(R.id.scrollHint) : null;
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
         raceKicker = findViewById(R.id.raceKicker);
@@ -779,6 +783,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // A single row never shows the names under its tiles (the title above the row names the app), so the
             // 7dp gap and 22dp label item_app.xml keeps for them would only lift the row: sit it that much lower.
             if (singleRow && !cfg.alwaysShowNames) want += (int) (29 * density);
+            peekClipY = want + dockRow + (int) (6 * density);
+            if (!peekRow) grid.post(this::updatePeek);
             if (grid.getPaddingTop() != want) {
                 grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
                 // A vertical grid parks the dock on the new padding line by scrolling (onTileFocused); a sideways
@@ -1464,7 +1470,42 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         boolean onTile = newF != null && newF.getId() == R.id.card;
         if (!onTile) hideGlass();
         if (browsing && newF != null && !shelfRow.owns(newF)) exitBrowse(true);
+        if (!this.peekRow || this.scrollHint != null) updatePeek();
     };
+
+    // ---- peek_row false and scroll_hint ------------------------------------------------------------
+
+    /** The grid's y below which nothing shows while the dock has focus (peek_row false), from the layout pass. */
+    private int peekClipY;
+    private boolean peekRow = true;
+    /** The chevron under the dock (scroll_hint), or null when off. */
+    private ImageView scrollHint;
+    private final android.graphics.Rect peekClip = new android.graphics.Rect();
+
+    /** True while focus is in the grid below the dock row, where the rows must show in full. */
+    private boolean focusBelowDock() {
+        View f = getCurrentFocus();
+        if (f == null || grid == null) return false;
+        RecyclerView.ViewHolder vh = grid.findContainingViewHolder(f);
+        return vh != null && vh.getBindingAdapterPosition() >= COLUMNS;
+    }
+
+    /** Clips the grid under the dock and shows the chevron while the dock, the shelf or the top bar has focus. */
+    private void updatePeek() {
+        if (grid == null) return;
+        boolean below = focusBelowDock();
+        boolean clip = !peekRow && dockRow && !singleRow && !below && peekClipY > 0;
+        if (clip) {
+            peekClip.set(0, 0, grid.getWidth(), peekClipY);
+            grid.setClipBounds(peekClip);
+        } else if (grid.getClipBounds() != null) {
+            grid.setClipBounds(null);
+        }
+        if (scrollHint != null) {
+            boolean more = adapter != null && adapter.appCount() > COLUMNS;
+            scrollHint.setVisibility(more && !below && !browsing && dockRow && !singleRow ? View.VISIBLE : View.GONE);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -2760,6 +2801,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     // ---- weather line (config.xml weather_line) -----------------------------------------------------
 
     private TextView weatherLine;
+    /** weather_style "compact": the reading goes beside the top buttons instead of under the clock. */
+    private boolean weatherCompact;
+    private TextView weatherCompactView;
     /** weather_line is on and both coordinates are usable. Off: the line is gone and nothing is fetched. */
     private boolean showWeather;
     private String weatherLat, weatherLon;
@@ -2787,20 +2831,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 WeatherLine.Forecast f = WeatherLine.fetch(weatherLat, weatherLon);
                 failures = f == null ? failures + 1 : 0;
                 handler.post(() -> {
-                    if (weatherBg != bg || weatherLine == null) return;
+                    TextView target = weatherCompact ? weatherCompactView : weatherLine;
+                    if (weatherBg != bg || target == null) return;
                     String line;
                     try {
-                        line = f == null ? "" : WeatherLine.sentence(f, weatherWords());
+                        line = f == null ? "" : weatherCompact ? WeatherLine.compact(f, weatherWords())
+                                : WeatherLine.sentence(f, weatherWords());
                     } catch (RuntimeException e) {   // a placeholder a translation got wrong: no line, no crash
                         line = "";
                     }
                     if (!line.isEmpty()) {
-                        weatherLine.setText(line);
-                        weatherLine.setVisibility(View.VISIBLE);
+                        target.setText(line);
+                        target.setVisibility(View.VISIBLE);
                         weatherReadAt = SystemClock.elapsedRealtime();
                     } else if (weatherReadAt == 0
                             || SystemClock.elapsedRealtime() - weatherReadAt > WEATHER_STALE_MS) {
-                        weatherLine.setVisibility(View.GONE);   // offline for a while: no line beats an old one
+                        target.setVisibility(View.GONE);   // offline for a while: no line beats an old one
                     }
                 });
                 // 30 s, 1, 2 and 4 minutes, then every 5 minutes while it keeps failing.
