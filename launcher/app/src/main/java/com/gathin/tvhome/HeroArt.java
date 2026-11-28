@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 /**
@@ -22,18 +23,27 @@ final class HeroArt {
     /** The softened artwork, about 5 KB; null when there is nothing to draw. */
     static Bitmap from(Drawable live) {
         if (live == null) return null;
-        // Draw a private copy: changing the bounds of the drawable a tile shows would blank the tile.
-        Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
-        Rect saved = new Rect(d.getBounds());
-        Bitmap big = Bitmap.createBitmap(W * 4, H * 4, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(big);
-        c.drawColor(Color.BLACK);
-        d.setBounds(0, 0, big.getWidth(), big.getHeight());
-        d.draw(c);
-        d.setBounds(saved);
-        // Halve twice: each filtered halving averages 2×2 pixels, where one 4× step would skip most of them.
-        Bitmap half = Bitmap.createScaledBitmap(big, W * 2, H * 2, true);
-        big.recycle();
+        Bitmap src = live instanceof BitmapDrawable ? ((BitmapDrawable) live).getBitmap() : null;
+        Bitmap half;
+        if (src != null) {
+            Bitmap sw = src.getConfig() == Bitmap.Config.HARDWARE ? src.copy(Bitmap.Config.ARGB_8888, false) : src;
+            if (sw == null) return null;
+            half = Bitmap.createScaledBitmap(sw, W * 2, H * 2, true);
+            if (sw != src) sw.recycle();
+        } else {
+            // Draw a private copy: changing the bounds of the drawable a tile shows would blank the tile.
+            Drawable d = live.getConstantState() != null ? live.getConstantState().newDrawable().mutate() : live;
+            Rect saved = new Rect(d.getBounds());
+            Bitmap big = Bitmap.createBitmap(W * 4, H * 4, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(big);
+            c.drawColor(Color.BLACK);
+            d.setBounds(0, 0, big.getWidth(), big.getHeight());
+            d.draw(c);
+            d.setBounds(saved);
+            // Halve twice: each filtered halving averages 2×2 pixels, where one 4× step would skip most of them.
+            half = Bitmap.createScaledBitmap(big, W * 2, H * 2, true);
+            big.recycle();
+        }
         Bitmap small = Bitmap.createScaledBitmap(half, W, H, true);
         half.recycle();
 
