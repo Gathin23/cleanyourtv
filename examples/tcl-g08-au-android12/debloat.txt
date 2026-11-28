@@ -49,7 +49,8 @@ com.tcl.guard                          # cleaner / "permission shield"
 com.tcl.android.webview
 com.iplayer.android.webview
 com.mediatek.support.webview
-com.mediatek.backgrounddetection
+# com.mediatek.backgrounddetection   # KEEP: on the standby path; with it disabled deep standby (STR) aborts
+                                    # and the set never suspends (#4499)
 com.mediatek.network
 com.google.android.apps.tv.dreamx      # photo screensaver; the basic one takes over
 com.google.android.tts
