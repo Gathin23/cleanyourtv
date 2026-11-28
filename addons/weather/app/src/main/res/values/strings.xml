@@ -65,4 +65,11 @@
     <string name="sky_showers">Showers</string>
     <string name="sky_snow_showers">Snow showers</string>
     <string name="sky_thunderstorm">Thunderstorm</string>
+
+    <string name="today_range">Today  ·  High %1$d° / Low %2$d°</string>
+    <string name="hourly_forecast">Next 24 hours</string>
+    <string name="daily_forecast">Daily forecast</string>
+    <string name="chart_high">High</string>
+    <string name="chart_low">Low</string>
+    <string name="forecast_unavailable">Forecast unavailable</string>
 </resources>

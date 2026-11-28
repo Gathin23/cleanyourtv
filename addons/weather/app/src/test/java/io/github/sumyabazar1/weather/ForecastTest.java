@@ -1,8 +1,14 @@
 package io.github.sumyabazar1.weather;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /** The tables that turn Open-Meteo's numbers into words and colours. */
 public class ForecastTest {
@@ -55,6 +61,37 @@ public class ForecastTest {
         assertEquals(7, Forecast.forecastDays(7));
         assertEquals(3, Forecast.forecastDays(0));
         assertEquals(7, Forecast.forecastDays(16));
+    }
+
+    @Test
+    public void hourlyForecastSpansMidnightAndKeepsGaps() {
+        LocalDateTime now = LocalDateTime.of(2026, 11, 21, 23, 15);
+        LocalDateTime midnight = LocalDateTime.of(2026, 11, 22, 0, 0);
+        List<Forecast.Hour> hours = Forecast.hourlyWindow(now, Arrays.asList(
+                new Forecast.Hour(midnight.minusHours(1), 3, 1, false),
+                new Forecast.Hour(midnight, 2.5, 3, false),
+                new Forecast.Hour(midnight.plusHours(23), -1, 71, false),
+                new Forecast.Hour(midnight.plusHours(24), -2, 73, false)));
+
+        assertEquals(24, hours.size());
+        assertEquals(midnight, hours.get(0).time);
+        assertEquals(2.5, hours.get(0).tempC, 0);
+        assertEquals(3, hours.get(0).code);
+        assertEquals(midnight.plusHours(1), hours.get(1).time);
+        assertTrue(Double.isNaN(hours.get(1).tempC));
+        assertEquals(-1, hours.get(1).code);
+        assertEquals(midnight.plusHours(23), hours.get(23).time);
+        assertEquals(-1, hours.get(23).tempC, 0);
+    }
+
+    @Test
+    public void hourlyForecastStartsAtTheCurrentHourWhenItMatchesExactly() {
+        LocalDateTime hour = LocalDateTime.of(2026, 11, 21, 12, 0);
+        List<Forecast.Hour> samples = Collections.singletonList(new Forecast.Hour(hour, 5, 1, true));
+
+        assertEquals(hour, Forecast.hourlyWindow(hour, samples).get(0).time);
+        assertTrue(Forecast.hourlyWindow(hour, samples).get(0).day);
+        assertTrue(Forecast.hourlyWindow(hour.plusMinutes(1), samples).isEmpty());
     }
 
     @Test

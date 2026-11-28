@@ -9,16 +9,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.time.format.TextStyle;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The weather for one place, full screen: now, the air quality and the next days (options.xml). It reads Open-Meteo only
+ * The weather for one place, full screen: current conditions, air quality and temperature charts. It reads Open-Meteo only
  * while it is on screen (every {@link Forecast#REFRESH_MS}, or {@link Forecast#RETRY_MS} after a failure) and
  * does nothing in the background. The place is chosen once with a search and kept in the app's preferences.
  */
@@ -37,11 +38,14 @@ public final class WeatherActivity extends Activity {
     private final ExecutorService io = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Runnable tick = this::refresh;
+    private final ViewTreeObserver.OnGlobalLayoutListener iconLayout = this::renderIcons;
     private SharedPreferences place;
     private SharedPreferences options;
     private View root;
+    private FrameLayout forecastArea;
     private View content;
     private TextView message;
+    private WeatherIcons icons;
     private boolean shown;
     private boolean resumed;
     private int requestId;
@@ -64,8 +68,21 @@ public final class WeatherActivity extends Activity {
         options = getSharedPreferences("options", MODE_PRIVATE);
         readOptions();
         root = findViewById(R.id.root);
+        forecastArea = findViewById(R.id.forecastArea);
         content = findViewById(R.id.content);
         message = findViewById(R.id.message);
+        try {
+            icons = new WeatherIcons(this);
+            icons.setVisibility(View.INVISIBLE);
+            forecastArea.addView(icons, new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+            forecastArea.getViewTreeObserver().addOnGlobalLayoutListener(iconLayout);
+            ((TemperatureChart) findViewById(R.id.hourlyChart)).enableIcons();
+            ((TemperatureChart) findViewById(R.id.dailyChart)).enableIcons();
+        } catch (RuntimeException e) {
+            // Some Android TV images ship without a WebView provider.
+            findViewById(R.id.currentIcon).setVisibility(View.GONE);
+        }
         View changeCity = findViewById(R.id.changeCity);
         changeCity.setOnClickListener(v -> pickCity());
         findViewById(R.id.weatherSettings).setOnClickListener(v -> settings());
@@ -80,6 +97,7 @@ public final class WeatherActivity extends Activity {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        if (icons != null) icons.onResume();
         if (place.contains("name")) refresh();
     }
 
@@ -87,6 +105,7 @@ public final class WeatherActivity extends Activity {
     protected void onPause() {
         super.onPause();
         resumed = false;
+        if (icons != null) icons.onPause();
         requestId++;
         searchId++;
         main.removeCallbacks(tick);   // nothing runs while the page is not on screen
@@ -95,6 +114,11 @@ public final class WeatherActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (icons != null) {
+            forecastArea.getViewTreeObserver().removeOnGlobalLayoutListener(iconLayout);
+            forecastArea.removeView(icons);
+            icons.destroy();
+        }
         io.shutdownNow();
     }
 
@@ -130,7 +154,8 @@ public final class WeatherActivity extends Activity {
         shown = true;
         root.setBackground(Forecast.backdrop(r.code, r.day));
         ((TextView) findViewById(R.id.place)).setText(place.getString("name", ""));
-        ((TextView) findViewById(R.id.temp)).setText(Forecast.degrees(r.tempC, fahrenheit) + "°");
+        ((TextView) findViewById(R.id.temp)).setText(getString(R.string.temperature_degrees,
+                Forecast.degrees(r.tempC, fahrenheit)));
         ((TextView) findViewById(R.id.sky)).setText(Forecast.sky(r.code, r.day));
         StringBuilder feels = new StringBuilder();
         if (bothUnits) {
@@ -158,42 +183,37 @@ public final class WeatherActivity extends Activity {
             air.setVisibility(View.GONE);
         }
 
-        LinearLayout days = findViewById(R.id.days);
-        days.removeAllViews();
-        LayoutInflater inflater = getLayoutInflater();
-        // More than three days: the cards share the row, with short day names, so a week fits on screen.
-        int count = Math.min(forecastDays, r.days.size());
-        boolean compact = count > Forecast.MIN_DAYS;
-        days.getLayoutParams().width = compact ? LinearLayout.LayoutParams.MATCH_PARENT
-                : LinearLayout.LayoutParams.WRAP_CONTENT;
-        for (int i = 0; i < count; i++) {
-            Forecast.Day d = r.days.get(i);
-            View card = inflater.inflate(R.layout.item_day, days, false);
-            ((TextView) card.findViewById(R.id.dayName)).setText(d.date.getDayOfWeek()
-                    .getDisplayName(compact ? TextStyle.SHORT : TextStyle.FULL, Locale.getDefault()));
-            ((TextView) card.findViewById(R.id.daySky)).setText(Forecast.sky(d.code, true));
-            TextView temps = card.findViewById(R.id.dayTemps);
-            temps.setText(getString(R.string.high_low, Forecast.degrees(d.maxC, fahrenheit),
-                    Forecast.degrees(d.minC, fahrenheit)));
-            if (compact) {
-                int pad = Math.round(14 * getResources().getDisplayMetrics().density);
-                card.setPadding(pad, pad, pad, pad);
-                TextView sky = card.findViewById(R.id.daySky);
-                sky.setTextSize(15);
-                sky.setSingleLine(false);   // "Partly cloudy" on two lines rather than cut; every card two lines tall
-                sky.setLines(2);
-                temps.setTextSize(21);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                lp.setMarginEnd(i < count - 1 ? Math.round(12 * getResources().getDisplayMetrics().density) : 0);
-                card.setLayoutParams(lp);
-            }
-            days.addView(card);
+        TextView todayRange = findViewById(R.id.todayRange);
+        if (Double.isFinite(r.todayMaxC) && Double.isFinite(r.todayMinC) && r.todayMaxC >= r.todayMinC) {
+            todayRange.setText(getString(R.string.today_range, Forecast.degrees(r.todayMaxC, fahrenheit),
+                    Forecast.degrees(r.todayMinC, fahrenheit)));
+            todayRange.setVisibility(View.VISIBLE);
+        } else {
+            todayRange.setVisibility(View.GONE);
         }
+
+        Locale locale = Locale.getDefault();
+        String timePattern = DateFormat.getBestDateTimePattern(locale, DateFormat.is24HourFormat(this) ? "Hm" : "hm");
+        TemperatureChart hourly = findViewById(R.id.hourlyChart);
+        hourly.setHourly(r.hours, DateTimeFormatter.ofPattern(timePattern, locale), fahrenheit);
+        TemperatureChart daily = findViewById(R.id.dailyChart);
+        int count = Math.min(forecastDays, r.days.size());
+        daily.setDaily(r.days.subList(0, count), fahrenheit);
 
         ((TextView) findViewById(R.id.updated))
                 .setText(getString(R.string.updated, DateFormat.getTimeFormat(this).format(updatedAt)));
         message.setVisibility(View.GONE);
         content.setVisibility(View.VISIBLE);
+        if (icons != null) {
+            icons.setVisibility(View.VISIBLE);
+            forecastArea.post(this::renderIcons);
+        }
+    }
+
+    private void renderIcons() {
+        if (icons == null || isDestroyed() || lastReport == null || content.getVisibility() != View.VISIBLE) return;
+        icons.render(WeatherIcons.symbol(lastReport.code, lastReport.day), findViewById(R.id.currentIcon),
+                findViewById(R.id.hourlyChart), findViewById(R.id.dailyChart));
     }
 
     private void readOptions() {
@@ -358,6 +378,7 @@ public final class WeatherActivity extends Activity {
                     lastReport = null;
                     shown = false;
                     content.setVisibility(View.INVISIBLE);
+                    if (icons != null) icons.setVisibility(View.INVISIBLE);
                     message.setVisibility(View.VISIBLE);
                     message.setText(R.string.loading);
                     refresh();

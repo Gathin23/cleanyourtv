@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- (c) ammap.com | SVG weather icons -->
+<svg width="56" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="blur" x="-.20655" y="-.21122" width="1.403" height="1.4997">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="0" dy="4" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA slope="0.05" type="linear" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <g transform="translate(16,-2)" filter="url(#blur)">
+    <g class="am-weather-fog" transform="translate(-10,20)" fill="none" stroke="#c6deff" stroke-linecap="round"
+      stroke-width="2">
+      <line class="am-weather-fog-1" y1="0" y2="0" x1="1" x2="37" stroke-dasharray="3, 5, 17, 5, 7" />
+      <line class="am-weather-fog-2" y1="5" y2="5" x1="9" x2="33" stroke-dasharray="11, 7, 15" />
+      <line class="am-weather-fog-3" y1="10" y2="10" x1="5" x2="40" stroke-dasharray="11, 7, 3, 5, 9" />
+      <line class="am-weather-fog-4" y1="15" y2="15" x1="7" x2="42" stroke-dasharray="13, 5, 9, 5, 3" />
+    </g>
+  </g>
+</svg>
