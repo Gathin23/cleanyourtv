@@ -111,3 +111,35 @@ used `org.droidtv.playtv` as `live_tv_package`; Watch TV is also in the Inputs p
 **Android 8 has no Wireless debugging.** USB debugging alone opens port 5555. No "Allow USB debugging?" prompt appeared on the first attempt
 (the handshake timed out); after a full restart (not standby) the connection worked, as the list header suggests.
 Switching USB debugging off closed the port again.
+
+## Fourth unit: Philips 55PUS7363/12 (one evening)
+
+Same product, board and firmware as above, read from the TV: `TPM171E`, `PH7M_EU_5596`, Android TV 8.0.0 (SDK 26),
+build `OC release-keys` 4718, software version `TPM171E_R.107.001.143.000`, security patch 2021-01-05. The rating
+label names the chassis `TPM18.1E LA`; the firmware reports itself as TPM171E all the same. This unit has its own
+list, [debloat-55pus7363.txt](debloat-55pus7363.txt), because its owner went further than `debloat.txt`: the
+Opera TV SDK sample app and, as commented options, Alexa, the old Google Play apps, the whole NetTV app gallery
+with its web apps, and DLNA. Its header has the Apply and Undo lines and what was checked.
+
+**The RSA prompt** did not appear until the USB debugging authorisations were revoked, debugging was switched off
+and on, and the TV was power-cycled at the mains. A plain reconnect, and a reconnect after a mains restart
+without the revoke, left the connection `unauthorized`.
+
+**`org.droidtv.usagelogger` and `org.droidtv.demome`** were disabled with `TVINPUT_ALLOW=1` after checking that
+neither serves a TV input (`cmd package query-services -a android.media.tv.TvInputService` lists only
+`com.mediatek.tvinput`, `com.mediatek.agent` and VLC). Home, the real Source button, HDMI 2 and a reboot were
+checked afterwards.
+
+**NetTV gallery.** The "Philips TV Collection" tile is `org.droidtv.nettv.market`. The owner switched to Play Store
+apps and turned off the gallery, its three service packages and the three preinstalled web apps together;
+`org.droidtv.nettvbrowser` stayed on. Netflix and MagentaTV still started from Home afterwards.
+
+**A paused app in the background.** The ZDF Mediathek, left paused with Home rather than closed with Back, held
+about 78% CPU in `dumpsys cpuinfo`, and the whole TV sat near 54% busy; after `am force-stop` the TV dropped to
+about 5%. This is the app, not the debloat. Android's three animation scales were set to 0.5 on this set at the
+owner's request (`settings put global window_animation_scale 1` and its two siblings undo it).
+
+**Power-on** came back on the last source (HDMI 2), not Home, and the owner kept it that way; the real Home button
+opened the replacement launcher without `HOME_KEY_SERVICE`. With no aerial connected, `live_tv_package` was left
+empty and `org.droidtv.playtv` stayed in `hidden_apps`. Not tested here: tuner reception, Ambilight, USB playback,
+Chromecast sending.
