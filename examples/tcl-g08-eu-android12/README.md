@@ -7,7 +7,7 @@ hotelmenu/channelplus/e-sticker/TV+/usercenter preloads, and no Android 14 ad se
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 32 packages: the 24 disabled on the first set and eight from the third unit, grouped and commented |
+| `debloat.txt` | The 31 packages to disable: the 24 from the first set and eight from the third unit, less `com.mediatek.backgrounddetection`, which now stays on (#4499); grouped and commented |
 
 **How much testing is behind it:** one set, 21 October 2026. All 24 packages are disabled on the live set
 (`pm list packages -d` verified) and the TV boots, plays Live TV/HDMI, and the remote's Source key opens

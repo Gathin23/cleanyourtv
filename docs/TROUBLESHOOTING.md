@@ -1289,12 +1289,7 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   there is no fix from the remote alone. Over ADB: disable PatchWall again
   (`tools/tv.py 'pm disable-user --user 0 com.mitv.tvhome.atv'`, or `check.py --fix` with the list).
   Disabling the updater as well stops it for good, but it also stops firmware updates; enable it again to
-  check for one, as in the bullet above. To keep the updater and still land on Home, set
-  `stock_home_redirect` to `com.mitv.tvhome.atv` and install with `HOME_KEY_SERVICE=1`: PatchWall is then
-  sent back to the new launcher whenever it comes up. That needs
-  [#4550](https://github.com/Gathin23/cleanyourtv/pull/4550), where a package with no HOME activity counts as
-  a stock home; a held volume key that stops ramping with the helper bound is covered in
-  [A key helper is bound and a held remote button stopped repeating](#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating).
+  check for one, as in the bullet above.
 - **The TV opens Live TV by itself at every power-on**, often on a "please scan channels" screen, with
   the new launcher already Home: seen on an ERGO DVB92YC (Changhong AI PONT, `redwood`, MT5867,
   Android TV 14, `UKNV.260514.001`). `logcat -b events -d | grep wm_set_resumed_activity` after a

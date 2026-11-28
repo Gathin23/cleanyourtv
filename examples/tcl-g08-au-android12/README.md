@@ -8,7 +8,7 @@ no voice assistant.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 28 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 27 packages to disable, grouped and commented (28 were disabled on the tested set; `com.mediatek.backgrounddetection` now stays on, #4499) |
 | `config.json` | Dock, hidden apps, no Live TV row, remote buttons; push it with `tools/theme.sh` |
 
 **How much testing is behind it:** one set, 22 October 2026. The list was applied with `tools/disable.sh` in

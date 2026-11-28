@@ -360,7 +360,7 @@ Alwtniet, Anker Nebula, Aurzen, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JM
 | Philips 55OLED708/12 (TPV, PH1M_WW_9972, MediaTek), Poland | Google TV 12 |
 | Philips 55OLED820/12 (TPV, PH1M_WW_9972, MediaTek), Czech Republic | Google TV 14 |
 | Philips 55POS9002/12 OLED (TP Vision TPM171E, PH7M_EU_5596, MediaTek MT5891), Europe | Android TV 8.0 |
-| Philips 55PUS7503/12, 50PUS7303/12 and 49PUS7502/12 (TP Vision TPM171E, PH7M_EU_5596, MediaTek MT5891), Europe | Android TV 8.0 |
+| Philips 55PUS7503/12, 50PUS7303/12, 49PUS7502/12 and 55PUS7363/12 (TP Vision TPM171E, PH7M_EU_5596, MediaTek MT5891), Europe | Android TV 8.0 |
 | Philips 65OLED706/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), France; 55OLED706/12, Poland, Germany and Austria | Android TV 11 |
 | Philips 65OLED807/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), Germany | Android TV 11 |
 | Philips 65OLED907/12 and 55OLED907/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), UK and France | Android TV 11 |
@@ -529,7 +529,7 @@ Alwtniet, Anker Nebula, Aurzen, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JM
 | TCL 55C845X2 / 75C845X2, UK/Europe (G08_4K_GB, MediaTek tcl9618) | Google TV 14 |
 | TCL 55EP640 (Greece, BeyondTV, Realtek RTD2851 / rtd285o, AR04) | Android TV 11 |
 | TCL 55P638 (Smart TV, BeyondTV4) | Android TV 11 |
-| TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P); also TCL 55C655, Italy, and TCL 55T7B, Turkey (same build) | Google TV 12 |
+| TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P); also TCL 55C655, Italy, TCL 55T7B, Turkey, and TCL 43T69C, Italy (G10_4K_GB_NF_32BIT, AS50) | Google TV 12 |
 | TCL 55P8LS QD-Mini LED, Vietnam (G10, G10_4K_GB_32BIT, Realtek rtd6748) | Google TV 12 |
 | TCL 55Q10G Pro (China, tcl_mt5879_cn, MediaTek MT9952) | Android TV 11 |
 | TCL 55Q6CX1 (Smart TV Pro, G08, G08_4K_GB, MediaTek) | Google TV 12 |
@@ -1060,7 +1060,7 @@ De nuttigste bijdrage is de opschoonlijst voor jouw tv, zodat de volgende gebrui
 |---|---|
 | **De opschoonlijst voor jouw tv** | De nuttigste bijdrage: de volgende gebruiker met dat model hoeft de software niet opnieuw te inventariseren. |
 | **Launcher en prompt** | Verbeteringen aan de launcher en duidelijkere promptteksten zijn ook welkom. |
-| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 285 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
+| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 288 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
 
 De volgende mensen hebben bijgedragen aan deze repository:
 

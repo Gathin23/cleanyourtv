@@ -132,7 +132,7 @@ What differed from the U7 and the 65U88QG:
   (`com.google.android.apps.mediashell`). With mediashell off, a phone's Cast button no longer finds the TV. AirPlay
   and YouTube clients linked with a TV code still work.
 
-Port 5555 and the saved Wi-Fi went as on the 65U88QG: Wireless debugging, then `adb tcpip 5555` until the next
-reboot, and the network had to be forgotten and joined again before `setupwraith` could go.
+As on the 65U88QG, the saved Wi-Fi network had to be forgotten and joined again before `setupwraith` could go.
+Switch Wireless and USB debugging off when you are done.
 
 Not tested: CEC, a soundbar, USB storage.
