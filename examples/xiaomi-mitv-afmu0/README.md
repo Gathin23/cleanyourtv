@@ -50,6 +50,33 @@ reboot, while USB debugging was on: switch both off when you are done.
 ## Private DNS (AdGuard DoT)
 Private DNS (such as AdGuard DoT) works on this set.
 
+## Usage & diagnostics after the debloat
+
+On another unit, same firmware (`V816.0.11.0.UZFAABX`), November 2026: the Settings → Privacy → Usage &
+diagnostics page comes from setupwraith, which this list disables for the launcher swap. With it off the page
+shows a spinner that never ends, and logcat has
+`Failed to find provider info for com.google.android.settings.usage`. Flip it before the debloat if you can.
+
+Afterwards it still works, in the order the header of [`debloat.txt`](debloat.txt) gives for re-pairing the
+remote: the stock launcher first, one package per call, and no reboot until the end.
+
+```sh
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm enable com.google.android.apps.tv.launcherx'
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm enable com.google.android.tungsten.setupwraith'
+# on the TV: Settings → Privacy → Usage & diagnostics → off
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'dumpsys wifi' | grep -o 'cname=[^ ]*'
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm disable-user --user 0 com.google.android.tungsten.setupwraith'
+TV_HOST=<tv ip> launcher/build-and-install.sh
+```
+
+Enabling the stock launcher first sends Home to it (HOME priority 2) rather than to setupwraith's
+RecoveryActivity (priority 1) while the wizard is on. Disable setupwraith again only if no `cname=` line
+names it: a saved Wi-Fi network it owns is deleted with it. If one does, forget and re-join that network in
+Settings first. Do not hand Home back while setupwraith is still enabled. `launcher/build-and-install.sh` then
+returns Home to the new launcher and disables the stock one; pass it the same `HOME_KEY_SERVICE` /
+`INPUT_KEY_SERVICE` as the first time, and `SKIP_BUILD=1` reuses the APK already built. Tested once on this
+firmware: the disabled packages were the same as before, and Home and Wi-Fi survived a reboot.
+
 ## YouTube kept playing with the TV off
 
 On another unit, same firmware, tried in November 2026: after the TV was turned off, YouTube played on for
