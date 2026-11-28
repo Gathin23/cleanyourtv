@@ -42,3 +42,21 @@ stopped playback. `settings put secure attentive_timeout 21600000` is the "when 
 as a safety net: Android warns before it sleeps and any key cancels. With HDMI-CEC on, the power key on the
 remote put both the TV and the box to sleep (`mLastSleepReason=hdmi`). The 6-hour timer itself was set but
 not watched to the end. To undo it: `settings put secure attentive_timeout -1`.
+
+## Volume and power do nothing on a monitor
+
+On another unit, same firmware (`V816.0.11.0.UZFAABX`), November 2026, on an LG 32UP83AK-W: a 4K monitor
+rather than a TV. The monitor has no infrared receiver and does not answer HDMI-CEC: every message the box sent
+it went unacknowledged (`dumpsys hdmi_control`). Plain Volume on the remote did nothing while watching, and the
+owner found Power did nothing either. Holding Home and pressing Volume changed the box's own volume.
+
+Here the remote sent plain Volume as infrared: `getevent -lt` on the box showed nothing for a plain Volume
+press, and holding Home made the remote send `KEY_VOLUMEUP` / `KEY_VOLUMEDOWN` over Bluetooth instead. Settings
+→ Remotes & Accessories → Set up remote buttons reported the remote as set up, but the owner found Volume and
+Power still did nothing on the monitor.
+
+The fix is in the same place: Settings → Remotes & Accessories → Set up remote buttons → **Reset** →
+**Clear** ("Clear saved remotes?"). After that `getevent` showed plain Volume presses arriving over
+Bluetooth, and the box changed its own output level (its volume bar, `STREAM_MUSIC` 0 to 15), during playback
+too. The owner confirmed Power then sleeps and wakes the box. Set the monitor's own speaker level once from its
+menu. Running "Set up remote buttons" again would most likely program the infrared codes back (not tried).
