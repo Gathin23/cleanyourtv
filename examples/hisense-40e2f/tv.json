@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense VIDAA_TV (MTK9255 / mt5862), China; retail model 40E2F",
+  "os": "Android 9",
+  "brand": "Hisense",
+  "notes": "VIDAA/WASU build: Hisense ads, telemetry, voice stack, hotel menu and OTA; 23 packages. Stock Home `com.jamdeo.tv.vod` kept, and `com.hisense.tv.tiletransition` kept because disabling it stops HDMI 1/HDMI 2 switching. [HDMI, casting and boot animation note](../docs/devices/hisense-40e2f.md)"
+}
