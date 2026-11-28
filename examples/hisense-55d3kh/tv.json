@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 55D3KH (VIDAA_TV, MediaTek MT9603, board D3K), China",
+  "os": "Android TV 11",
+  "brand": "Hisense",
+  "notes": "China JuUI on Android 11 (RP1A.200720.011 / 02.02.70.20250214160513), 107 installed apps, armv7, 1.9 GB, no Google services and no browser: ad SDK/service, telemetry and the DAS reporter, the vendor push channel and its persistent network poller, retail/hotel/first-run leftovers, preloaded content (Migu, family cloud/album/message, NAS, PC share, casting), the voice assistant stack, the vendor screensaver and the AOSP leftovers this build leaves enabled; debloat only, stock Home `com.jamdeo.tv.vod` and Live TV kept, so the sponsored rows stay; OTA off by the owner's choice (`com.jamdeo.updateservice`), the one departure from the repo default; `ro.adb.secure=0` so the TV never asks for the ADB key; reboot late - wait after `adb shell sync`, this build re-reads a stale package state otherwise; 38 packages; a launcher swap works without root through `persist.vt.use_home_pkg` + `persist.sys.boot.source_pkg`, while the accessibility Home Guard route does not (InputFilterEnabled: false)"
+}

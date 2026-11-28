@@ -1,0 +1,136 @@
+# Hisense 55D3KH (China market), JuUI on Android 11
+#   ro.product.model           = VIDAA_TV
+#   ro.product.hisense.model   = 55D3KH
+#   ro.product.device          = MT9603
+#   ro.product.board           = D3K
+#   ro.build.version.release   = 11  (API 30)
+#   ro.build.display.id        = RP1A.200720.011 release-keys
+#   ro.build.description       = D3K-user 11 RP1A.200720.011 02.02.70.20250214160513 release-keys
+#   ro.adb.secure              = 0     <- no "Allow USB debugging?" prompt, see below
+#   service.adb.tcp.port       = 5555
+#
+# Same JuUI namespace as examples/hisense-65d62qh/, examples/hisense-e5q-pro/ and
+# examples/vidda-mt9653/ (com.jamdeo.* / com.hisense.*), but this set is device MT9603 (board D3K,
+# armv7, 1.9 GB) on the 02.02.70 build line, so the list was derived from those and then re-checked
+# package by package against this set's own `pm list packages` (107 packages). Packages those lists
+# name that are not installed here are left out rather than copied over.
+#
+# ADB: turning USB debugging on opens port 5555 directly, and ro.adb.secure=0 means the TV never shows
+# the "Allow USB debugging?" dialog: ANY device on the LAN gets a shell with no prompt. Close the
+# debugging switch when the work is done and confirm the port really refuses connections
+# (tools/adb-closed.py <tv ip>).
+#
+# State at the time this list was written (2026-11-28):
+#   pm list packages -d        -> com.android.bluetooth only, disabled at the factory; left alone.
+#   No Google services: no com.google.android.*, no Play Store, no leanback launcher. The account and
+#   store layer is JuUI (com.hisense.hitv.*, com.jamdeo.tv.vod).
+#   No browser and no webview-based launcher: the browser lane that other VIDAA lists use does not
+#   exist here, so a launcher swap has to be a native APK plus the vendor properties below.
+#
+# Applied on the real set on 2026-11-28: five batches, each followed by a cold reboot, with the input
+# panel, the remote, Wi-Fi/Ethernet and the app library checked after every one. 38 packages stick.
+# com.jamdeo.updateservice is disabled on the owner's instruction (see BATCH 5), which is a departure
+# from the repo's default of leaving the OTA updater enabled.
+#
+# Read before applying:
+#   * This list does NOT change how Home looks. The sponsored rows, the VIP banner and the promo tiles
+#     are fetched by com.jamdeo.tv.vod itself, not by the ad sidecars below. Only swapping the launcher
+#     removes them. What this list buys is the telemetry, the push channel, the persistent network
+#     poller, the ad SDK processes and the leftover preloads.
+#   * Everything is DISABLED (pm disable-user --user 0), never uninstalled. tools\disable.ps1 records
+#     each package's original state under %USERPROFILE%\.cleanyourtv\ before touching it, so
+#     tools\restore.ps1 with this same file puts it all back.
+#   * Apply in batches, reboot after each one, and confirm the TV boots, the remote works, the source
+#     panel switches to HDMI and the network is still up. A batch can take something load-bearing with
+#     it and you cannot tell which without the reboot. `adb shell sync` plus about 20 seconds before
+#     rebooting matters: Android writes package state to disk late, and a reboot sent straight after a
+#     batch boots with the old state and reads as if the firmware re-enabled everything.
+#
+# Apply:   tools\disable.ps1 -TvHost <tv ip> examples\hisense-55d3kh\debloat.txt
+# Undo:    tools\restore.ps1 -TvHost <tv ip> examples\hisense-55d3kh\debloat.txt
+# Reboot:  & tools\venv\Scripts\python.exe -I tools/tv.py --reboot   # returns once ADB accepts it; wait for the TV to come back
+# Compare: & tools\venv\Scripts\python.exe -I tools/tv.py 'pm list packages -d'
+# Comment out any line you want to keep.
+
+# BATCH 1 — telemetry, reporting and the vendor push channel (lowest risk, start here)
+com.hisense.hitv.das                            # DasApp: DataReportReceiver only
+com.hisense.platformreport                      # usage/telemetry reporting
+com.hisense.service.hproxy                      # LoopingService + network-change receiver, polls forever
+com.hisense.service.message                     # HiMsgService, the vendor push channel
+
+# BATCH 2 — advertising and content feeds
+com.hisense.business.ad                         # ad SDK
+com.hisense.service.ad                          # ad service; registers a WatchingAccessibilityService
+com.hisense.tv.weather                          # weather card, another content feed
+com.jamdeo.screensaver                          # vendor ad screensaver
+
+# BATCH 3 — retail, hotel, factory and first-run leftovers
+com.hisense.demonstrate                         # DbxDemo / multi-channel sound demo reels
+com.hisense.hotelmenu                           # hotel mode menu
+com.jamdeo.tv.fte                               # first-run wizard, already completed
+com.hisense.electronictutorial                  # e-manual
+fusion.android.tv.demo                          # retail demo shell: no launchable activity
+com.jamdeo.calendar                             # vendor calendar, not the AOSP one
+com.android.dreams.basic                        # AOSP screensaver it falls back to
+com.android.printspooler                        # printing
+com.android.wallpaperbackup                     # wallpaper backup agent
+
+# BATCH 4 — preloaded features nobody in this home used
+com.ju.miguvideoTV.cmcc                         # Migu Video (咪咕视频) preload
+com.hisense.tv.videochat                        # preloaded video chat
+com.hisense.tv.familyalbum                      # family album
+com.hisense.tv.familycloud                      # family cloud
+com.hisense.familymessage                       # family message board
+com.hisense.nasservice                          # vendor NAS background service
+com.hisense.nas.pt                              # vendor NAS client
+com.hisense.pcm.share                           # PC screen share
+com.hisense.multiscreen.screenhelper            # multi-screen helper
+com.ms.weshare                                  # weshare casting
+com.ms.ucast.ucastapp                           # ucast casting
+com.hisense.childlock                           # parental lock
+
+# BATCH 5 — the voice assistant stack, and the OTA updater by the owner's choice
+# Disabling com.keylab.speech.view.vidaa removes the remote's mic key AND stops
+# com.ju.secondscreen.HomeActivity, which that package starts at boot and which can take the
+# foreground on top of Home on this firmware family.
+com.keylab.speech.view.vidaa                    # voice UI shell + secondscreen Home
+com.keylab.speech.core.vidaa                    # speech core
+com.hisense.tv.aivirtualassistant               # AI virtual assistant character
+com.hisense.msvoicetome                         # voice service
+com.hispeech.ai.area                            # HiSpeech AI service
+com.intelligent.speech                          # intelligent speech engine
+com.speech.enchatroom                           # voice chat room
+com.aispeech.dui.dds.tvassistant                # TV assistant voice stub
+com.jamdeo.updateservice                        # OTA — disabled on the owner's instruction; re-enable to get updates
+
+# ---------------------------------------------------------------------------------------------
+# NOT IN THIS LIST — present on this set, not touched (no tested note, or nothing to gain)
+#   com.vt.factory, com.xiaodianshi.tv.yst, com.hisense.prism, com.hisense.playerupdate,
+#   com.hisense.smartimages, com.hisense.usbupgrade
+#
+# Do NOT disable (verified load-bearing on VIDAA_TV / JuUI):
+#   com.jamdeo.tv.vod               stock Home. Disabled, this firmware starts no Home at all at boot
+#                                   (display on, no window) until the remote wakes the TV, and the
+#                                   remote's Home key (Linux scancode 102 -> KEYCODE_F12) is gone.
+#   com.jamdeo.tv.livetv            Live TV and the HDMI/AV renderer
+#   com.jamdeo.tv.service           TVServices: the TIL/JNI side of source switching
+#   com.hisense.tv.inputs           SysUIMerge: the source panel and TaskCenter
+#   com.hisense.tv.tiletransition   TileAnimationService, required by the source panel. Disabled, the
+#                                   panel still opens and animates but picking HDMI does nothing.
+#   com.hisense.tv.baseservice      TV base services
+#   com.hisense.bluetoothpair       remote pairing; losing it can leave you without a remote
+#   com.sohu.inputmethod.sogou.tv   the only IME on the device
+#   com.hisense.vidaaassistant      also handles APK installation, permissions and app startup
+#   com.hisense.hitv.payment       payment
+#   com.hisense.hitv.hicloud.account  JuUI account / sign-in
+#   com.hisense.aiot                AIoT. NOT verified on this platform, and the aiot family sent a
+#                                   different Hisense board (huangshan) to Android Recovery on boot.
+#                                   Leave it alone.
+#
+# HOME: this list is debloat only; the stock Home stays. Replacing Home on this set does not need root
+# but does need the vendor's own properties, not the HOME role:
+#   adb shell setprop persist.vt.use_home_pkg <launcher package>
+#   adb shell setprop persist.sys.boot.source_pkg <launcher package>
+# Both are empty at the factory and both are what make the Home key and power-on open the new
+# launcher. The accessibility Home Guard route does not work here: this firmware reports
+# InputFilterEnabled: false, so a guard service cannot filter the key.
