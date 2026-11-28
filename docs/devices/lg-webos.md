@@ -62,6 +62,29 @@ on 2026-11-04:
 This set has no Hands-free Voice setting. Turning off voice information disables voice search.
 A firmware update can reset these switches, so check them again after each update.
 
+## The same switches on a 2019 set
+
+The list above is the 2026 menu. A 2019 set carries the same switches, one level lower, and its General
+page has no System level at all: an owner typed out every path below on an LG 50UM7300AUE (`UM7300`,
+UHD) and reported them in [#2989](https://github.com/Gathin23/cleanyourtv/issues/2989), arriving from
+the guide's `#lg-all` section.
+
+| Step | Path on the 2019 set | What it offers |
+|---|---|---|
+| 1 | Settings → All Settings → General → Additional Settings → Live Plus | Live Plus (ACR) |
+| 2 | Settings → All Settings → General → About This TV → User Agreements | Viewing information, Voice information, Interest-based & Cross-device advertising, Who.Where.What? |
+| 3 | Settings → All Settings → General → Additional Settings → Advertisement | Limit AD Tracking, Reset AD ID |
+| 4 | Settings → All Settings → General → Additional Settings → Home Settings → Home Promotion | Home Promotion |
+| — | Settings → All Settings → General → AI Service | AI Recommendation |
+
+So on this set the agreements sit under **About This TV** rather than on a User Agreements page of
+their own, and Live Plus, Advertisement and Home Promotion share the one **Additional Settings** page;
+AI Recommendation is the only switch under **AI Service**.
+
+These are the owner's paths, not a run of ours: no LG set was tested for this page, and nothing here
+says whether a firmware update puts any of them back. The DNS half below was measured on the 2026 set
+and does not depend on which menu a year's firmware puts the switches in.
+
 ## AdGuard Home for the TV only
 
 The settings stop collection on the TV. DNS filtering stops the uploads that remain. This set
