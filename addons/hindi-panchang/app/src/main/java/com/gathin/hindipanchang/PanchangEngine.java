@@ -594,7 +594,7 @@ final class PanchangEngine {
         List<String> festivalsHi = new ArrayList<>();
         List<String> festivalsEn = new ArrayList<>();
         boolean isMajor = populateFestivals(
-                date, monthIndex, isShukla, pakshaTithiNum, tithiIndex,
+                date, isAdhikMaas ? -1 : monthIndex, monthIndex, isShukla, pakshaTithiNum, tithiIndex,
                 sunSidereal, weekdayIndex, festivalsHi, festivalsEn
         );
 
@@ -680,8 +680,9 @@ final class PanchangEngine {
         );
     }
 
+    /** monthIndex is -1 in an adhik month, whose days keep no month-keyed festival. */
     private static boolean populateFestivals(
-            LocalDate date, int monthIndex, boolean isShukla, int pakshaTithi, int tithiIndex,
+            LocalDate date, int monthIndex, int monthNameIndex, boolean isShukla, int pakshaTithi, int tithiIndex,
             double sunSidereal, int weekdayIndex, List<String> hi, List<String> en) {
         boolean major = false;
 
@@ -770,7 +771,7 @@ final class PanchangEngine {
             en.add("Raksha Bandhan");
             major = true;
         }
-        if (monthIndex == 4 && weekdayIndex == 1) {
+        if (monthNameIndex == 4 && weekdayIndex == 1) {
             hi.add("श्रावण सोमवार व्रत");
             en.add("Shravan Somwar Vrat");
         }
@@ -925,12 +926,12 @@ final class PanchangEngine {
             en.add("Sankashti Chaturthi Vrat");
         }
         if (tithiIndex == 14 && hi.isEmpty()) {
-            hi.add(HINDI_MONTHS_HI[monthIndex] + " पूर्णिमा व्रत");
-            en.add(HINDI_MONTHS_EN[monthIndex] + " Purnima Vrat");
+            hi.add(HINDI_MONTHS_HI[monthNameIndex] + " पूर्णिमा व्रत");
+            en.add(HINDI_MONTHS_EN[monthNameIndex] + " Purnima Vrat");
         }
         if (tithiIndex == 29 && hi.isEmpty()) {
-            hi.add(HINDI_MONTHS_HI[monthIndex] + " अमावस्या");
-            en.add(HINDI_MONTHS_EN[monthIndex] + " Amavasya");
+            hi.add(HINDI_MONTHS_HI[monthNameIndex] + " अमावस्या");
+            en.add(HINDI_MONTHS_EN[monthNameIndex] + " Amavasya");
         }
 
         return major;
