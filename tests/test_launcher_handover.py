@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STOCK_HOME = "com.google.android.tvlauncher/.MainActivity"
 NEW_HOME = "com.gathin.tvhome/.MainActivity"
 FOREIGN_HOME = "com.unknown.oem.launcher/.Home"
+FALLBACK_HOME = "com.android.tv.settings/.system.FallbackHome"
 
 # Stands in for tools/tv.py: a TV that answers shell commands and keeps the state the script changes.
 FAKE_TV = r'''
@@ -92,6 +93,9 @@ def run(command):
         # An unknown third-party launcher owns Home: the unknown-launcher refusal names it (#3471).
         if state["foreign_home"]:
             return FOREIGN + "\n"
+        # OEM firmware (fallback_home): our launcher is a claimant alongside FallbackHome (#4439).
+        if state["fallback_home"]:
+            return NEW + "\n" + FALLBACK + "\n"
         return state["home"] + "\n"
     if "resolve-activity" in command:
         if state["link_lost"]:
@@ -104,6 +108,10 @@ def run(command):
         # launcher and must refuse with the candidates listed (#3471).
         if state["foreign_home"]:
             return FOREIGN + "\n"
+        # OEM firmware overrides resolve-activity to return FallbackHome after the stock launcher
+        # is disabled, even though set-home-activity answered Success (#4439).
+        if state["fallback_home"] and state["stock_disabled"]:
+            return FALLBACK + "\n"
         # A disabled package is not a HOME candidate, so the answer falls back to the chooser.
         if state["stock_disabled"] and state["home"] == STOCK:
             return "android\n"
@@ -137,7 +145,7 @@ def main():
 
 
 sys.exit(main())
-'''.replace("STOCK", repr(STOCK_HOME)).replace("NEW", repr(NEW_HOME)).replace("FOREIGN", repr(FOREIGN_HOME))
+'''.replace("STOCK", repr(STOCK_HOME)).replace("NEW", repr(NEW_HOME)).replace("FOREIGN", repr(FOREIGN_HOME)).replace("FALLBACK", repr(FALLBACK_HOME))
 
 
 class HandoverTest(unittest.TestCase):
@@ -179,6 +187,7 @@ class HandoverTest(unittest.TestCase):
             "link_lost": False,
             "second_home": False,
             "foreign_home": False,
+            "fallback_home": False,
             "commands": [],
         }
         state.update(overrides)
@@ -323,6 +332,31 @@ class HandoverTest(unittest.TestCase):
         # Nothing was disabled or started: the refusal happens during detection.
         self.assertFalse(any("pm disable-user" in c for c in state["commands"]))
         self.assertFalse(state["stock_disabled"])
+
+    def test_fallbackhome_is_not_rolled_back_when_set_home_succeeded(self):
+        # OEM firmware (TELESystem UPT24K, Android 12) customises PackageManager so that
+        # resolve-activity returns FallbackHome after the stock launcher is disabled, even though
+        # set-home-activity answered Success and our launcher holds the HOME role (#4439).
+        # That must not trigger a rollback.
+        result, state = self.handover(fallback_home=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Installed.", result.stdout)
+        self.assertIn("FallbackHome", result.stdout)
+        self.assertTrue(state["stock_disabled"], "a correct handover must not be rolled back")
+        self.assertEqual(state["home"], NEW_HOME)
+        self.assertFalse(any("pm enable --user 0" in c for c in state["commands"]),
+                         "the stock launcher must not be re-enabled when set-home-activity succeeded")
+        self.assertIsNone(self.record())
+
+    def test_fallbackhome_with_failed_set_home_is_rolled_back(self):
+        # If FallbackHome appears but set-home-activity did NOT answer Success, it is a real failure
+        # and must still roll back — same guard as the chooser arm (#4068).
+        result, state = self.handover(fallback_home=True, set_home_fails=True)
+        self.assertNotEqual(result.returncode, 0, "a failed set-home must not be accepted")
+        self.assertIn("owns Home again", result.stderr)
+        self.assertNotIn("Installed.", result.stdout)
+        self.assertFalse(state["stock_disabled"], "the stock launcher must be re-enabled on rollback")
+        self.assertTrue(any("pm enable --user 0" in c for c in state["commands"]))
 
 
 if __name__ == "__main__":

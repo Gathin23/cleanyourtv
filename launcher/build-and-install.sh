@@ -233,6 +233,20 @@ if [ "$HOME_NOW" = android ] && [ "$SET_HOME_OK" = yes ]; then
     echo "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
   fi
 fi
+# Some OEM firmwares (e.g. TELESystem UPT24K, Android 12) customise PackageManager so that
+# resolve-activity returns com.android.tv.settings/.system.FallbackHome after the stock launcher
+# is disabled, even though set-home-activity answered Success and our launcher holds the HOME role
+# (confirmed by dumpsys role and preferred-xml). Rolling back there undoes a correct handover
+# (#4439). Apply the same guard as the chooser arm above: keep the handover only when
+# set-home-activity answered Success and our launcher is a registered HOME claimant.
+if { [ "${HOME_NOW##*/}" = ".system.FallbackHome" ] || [ "${HOME_NOW##*/}" = "FallbackHome" ]; } && [ "$SET_HOME_OK" = yes ]; then
+  CLAIMANTS=$("$PY" -I ../tools/tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
+    | tr -d '\r' | grep -o '[A-Za-z0-9_.]*/' | tr -d / | sort -u)
+  if printf '%s\n' "$CLAIMANTS" | grep -qx com.gathin.tvhome; then
+    HOME_NOW=com.gathin.tvhome/fallback
+    echo "Home resolves to FallbackHome (OEM firmware overrides resolve-activity); set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate, so the handover is kept."
+  fi
+fi
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
   *)

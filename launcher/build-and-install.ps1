@@ -192,6 +192,17 @@ if ($homeNow -eq 'android' -and $setHomeOk) {
         Write-Host "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
     }
 }
+# Some OEM firmwares (e.g. TELESystem UPT24K, Android 12) customise PackageManager so that
+# resolve-activity returns com.android.tv.settings/.system.FallbackHome after the stock launcher
+# is disabled, even though set-home-activity answered Success and our launcher holds the HOME role.
+# Apply the same guard as the chooser arm above (#4439).
+if (($homeNow -like '*FallbackHome') -and $setHomeOk) {
+    $claimants = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
+    if ($claimants -match 'com\.gathin\.tvhome/') {
+        $homeNow = 'com.gathin.tvhome/fallback'
+        Write-Host "Home resolves to FallbackHome (OEM firmware overrides resolve-activity); set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate, so the handover is kept."
+    }
+}
 if ($homeNow -and $homeNow -notlike 'com.gathin.tvhome/*' -and $keepStockHome) {
     Write-Host "Home stays $homeNow, as -StockLauncher none disabled nothing (stock_home_redirect)."
     if (-not $HomeKeyService) { Write-Warning 'Without -HomeKeyService nothing sends Home here; run again with it for stock_home_redirect.' }
