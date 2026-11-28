@@ -18,6 +18,8 @@
     <string name="weather_location_off">Locatieservices staan uit op deze TV: zet ze aan voor het weer.</string>
     <string name="weather_ok">Locatie staat aan. Het weer wordt elke 30 minuten bijgewerkt.</string>
     <string name="open_location_settings">Locatie-instellingen openen</string>
+    <string name="option_sharp">Scherpe foto\'s: tekenen op de eigen resolutie van het paneel</string>
+    <string name="sharp_info">Voor 4K-TV\'s die hun apps op 1080p opbouwen. Kost meer geheugen: ongeveer 33 MB per foto op 4K.</string>
     <string name="preview">Voorbeeld</string>
     <string name="seconds_per_picture">Tijd per foto: %d seconden</string>
     <string name="idle_minutes">Screensaver starten na: %d minuten</string>

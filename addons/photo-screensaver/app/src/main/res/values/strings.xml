@@ -18,6 +18,8 @@
     <string name="weather_location_off">Location services are off on this TV: turn them on for the weather.</string>
     <string name="weather_ok">Location is on. The weather is updated every 30 minutes.</string>
     <string name="open_location_settings">Open location settings</string>
+    <string name="option_sharp">Sharp pictures: draw them at the panel\'s own resolution</string>
+    <string name="sharp_info">For 4K TVs that lay their apps out at 1080p. Takes more memory: about 33 MB a picture at 4K.</string>
     <string name="preview">Preview</string>
     <string name="seconds_per_picture">Time per picture: %d seconds</string>
     <string name="idle_minutes">Start screensaver after: %d minutes</string>

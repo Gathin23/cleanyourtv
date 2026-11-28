@@ -14,6 +14,7 @@ final class Options {
     static final String PRINTS = "prints";
     static final String WEATHER = "weather";
     static final String ANIMATION = "animation";
+    static final String SHARP = "sharp";
     static final String SECONDS_PER_PICTURE = "seconds_per_picture";
     static final String IDLE_MINUTES = "idle_minutes";
 
@@ -26,6 +27,7 @@ final class Options {
     final boolean prints;
     final boolean weather;
     final boolean animation;
+    final boolean sharp;
     final int secondsPerPicture;
     final int idleMinutes;
 
@@ -37,6 +39,7 @@ final class Options {
         prints = p.getBoolean(PRINTS, false);
         weather = p.getBoolean(WEATHER, false);
         animation = p.getBoolean(ANIMATION, true);
+        sharp = p.getBoolean(SHARP, false);
         secondsPerPicture = p.getInt(SECONDS_PER_PICTURE,
                 Media.seconds(Photos.read(dir == null ? null : new File(dir, Media.SECONDS))));
         idleMinutes = p.getInt(IDLE_MINUTES, DEFAULT_IDLE_MINUTES);

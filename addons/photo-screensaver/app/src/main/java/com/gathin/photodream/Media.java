@@ -88,6 +88,31 @@ final class Media {
         }
     }
 
+    /** {left, top, right, bottom}: the centred part of a w x h picture that has the target's shape. */
+    static int[] cover(int w, int h, int targetW, int targetH) {
+        if ((long) w * targetH > (long) h * targetW) {
+            int cw = (int) ((long) h * targetW / targetH);
+            int left = (w - cw) / 2;
+            return new int[]{left, 0, left + cw, h};
+        }
+        int ch = (int) ((long) w * targetH / targetW);
+        int top = (h - ch) / 2;
+        return new int[]{0, top, w, top + ch};
+    }
+
+    /**
+     * The sample size for decoding a cw x ch region toward a target: the largest power of two that still
+     * covers the target, then raised until the decode holds no more than maxPixels. A region just under
+     * twice the target cannot be halved without falling short of it, and would otherwise decode to almost
+     * four times the target's pixels.
+     */
+    static int regionSample(int cw, int ch, int targetW, int targetH, long maxPixels) {
+        int sample = 1;
+        while (cw / (sample * 2) >= targetW && ch / (sample * 2) >= targetH) sample *= 2;
+        while ((long) (cw / sample) * (ch / sample) > maxPixels) sample *= 2;
+        return sample;
+    }
+
     private static final Pattern NAME_DATE = Pattern.compile("-(\\d{4})(\\d{2})(\\d{2})?\\.[A-Za-z0-9]+$");
 
     /** {year, month} from a name ending in its date, photo-20231202.jpg or photo-202312.jpg; else null. */
