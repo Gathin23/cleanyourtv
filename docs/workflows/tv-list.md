@@ -27,6 +27,11 @@
      alone.
 3. List only packages you actually disabled and lived with for a few days. Note anything you re-enabled.
    Mark untested entries as comments.
+   - Restart the TV once with the list applied and write in the header what held: the packages still disabled,
+     Home still working (on the launcher you installed, if you installed one) and Wi-Fi back on its own. It is
+     the check `CONTRIBUTING.md` asks for, and most headers carry it
+     (`examples/amazon-fire-tv-stick-4k-max-2021/debloat.txt`: "Rebooted twice after applying: everything below
+     stayed disabled"); a list PR without it is asked for the reboot before it is merged.
    - A package the next owner may want goes in commented out, not on an active line. The person's own streaming
      apps, the firmware updater and the phone-remote service (`com.google.android.tv.remote.service`) are choices
      each owner makes for themselves, so a set that found one of them unused keeps the line in the list under a
