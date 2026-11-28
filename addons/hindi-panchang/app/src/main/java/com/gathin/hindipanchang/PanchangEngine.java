@@ -496,7 +496,7 @@ final class PanchangEngine {
         String monthHi = (isAdhikMaas ? "अधिक " : "") + HINDI_MONTHS_HI[monthIndex];
         String monthEn = (isAdhikMaas ? "Adhik " : "") + HINDI_MONTHS_EN[monthIndex];
 
-        int vikramSamvat = computeVikramSamvat(date, monthIndex);
+        int vikramSamvat = computeVikramSamvat(date, monthIndex, isShukla);
         int weekdayIndex = date.getDayOfWeek().getValue() % 7;
 
         // Moonrise & Moonset across the Hindu Ahoratra (Sunrise to next Sunrise)
@@ -963,13 +963,13 @@ final class PanchangEngine {
         return new int[]{purnimantaMonth, isAdhik ? 1 : 0};
     }
 
-    private static int computeVikramSamvat(LocalDate date, int hindiMonthIndex) {
+    private static int computeVikramSamvat(LocalDate date, int hindiMonthIndex, boolean isShukla) {
         int y = date.getYear();
         if (date.getMonthValue() <= 3 && hindiMonthIndex >= 9) {
             return y + 56;
         }
-        if (date.getMonthValue() == 3 && hindiMonthIndex == 0 && date.getDayOfMonth() < 15) {
-            return y + 57;
+        if (hindiMonthIndex == 0 && !isShukla) {
+            return y + 56;
         }
         return y + 57;
     }
