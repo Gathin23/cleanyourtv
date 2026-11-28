@@ -96,6 +96,15 @@ if (-not $StockLauncher) {
     }
 }
 Write-Host "Stock launcher: $StockLauncher"
+# Skyworth/Coocaa's persistent key service crashes on app buttons with launcherx disabled once a second user
+# exists (see build-and-install.sh, #2973), so stop before anything is pushed.
+if ($StockLauncher -eq 'com.google.android.apps.tv.launcherx') {
+    $keyService = (& $py -I ..\tools\tv.py 'pm path com.smartdevice.global.service') -join "`n"
+    $users = @(& $py -I ..\tools\tv.py 'pm list users' | Where-Object { $_ -match 'UserInfo\{' }).Count
+    if ($keyService -match '(?m)^package:' -and $users -gt 1) {
+        throw "this TV has $users Android users and com.smartdevice.global.service, which crashes on the remote's app buttons once launcherx is disabled, until RescueParty resets settings (#2973). Nothing was pushed or disabled. Keep launcherx and run again with -StockLauncher none (stock_home_redirect), or remove a profile nobody uses with 'pm remove-user <id>' first; docs/TROUBLESHOOTING.md has both."
+    }
+}
 $disableStock = if ($StockLauncher -eq 'none') { 'echo stock launcher left alone' } else { "pm disable-user --user 0 $StockLauncher" }
 
 $apk = 'app\build\outputs\apk\release\app-release.apk'
