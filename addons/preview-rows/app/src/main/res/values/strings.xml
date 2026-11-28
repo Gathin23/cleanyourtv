@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Preview rows</string>
+    <string name="loading">Reading preview channels…</string>
+    <string name="refresh">Refresh</string>
+    <string name="allow_permission">Allow permission</string>
+    <string name="open_settings">App info</string>
+    <string name="permission_needed_title">Needs TV listings permission</string>
+    <string name="permission_needed_body">Allow READ_TV_LISTINGS to read preview channels published by apps on this TV.\n\nYou can also grant it over ADB:\nadb shell pm grant io.github.jain05vaibhav.previewrows android.permission.READ_TV_LISTINGS</string>
+    <string name="permission_denied_status">Permission denied: grant READ_TV_LISTINGS to show preview rows.</string>
+    <string name="empty_title">No preview rows found</string>
+    <string name="empty_body">No searchable preview programs were returned by apps on this TV. Some apps do not publish preview channels, or only publish non-searchable rows.</string>
+    <string name="error_status">Could not read preview channels on this TV.</string>
+    <string name="cant_open">Could not open that item.</string>
+    <string name="channel_header">%1$s (%2$d)</string>
+    <plurals name="summary_counts">
+        <item quantity="one">%1$d channel · %2$d items · OK opens</item>
+        <item quantity="other">%1$d channels · %2$d items · OK opens</item>
+    </plurals>
+</resources>
+

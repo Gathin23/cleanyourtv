@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Two rows of still cards inside the adaptive icon's safe zone. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#4F9CF9" android:pathData="M30,34h18a2,2 0 0 1 0,4h-18a2,2 0 0 1 0,-4z" />
+    <path android:fillColor="#25364C" android:strokeColor="#4F9CF9" android:strokeWidth="2"
+        android:pathData="M30,42h22a3,3 0 0 1 3,3v11a3,3 0 0 1 -3,3h-22a3,3 0 0 1 -3,-3v-11a3,3 0 0 1 3,-3z" />
+    <path android:fillColor="#1E2733"
+        android:pathData="M59,42h20a3,3 0 0 1 3,3v11a3,3 0 0 1 -3,3h-20a3,3 0 0 1 -3,-3v-11a3,3 0 0 1 3,-3z" />
+    <path android:fillColor="#7AA8E8" android:pathData="M30,64h14a2,2 0 0 1 0,4h-14a2,2 0 0 1 0,-4z" />
+    <path android:fillColor="#1E2733"
+        android:pathData="M30,71h22a2.5,2.5 0 0 1 2.5,2.5v5a2.5,2.5 0 0 1 -2.5,2.5h-22a2.5,2.5 0 0 1 -2.5,-2.5v-5a2.5,2.5 0 0 1 2.5,-2.5z" />
+    <path android:fillColor="#1E2733"
+        android:pathData="M59,71h20a2.5,2.5 0 0 1 2.5,2.5v5a2.5,2.5 0 0 1 -2.5,2.5h-20a2.5,2.5 0 0 1 -2.5,-2.5v-5a2.5,2.5 0 0 1 2.5,-2.5z" />
+</vector>
+

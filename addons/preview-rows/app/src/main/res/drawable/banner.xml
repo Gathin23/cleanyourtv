@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: two horizontal rows of still preview cards on a dark TV canvas. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#161C24" android:pathData="M18,18h284v144h-284z" />
+    <!-- Row 1 header bar -->
+    <path android:fillColor="#4F9CF9" android:pathData="M34,34h64a3,3 0 0 1 0,6h-64a3,3 0 0 1 0,-6z" />
+    <!-- Row 1 cards (focused first card + two neighbours) -->
+    <path android:fillColor="#25364C" android:strokeColor="#4F9CF9" android:strokeWidth="2.5"
+        android:pathData="M34,48h74a5,5 0 0 1 5,5v38a5,5 0 0 1 -5,5h-74a5,5 0 0 1 -5,-5v-38a5,5 0 0 1 5,-5z" />
+    <path android:fillColor="#4F9CF9" android:pathData="M42,84h44a2,2 0 0 1 0,4h-44a2,2 0 0 1 0,-4z" />
+    <path android:fillColor="#1E2733" android:pathData="M124,48h74a5,5 0 0 1 5,5v38a5,5 0 0 1 -5,5h-74a5,5 0 0 1 -5,-5v-38a5,5 0 0 1 5,-5z" />
+    <path android:fillColor="#3A495C" android:pathData="M132,84h40a2,2 0 0 1 0,4h-40a2,2 0 0 1 0,-4z" />
+    <path android:fillColor="#1E2733" android:pathData="M214,48h72a5,5 0 0 1 5,5v38a5,5 0 0 1 -5,5h-72a5,5 0 0 1 -5,-5v-38a5,5 0 0 1 5,-5z" />
+    <path android:fillColor="#3A495C" android:pathData="M222,84h38a2,2 0 0 1 0,4h-38a2,2 0 0 1 0,-4z" />
+    <!-- Row 2 header bar -->
+    <path android:fillColor="#7AA8E8" android:pathData="M34,110h52a3,3 0 0 1 0,6h-52a3,3 0 0 1 0,-6z" />
+    <!-- Row 2 cards -->
+    <path android:fillColor="#1E2733" android:pathData="M34,122h74a5,5 0 0 1 5,5v24a5,5 0 0 1 -5,5h-74a5,5 0 0 1 -5,-5v-24a5,5 0 0 1 5,-5z" />
+    <path android:fillColor="#1E2733" android:pathData="M124,122h74a5,5 0 0 1 5,5v24a5,5 0 0 1 -5,5h-74a5,5 0 0 1 -5,-5v-24a5,5 0 0 1 5,-5z" />
+    <path android:fillColor="#1E2733" android:pathData="M214,122h72a5,5 0 0 1 5,5v24a5,5 0 0 1 -5,5h-72a5,5 0 0 1 -5,-5v-24a5,5 0 0 1 5,-5z" />
+</vector>
+
