@@ -57,6 +57,11 @@ so there is no tested debloat list for this set.
   session): `com.android.vending` 35.2.19-23 (versionCode 83521938; the TV `TvMainActivity`
   resolves), `com.google.android.gms` 20.50.16, and `com.google.android.gsf`; all enabled.
   Play sign-in was not tested.
+- Official ATV YouTube `com.google.android.youtube.tv` 7.12.300 (versionCode 712300320,
+  minSdk 24, armeabi-v7a) was sideloaded over ADB on 2026-11-28. The APK came from a third-party
+  mirror; its v2/v3 signer cert SHA-1 `61226bdb57cc32c8a2a9ef71f7bc9548e95dcc0b` matches the
+  official Google YouTube signer. It launches to the account-linking screen; Google account
+  sign-in was not performed.
 - The Inputs pill is hidden: TvInputManager reports no HDMI/AV/tuner hardware on this box, and
   `live_tv_package` is empty.
 - Granted to tvhome: `WRITE_SECURE_SETTINGS`, `ACCESS_FINE_LOCATION`; AppOps
@@ -70,7 +75,7 @@ so there is no tested debloat list for this set.
   injected `KEYCODE_HOME` lands on tvhome.
 - After one owner-consented reboot, `eth0` came back on its own; the HOME resolver and resumed
   activity were both `com.gathin.tvhome/.MainActivity`; the helper was bound. Re-checked
-  2026-11-28: 85 packages present, disabled list empty (0 disabled).
+  2026-11-28: 86 packages present, disabled list empty (0 disabled).
 - Standby/wake: the first wake, before `power_on_home_always` was enabled, landed back on the
   stock launcher (late or missing stock-home window event; see the standby-wake entry in
   [TROUBLESHOOTING.md](../TROUBLESHOOTING.md)). After enabling `power_on_home_always` and
