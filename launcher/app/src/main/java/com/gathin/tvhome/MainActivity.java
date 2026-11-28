@@ -3696,7 +3696,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dot.setVisibility(View.VISIBLE);
         } else if (state == TvInputManager.INPUT_STATE_DISCONNECTED) {
             status.setText(R.string.not_connected);
-            dot.setVisibility(View.GONE);
+            dot.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFFFC107));
+            dot.setVisibility(View.VISIBLE);
         } else {
             status.setVisibility(View.GONE);
             dot.setVisibility(View.GONE);
