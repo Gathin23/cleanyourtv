@@ -250,6 +250,14 @@ final class Config {
     final boolean continueWatching;
     /** dock_order "recent": the dock holds the apps Home opened last, newest first, dock_apps filling the rest (config.xml, dock_order). */
     final boolean dockOrderRecent;
+    /** The shelf's cards also take the app's preview-channel programs after its Continue watching (config.xml, shelf_previews). */
+    final boolean shelfPreviews;
+    /** Packages whose rows the shelf leaves out, for apps that publish only promotions (config.xml, shelf_hidden_apps). */
+    final List<String> shelfHiddenApps;
+    /** The weather line under the clock (config.xml weather_line), for weatherLatitude and weatherLongitude. */
+    final boolean weatherLine;
+    final String weatherLatitude;
+    final String weatherLongitude;
     /** Opacity of the app's artwork behind the cinematic shelf, 0 to 100 (config.xml, cinematic_art); 50 as before. */
     final int cinematicArt;
     /** Strength of the cinematic shelf's dark scrim, 0 to 100 percent (config.xml, cinematic_scrim); 100 as before. */
@@ -303,7 +311,9 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean volumePausesFilter, boolean homeIgnoreChannelKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean inputsCecStateOnly,
                    int openOnStartNetworkWait, boolean openOnStartOnWake, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock, boolean glowSnap,
-                   boolean settingsKeyClearTask, boolean continueWatching, boolean dockOrderRecent) {
+                   boolean settingsKeyClearTask, boolean continueWatching, boolean dockOrderRecent,
+                   boolean shelfPreviews, List<String> shelfHiddenApps, boolean weatherLine, String weatherLatitude,
+                   String weatherLongitude) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -398,6 +408,11 @@ final class Config {
         this.wifiStatusColor = wifiStatusColor;
         this.continueWatching = continueWatching;
         this.dockOrderRecent = dockOrderRecent;
+        this.shelfPreviews = shelfPreviews;
+        this.shelfHiddenApps = Collections.unmodifiableList(shelfHiddenApps);
+        this.weatherLine = weatherLine;
+        this.weatherLatitude = weatherLatitude;
+        this.weatherLongitude = weatherLongitude;
         this.cinematicArt = cinematicArt;
         this.cinematicScrim = cinematicScrim;
         this.wallpaperMoods = wallpaperMoods;
@@ -541,6 +556,11 @@ final class Config {
         boolean wifiStatusColor = res.getBoolean(R.bool.wifi_status_color);
         boolean continueWatching = res.getBoolean(R.bool.continue_watching);
         boolean dockOrderRecent = RecentDock.RECENT.equals(res.getString(R.string.dock_order));
+        boolean shelfPreviews = res.getBoolean(R.bool.shelf_previews);
+        List<String> shelfHidden = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.shelf_hidden_apps)));
+        boolean weatherLine = res.getBoolean(R.bool.weather_line);
+        String weatherLat = res.getString(R.string.weather_latitude).trim();
+        String weatherLon = res.getString(R.string.weather_longitude).trim();
         int cinematicArt = res.getInteger(R.integer.cinematic_art);
         int cinematicScrim = res.getInteger(R.integer.cinematic_scrim);
         Map<String, Set<String>> wallpaperMoods = moods(res.getString(R.string.wallpaper_moods));
@@ -660,6 +680,11 @@ final class Config {
             wifiStatusColor = bool(json, "wifi_status_color", wifiStatusColor);
             continueWatching = bool(json, "continue_watching", continueWatching);
             if (json.has("dock_order")) dockOrderRecent = RecentDock.RECENT.equals(string(json, "dock_order", RecentDock.FIXED));
+            shelfPreviews = bool(json, "shelf_previews", shelfPreviews);
+            shelfHidden = stringList(json, "shelf_hidden_apps", shelfHidden);
+            weatherLine = bool(json, "weather_line", weatherLine);
+            weatherLat = string(json, "weather_latitude", weatherLat);
+            weatherLon = string(json, "weather_longitude", weatherLon);
             cinematicArt = integer(json, "cinematic_art", cinematicArt, 0, 100);
             cinematicScrim = integer(json, "cinematic_scrim", cinematicScrim, 0, 100);
             JSONObject moods = json.optJSONObject("wallpaper_moods");
@@ -742,7 +767,8 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap,
-                settingsKeyClearTask, continueWatching, dockOrderRecent);
+                settingsKeyClearTask, continueWatching, dockOrderRecent,
+                shelfPreviews, shelfHidden, weatherLine, weatherLat, weatherLon);
     }
 
     /**

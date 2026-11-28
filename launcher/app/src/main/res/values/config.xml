@@ -531,6 +531,22 @@
          "dock_order": "recent" in a theme's config.json. -->
     <string name="dock_order" translatable="false">fixed</string>
 
+    <!-- With continue_watching, the shelf's cards also take the focused app's preview-channel programs (its picks,
+         subscriptions or trending rows) after its Continue watching, without a progress bar. With the stock launcher
+         disabled no channel is marked browsable, so all of an app's channels are read. Off by default. Theme:
+         "shelf_previews": true. -->
+    <bool name="shelf_previews">false</bool>
+    <!-- Packages whose rows the shelf leaves out, for apps that publish only promotions. Theme: "shelf_hidden_apps". -->
+    <string-array name="shelf_hidden_apps" translatable="false"></string-array>
+
+    <!-- One line under the clock: now, the next hours (rain likely around a time, or where the temperature goes) and
+         the night's low (or the day's high), from Open-Meteo for weather_latitude and weather_longitude (decimal
+         degrees). Only those two numbers are sent, every 30 minutes while Home is on screen. Off by default. A theme
+         can set "weather_line": true with "weather_latitude" and "weather_longitude". -->
+    <bool name="weather_line">false</bool>
+    <string name="weather_latitude" translatable="false"></string>
+    <string name="weather_longitude" translatable="false"></string>
+
     <!-- The glow behind the dock in the focused app's colour (red for YouTube, blue for Prime Video). false keeps
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a
          theme's config.json. -->

@@ -98,4 +98,25 @@
     <string name="clock_format_system">Système</string>
     <string name="clock_format_12">12 heures</string>
     <string name="clock_format_24">24 heures</string>
+    <string-array name="weather_conditions">
+        <item>Ciel dégagé</item>
+        <item>Plutôt dégagé</item>
+        <item>Partiellement nuageux</item>
+        <item>Couvert</item>
+        <item>Brouillard</item>
+        <item>Bruine</item>
+        <item>Pluie</item>
+        <item>Neige</item>
+        <item>Averses</item>
+        <item>Averses de neige</item>
+        <item>Orages</item>
+    </string-array>
+    <string name="weather_rain_at">Pluie probable vers %1$s</string>
+    <string name="weather_snow_at">Neige probable vers %1$s</string>
+    <string name="weather_storm_at">Orages probables vers %1$s</string>
+    <string name="weather_rising_to">Jusqu’à %1$d° dans les prochaines heures</string>
+    <string name="weather_falling_to">Descend à %1$d° dans les prochaines heures</string>
+    <string name="weather_steady">Stable dans les prochaines heures</string>
+    <string name="weather_low_tonight">Min. %1$d° cette nuit</string>
+    <string name="weather_high_today">Max. %1$d° aujourd’hui</string>
 </resources>

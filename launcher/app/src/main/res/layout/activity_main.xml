@@ -332,6 +332,27 @@
                 android:focusable="false"
                 android:visibility="gone" />
 
+            <!-- Shown only when weather_line is on: now and the next hours, under the clock (or under the stats line
+                 when that is on too; gone, the stats line is skipped as an anchor). -->
+            <TextView
+                android:id="@+id/weatherLine"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/stats"
+                android:layout_alignStart="@id/leftBlock"
+                android:gravity="left"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#E6FFFFFF"
+                android:textSize="15sp"
+                android:fontFamily="@string/font_regular"
+                android:letterSpacing="0.02"
+                android:shadowColor="#99000000"
+                android:shadowRadius="6"
+                android:focusable="false"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"

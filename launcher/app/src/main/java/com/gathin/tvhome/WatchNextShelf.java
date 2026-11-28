@@ -12,11 +12,14 @@ import android.os.Handler;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,6 +33,8 @@ final class WatchNextShelf {
 
     static final String PERMISSION = "android.permission.READ_TV_LISTINGS";
     static final int MAX_PER_APP = 8;
+    /** With shelf_previews, an app's cards in all: its Continue watching first, then its preview programs. */
+    static final int MAX_WITH_PREVIEWS = 16;
     /** A row last engaged longer ago than this is stale (rows linger for months on some apps). */
     static final long MAX_AGE_MS = 60L * 24 * 60 * 60 * 1000;
     /** A "continue" row this far into its video is as good as finished. */
@@ -54,6 +59,23 @@ final class WatchNextShelf {
             TvContract.WatchNextPrograms.COLUMN_DURATION_MILLIS,
             TvContract.WatchNextPrograms.COLUMN_TYPE,
             TvContract.WatchNextPrograms.COLUMN_SHORT_DESCRIPTION,
+    };
+
+    /** A preview program's columns (shelf_previews), in the order previewItem reads them. */
+    private static final String[] PREVIEW_PROJECTION = {
+            TvContract.PreviewPrograms.COLUMN_TITLE,
+            TvContract.PreviewPrograms.COLUMN_EPISODE_TITLE,
+            TvContract.PreviewPrograms.COLUMN_SEASON_DISPLAY_NUMBER,
+            TvContract.PreviewPrograms.COLUMN_EPISODE_DISPLAY_NUMBER,
+            TvContract.PreviewPrograms.COLUMN_POSTER_ART_URI,
+            TvContract.PreviewPrograms.COLUMN_THUMBNAIL_URI,
+            TvContract.PreviewPrograms.COLUMN_INTENT_URI,
+            TvContract.PreviewPrograms.COLUMN_LAST_PLAYBACK_POSITION_MILLIS,
+            TvContract.PreviewPrograms.COLUMN_DURATION_MILLIS,
+            TvContract.PreviewPrograms.COLUMN_TYPE,
+            TvContract.PreviewPrograms.COLUMN_SHORT_DESCRIPTION,
+            TvContract.PreviewPrograms.COLUMN_WEIGHT,
+            TvContract.PreviewPrograms.COLUMN_BROWSABLE,
     };
 
     /** One row of the table, as the cards need it. Unknown numbers are -1, unknown texts null. */
@@ -195,6 +217,45 @@ final class WatchNextShelf {
         return byApp;
     }
 
+    /**
+     * shelf_previews: each app's Continue watching (from select) followed by its preview programs, a program whose
+     * deep link a card already has left out, at most MAX_WITH_PREVIEWS cards; apps in hidden are dropped. Apps with
+     * Continue watching keep their place, apps with only previews follow in the order given.
+     */
+    static Map<String, List<Item>> merge(Map<String, List<Item>> watchNext, Map<String, List<Item>> previews,
+                                         Collection<String> hidden) {
+        Map<String, List<Item>> out = new LinkedHashMap<>();
+        Set<String> pkgs = new java.util.LinkedHashSet<>(watchNext.keySet());
+        pkgs.addAll(previews.keySet());
+        for (String pkg : pkgs) {
+            if (hidden.contains(pkg)) continue;
+            List<Item> list = new ArrayList<>();
+            Set<String> links = new HashSet<>();
+            for (List<Item> source : java.util.Arrays.asList(watchNext.get(pkg), previews.get(pkg))) {
+                if (source == null) continue;
+                for (Item it : source) {
+                    if (list.size() >= MAX_WITH_PREVIEWS) break;
+                    if (isEmpty(it.intentUri) || (isEmpty(it.title) && isEmpty(it.episodeTitle))) continue;
+                    if (links.add(it.intentUri)) list.add(it);
+                }
+            }
+            if (!list.isEmpty()) out.put(pkg, Collections.unmodifiableList(list));
+        }
+        return out;
+    }
+
+    /**
+     * An app's preview channels as {id, browsable}, in id order: the browsable ones, those someone put on the home
+     * screen. With the stock launcher disabled nothing marks them, so when none is browsable all stand in. From
+     * Mehdi-Ks's top shelf (github.com/Mehdi-Ks/cleanyourtv, ShelfContent.pickChannels).
+     */
+    static List<Long> pickChannels(List<long[]> channels) {
+        List<Long> out = new ArrayList<>();
+        for (long[] ch : channels) if (ch[1] != 0) out.add(ch[0]);
+        if (out.isEmpty()) for (long[] ch : channels) out.add(ch[0]);
+        return out;
+    }
+
     private final Context context;
     private final Handler main;
     private final Runnable onChanged;
@@ -206,12 +267,21 @@ final class WatchNextShelf {
     private final ContentObserver observer;
     private final Runnable debounced = this::refresh;
     private boolean observing;
+    private final boolean previews;
+    private final Set<String> hidden;
     /** Replaced whole on the main thread; the lists in it are never changed. */
     private Map<String, List<Item>> shelf = Collections.emptyMap();
     private volatile boolean closed;
 
     /** onChanged runs on the main thread after every read, whether or not anything differs. */
     WatchNextShelf(Context context, Handler main, Runnable onChanged) {
+        this(context, main, onChanged, false, Collections.<String>emptyList());
+    }
+
+    /** previews: also the apps' preview-channel programs (shelf_previews); hidden: apps left out (shelf_hidden_apps). */
+    WatchNextShelf(Context context, Handler main, Runnable onChanged, boolean previews, Collection<String> hidden) {
+        this.previews = previews;
+        this.hidden = new HashSet<>(hidden);
         this.context = context.getApplicationContext();
         this.main = main;
         this.onChanged = onChanged;
@@ -240,6 +310,12 @@ final class WatchNextShelf {
             try {
                 context.getContentResolver().registerContentObserver(
                         TvContract.WatchNextPrograms.CONTENT_URI, true, observer);
+                if (previews) {
+                    context.getContentResolver().registerContentObserver(
+                            TvContract.PreviewPrograms.CONTENT_URI, true, observer);
+                    context.getContentResolver().registerContentObserver(
+                            TvContract.Channels.CONTENT_URI, true, observer);
+                }
                 observing = true;
             } catch (SecurityException ignored) {
                 // Permission taken away since the check: the read below reports nothing.
@@ -267,7 +343,12 @@ final class WatchNextShelf {
             return;
         }
         try {
-            reader.execute(() -> publish(select(read(context.getContentResolver()), System.currentTimeMillis())));
+            reader.execute(() -> {
+                ContentResolver resolver = context.getContentResolver();
+                Map<String, List<Item>> next = select(read(resolver), System.currentTimeMillis());
+                publish(merge(next, previews ? readPreviews(resolver) : Collections.<String, List<Item>>emptyMap(),
+                        hidden));
+            });
         } catch (RuntimeException ignored) {
             // Shut down while a refresh was queued.
         }
@@ -297,6 +378,58 @@ final class WatchNextShelf {
             rows.clear();
         }
         return rows;
+    }
+
+    /**
+     * shelf_previews: each app's preview programs, channel by channel (pickChannels), each channel in the app's own
+     * order (weight, highest first). The channel list and a channel's programs are read whole, without a selection,
+     * as the provider requires; an unreadable table is an empty one.
+     */
+    private static Map<String, List<Item>> readPreviews(ContentResolver resolver) {
+        Map<String, List<long[]>> channelsByApp = new LinkedHashMap<>();
+        Map<String, List<Item>> out = new LinkedHashMap<>();
+        try (Cursor c = resolver.query(TvContract.Channels.CONTENT_URI, new String[]{TvContract.Channels._ID,
+                TvContract.Channels.COLUMN_BROWSABLE, TvContract.Channels.COLUMN_PACKAGE_NAME,
+                TvContract.Channels.COLUMN_TYPE}, null, null, null)) {
+            if (c == null) return out;
+            while (c.moveToNext()) {
+                String pkg = c.getString(2);
+                if (isEmpty(pkg) || !TvContract.Channels.TYPE_PREVIEW.equals(c.getString(3))) continue;
+                List<long[]> list = channelsByApp.get(pkg);
+                if (list == null) channelsByApp.put(pkg, list = new ArrayList<>());
+                list.add(new long[]{c.getLong(0), c.isNull(1) ? 0 : c.getInt(1)});
+            }
+        } catch (RuntimeException e) {
+            return out;
+        }
+        for (Map.Entry<String, List<long[]>> app : channelsByApp.entrySet()) {
+            List<long[]> channels = app.getValue();
+            Collections.sort(channels, (a, b) -> Long.compare(a[0], b[0]));
+            List<Item> items = new ArrayList<>();
+            for (long channel : pickChannels(channels)) {
+                if (items.size() >= MAX_WITH_PREVIEWS) break;
+                List<Object[]> progs = new ArrayList<>();   // {Item, weight}
+                try (Cursor c = resolver.query(TvContract.buildPreviewProgramsUriForChannel(channel),
+                        PREVIEW_PROJECTION, null, null, null)) {
+                    while (c != null && c.moveToNext()) {
+                        if (!c.isNull(12) && c.getInt(12) == 0) continue;   // browsable 0: the app hid it
+                        progs.add(new Object[]{previewItem(app.getKey(), c), c.isNull(11) ? 0 : c.getInt(11)});
+                    }
+                } catch (RuntimeException e) {
+                    continue;
+                }
+                Collections.sort(progs, (a, b) -> Integer.compare((Integer) b[1], (Integer) a[1]));
+                for (Object[] p : progs) items.add((Item) p[0]);
+            }
+            if (!items.isEmpty()) out.put(app.getKey(), items);
+        }
+        return out;
+    }
+
+    private static Item previewItem(String pkg, Cursor c) {
+        return new Item(pkg, c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4),
+                c.getString(5), c.getString(6), -1, -1, c.isNull(7) ? -1 : c.getLong(7),
+                c.isNull(8) ? -1 : c.getLong(8), c.isNull(9) ? -1 : c.getInt(9), c.getString(10));
     }
 
     /** The deep link as an Intent, or null when it does not parse. */

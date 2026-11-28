@@ -74,4 +74,27 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 Stunden</string>
     <string name="clock_format_24">24 Stunden</string>
+    <!-- Weather line under the clock (weather_line). Order: clear, mainly clear, partly cloudy, overcast, fog,
+         drizzle, rain, snow, showers, snow showers, thunderstorm. -->
+    <string-array name="weather_conditions">
+        <item>Klar</item>
+        <item>Überwiegend klar</item>
+        <item>Teils bewölkt</item>
+        <item>Bedeckt</item>
+        <item>Nebel</item>
+        <item>Nieselregen</item>
+        <item>Regen</item>
+        <item>Schnee</item>
+        <item>Schauer</item>
+        <item>Schneeschauer</item>
+        <item>Gewitter</item>
+    </string-array>
+    <string name="weather_rain_at">Regen wahrscheinlich gegen %1$s</string>
+    <string name="weather_snow_at">Schnee wahrscheinlich gegen %1$s</string>
+    <string name="weather_storm_at">Gewitter wahrscheinlich gegen %1$s</string>
+    <string name="weather_rising_to">Bis %1$d° in den nächsten Stunden</string>
+    <string name="weather_falling_to">Runter auf %1$d° in den nächsten Stunden</string>
+    <string name="weather_steady">Gleichbleibend in den nächsten Stunden</string>
+    <string name="weather_low_tonight">Tiefstwert %1$d° heute Nacht</string>
+    <string name="weather_high_today">Höchstwert %1$d° heute</string>
 </resources>
