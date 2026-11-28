@@ -59,12 +59,17 @@ so there is no tested debloat list for this set.
 - Official ATV YouTube `com.google.android.youtube.tv` 7.12.300 (versionCode 712300320,
   minSdk 24, armeabi-v7a) was sideloaded over ADB on 2026-11-28. The APK came from a third-party
   mirror; its v2/v3 signer cert SHA-1 `61226bdb57cc32c8a2a9ef71f7bc9548e95dcc0b` matches the
-  official Google YouTube signer. The UI, search and thumbnails render, but any video or home
-  preview selects the dead VP9 OMX shell: the Starboard player hits an unrecoverable MediaCodec
-  error (`0x80001009`), resets the video surface, and the screen goes black. The official app
-  exposes no decoder/codec or AVC-preference toggle; playback on this box stays on SmartTube.
-  A system-level removal of the amlogic VP9 nodes from `media_codecs.xml` was considered but not
-  applied.
+  official Google YouTube signer. On first launch any video or home preview selected the dead
+  VP9 OMX shell: the Starboard player hit an unrecoverable MediaCodec error (`0x80001009`),
+  reset the video surface, and the screen went black. The official app exposes no decoder/codec
+  or AVC-preference toggle. As a workaround, the two `OMX.amlogic.vp9.decoder.awesome` entries
+  (plain and `.secure`) were commented out in `/vendor/etc/media_codecs.xml`, together with the
+  matching performance entry in `media_codecs_performance.xml`; the original two xmls were
+  backed up on the box before the edit. After reboot the codec list no longer reports VP9
+  hardware: the YouTube client negotiates an H.264 MP4 track (`avc1.64001F`, 1280x720@30),
+  opens `OMX.amlogic.avc.decoder.awesome` to Executing, and reaches Presenting with no
+  `0x80001009` and no surface reset. VP9/AV1 tracks remain unavailable; the Google software VP9
+  decoder stays capped at 1280×1280. Revert by restoring the backed-up xmls.
 - The Inputs pill is hidden: TvInputManager reports no HDMI/AV/tuner hardware on this box, and
   `live_tv_package` is empty.
 - Granted to tvhome: `WRITE_SECURE_SETTINGS`, `ACCESS_FINE_LOCATION`; AppOps
@@ -99,10 +104,12 @@ so there is no tested debloat list for this set.
 - The software Google VP9 decoder is capped at 1280×1280, so 1080p/4K VP9 or AV1 tracks are not
   playable on this box. In practice the YouTube client is held to a 720p30 AVC profile; H.264 and
   HEVC files play through the hardware decoders.
-- The official ATV YouTube TV client hits the same VP9 shell on home previews and playback:
-  Starboard opens a VP9 WebM stream, the decoder fails unrecoverably (`0x80001009`), the
-  surface resets and the app shows a black screen. Unlike SmartTube, the official app has no
-  force-traditional-decoder or AVC-preference setting.
+- Before the workaround the official ATV YouTube TV client hit the same VP9 shell on home
+  previews and playback: Starboard opened a VP9 WebM stream, the decoder failed unrecoverably
+  (`0x80001009`), the surface reset and the app showed a black screen. Unlike SmartTube, the
+  official app has no force-traditional-decoder or AVC-preference setting. After stripping the
+  amlogic VP9 nodes the client falls back to the AVC hardware decoder (see the YouTube bullet
+  in [What was installed](#what-was-installed)).
 - Observed on this one rebranded image only; do not generalize to other S905L3A builds.
 
 ## Not yet verified
@@ -118,9 +125,13 @@ so there is no tested debloat list for this set.
 
 ## Rollback
 
-Nothing was disabled, so no restore record is needed: switch the default Home back to
-`com.ikukan.launcher` from the box's Home picker or Settings → Apps, turn the `HomeKeyService`
-accessibility service off, and uninstall `com.gathin.tvhome` if desired.
+Nothing was disabled, so no restore record is needed for the launcher: switch the default Home
+back to `com.ikukan.launcher` from the box's Home picker or Settings → Apps, turn the
+`HomeKeyService` accessibility service off, and uninstall `com.gathin.tvhome` if desired.
+
+The two codec xmls in `/vendor/etc` were edited (the amlogic VP9 nodes are commented out);
+restore the backed-up originals to revert that change. The H.264 and HEVC hardware nodes were
+left untouched.
 
 See also the other ZTE notes: [ZTE zBox 1](zte-zbox-1-b866v2k.md) (Android TV 14) and
 [ZTE ZXV10 B866F](zte-b866f.md) (Android TV 14); both differ from this Android 9 box.
