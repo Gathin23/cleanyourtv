@@ -360,6 +360,24 @@ person reading the screen at each step, which is what happened here, or a captur
 generation does not offer. Launching an app by id through
 `/api/v2/applications/<appId>` stays the one deterministic action.
 
+## UA65KS9000 (2016): the ad ID reset is the last row of Terms & Privacy
+
+One owner's reading of the menus on a Samsung UA65KS9000 (2016, Tizen), reported in
+[#3941](https://github.com/Gathin23/cleanyourtv/issues/3941) by
+[@Arkom-Natwor](https://github.com/Arkom-Natwor). No session from this repo touched that set: this
+is what the screen showed, and it is here because the menu path moves between model years.
+
+The row that resets the advertising identifier is not a top-level "Advertising ID" item. It is the
+last entry in **Settings › Support › Terms & Privacy**, and it is called **Reset PSID**; its own
+description calls a PSID "a unique, resettable ID for personalised services". The rows above it are
+the Smart Hub and Nuance privacy notices, the remote-management terms, the Samsung UHD video pack,
+and the viewing information, interest-based advertising and voice recognition notices. System ›
+Expert Settings, where Autorun Smart Hub and Change PIN sit, does not carry the row.
+
+That is also the screen the blind five-`KEY_DOWN` sequence above happened to land in, so a 2016 owner
+walking it with remote keys should expect Terms & Privacy and its last row, not an Advertising ID
+item in the top-level list.
+
 ## CU7700 (2023, India): token reused, no app list, manual DNS not kept, checked on 2026-11-05
 
 An owner's check of a 2023 set in India (the year from the model string's `23_` prefix), reported in
